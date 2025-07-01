@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"apollo","required":["class-hasura"],"available":["lib","graphql-subscriptions"]}*/
+
 import { ApolloClient, InMemoryCache, gql, createHttpLink, from } from '@apollo/client/core';
 import { ApolloProvider } from '@apollo/client/react';
 import { ApolloLink, split } from '@apollo/client/link/core';

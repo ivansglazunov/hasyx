@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"generator-hasyx","required":["class-hasura"],"available":["lib","graphql-generation"]}*/
+
 import { DocumentNode, gql } from '@apollo/client/core';
 import Debug from './debug';
 

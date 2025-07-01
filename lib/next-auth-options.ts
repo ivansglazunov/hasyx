@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"next-auth","required":[],"available":["google-auth","yandex-auth","vk-auth","telegram-auth","telegram-miniapp-auth"]}*/
+
 import { Hasyx } from './hasyx'; // Import Client and apollo creator
 import { createApolloClient } from './apollo';
 import { Generator } from './generator';

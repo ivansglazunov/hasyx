@@ -1,5 +1,7 @@
 "use client"
 
+/*😈{"symbol":"🟠","name":"PWA","required":["server-client"],"available":["notifications","install-prompt","offline-support"]}*/
+
 /**
  * PWA utilities for Hasyx
  * Handles service worker registration, installation prompts, and PWA features

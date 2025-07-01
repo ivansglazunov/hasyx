@@ -1,0 +1,80 @@
+[
+  {
+    "symbol": "🟢",
+    "name": "apollo",
+    "required": [
+      "class-hasura"
+    ],
+    "available": [
+      "lib",
+      "graphql-subscriptions"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "class-hasura",
+    "required": [
+      "lib"
+    ],
+    "available": [
+      "migrations",
+      "apollo",
+      "graphql-proxy"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "generator-hasyx",
+    "required": [
+      "class-hasura"
+    ],
+    "available": [
+      "lib",
+      "graphql-generation"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "next-auth",
+    "required": [],
+    "available": [
+      "google-auth",
+      "yandex-auth",
+      "vk-auth",
+      "telegram-auth",
+      "telegram-miniapp-auth"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "nextjs",
+    "required": [],
+    "available": [
+      "cli",
+      "server-client",
+      "client"
+    ]
+  },
+  {
+    "symbol": "🟠",
+    "name": "PWA",
+    "required": [
+      "server-client"
+    ],
+    "available": [
+      "notifications",
+      "install-prompt",
+      "offline-support"
+    ]
+  },
+  {
+    "symbol": "🟠",
+    "name": "telegram-miniapp-auth",
+    "required": [
+      "next-auth"
+    ],
+    "available": [
+      "telegram-auth"
+    ]
+  }
+]

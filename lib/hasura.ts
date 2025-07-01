@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"class-hasura","required":["lib"],"available":["migrations","apollo","graphql-proxy"]}*/
+
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import Debug from './debug'; // Assuming debug is in lib and alias @ points to root/src
 
