@@ -24,6 +24,82 @@
   },
   {
     "symbol": "🟢",
+    "name": "class-hasyx",
+    "required": [
+      "generator-hasyx",
+      "apollo"
+    ],
+    "available": [
+      "lib",
+      "react-hooks",
+      "sql-operations"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "cli",
+    "required": [],
+    "available": [
+      "exec",
+      "terminal",
+      "scripts"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "cloudflare",
+    "required": [],
+    "available": [
+      "dns-api",
+      "ssl-certificates"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "components-cyto",
+    "required": [
+      "lib"
+    ],
+    "available": [
+      "graph-visualization",
+      "interactive-diagrams"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "components-payments",
+    "required": [
+      "payments",
+      "components-ui"
+    ],
+    "available": [
+      "payment-forms",
+      "subscription-management"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "debug",
+    "required": [],
+    "available": [
+      "logging",
+      "development-tools"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "events",
+    "required": [
+      "class-hasura"
+    ],
+    "available": [
+      "webhooks",
+      "event-triggers",
+      "cron-jobs"
+    ]
+  },
+  {
+    "symbol": "🟢",
     "name": "generator-hasyx",
     "required": [
       "class-hasura"
@@ -31,6 +107,44 @@
     "available": [
       "lib",
       "graphql-generation"
+    ]
+  },
+  {
+    "symbol": "🟡",
+    "name": "graphql-proxy",
+    "required": [
+      "next-auth",
+      "telegram-miniapp-auth",
+      "apollo"
+    ],
+    "available": [
+      "api-proxy",
+      "websocket-proxy"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "lib",
+    "required": [
+      "nextjs"
+    ],
+    "available": [
+      "class-hasyx",
+      "class-hasura",
+      "apollo",
+      "generator-hasyx",
+      "pwa"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "migrations",
+    "required": [
+      "class-hasura"
+    ],
+    "available": [
+      "cli",
+      "database-migrations"
     ]
   },
   {
@@ -56,6 +170,55 @@
     ]
   },
   {
+    "symbol": "🟢",
+    "name": "notifications",
+    "required": [
+      "class-hasyx",
+      "firebase",
+      "telegram-bot"
+    ],
+    "available": [
+      "push-notifications",
+      "multi-provider"
+    ]
+  },
+  {
+    "symbol": "🟠",
+    "name": "page-constructor",
+    "required": [
+      "components-constructor",
+      "next-auth"
+    ],
+    "available": [
+      "visual-editor",
+      "app-building"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "page-payments",
+    "required": [
+      "components-payments"
+    ],
+    "available": [
+      "payment-ui",
+      "billing-dashboard"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "payments",
+    "required": [
+      "class-hasura",
+      "tinkoff-api"
+    ],
+    "available": [
+      "payment-processing",
+      "subscriptions",
+      "billing"
+    ]
+  },
+  {
     "symbol": "🟠",
     "name": "PWA",
     "required": [
@@ -69,12 +232,73 @@
   },
   {
     "symbol": "🟠",
+    "name": "pwa-components",
+    "required": [
+      "PWA",
+      "components-ui"
+    ],
+    "available": [
+      "install-prompt",
+      "update-notifications"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "ssl",
+    "required": [
+      "nginx",
+      "certbot"
+    ],
+    "available": [
+      "https",
+      "ssl-certificates"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "subdomain",
+    "required": [
+      "cloudflare",
+      "ssl",
+      "nginx"
+    ],
+    "available": [
+      "dns-management",
+      "domain-routing"
+    ]
+  },
+  {
+    "symbol": "🟢",
+    "name": "telegram-bot",
+    "required": [
+      "class-hasyx",
+      "webhooks"
+    ],
+    "available": [
+      "bot-api",
+      "telegram-integration"
+    ]
+  },
+  {
+    "symbol": "🟠",
     "name": "telegram-miniapp-auth",
     "required": [
       "next-auth"
     ],
     "available": [
       "telegram-auth"
+    ]
+  },
+  {
+    "symbol": "🟡",
+    "name": "wstunnel",
+    "required": [
+      "subdomain",
+      "nginx"
+    ],
+    "available": [
+      "tunneling",
+      "remote-access"
     ]
   }
 ]

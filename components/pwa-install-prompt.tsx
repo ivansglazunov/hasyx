@@ -1,5 +1,7 @@
 'use client';
 
+/*😈{"symbol":"🟠","name":"pwa-components","required":["PWA","components-ui"],"available":["install-prompt","update-notifications"]}*/
+
 import { usePWA } from '../hooks/use-pwa';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';

@@ -1,5 +1,7 @@
 "use client";
 
+/*😈{"symbol":"🟢","name":"components-payments","required":["payments","components-ui"],"available":["payment-forms","subscription-management"]}*/
+
 import { useEffect, useState } from "react";
 import { SidebarLayout } from "hasyx/components/sidebar/layout";
 import {

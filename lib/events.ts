@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"events","required":["class-hasura"],"available":["webhooks","event-triggers","cron-jobs"]}*/
+
 import { Hasura } from './hasura';
 import Debug from './debug';
 import fs from 'fs-extra';

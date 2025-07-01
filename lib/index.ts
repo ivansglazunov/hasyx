@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"lib","required":["nextjs"],"available":["class-hasyx","class-hasura","apollo","generator-hasyx","pwa"]}*/
+
 // Client-safe exports
 // This file can be safely imported in both client and server environments
 

@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"payments","required":["class-hasura","tinkoff-api"],"available":["payment-processing","subscriptions","billing"]}*/
+
 import { Hasura, ColumnType } from './hasura';
 import Debug from './debug';
 

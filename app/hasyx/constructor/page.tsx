@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟠","name":"page-constructor","required":["components-constructor","next-auth"],"available":["visual-editor","app-building"]}*/
+
 import authOptions from "@/app/options"
 import sidebar from "@/app/sidebar"
 import Constructor from "hasyx/lib/constructor"

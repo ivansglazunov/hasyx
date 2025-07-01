@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟡","name":"wstunnel","required":["subdomain","nginx"],"available":["tunneling","remote-access"]}*/
+
 import { v4 as uuidv4 } from 'uuid';
 import { spawn, ChildProcess } from 'child_process';
 import { SubdomainManager } from './subdomain';
