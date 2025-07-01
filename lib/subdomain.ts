@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"subdomain","required":["cloudflare","ssl","nginx"],"available":["dns-management","domain-routing"]}*/
+
 import Debug from './debug';
 import { CloudFlare } from './cloudflare';
 import { SSL, WildcardCertificateInfo } from './ssl';

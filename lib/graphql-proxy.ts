@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟡","name":"graphql-proxy","required":["next-auth","telegram-miniapp-auth","apollo"],"available":["api-proxy","websocket-proxy"]}*/
+
 import { NextRequest, NextResponse } from 'next/server';
 import http from 'http';
 import ws, { WebSocket, WebSocketServer } from 'ws';

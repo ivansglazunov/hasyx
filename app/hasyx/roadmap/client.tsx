@@ -6,6 +6,7 @@ import { Card as EntityCard, Button as EntityButton } from '../../../lib/entitie
 import { QueriesManager, QueriesRenderer } from 'hasyx/lib/renderer';
 import { useCallback, useMemo, useState } from "react";
 import projectSchema from '../hasura-schema.json';
+import generatedRoadmap from '../../../lib/roadmap.json';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const debug = Debug('cyto');
@@ -96,7 +97,8 @@ interface Roadstep {
   available?: string[];
 }
 
-export const roadmap: Roadstep[] = [
+// Ручной roadmap для сравнения (старый)
+export const manualRoadmap: Roadstep[] = [
   {
     symbol: '🟢',
     name: 'nextjs',
@@ -264,6 +266,9 @@ export const roadmap: Roadstep[] = [
   },
 ];
 
+// Автоматически сгенерированный roadmap из комментариев
+export const roadmap: Roadstep[] = generatedRoadmap;
+
 export function Renderer({ roadmap }: { roadmap: Roadstep[] }) {
   return <>
     {roadmap.map((step) => (
@@ -343,14 +348,15 @@ export default function Client() {
         leftTop={<>
           <Card className="w-xs">
             <CardHeader>
-              <CardTitle>🟠 Manual created Roadmap</CardTitle>
-              <CardDescription>Next steps:</CardDescription>
+              <CardTitle>� Auto-generated Roadmap</CardTitle>
+              <CardDescription>Generated from /*😈{...}*/ comments</CardDescription>
             </CardHeader>
             <CardContent>
               <ul>
-                <li>Parse all filres in project</li>
-                <li>Generate roadmap from parsed files</li>
-                <li>Sync with GitHub issues</li>
+                <li>✅ Parse roadmap comments from files</li>
+                <li>✅ Generate roadmap.json automatically</li>
+                <li>🔄 Add more features to roadmap</li>
+                <li>📋 Sync with GitHub issues</li>
               </ul>
             </CardContent>
           </Card>

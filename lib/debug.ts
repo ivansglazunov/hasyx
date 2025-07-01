@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"debug","required":[],"available":["logging","development-tools"]}*/
+
 import _debug from 'debug';
 // @ts-ignore
 import pckg from '../package.json'; // Using relative path

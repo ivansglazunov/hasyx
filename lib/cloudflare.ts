@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"cloudflare","required":[],"available":["dns-api","ssl-certificates"]}*/
+
 import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';

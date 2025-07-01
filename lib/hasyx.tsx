@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"class-hasyx","required":["generator-hasyx","apollo"],"available":["lib","react-hooks","sql-operations"]}*/
+
 import { useCreateApolloClient } from './apollo';
 
 import { ThemeProvider } from "hasyx/components/theme-provider";

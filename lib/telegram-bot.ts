@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"telegram-bot","required":["class-hasyx","webhooks"],"available":["bot-api","telegram-integration"]}*/
+
 import Debug from './debug';
 import { Hasyx } from './hasyx'; // Assuming Hasyx client is used for DB operations
 import { v4 as uuidv4 } from 'uuid';

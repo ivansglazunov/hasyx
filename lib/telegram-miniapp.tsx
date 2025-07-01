@@ -1,4 +1,7 @@
 'use client';
+
+/*😈{"symbol":"🟠","name":"telegram-miniapp-auth","required":["next-auth"],"available":["telegram-auth"]}*/
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session } from 'hasyx/lib/auth';
 import { Hasyx } from 'hasyx/lib/hasyx';

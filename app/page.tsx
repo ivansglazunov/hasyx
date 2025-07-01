@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"nextjs","required":[],"available":["cli","server-client","client"]}*/
+
 // Imports for getting server-side session
 
 import { SidebarLayout } from "hasyx/components/sidebar/layout";

@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"ssl","required":["nginx","certbot"],"available":["https","ssl-certificates"]}*/
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';

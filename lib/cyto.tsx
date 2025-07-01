@@ -1,5 +1,7 @@
 "use client"
 
+/*😈{"symbol":"🟢","name":"components-cyto","required":["lib"],"available":["graph-visualization","interactive-diagrams"]}*/
+
 import { Button } from "hasyx/components/ui/button";
 import { createContext, forwardRef, memo, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useDebounceCallback } from '@react-hook/debounce';

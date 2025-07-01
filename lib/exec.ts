@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"cli","required":[],"available":["exec","terminal","scripts"]}*/
+
 // Universal VM import that works in both Node.js and browser
 // In browser environments, bundlers like webpack/browserify will automatically
 // replace 'vm' with 'vm-browserify'

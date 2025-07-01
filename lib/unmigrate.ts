@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/*😈{"symbol":"🟢","name":"migrations","required":["class-hasura"],"available":["cli","database-migrations"]}*/
+
 import fs from 'fs-extra';
 import path from 'path';
 import spawn from 'cross-spawn';

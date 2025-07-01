@@ -1,3 +1,5 @@
+/*😈{"symbol":"🟢","name":"notifications","required":["class-hasyx","firebase","telegram-bot"],"available":["push-notifications","multi-provider"]}*/
+
 import { Hasura } from './hasura';
 import Debug from './debug';
 import { Hasyx } from './hasyx';
