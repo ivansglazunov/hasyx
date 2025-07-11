@@ -1,5 +1,5 @@
 import Debug from './debug';
-import { Hasyx } from './hasyx';
+import { Hasyx } from 'hasyx';
 
 const debug = Debug('schedule-event');
 
@@ -109,6 +109,7 @@ export async function handleScheduleChange(
   operation: 'INSERT' | 'UPDATE' | 'DELETE'
 ) {
   debug(`Processing schedule ${operation} for ${schedule.id}`);
+  console.log(`[DEBUG] handleScheduleChange: operation=${operation}, schedule.id=${schedule.id}, cron=${schedule.cron}, start_at=${schedule.start_at}, end_at=${schedule.end_at}`);
   
   if (operation === 'DELETE') {
     // Remove all pending events for this schedule
@@ -124,10 +125,12 @@ export async function handleScheduleChange(
   }
   
   const currentTime = Math.floor(Date.now() / 1000);
+  console.log(`[DEBUG] currentTime=${currentTime} (${new Date(currentTime * 1000).toISOString()}), schedule.end_at=${schedule.end_at} (${new Date(schedule.end_at * 1000).toISOString()})`);
   
   // Check if schedule is still active
   if (currentTime >= schedule.end_at) {
     debug(`Schedule ${schedule.id} has ended, skipping event creation`);
+    console.log(`[DEBUG] Schedule ${schedule.id} has ended, skipping event creation`);
     return;
   }
   
@@ -142,9 +145,11 @@ export async function handleScheduleChange(
   
   // Calculate next run time
   const nextRun = calculateNextRun(schedule.cron, Math.max(currentTime, schedule.start_at));
+  console.log(`[DEBUG] calculateNextRun returned: ${nextRun} (${nextRun ? new Date(nextRun * 1000).toISOString() : 'null'})`);
   
   if (!nextRun || nextRun >= schedule.end_at) {
     debug(`No more runs scheduled for ${schedule.id}`);
+    console.log(`[DEBUG] No more runs scheduled for ${schedule.id}. nextRun=${nextRun}, schedule.end_at=${schedule.end_at}`);
     return;
   }
   
@@ -158,12 +163,14 @@ export async function handleScheduleChange(
     scheduled: false
   };
   
+  console.log(`[DEBUG] Creating event:`, newEvent);
   await hasyx.insert({
     table: 'events',
     objects: [newEvent]
   });
   
   debug(`Created next event for schedule ${schedule.id} at ${new Date(nextRun * 1000).toISOString()}`);
+  console.log(`[DEBUG] Event created successfully for schedule ${schedule.id}`);
 }
 
 /**

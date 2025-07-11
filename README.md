@@ -27,6 +27,7 @@ Hasyx provides a robust starting point and a set of tools for building applicati
 [![Telegram Bot Notifications Documentation](https://img.shields.io/badge/Notify%20Telegram%20Bot-MD-skyblue)](NOTIFY-TELEGRAM-BOT.md)
 [![GitHub Telegram Bot Integration Documentation](https://img.shields.io/badge/GitHub%20Telegram%20Bot-MD-brightgreen)](TELEGRAM_BOT.md)
 [![PWA Support Documentation](https://img.shields.io/badge/PWA%20Support-MD-9cf)](PWA.md)
+[![Schedule System Documentation](https://img.shields.io/badge/Schedule%20System-MD-purple)](SCHEDULE.md)
 [![Logs System Documentation](https://img.shields.io/badge/Logs%20System-MD-brown)](LOGS.md)
 [![TBank Payments Documentation](https://img.shields.io/badge/TBank%20Payments-MD-ff69b4)](TBANK.md)
 [![Tinkoff API Base Documentation](https://img.shields.io/badge/Tinkoff%20API-MD-lightpink)](TINKOFF_API.md)
@@ -153,6 +154,7 @@ Explore the different modules and functionalities of Hasyx:
 *   **[CYTO.md](CYTO.md):** Guide to Cytoscape.js integration for graph visualizations.
 *   **[HID.md](HID.md):** Explanation of Hasyx Identifiers (HID) for resource identification.
 *   **[EVENTS.md](EVENTS.md):** Complete guide to Hasura Event Triggers integration with automatic synchronization and secure webhook handling.
+*   **[SCHEDULE.md](SCHEDULE.md):** Comprehensive documentation for the Schedule system with cron-based event planning, real-time processing, and database integration.
 *   **[PWA.md](PWA.md):** Progressive Web App support with offline functionality, installability, and push notifications.
 *   **[LOGS.md](LOGS.md):** Comprehensive audit trail system with granular diff tracking and complete state snapshots for your Hasura database.
 *   **[NOTIFY.md](NOTIFY.md):** Overview of the notifications system.

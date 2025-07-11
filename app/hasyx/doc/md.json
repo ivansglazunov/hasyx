@@ -3740,6 +3740,377 @@
       "level": 1
     },
     {
+      "title": "Schedule System Documentation",
+      "url": "/hasyx/doc/SCHEDULE",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/SCHEDULE#overview",
+          "level": 2
+        },
+        {
+          "title": "Architecture",
+          "url": "/hasyx/doc/SCHEDULE#architecture",
+          "level": 2
+        },
+        {
+          "title": "Database Schema",
+          "url": "/hasyx/doc/SCHEDULE#database-schema",
+          "level": 3
+        },
+        {
+          "title": "System Components",
+          "url": "/hasyx/doc/SCHEDULE#system-components",
+          "level": 3
+        },
+        {
+          "title": "Getting Started",
+          "url": "/hasyx/doc/SCHEDULE#getting-started",
+          "level": 2
+        },
+        {
+          "title": "1. Database Setup",
+          "url": "/hasyx/doc/SCHEDULE#1-database-setup",
+          "level": 3
+        },
+        {
+          "title": "2. Event Triggers Configuration",
+          "url": "/hasyx/doc/SCHEDULE#2-event-triggers-configuration",
+          "level": 3
+        },
+        {
+          "title": "3. Sync Event Triggers",
+          "url": "/hasyx/doc/SCHEDULE#3-sync-event-triggers",
+          "level": 3
+        },
+        {
+          "title": "Usage",
+          "url": "/hasyx/doc/SCHEDULE#usage",
+          "level": 2
+        },
+        {
+          "title": "Creating a Schedule",
+          "url": "/hasyx/doc/SCHEDULE#creating-a-schedule",
+          "level": 3
+        },
+        {
+          "title": "Querying Schedules and Events",
+          "url": "/hasyx/doc/SCHEDULE#querying-schedules-and-events",
+          "level": 3
+        },
+        {
+          "title": "Updating and Deleting Schedules",
+          "url": "/hasyx/doc/SCHEDULE#updating-and-deleting-schedules",
+          "level": 3
+        },
+        {
+          "title": "Cron Expression Guide",
+          "url": "/hasyx/doc/SCHEDULE#cron-expression-guide",
+          "level": 2
+        },
+        {
+          "title": "Basic Patterns",
+          "url": "/hasyx/doc/SCHEDULE#basic-patterns",
+          "level": 3
+        },
+        {
+          "title": "Cron Format",
+          "url": "/hasyx/doc/SCHEDULE#cron-format",
+          "level": 3
+        },
+        {
+          "title": "Advanced Examples",
+          "url": "/hasyx/doc/SCHEDULE#advanced-examples",
+          "level": 3
+        },
+        {
+          "title": "Event Lifecycle",
+          "url": "/hasyx/doc/SCHEDULE#event-lifecycle",
+          "level": 2
+        },
+        {
+          "title": "Event States",
+          "url": "/hasyx/doc/SCHEDULE#event-states",
+          "level": 3
+        },
+        {
+          "title": "Event Flow",
+          "url": "/hasyx/doc/SCHEDULE#event-flow",
+          "level": 3
+        },
+        {
+          "title": "Custom Event Handlers",
+          "url": "/hasyx/doc/SCHEDULE#custom-event-handlers",
+          "level": 2
+        },
+        {
+          "title": "Creating Custom Event Processors",
+          "url": "/hasyx/doc/SCHEDULE#creating-custom-event-processors",
+          "level": 3
+        },
+        {
+          "title": "Using Custom Handlers in Cron Processor",
+          "url": "/hasyx/doc/SCHEDULE#using-custom-handlers-in-cron-processor",
+          "level": 3
+        },
+        {
+          "title": "Real-time Subscriptions",
+          "url": "/hasyx/doc/SCHEDULE#real-time-subscriptions",
+          "level": 2
+        },
+        {
+          "title": "Subscribe to Schedule Changes",
+          "url": "/hasyx/doc/SCHEDULE#subscribe-to-schedule-changes",
+          "level": 3
+        },
+        {
+          "title": "Subscribe to Event Updates",
+          "url": "/hasyx/doc/SCHEDULE#subscribe-to-event-updates",
+          "level": 3
+        },
+        {
+          "title": "Error Handling and Debugging",
+          "url": "/hasyx/doc/SCHEDULE#error-handling-and-debugging",
+          "level": 2
+        },
+        {
+          "title": "Common Issues and Solutions",
+          "url": "/hasyx/doc/SCHEDULE#common-issues-and-solutions",
+          "level": 3
+        },
+        {
+          "title": "Debug Mode",
+          "url": "/hasyx/doc/SCHEDULE#debug-mode",
+          "level": 3
+        },
+        {
+          "title": "Monitoring Schedules",
+          "url": "/hasyx/doc/SCHEDULE#monitoring-schedules",
+          "level": 3
+        },
+        {
+          "title": "Best Practices",
+          "url": "/hasyx/doc/SCHEDULE#best-practices",
+          "level": 2
+        },
+        {
+          "title": "1. Schedule Design",
+          "url": "/hasyx/doc/SCHEDULE#1-schedule-design",
+          "level": 3
+        },
+        {
+          "title": "2. Event Processing",
+          "url": "/hasyx/doc/SCHEDULE#2-event-processing",
+          "level": 3
+        },
+        {
+          "title": "3. Database Management",
+          "url": "/hasyx/doc/SCHEDULE#3-database-management",
+          "level": 3
+        },
+        {
+          "title": "4. Testing",
+          "url": "/hasyx/doc/SCHEDULE#4-testing",
+          "level": 3
+        },
+        {
+          "title": "API Reference",
+          "url": "/hasyx/doc/SCHEDULE#api-reference",
+          "level": 2
+        },
+        {
+          "title": "Schedule Functions",
+          "url": "/hasyx/doc/SCHEDULE#schedule-functions",
+          "level": 3
+        },
+        {
+          "title": "Performance Considerations",
+          "url": "/hasyx/doc/SCHEDULE#performance-considerations",
+          "level": 2
+        },
+        {
+          "title": "Scaling Schedules",
+          "url": "/hasyx/doc/SCHEDULE#scaling-schedules",
+          "level": 3
+        },
+        {
+          "title": "Memory Management",
+          "url": "/hasyx/doc/SCHEDULE#memory-management",
+          "level": 3
+        },
+        {
+          "title": "Security Considerations",
+          "url": "/hasyx/doc/SCHEDULE#security-considerations",
+          "level": 2
+        },
+        {
+          "title": "Access Control",
+          "url": "/hasyx/doc/SCHEDULE#access-control",
+          "level": 3
+        },
+        {
+          "title": "Data Protection",
+          "url": "/hasyx/doc/SCHEDULE#data-protection",
+          "level": 3
+        },
+        {
+          "title": "Migration Guide",
+          "url": "/hasyx/doc/SCHEDULE#migration-guide",
+          "level": 2
+        },
+        {
+          "title": "From Manual Scheduling",
+          "url": "/hasyx/doc/SCHEDULE#from-manual-scheduling",
+          "level": 3
+        },
+        {
+          "title": "Database Migration",
+          "url": "/hasyx/doc/SCHEDULE#database-migration",
+          "level": 3
+        },
+        {
+          "title": "Related Documentation",
+          "url": "/hasyx/doc/SCHEDULE#related-documentation",
+          "level": 2
+        },
+        {
+          "title": "Support",
+          "url": "/hasyx/doc/SCHEDULE#support",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Отчет об исследовании механики Schedule в проекте hasyx",
+      "url": "/hasyx/doc/SCHEDULE_REPORT",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Обзор",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "Анализ тестирования (использование моков vs реальной базы данных)",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#vs",
+          "level": 2
+        },
+        {
+          "title": "✅ Тесты НЕ используют моки/фейки - работают с реальной базой данных",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 3
+        },
+        {
+          "title": "Тестовые сценарии:",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 3
+        },
+        {
+          "title": "Конфигурация events/*.json",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#eventsjson",
+          "level": 2
+        },
+        {
+          "title": "events/schedule.json - Event Trigger для таблицы schedule",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#eventsschedulejson-event-trigger-schedule",
+          "level": 3
+        },
+        {
+          "title": "events/schedule-cron.json - Cron Trigger для обработки событий",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#eventsschedule-cronjson-cron-trigger",
+          "level": 3
+        },
+        {
+          "title": "events/events.json - Event Trigger для таблицы events",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#eventseventsjson-event-trigger-events",
+          "level": 3
+        },
+        {
+          "title": "Архитектура системы планирования",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "Основные компоненты:",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 3
+        },
+        {
+          "title": "Поток выполнения:",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 3
+        },
+        {
+          "title": "Функциональность",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "Ключевые функции (lib/schedule-event.ts):",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#libschedule-eventts",
+          "level": 3
+        },
+        {
+          "title": "Поддерживаемые cron-выражения:",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#cron",
+          "level": 3
+        },
+        {
+          "title": "Документация",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "Существующая документация:",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 3
+        },
+        {
+          "title": "❌ Отсутствует специализированная документация по Schedule",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#schedule",
+          "level": 3
+        },
+        {
+          "title": "Рекомендации",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "1. Состояние тестирования - ОТЛИЧНО ✅",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#1",
+          "level": 3
+        },
+        {
+          "title": "2. Конфигурация - ОТЛИЧНО ✅",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#2",
+          "level": 3
+        },
+        {
+          "title": "3. Функциональность - ОТЛИЧНО ✅",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#3",
+          "level": 3
+        },
+        {
+          "title": "4. Документация - ТРЕБУЕТ УЛУЧШЕНИЯ ❌",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#4",
+          "level": 3
+        },
+        {
+          "title": "Следующие шаги",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "Заключение",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "SSL Certificate Management",
       "url": "/hasyx/doc/SSL",
       "collapse": true,
@@ -9473,5 +9844,9 @@
       "level": 1
     }
   ],
+<<<<<<< Updated upstream
   "lastUpdated": "2025-07-09T18:39:59.887Z"
+=======
+  "lastUpdated": "2025-07-09T15:42:09.655Z"
+>>>>>>> Stashed changes
 }

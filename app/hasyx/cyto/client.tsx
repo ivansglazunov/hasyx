@@ -97,7 +97,7 @@ export default function Client() {
         onLoaded={onGraphLoaded}
         buttons={true}
         layout={layoutConfig}
-        leftTop={<QueriesManager queries={queries} setQueries={setQueries} schema={projectSchema} />}
+        // leftTop={<QueriesManager queries={queries} setQueries={setQueries} schema={projectSchema} />}
       >
         <CytoStyle stylesheet={stylesheet} />
         <QueriesRenderer

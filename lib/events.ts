@@ -4,11 +4,12 @@ import fs from 'fs-extra';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
 import dotenv from 'dotenv';
-import { API_URL } from './url';
 
 dotenv.config({ path: path.join(process.cwd(), '.env') });
 
 const debug = Debug('events');
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_MAIN_URL || process.env.NEXT_PUBLIC_BASE_URL;
 
 if (!API_URL) {
   throw new Error('NEXT_PUBLIC_MAIN_URL | NEXT_PUBLIC_BASE_URL || NEXT_PUBLIC_API_URL is not set');

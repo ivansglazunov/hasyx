@@ -314,11 +314,63 @@ export async function applyPermissions(hasura: Hasura) {
   
   await hasura.definePermission({
     schema: 'public',
+    table: 'schedule',
+    operation: 'insert',
+    role: 'admin',
+    filter: {},
+    columns: ['message_id', 'cron', 'start_at', 'end_at', 'user_id']
+  });
+  
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'schedule',
+    operation: 'update',
+    role: 'admin',
+    filter: {},
+    columns: ['message_id', 'cron', 'start_at', 'end_at', 'user_id']
+  });
+  
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'schedule',
+    operation: 'delete',
+    role: 'admin',
+    filter: {},
+  });
+  
+  await hasura.definePermission({
+    schema: 'public',
     table: 'events',
     operation: 'select',
     role: 'admin',
     filter: {},
     columns: ['id', 'schedule_id', 'message_id', 'user_id', 'plan_start', 'start', 'end', 'plan_end', 'status', 'scheduled', 'created_at', 'updated_at'],
+  });
+  
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'events',
+    operation: 'insert',
+    role: 'admin',
+    filter: {},
+    columns: ['schedule_id', 'message_id', 'user_id', 'plan_start', 'start', 'end', 'plan_end', 'status', 'scheduled'],
+  });
+  
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'events',
+    operation: 'update',
+    role: 'admin',
+    filter: {},
+    columns: ['schedule_id', 'message_id', 'user_id', 'plan_start', 'start', 'end', 'plan_end', 'status', 'scheduled']
+  });
+  
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'events',
+    operation: 'delete',
+    role: 'admin',
+    filter: {},
   });
   
   debug('✅ Schedule permissions applied successfully.');
