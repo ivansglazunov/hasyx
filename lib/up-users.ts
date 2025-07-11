@@ -205,29 +205,45 @@ export async function applySQLSchema(hasura: Hasura) {
     comment: 'Additional provider-specific data (e.g., Telegram username, photo_url)'
   });
   
-  // Define auth_passive table for passive authentication
-  await hasura.defineTable({
+  // Define auth_jwt table for JWT authentication
+  debug('  🔧 Creating auth_jwt table...');
+  await hasura.createTable({
     schema: 'public',
-    table: 'auth_passive',
+    table: 'auth_jwt',
     id: 'id',
-    type: ColumnType.UUID
+    type: ColumnType.UUID,
   });
   
   await hasura.defineColumn({
     schema: 'public',
-    table: 'auth_passive',
+    table: 'auth_jwt',
     name: 'jwt',
     type: ColumnType.TEXT,
-    comment: 'JWT token for passive authentication'
   });
   
   await hasura.defineColumn({
     schema: 'public',
-    table: 'auth_passive',
+    table: 'auth_jwt',
     name: 'redirect',
     type: ColumnType.TEXT,
-    comment: 'Redirect URL after authentication'
   });
+  
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'auth_jwt',
+    name: 'created_at',
+    type: ColumnType.TIMESTAMPTZ,
+  });
+  
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'auth_jwt',
+    name: 'updated_at',
+    type: ColumnType.TIMESTAMPTZ,
+  });
+  
+  debug('  🔧 Tracking auth_jwt table...');
+  await hasura.trackTable({ schema: 'public', table: 'auth_jwt' });
   
   // Create foreign key constraint
   await hasura.defineForeignKey({
@@ -254,7 +270,7 @@ export async function trackTables(hasura: Hasura) {
   
   await hasura.trackTable({ schema: 'public', table: 'users' });
   await hasura.trackTable({ schema: 'public', table: 'accounts' });
-  await hasura.trackTable({ schema: 'public', table: 'auth_passive' });
+  await hasura.trackTable({ schema: 'public', table: 'auth_jwt' });
   
   debug('✅ Users tables tracking complete.');
 }
@@ -363,7 +379,7 @@ export async function applyPermissions(hasura: Hasura) {
   // Auth passive permissions - only admin can access this table
   await hasura.definePermission({
     schema: 'public',
-    table: 'auth_passive',
+    table: 'auth_jwt',
     operation: 'select',
     role: 'admin',
     filter: {},

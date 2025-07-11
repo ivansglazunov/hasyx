@@ -7,12 +7,12 @@ import { Label } from "hasyx/components/ui/label";
 import { KeyRound } from "lucide-react";
 import { signIn } from "next-auth/react";
 import React, { useState } from "react";
-import { usePassive } from '../passive';
+import { useJwt } from '../jwt-auth';
 import { API_URL } from 'hasyx/lib/url';
 
 export function CredentialsSignInCard(props: React.HTMLAttributes<HTMLDivElement>) {
-  const passiveClient = usePassive();
-  const isPassiveMode = !!process.env.NEXT_PUBLIC_PASSIVE_AUTH;
+  const jwtClient = useJwt();
+  const isJwtMode = !!+process.env.NEXT_PUBLIC_JWT_AUTH!;
   
   // State for credentials form
   const [email, setEmail] = useState('');
@@ -27,17 +27,17 @@ export function CredentialsSignInCard(props: React.HTMLAttributes<HTMLDivElement
     setIsCredentialsLoading(true);
     
     try {
-      if (isPassiveMode) {
-        // Passive mode - use standard NextAuth signIn with passive parameter
+      if (isJwtMode) {
+        // JWT mode - use standard NextAuth signIn with JWT parameter
         const currentUrl = window.location.href;
-        localStorage.setItem('nextauth_passive_redirect', currentUrl);
-        localStorage.setItem('nextauth_passive_id', passiveClient.id);
+        localStorage.setItem('nextauth_jwt_redirect', currentUrl);
+        localStorage.setItem('nextauth_jwt_id', jwtClient.id);
         
         const result = await signIn('credentials', {
           redirect: false,
           email,
           password,
-          callbackUrl: `/?passive=${passiveClient.id}`,
+          callbackUrl: `/?jwt=${jwtClient.id}`,
         });
         
         if (result?.error) {
@@ -46,84 +46,95 @@ export function CredentialsSignInCard(props: React.HTMLAttributes<HTMLDivElement
           setInfoMessage('Authentication initiated. Waiting for completion...');
           setEmail('');
           setPassword('');
-          passiveClient.start();
+          jwtClient.start();
         }
         
       } else {
-        // Standard NextAuth flow
+        // Regular credentials flow
         const result = await signIn('credentials', {
-          redirect: false, // Prevent page reload
           email,
           password,
+          redirect: false,
         });
-
+        
         if (result?.error) {
-          let actualError = result.error; // Default to the code like 'CredentialsSignin'
-
-          // Try to parse the actual error message from the URL returned by NextAuth
-          if (result.url) {
-            try {
-              const url = new URL(result.url);
-              const errorParam = url.searchParams.get('error');
-              if (errorParam) {
-                actualError = decodeURIComponent(errorParam);
-                console.log('Parsed error from URL:', actualError);
-              }
-            } catch (parseError) {
-              console.error('Failed to parse error URL:', parseError);
-            }
-          }
-
-          // Display the parsed error or the default code
-          setError(actualError);
+          setError('Invalid credentials');
         } else if (result?.ok) {
-          // Session should update automatically via useSession (no state change needed here)
+          setInfoMessage('Authentication successful!');
           setEmail('');
           setPassword('');
+          // Redirect after successful login
+          window.location.href = '/';
         }
       }
     } catch (error) {
-      console.error('Authentication error:', error);
-      setError('Authentication failed');
+      console.error('Credentials sign-in error:', error);
+      setError('An error occurred during sign-in');
+    } finally {
+      setIsCredentialsLoading(false);
     }
-    
-    setIsCredentialsLoading(false);
   };
 
   return (
-    <Card {...props}>
+    <Card {...props} className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle>Sign In / Sign Up with Email</CardTitle>
-        <CardDescription>Enter your email and password to log in or create a new account.</CardDescription>
+        <CardTitle className="text-2xl flex items-center gap-2">
+          <KeyRound className="h-6 w-6" />
+          Login
+        </CardTitle>
+        <CardDescription>
+          Enter your email below to login to your account
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email-cred">Email</Label>
-          <Input 
-            id="email-cred" 
-            type="email" 
-            placeholder="user@example.com" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
+      <CardContent>
+        <div className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isCredentialsLoading}
+              required
+            />
+          </div>
+          <div className="grid gap-2">
+            <div className="flex items-center">
+              <Label htmlFor="password">Password</Label>
+            </div>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isCredentialsLoading}
+              required
+            />
+          </div>
+          
+          {error && (
+            <div className="text-red-500 text-sm">
+              {error}
+            </div>
+          )}
+          
+          {infoMessage && (
+            <div className="text-blue-500 text-sm">
+              {infoMessage}
+            </div>
+          )}
+          
+          <Button 
+            type="button" 
+            className="w-full" 
+            onClick={handleCredentialsSignIn}
             disabled={isCredentialsLoading}
-          />
+          >
+            {isCredentialsLoading ? 'Signing in...' : 'Login'}
+          </Button>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="password-cred">Password</Label>
-          <Input 
-            id="password-cred" 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            disabled={isCredentialsLoading}
-          />
-        </div>
-        {/* Display Info message OR Error message */} 
-        {infoMessage && <p className="text-sm text-green-600 dark:text-green-400">{infoMessage}</p>}
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <Button onClick={handleCredentialsSignIn} disabled={isCredentialsLoading || !email || !password} className="w-full">
-          {isCredentialsLoading ? 'Processing...' : <> <KeyRound className="mr-2 h-4 w-4" /> Sign In / Sign Up</>}
-        </Button>
       </CardContent>
     </Card>
   );

@@ -102,14 +102,23 @@ export function createApolloClient(options: ApolloOptions = {}): HasyxApolloClie
   });
 
   const authHeaderLink = setContext((_, { headers }) => {
+    // Check for JWT token in localStorage first (for JWT auth mode)
+    let activeToken = token;
+    if (!activeToken && typeof window !== 'undefined' && !!+process.env.NEXT_PUBLIC_JWT_AUTH!) {
+      const jwtToken = localStorage.getItem('nextauth_jwt');
+      if (jwtToken) {
+        activeToken = jwtToken;
+        debug('apollo', '🔓 Using JWT token from localStorage');
+      }
+    }
 
-    if (token) {
+    if (activeToken) {
       debug('apollo', '🔒 Using JWT token for Authorization header');
       return {
         headers: {
           'X-Hasura-Role': role,
           ...headers,
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${activeToken}`,
         }
       }
     } else if (secret) {
@@ -154,9 +163,19 @@ export function createApolloClient(options: ApolloOptions = {}): HasyxApolloClie
 
     const wsConnectionParams: Record<string, any> = {};
 
-    if (token) {
+    // Check for JWT token in localStorage first (for JWT auth mode)
+    let activeToken = token;
+    if (!activeToken && typeof window !== 'undefined' && !!+process.env.NEXT_PUBLIC_JWT_AUTH!) {
+      const jwtToken = localStorage.getItem('nextauth_jwt');
+      if (jwtToken) {
+        activeToken = jwtToken;
+        debug('apollo', '🔓 Using JWT token from localStorage for WS');
+      }
+    }
+
+    if (activeToken) {
       debug('apollo', '🔒 Preparing JWT token for WS connectionParams');
-      wsConnectionParams.headers = { 'X-Hasura-Role': role, Authorization: `Bearer ${token}` };
+      wsConnectionParams.headers = { 'X-Hasura-Role': role, Authorization: `Bearer ${activeToken}` };
     } else if (secret) {
       debug('apollo', '🔑 Preparing Admin Secret for WS connectionParams');
 

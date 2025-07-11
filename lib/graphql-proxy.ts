@@ -116,6 +116,37 @@ export async function proxyPOST(request: NextRequest): Promise<NextResponse> {
       'Content-Type': 'application/json',
     };
 
+    // Check for JWT token in Authorization header first
+    const authHeader = request.headers.get('authorization');
+    let useJwt = false;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const jwtToken = authHeader.substring(7); // Remove 'Bearer ' prefix
+      debug('🔓 Found Bearer token in Authorization header (JWT auth)');
+      
+      try {
+        // Validate the JWT structure
+        const [, payloadB64] = jwtToken.split('.');
+        const payload = JSON.parse(Buffer.from(payloadB64, 'base64').toString());
+        const hasuraClaims = payload['https://hasura.io/jwt/claims'];
+        
+        if (hasuraClaims) {
+          debug('✅ Valid JWT found with Hasura claims');
+          debug(`👤 JWT user ID: ${hasuraClaims['x-hasura-user-id']}`);
+          debug(`🏷️ JWT role: ${hasuraClaims['x-hasura-default-role']}`);
+          
+          // Use the JWT directly
+          headers['Authorization'] = authHeader;
+          useJwt = true;
+          debug('🔑 Using JWT for downstream HTTP request.');
+        }
+      } catch (jwtError: any) {
+        debug('❌ Invalid JWT format:', jwtError);
+      }
+    }
+    
+    if (!useJwt) {
+      // Fall back to admin secret if no valid JWT
     if (!HASURA_ADMIN_SECRET) {
       const errorMsg = 'HASURA_ADMIN_SECRET is not configured on the server for HTTP proxy.';
       console.error(`❌ ${errorMsg}`);
@@ -128,6 +159,7 @@ export async function proxyPOST(request: NextRequest): Promise<NextResponse> {
     }
     headers['x-hasura-admin-secret'] = HASURA_ADMIN_SECRET;
     debug('🔑 Using Hasura Admin Secret for downstream HTTP request.');
+    }
 
     debug(`🔗 Sending request to Hasura HTTP: ${HASURA_ENDPOINT}`);
     const hasuraResponse = await fetch(HASURA_ENDPOINT, {
@@ -259,6 +291,41 @@ export async function proxySOCKET(
 
   try {
     debug(`🔐 [${clientId}] === AUTHENTICATION FLOW START ===`);
+    
+    // Check for JWT token in Authorization header first
+    const authHeader = request.headers.authorization;
+    let jwtToken: string | null = null;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      jwtToken = authHeader.substring(7); // Remove 'Bearer ' prefix
+      debug(`🔓 [${clientId}] Found Bearer token in Authorization header (JWT auth)`);
+      
+      try {
+        // Validate the JWT structure
+        const [, payloadB64] = jwtToken.split('.');
+        const payload = JSON.parse(Buffer.from(payloadB64, 'base64').toString());
+        const hasuraClaims = payload['https://hasura.io/jwt/claims'];
+        
+        if (hasuraClaims) {
+          debug(`✅ [${clientId}] Valid JWT found with Hasura claims`);
+          debug(`👤 [${clientId}] JWT user ID: ${hasuraClaims['x-hasura-user-id']}`);
+          debug(`🏷️ [${clientId}] JWT role: ${hasuraClaims['x-hasura-default-role']}`);
+        }
+      } catch (jwtError: any) {
+        debug(`❌ [${clientId}] Invalid JWT format:`, jwtError.message);
+        jwtToken = null;
+      }
+    }
+    
+    const headers: Record<string, string> = {};
+    
+    if (jwtToken) {
+      // Use JWT directly
+      headers['Authorization'] = `Bearer ${jwtToken}`;
+      debug(`🔑 [${clientId}] Using JWT for Hasura WS connection.`);
+      debug(`📝 [${clientId}] JWT header added: Authorization: Bearer ${jwtToken.substring(0, 50)}...`);
+    } else {
+      // Fall back to NextAuth cookie authentication
     const token = await getToken({
       req: request as any,
       secret: NEXTAUTH_SECRET
@@ -270,8 +337,6 @@ export async function proxySOCKET(
       tokenType: typeof token,
       sub: token?.sub
     });
-
-    const headers: Record<string, string> = {};
 
     if (token?.sub) {
       debug(`👤 [${clientId}] User authenticated (ID: ${token.sub}). Generating Hasura JWT.`);
@@ -321,6 +386,7 @@ export async function proxySOCKET(
         return;
       }
       // --- MODIFICATION END ---
+      }
     }
 
     debug(`🔐 [${clientId}] === AUTHENTICATION FLOW END ===`);

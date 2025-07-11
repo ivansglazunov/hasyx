@@ -5,6 +5,7 @@ import { SidebarLayout } from "hasyx/components/sidebar/layout";
 import { AuthActionsCard } from "hasyx/components/auth/auth-actions-card";
 import { CredentialsSignInCard } from "hasyx/components/auth/credentials-signin-card";
 import { SessionCard } from "hasyx/components/auth/session-card";
+import { JwtDebugCard } from "hasyx/components/auth/jwt-debug-card";
 import { HasuraCard } from "hasyx/components/hasura/card";
 import { ProxyCard } from "hasyx/components/proxy/card";
 import { UsersCard } from "hasyx/components/users/users-card";
@@ -30,6 +31,7 @@ export default function Diagnostics({ serverSession, sidebarData }: DiagnosticsP
           <CredentialsSignInCard />
           <AuthActionsCard />
           <SessionCard serverSession={serverSession} />
+          <JwtDebugCard />
           <NotificationCard />
           <UsersCard />
           {/* <TelegramDebugCard /> */}

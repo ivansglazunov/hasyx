@@ -32,56 +32,71 @@ export const useAuthCallback = (): AuthCallbackState => {
       setCallbackState({ status: 'completing' });
       setHasRedirected(true);
       
-      // Check if this is passive mode authentication
-      const passiveId = localStorage.getItem('nextauth_passive_id');
-      const passiveProvider = localStorage.getItem('nextauth_passive_provider');
+      // Get JWT-related data from localStorage
+      const jwtId = localStorage.getItem('nextauth_jwt_id');
+      const jwtProvider = localStorage.getItem('nextauth_jwt_provider');
       
-      if (passiveId && passiveProvider) {
-        debug('Passive mode detected. Passive ID:', passiveId);
+      debug('JWT callback data:', { jwtId, jwtProvider });
+      
+      // If we have JWT data, complete the JWT authentication
+      if (jwtId && jwtProvider) {
+        debug('Completing JWT authentication...');
         
-        // Call the passive-complete API to save the JWT
-        try {
-          fetch('/api/auth/passive-complete', {
+        const completeJwtAuth = async () => {
+          try {
+            // Call the JWT complete endpoint
+            const response = await fetch('/api/auth/jwt-complete', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ passiveId }),
-          }).then(response => {
+              body: JSON.stringify({
+                jwtId: jwtId,
+              }),
+            });
+            
             if (response.ok) {
-              debug('JWT saved successfully for passive ID:', passiveId);
+              debug('JWT authentication completed successfully');
+              
+              // Clean up localStorage
+              localStorage.removeItem('nextauth_jwt_id');
+              localStorage.removeItem('nextauth_jwt_provider');
+              
+              // Redirect to root or saved URL
+              const savedUrl = localStorage.getItem('nextauth_jwt_redirect');
+              if (savedUrl) {
+                localStorage.removeItem('nextauth_jwt_redirect');
+                window.location.href = savedUrl;
+              } else {
+                window.location.href = '/';
+              }
             } else {
-              debug('Failed to save JWT for passive ID:', passiveId);
+              debug('JWT authentication completion failed:', response.status);
+              // Clean up localStorage on error
+              localStorage.removeItem('nextauth_jwt_id');
+              localStorage.removeItem('nextauth_jwt_provider');
+              localStorage.removeItem('nextauth_jwt_redirect');
+              
+              // Show error or redirect to home
+              window.location.href = '/?error=jwt-completion-failed';
             }
-          });
         } catch (error) {
-          debug('Error calling passive-complete API:', error);
-        }
-        
-        // Send message to parent window about successful authentication
-        if (window.opener) {
-          debug('Sending success message to parent window');
-          window.opener.postMessage({
-            type: 'NEXTAUTH_SIGNIN_SUCCESS',
-            passiveId,
-            provider: passiveProvider
-          }, window.location.origin);
+            debug('Error completing JWT authentication:', error);
+            // Clean up localStorage on error
+            localStorage.removeItem('nextauth_jwt_id');
+            localStorage.removeItem('nextauth_jwt_provider');
+            localStorage.removeItem('nextauth_jwt_redirect');
           
-          // Close this popup window
-          setTimeout(() => {
-            window.close();
-          }, 1000);
+            // Show error or redirect to home
+            window.location.href = '/?error=jwt-completion-error';
+          }
+        };
           
+        completeJwtAuth();
           return;
-        } else {
-          debug('No opener window found, treating as regular redirect');
-          // Clean up passive localStorage if no opener
-          localStorage.removeItem('nextauth_passive_id');
-          localStorage.removeItem('nextauth_passive_provider');
-        }
       }
       
-      // Regular (non-passive) authentication redirect
+      // Regular (non-JWT) authentication redirect
       const preAuthUrl = sessionStorage.getItem('preAuthUrl') || '/';
       sessionStorage.removeItem('preAuthUrl');
       

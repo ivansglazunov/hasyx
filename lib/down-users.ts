@@ -30,12 +30,34 @@ export async function dropMetadata(hasura: Hasura) {
     role: ['user', 'me', 'admin', 'anonymous']
   });
   
-  // Drop permissions for auth_passive table
+  // Drop permissions for auth_jwt table
+  debug('  🗑️ Dropping permissions for auth_jwt table...');
   await hasura.deletePermission({
     schema: 'public',
-    table: 'auth_passive',
+    table: 'auth_jwt',
     operation: 'select',
-    role: ['admin']
+    role: 'admin',
+  });
+  
+  await hasura.deletePermission({
+    schema: 'public',
+    table: 'auth_jwt',
+    operation: 'insert',
+    role: 'admin',
+  });
+  
+  await hasura.deletePermission({
+    schema: 'public',
+    table: 'auth_jwt',
+    operation: 'update',
+    role: 'admin',
+  });
+  
+  await hasura.deletePermission({
+    schema: 'public',
+    table: 'auth_jwt',
+    operation: 'delete',
+    role: 'admin',
   });
   
   debug('  ✅ Permissions dropped.');
@@ -57,10 +79,10 @@ export async function dropMetadata(hasura: Hasura) {
   
   debug('  ✅ Relationships dropped.');
 
-  debug('  🗑️ Untracking tables users, accounts and auth_passive...');
-  await hasura.untrackTable({ schema: 'public', table: 'auth_passive' });
-  await hasura.untrackTable({ schema: 'public', table: 'accounts' });
+  debug('  🗑️ Untracking tables users, accounts and auth_jwt...');
   await hasura.untrackTable({ schema: 'public', table: 'users' });
+  await hasura.untrackTable({ schema: 'public', table: 'accounts' });
+  await hasura.untrackTable({ schema: 'public', table: 'auth_jwt' });
   debug('✅ Tables untracked.');
 }
 
@@ -70,7 +92,8 @@ export async function dropMetadata(hasura: Hasura) {
 export async function dropTables(hasura: Hasura) {
   debug('🧹 Dropping tables users and accounts...');
   
-  // Drop foreign key constraints first
+  // Drop foreign key constraint
+  debug('  🗑️ Dropping foreign key constraint...');
   await hasura.deleteForeignKey({
     schema: 'public',
     table: 'accounts',
@@ -78,9 +101,9 @@ export async function dropTables(hasura: Hasura) {
   });
   
   // Drop tables
-  await hasura.deleteTable({ schema: 'public', table: 'auth_passive' });
-  await hasura.deleteTable({ schema: 'public', table: 'accounts' });
   await hasura.deleteTable({ schema: 'public', table: 'users' });
+  await hasura.deleteTable({ schema: 'public', table: 'accounts' });
+  await hasura.deleteTable({ schema: 'public', table: 'auth_jwt' });
   
   debug('✅ Tables dropped successfully.');
 }
