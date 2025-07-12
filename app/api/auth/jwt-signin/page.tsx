@@ -1,12 +1,12 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import Debug from 'hasyx/lib/debug';
 
 const debug = Debug('auth:jwt-signin');
 
-export default function JwtSigninPage() {
+function JwtSigninContent() {
   const searchParams = useSearchParams();
   const jwt = searchParams.get('jwt');
   const error = searchParams.get('error');
@@ -68,5 +68,25 @@ export default function JwtSigninPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function JwtSigninPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">JWT Authentication</h1>
+          <div>
+            <p>Loading...</p>
+            <div className="mt-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <JwtSigninContent />
+    </Suspense>
   );
 } 
