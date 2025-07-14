@@ -290,6 +290,8 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'events/schedule.json': 'events/schedule.json',
     'events/events.json': 'events/events.json',
     'events/schedule-cron.json': 'events/schedule-cron.json',
+    'events/subscription-billing.json': 'events/subscription-billing.json',
+    'events/logs-diffs.json': 'events/logs-diffs.json',
     'lib/debug.ts': 'lib/debug.template',
     'lib/cli.ts': 'lib/cli.template',
     'lib/schedule-event.ts': 'lib/schedule-event.template',

@@ -495,7 +495,11 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │   ├── ✨ logo.svg             # Default logo, replace with your own
 │   └── ✨ favicon.ico           # Default favicon
 |-- events/
-│   └── ✨ notify.json           # Default Hasura event trigger definition for notifications
+│   ├── ✨ notify.json           # Default Hasura event trigger definition for notifications
+│   ├── ✨ schedule.json         # Default Hasura event trigger definition for schedule
+│   ├── ✨ schedule-cron.json    # Default Hasura event trigger definition for schedule-cron
+│   ├── ✨ subscription-billing.json # Default Hasura event trigger definition for subscription-billing
+│   ├── ✨ logs-diffs.json       # Default Hasura event trigger definition for logs-diffs
 ├── .vscode/
 │   └── ✨ extensions.json       # Recommended VS Code extensions
 ├── ✨ .gitignore               # Git ignore patterns (from .gitignore.template)
