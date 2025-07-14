@@ -296,6 +296,11 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'lib/cli.ts': 'lib/cli.template',
     'lib/schedule-event.ts': 'lib/schedule-event.template',
     'lib/github-telegram-bot.ts': 'lib/github-telegram-bot.template',
+    'app/api/events/schedule-cron/route.ts': 'app/api/events/schedule-cron/route.ts',
+    'app/api/events/subscription-billing/route.ts': 'app/api/events/subscription-billing/route.ts',
+    'app/api/events/schedule/route.ts': 'app/api/events/schedule/route.ts',
+    'app/api/events/notify/route.ts': 'app/api/events/notify/route.ts',
+    'app/api/events/logs-diffs/route.ts': 'app/api/events/logs-diffs/route.ts',
   };
 
   // Ensure directories exist
