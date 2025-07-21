@@ -789,9 +789,6 @@
   .max-w-none {
     max-width: none;
   }
-  .max-w-sm {
-    max-width: var(--container-sm);
-  }
   .min-w-0 {
     min-width: calc(var(--spacing) * 0);
   }

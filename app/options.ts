@@ -10,7 +10,7 @@ import { TelegramMiniappCredentialsProvider } from 'hasyx/lib/telegram-miniapp-s
 
 import schema from '../public/hasura-schema.json';
 
-let authOptions: NextAuthOptions | undefined = { providers: [] }, client: Hasyx;
+let authOptions: NextAuthOptions = { providers: [] }, client: Hasyx;
 
 if (process?.env?.NEXT_PUBLIC_HASURA_GRAPHQL_URL && process?.env?.HASURA_ADMIN_SECRET) {
   client = new Hasyx(createApolloClient({
