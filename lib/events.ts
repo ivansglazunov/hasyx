@@ -5,7 +5,8 @@ import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: path.join(process.cwd(), '.env') });
+// dotenv.config({ path: path.join(process.cwd(), '.env') });
+dotenv.config();
 
 const debug = Debug('events');
 
@@ -268,37 +269,62 @@ export async function createOrUpdateEventTrigger(
     // Set default source if not specified
     const source = trigger.source || 'default';
 
-    // Check if trigger already exists using pg_get_event_triggers metadata API
-    const existingTriggersResponse = await hasura.v1({
-      type: 'export_metadata',
-      args: {}
-    });
-
-    // Parse the metadata to check if the trigger exists
-    let triggerExists = false;
-    if (existingTriggersResponse?.metadata?.sources) {
-      for (const sourceObj of existingTriggersResponse.metadata.sources) {
-        if (sourceObj.name !== source) continue;
-
-        if (sourceObj.tables) {
-          for (const table of sourceObj.tables) {
-            if (table.table.schema === trigger.table.schema &&
-              table.table.name === trigger.table.name &&
-              table.event_triggers) {
-              triggerExists = table.event_triggers.some((et: { name: string }) => et.name === trigger.name);
-              if (triggerExists) {
-                debug(`Event trigger ${trigger.name} already exists, updating...`);
-                break;
+    // Always try to delete the trigger first to ensure clean state
+    debug(`Attempting to delete event trigger ${trigger.name} before creating (if it exists)`);
+    try {
+      await hasura.v1({
+        type: 'delete_event_trigger',
+        args: {
+          name: trigger.name,
+          source
+        }
+      });
+      debug(`Event trigger ${trigger.name} deleted successfully`);
+      
+      // Verify deletion by checking metadata
+      try {
+        const verifyResponse = await hasura.v1({
+          type: 'export_metadata',
+          args: {}
+        });
+        
+        let stillExists = false;
+        if (verifyResponse?.sources) {
+          for (const sourceObj of verifyResponse.sources) {
+            if (sourceObj.name !== source) continue;
+            if (sourceObj.tables) {
+              for (const table of sourceObj.tables) {
+                if (table.event_triggers) {
+                  stillExists = table.event_triggers.some((et: { name: string }) => et.name === trigger.name);
+                  if (stillExists) {
+                    debug(`⚠️ Trigger ${trigger.name} still exists in table ${table.table.schema}.${table.table.name} after deletion!`);
+                    break;
+                  }
+                }
               }
             }
+            if (stillExists) break;
           }
         }
-
-        if (triggerExists) break;
+        
+        if (!stillExists) {
+          debug(`✅ Verified: Trigger ${trigger.name} successfully removed from metadata`);
+        }
+      } catch (verifyErr) {
+        debug(`Failed to verify deletion: ${verifyErr}`);
+      }
+      
+      // Small delay to ensure metadata consistency
+      await new Promise(resolve => setTimeout(resolve, 100));
+    } catch (delErr: any) {
+      if (delErr?.response?.data?.error?.includes('does not exist')) {
+        debug(`Event trigger ${trigger.name} did not exist, proceeding with creation`);
+      } else {
+        debug(`Failed to delete event trigger ${trigger.name}:`, delErr?.response?.data || delErr);
       }
     }
 
-    // Prepare the arguments for the API call
+    // Prepare the arguments for the API call using the Postgres backend spec (pg_create_event_trigger)
     const args: any = {
       name: trigger.name,
       source,
@@ -306,7 +332,6 @@ export async function createOrUpdateEventTrigger(
       webhook: webhookUrl
     };
 
-    // Add operation configurations
     if (trigger.insert) args.insert = trigger.insert;
     if (trigger.update) args.update = trigger.update;
     if (trigger.delete) args.delete = trigger.delete;
@@ -341,17 +366,20 @@ export async function createOrUpdateEventTrigger(
     // Add headers to args if any exist
     if (headers.length > 0) args.headers = headers;
 
-    // Set replace to true if the trigger already exists
-    args.replace = triggerExists;
+    // Set replace to false since we delete before creating
+    args.replace = false;
 
-    // Create or update the event trigger
-    const type = 'pg_create_event_trigger'; // Currently only supporting Postgres
-    const result = await hasura.v1({
-      type,
-      args
-    });
+    // Create or update the event trigger (Postgres backend)
+    const type = 'pg_create_event_trigger';
+    const result = await hasura.v1({ type, args });
 
-    debug(`Event trigger ${trigger.name} ${triggerExists ? 'updated' : 'created'} successfully`);
+    if (result && (result.error || result.code)) {
+      debug(`❌ Error response for ${trigger.name}:`, JSON.stringify(result));
+      return false;
+    }
+
+    debug(`✅ API response for ${trigger.name}:`, JSON.stringify(result));
+    debug(`Event trigger ${trigger.name} created successfully`);
     return true;
   } catch (error) {
     debug(`Error creating/updating event trigger ${trigger.name}: ${error}`);
@@ -436,6 +464,22 @@ export async function getExistingEventTriggers(hasura: Hasura): Promise<Record<s
 export async function syncEventTriggers(hasura: Hasura, localTriggers: EventTriggerDefinition[], baseUrl?: string): Promise<void> {
   try {
     debug('Starting event trigger synchronization');
+    
+    // First, reload metadata with recreate_event_triggers to fix any ghost triggers
+    debug('Reloading metadata with event trigger recreation to fix ghost triggers');
+    try {
+      await hasura.v1({
+        type: 'reload_metadata',
+        args: {
+          reload_remote_schemas: false,
+          reload_sources: false,
+          recreate_event_triggers: true
+        }
+      });
+      debug('Metadata reloaded successfully with event trigger recreation');
+    } catch (reloadError) {
+      debug('Failed to reload metadata:', reloadError);
+    }
 
     // Get existing triggers from Hasura
     const existingTriggers = await getExistingEventTriggers(hasura);
@@ -824,7 +868,8 @@ export function hasyxEvent(
   handler: (payload: HasuraEventPayload) => Promise<Response | NextResponse | any>
 ) {
   return async (request: NextRequest, context?: any) => {
-    const triggerName = context?.params?.name || 'unknown';
+    const params = await context.params;
+    const triggerName = params?.name || 'unknown';
     debug(`Received event trigger for ${triggerName}`);
 
     // Verify that the request is from Hasura

@@ -33,6 +33,11 @@ describe('JwtClient', () => {
     mockLocalStorage.clear();
     mockFetch.mockClear();
     
+    // Reset all mock methods
+    mockLocalStorage.getItem.mockClear();
+    mockLocalStorage.setItem.mockClear();
+    mockLocalStorage.removeItem.mockClear();
+    
     // Setup global mocks
     global.localStorage = mockLocalStorage as any;
     global.fetch = mockFetch as any;

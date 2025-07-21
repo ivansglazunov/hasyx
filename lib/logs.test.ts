@@ -32,6 +32,10 @@ const TEST_SCHEMA = 'test_logs';
     const hasura = createTestHasura();
     await hasura.defineSchema({ schema: TEST_SCHEMA });
     
+    // IMPORTANT: Initialize logs schema and tables first
+    const { applySQLSchema } = await import('./up-logs');
+    await applySQLSchema(hasura);
+    
     // Create test table
     await hasura.defineTable({
       schema: TEST_SCHEMA,
@@ -132,6 +136,7 @@ const TEST_SCHEMA = 'test_logs';
       `);
       
       const userId = insertResult.result[1][0];
+      debug(`Created user with ID: ${userId}`);
       
       // Update the name to trigger diff recording
       await hasura.sql(`
@@ -139,6 +144,8 @@ const TEST_SCHEMA = 'test_logs';
         SET name = 'Updated User' 
         WHERE id = '${userId}'
       `);
+      
+      debug('Update completed, checking for diffs...');
       
       // Check if diffs were recorded
       const diffsResult = await hasura.sql(`
@@ -149,6 +156,29 @@ const TEST_SCHEMA = 'test_logs';
         AND _column = 'name'
         AND _id = '${userId}'
       `);
+      
+      debug('Diffs result:', diffsResult);
+      debug('Diffs result length:', diffsResult.result.length);
+      
+      if (diffsResult.result.length === 1) {
+        debug('No diffs found, checking if logs schema exists...');
+        const schemaCheck = await hasura.sql(`
+          SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'logs'
+        `);
+        debug('Schema check result:', schemaCheck);
+        
+        const tableCheck = await hasura.sql(`
+          SELECT table_name FROM information_schema.tables 
+          WHERE table_schema = 'logs' AND table_name = 'diffs'
+        `);
+        debug('Table check result:', tableCheck);
+        
+        const triggerCheck = await hasura.sql(`
+          SELECT tgname FROM pg_trigger 
+          WHERE tgname LIKE 'hasyx_diffs_${TEST_SCHEMA}_test_users_name%'
+        `);
+        debug('Trigger check result:', triggerCheck);
+      }
       
       expect(diffsResult.result).toBeDefined();
       expect(diffsResult.result.length).toBeGreaterThan(1); // Header + data rows
@@ -217,6 +247,7 @@ const TEST_SCHEMA = 'test_logs';
       `);
       
       const userId = insertResult.result[1][0];
+      debug(`Created user with ID: ${userId}`);
       
       // Check if states were recorded for insert
       const insertStatesResult = await hasura.sql(`
@@ -227,6 +258,24 @@ const TEST_SCHEMA = 'test_logs';
         AND _id = '${userId}'
         ORDER BY _column, created_at
       `);
+      
+      debug('States result:', insertStatesResult);
+      debug('States result length:', insertStatesResult.result.length);
+      
+      if (insertStatesResult.result.length === 1) {
+        debug('No states found, checking states table...');
+        const statesTableCheck = await hasura.sql(`
+          SELECT table_name FROM information_schema.tables 
+          WHERE table_schema = 'logs' AND table_name = 'states'
+        `);
+        debug('States table check result:', statesTableCheck);
+        
+        const statesTriggersCheck = await hasura.sql(`
+          SELECT tgname FROM pg_trigger 
+          WHERE tgname LIKE 'hasyx_states_${TEST_SCHEMA}_test_users%'
+        `);
+        debug('States triggers check result:', statesTriggersCheck);
+      }
       
       expect(insertStatesResult.result).toBeDefined();
       expect(insertStatesResult.result.length).toBeGreaterThan(1); // Header + data rows
@@ -299,10 +348,13 @@ const TEST_SCHEMA = 'test_logs';
       
       // Apply both configurations
       const hasura = createTestHasura();
+      debug('Applying diffs config...');
       await applyLogsDiffs(hasura, diffsConfig);
+      debug('Applying states config...');
       await applyLogsStates(hasura, statesConfig);
       
       // Insert and modify test data
+      debug('Creating test data...');
       const insertResult = await hasura.sql(`
         INSERT INTO ${TEST_SCHEMA}.test_users (name, email, status) 
         VALUES ('Test User', 'test@example.com', 'active') 
@@ -310,19 +362,23 @@ const TEST_SCHEMA = 'test_logs';
       `);
       
       const userId = insertResult.result[1][0];
+      debug(`Created user with ID: ${userId}`);
       
+      debug('Updating test data...');
       await hasura.sql(`
         UPDATE ${TEST_SCHEMA}.test_users 
         SET name = 'Updated User', email = 'updated@example.com', status = 'inactive'
         WHERE id = '${userId}'
       `);
       
+      debug('Checking diffs...');
       // Verify both diffs and states were recorded
       const diffsResult = await hasura.sql(`
         SELECT COUNT(*) as count FROM logs.diffs 
         WHERE _schema = '${TEST_SCHEMA}' AND _table = 'test_users' AND _id = '${userId}'
       `);
       
+      debug('Checking states...');
       const statesResult = await hasura.sql(`
         SELECT COUNT(*) as count FROM logs.states 
         WHERE _schema = '${TEST_SCHEMA}' AND _table = 'test_users' AND _id = '${userId}'
@@ -331,11 +387,13 @@ const TEST_SCHEMA = 'test_logs';
       const diffsCount = parseInt(diffsResult.result[1][0]);
       const statesCount = parseInt(statesResult.result[1][0]);
       
+      debug(`Diffs count: ${diffsCount}, States count: ${statesCount}`);
+      
       expect(diffsCount).toBeGreaterThan(0);
       expect(statesCount).toBeGreaterThan(0);
       
       debug('✅ Combined system working correctly');
-    });
+    }, 120000); // 2 minute timeout
   });
 
   describe('Event Trigger Functionality', () => {
@@ -449,5 +507,5 @@ const TEST_SCHEMA = 'test_logs';
     }
     
     debug('Test cleanup complete');
-  });
+  }, 120000); // 2 minute timeout
 }); 

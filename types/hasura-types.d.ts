@@ -1326,453 +1326,6 @@ export type Debug_Variance_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** columns and relationships of "events" */
-export type Events = {
-  __typename?: "events";
-  created_at: Scalars["bigint"]["output"];
-  /** Actual end unix timestamp */
-  end?: Maybe<Scalars["bigint"]["output"]>;
-  id: Scalars["uuid"]["output"];
-  /** Message ID reference */
-  message_id: Scalars["uuid"]["output"];
-  /** Planned end unix timestamp */
-  plan_end?: Maybe<Scalars["bigint"]["output"]>;
-  /** Planned start unix timestamp */
-  plan_start?: Maybe<Scalars["bigint"]["output"]>;
-  /** Reference to schedule table */
-  schedule_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Whether event has been processed by scheduler */
-  scheduled?: Maybe<Scalars["Boolean"]["output"]>;
-  /** Actual start unix timestamp */
-  start?: Maybe<Scalars["bigint"]["output"]>;
-  /** Event status: pending, in_progress, completed, cancelled */
-  status?: Maybe<Scalars["String"]["output"]>;
-  updated_at: Scalars["bigint"]["output"];
-  /** User who created this event */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** aggregated selection of "events" */
-export type Events_Aggregate = {
-  __typename?: "events_aggregate";
-  aggregate?: Maybe<Events_Aggregate_Fields>;
-  nodes: Array<Events>;
-};
-
-/** aggregate fields of "events" */
-export type Events_Aggregate_Fields = {
-  __typename?: "events_aggregate_fields";
-  avg?: Maybe<Events_Avg_Fields>;
-  count: Scalars["Int"]["output"];
-  max?: Maybe<Events_Max_Fields>;
-  min?: Maybe<Events_Min_Fields>;
-  stddev?: Maybe<Events_Stddev_Fields>;
-  stddev_pop?: Maybe<Events_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Events_Stddev_Samp_Fields>;
-  sum?: Maybe<Events_Sum_Fields>;
-  var_pop?: Maybe<Events_Var_Pop_Fields>;
-  var_samp?: Maybe<Events_Var_Samp_Fields>;
-  variance?: Maybe<Events_Variance_Fields>;
-};
-
-/** aggregate fields of "events" */
-export type Events_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Events_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** aggregate avg on columns */
-export type Events_Avg_Fields = {
-  __typename?: "events_avg_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual end unix timestamp */
-  end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned end unix timestamp */
-  plan_end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned start unix timestamp */
-  plan_start?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual start unix timestamp */
-  start?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Boolean expression to filter rows from the table "events". All fields are combined with a logical 'AND'. */
-export type Events_Bool_Exp = {
-  _and?: InputMaybe<Array<Events_Bool_Exp>>;
-  _not?: InputMaybe<Events_Bool_Exp>;
-  _or?: InputMaybe<Array<Events_Bool_Exp>>;
-  created_at?: InputMaybe<Bigint_Comparison_Exp>;
-  end?: InputMaybe<Bigint_Comparison_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  message_id?: InputMaybe<Uuid_Comparison_Exp>;
-  plan_end?: InputMaybe<Bigint_Comparison_Exp>;
-  plan_start?: InputMaybe<Bigint_Comparison_Exp>;
-  schedule_id?: InputMaybe<Uuid_Comparison_Exp>;
-  scheduled?: InputMaybe<Boolean_Comparison_Exp>;
-  start?: InputMaybe<Bigint_Comparison_Exp>;
-  status?: InputMaybe<String_Comparison_Exp>;
-  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  user_id?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "events" */
-export enum Events_Constraint {
-  /** unique or primary key constraint on columns "id" */
-  EventsPkey = "events_pkey",
-}
-
-/** input type for incrementing numeric columns in table "events" */
-export type Events_Inc_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Actual end unix timestamp */
-  end?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Planned end unix timestamp */
-  plan_end?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Planned start unix timestamp */
-  plan_start?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Actual start unix timestamp */
-  start?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-};
-
-/** input type for inserting data into table "events" */
-export type Events_Insert_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Actual end unix timestamp */
-  end?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Message ID reference */
-  message_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Planned end unix timestamp */
-  plan_end?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Planned start unix timestamp */
-  plan_start?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Reference to schedule table */
-  schedule_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Whether event has been processed by scheduler */
-  scheduled?: InputMaybe<Scalars["Boolean"]["input"]>;
-  /** Actual start unix timestamp */
-  start?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Event status: pending, in_progress, completed, cancelled */
-  status?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** User who created this event */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-};
-
-/** aggregate max on columns */
-export type Events_Max_Fields = {
-  __typename?: "events_max_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Actual end unix timestamp */
-  end?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Message ID reference */
-  message_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Planned end unix timestamp */
-  plan_end?: Maybe<Scalars["bigint"]["output"]>;
-  /** Planned start unix timestamp */
-  plan_start?: Maybe<Scalars["bigint"]["output"]>;
-  /** Reference to schedule table */
-  schedule_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Actual start unix timestamp */
-  start?: Maybe<Scalars["bigint"]["output"]>;
-  /** Event status: pending, in_progress, completed, cancelled */
-  status?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** User who created this event */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** aggregate min on columns */
-export type Events_Min_Fields = {
-  __typename?: "events_min_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Actual end unix timestamp */
-  end?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Message ID reference */
-  message_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Planned end unix timestamp */
-  plan_end?: Maybe<Scalars["bigint"]["output"]>;
-  /** Planned start unix timestamp */
-  plan_start?: Maybe<Scalars["bigint"]["output"]>;
-  /** Reference to schedule table */
-  schedule_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Actual start unix timestamp */
-  start?: Maybe<Scalars["bigint"]["output"]>;
-  /** Event status: pending, in_progress, completed, cancelled */
-  status?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** User who created this event */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** response of any mutation on the table "events" */
-export type Events_Mutation_Response = {
-  __typename?: "events_mutation_response";
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars["Int"]["output"];
-  /** data from the rows affected by the mutation */
-  returning: Array<Events>;
-};
-
-/** on_conflict condition type for table "events" */
-export type Events_On_Conflict = {
-  constraint: Events_Constraint;
-  update_columns?: Array<Events_Update_Column>;
-  where?: InputMaybe<Events_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "events". */
-export type Events_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  end?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  message_id?: InputMaybe<Order_By>;
-  plan_end?: InputMaybe<Order_By>;
-  plan_start?: InputMaybe<Order_By>;
-  schedule_id?: InputMaybe<Order_By>;
-  scheduled?: InputMaybe<Order_By>;
-  start?: InputMaybe<Order_By>;
-  status?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  user_id?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: events */
-export type Events_Pk_Columns_Input = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** select columns of table "events" */
-export enum Events_Select_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  End = "end",
-  /** column name */
-  Id = "id",
-  /** column name */
-  MessageId = "message_id",
-  /** column name */
-  PlanEnd = "plan_end",
-  /** column name */
-  PlanStart = "plan_start",
-  /** column name */
-  ScheduleId = "schedule_id",
-  /** column name */
-  Scheduled = "scheduled",
-  /** column name */
-  Start = "start",
-  /** column name */
-  Status = "status",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-}
-
-/** input type for updating data in table "events" */
-export type Events_Set_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Actual end unix timestamp */
-  end?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Message ID reference */
-  message_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Planned end unix timestamp */
-  plan_end?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Planned start unix timestamp */
-  plan_start?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Reference to schedule table */
-  schedule_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Whether event has been processed by scheduler */
-  scheduled?: InputMaybe<Scalars["Boolean"]["input"]>;
-  /** Actual start unix timestamp */
-  start?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Event status: pending, in_progress, completed, cancelled */
-  status?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** User who created this event */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-};
-
-/** aggregate stddev on columns */
-export type Events_Stddev_Fields = {
-  __typename?: "events_stddev_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual end unix timestamp */
-  end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned end unix timestamp */
-  plan_end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned start unix timestamp */
-  plan_start?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual start unix timestamp */
-  start?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Events_Stddev_Pop_Fields = {
-  __typename?: "events_stddev_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual end unix timestamp */
-  end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned end unix timestamp */
-  plan_end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned start unix timestamp */
-  plan_start?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual start unix timestamp */
-  start?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Events_Stddev_Samp_Fields = {
-  __typename?: "events_stddev_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual end unix timestamp */
-  end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned end unix timestamp */
-  plan_end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned start unix timestamp */
-  plan_start?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual start unix timestamp */
-  start?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Streaming cursor of the table "events" */
-export type Events_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Events_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Events_Stream_Cursor_Value_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Actual end unix timestamp */
-  end?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Message ID reference */
-  message_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Planned end unix timestamp */
-  plan_end?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Planned start unix timestamp */
-  plan_start?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Reference to schedule table */
-  schedule_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Whether event has been processed by scheduler */
-  scheduled?: InputMaybe<Scalars["Boolean"]["input"]>;
-  /** Actual start unix timestamp */
-  start?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Event status: pending, in_progress, completed, cancelled */
-  status?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** User who created this event */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-};
-
-/** aggregate sum on columns */
-export type Events_Sum_Fields = {
-  __typename?: "events_sum_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Actual end unix timestamp */
-  end?: Maybe<Scalars["bigint"]["output"]>;
-  /** Planned end unix timestamp */
-  plan_end?: Maybe<Scalars["bigint"]["output"]>;
-  /** Planned start unix timestamp */
-  plan_start?: Maybe<Scalars["bigint"]["output"]>;
-  /** Actual start unix timestamp */
-  start?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** update columns of table "events" */
-export enum Events_Update_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  End = "end",
-  /** column name */
-  Id = "id",
-  /** column name */
-  MessageId = "message_id",
-  /** column name */
-  PlanEnd = "plan_end",
-  /** column name */
-  PlanStart = "plan_start",
-  /** column name */
-  ScheduleId = "schedule_id",
-  /** column name */
-  Scheduled = "scheduled",
-  /** column name */
-  Start = "start",
-  /** column name */
-  Status = "status",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-}
-
-export type Events_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<Events_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Events_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Events_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type Events_Var_Pop_Fields = {
-  __typename?: "events_var_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual end unix timestamp */
-  end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned end unix timestamp */
-  plan_end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned start unix timestamp */
-  plan_start?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual start unix timestamp */
-  start?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate var_samp on columns */
-export type Events_Var_Samp_Fields = {
-  __typename?: "events_var_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual end unix timestamp */
-  end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned end unix timestamp */
-  plan_end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned start unix timestamp */
-  plan_start?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual start unix timestamp */
-  start?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate variance on columns */
-export type Events_Variance_Fields = {
-  __typename?: "events_variance_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual end unix timestamp */
-  end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned end unix timestamp */
-  plan_end?: Maybe<Scalars["Float"]["output"]>;
-  /** Planned start unix timestamp */
-  plan_start?: Maybe<Scalars["Float"]["output"]>;
-  /** Actual start unix timestamp */
-  start?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
 export type Jsonb_Cast_Exp = {
   String?: InputMaybe<String_Comparison_Exp>;
 };
@@ -2539,10 +2092,6 @@ export type Mutation_Root = {
   delete_debug?: Maybe<Debug_Mutation_Response>;
   /** delete single row from the table: "debug" */
   delete_debug_by_pk?: Maybe<Debug>;
-  /** delete data from the table: "events" */
-  delete_events?: Maybe<Events_Mutation_Response>;
-  /** delete single row from the table: "events" */
-  delete_events_by_pk?: Maybe<Events>;
   /** delete data from the table: "logs.diffs" */
   delete_logs_diffs?: Maybe<Logs_Diffs_Mutation_Response>;
   /** delete single row from the table: "logs.diffs" */
@@ -2587,10 +2136,6 @@ export type Mutation_Root = {
   delete_payments_user_payment_provider_mappings?: Maybe<Payments_User_Payment_Provider_Mappings_Mutation_Response>;
   /** delete single row from the table: "payments.user_payment_provider_mappings" */
   delete_payments_user_payment_provider_mappings_by_pk?: Maybe<Payments_User_Payment_Provider_Mappings>;
-  /** delete data from the table: "schedule" */
-  delete_schedule?: Maybe<Schedule_Mutation_Response>;
-  /** delete single row from the table: "schedule" */
-  delete_schedule_by_pk?: Maybe<Schedule>;
   /** delete data from the table: "users" */
   delete_users?: Maybe<Users_Mutation_Response>;
   /** delete single row from the table: "users" */
@@ -2607,10 +2152,6 @@ export type Mutation_Root = {
   insert_debug?: Maybe<Debug_Mutation_Response>;
   /** insert a single row into the table: "debug" */
   insert_debug_one?: Maybe<Debug>;
-  /** insert data into the table: "events" */
-  insert_events?: Maybe<Events_Mutation_Response>;
-  /** insert a single row into the table: "events" */
-  insert_events_one?: Maybe<Events>;
   /** insert data into the table: "logs.diffs" */
   insert_logs_diffs?: Maybe<Logs_Diffs_Mutation_Response>;
   /** insert a single row into the table: "logs.diffs" */
@@ -2655,10 +2196,6 @@ export type Mutation_Root = {
   insert_payments_user_payment_provider_mappings?: Maybe<Payments_User_Payment_Provider_Mappings_Mutation_Response>;
   /** insert a single row into the table: "payments.user_payment_provider_mappings" */
   insert_payments_user_payment_provider_mappings_one?: Maybe<Payments_User_Payment_Provider_Mappings>;
-  /** insert data into the table: "schedule" */
-  insert_schedule?: Maybe<Schedule_Mutation_Response>;
-  /** insert a single row into the table: "schedule" */
-  insert_schedule_one?: Maybe<Schedule>;
   /** insert data into the table: "users" */
   insert_users?: Maybe<Users_Mutation_Response>;
   /** insert a single row into the table: "users" */
@@ -2681,12 +2218,6 @@ export type Mutation_Root = {
   update_debug_by_pk?: Maybe<Debug>;
   /** update multiples rows of table: "debug" */
   update_debug_many?: Maybe<Array<Maybe<Debug_Mutation_Response>>>;
-  /** update data of the table: "events" */
-  update_events?: Maybe<Events_Mutation_Response>;
-  /** update single row of the table: "events" */
-  update_events_by_pk?: Maybe<Events>;
-  /** update multiples rows of table: "events" */
-  update_events_many?: Maybe<Array<Maybe<Events_Mutation_Response>>>;
   /** update data of the table: "logs.diffs" */
   update_logs_diffs?: Maybe<Logs_Diffs_Mutation_Response>;
   /** update single row of the table: "logs.diffs" */
@@ -2771,12 +2302,6 @@ export type Mutation_Root = {
   update_payments_user_payment_provider_mappings_many?: Maybe<
     Array<Maybe<Payments_User_Payment_Provider_Mappings_Mutation_Response>>
   >;
-  /** update data of the table: "schedule" */
-  update_schedule?: Maybe<Schedule_Mutation_Response>;
-  /** update single row of the table: "schedule" */
-  update_schedule_by_pk?: Maybe<Schedule>;
-  /** update multiples rows of table: "schedule" */
-  update_schedule_many?: Maybe<Array<Maybe<Schedule_Mutation_Response>>>;
   /** update data of the table: "users" */
   update_users?: Maybe<Users_Mutation_Response>;
   /** update single row of the table: "users" */
@@ -2812,16 +2337,6 @@ export type Mutation_RootDelete_DebugArgs = {
 
 /** mutation root */
 export type Mutation_RootDelete_Debug_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** mutation root */
-export type Mutation_RootDelete_EventsArgs = {
-  where: Events_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Events_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -2937,16 +2452,6 @@ export type Mutation_RootDelete_Payments_User_Payment_Provider_Mappings_By_PkArg
   };
 
 /** mutation root */
-export type Mutation_RootDelete_ScheduleArgs = {
-  where: Schedule_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Schedule_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** mutation root */
 export type Mutation_RootDelete_UsersArgs = {
   where: Users_Bool_Exp;
 };
@@ -2990,18 +2495,6 @@ export type Mutation_RootInsert_DebugArgs = {
 export type Mutation_RootInsert_Debug_OneArgs = {
   object: Debug_Insert_Input;
   on_conflict?: InputMaybe<Debug_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_EventsArgs = {
-  objects: Array<Events_Insert_Input>;
-  on_conflict?: InputMaybe<Events_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Events_OneArgs = {
-  object: Events_Insert_Input;
-  on_conflict?: InputMaybe<Events_On_Conflict>;
 };
 
 /** mutation root */
@@ -3138,18 +2631,6 @@ export type Mutation_RootInsert_Payments_User_Payment_Provider_Mappings_OneArgs 
   };
 
 /** mutation root */
-export type Mutation_RootInsert_ScheduleArgs = {
-  objects: Array<Schedule_Insert_Input>;
-  on_conflict?: InputMaybe<Schedule_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Schedule_OneArgs = {
-  object: Schedule_Insert_Input;
-  on_conflict?: InputMaybe<Schedule_On_Conflict>;
-};
-
-/** mutation root */
 export type Mutation_RootInsert_UsersArgs = {
   objects: Array<Users_Insert_Input>;
   on_conflict?: InputMaybe<Users_On_Conflict>;
@@ -3236,25 +2717,6 @@ export type Mutation_RootUpdate_Debug_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Debug_ManyArgs = {
   updates: Array<Debug_Updates>;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_EventsArgs = {
-  _inc?: InputMaybe<Events_Inc_Input>;
-  _set?: InputMaybe<Events_Set_Input>;
-  where: Events_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Events_By_PkArgs = {
-  _inc?: InputMaybe<Events_Inc_Input>;
-  _set?: InputMaybe<Events_Set_Input>;
-  pk_columns: Events_Pk_Columns_Input;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Events_ManyArgs = {
-  updates: Array<Events_Updates>;
 };
 
 /** mutation root */
@@ -3567,25 +3029,6 @@ export type Mutation_RootUpdate_Payments_User_Payment_Provider_Mappings_ManyArgs
   {
     updates: Array<Payments_User_Payment_Provider_Mappings_Updates>;
   };
-
-/** mutation root */
-export type Mutation_RootUpdate_ScheduleArgs = {
-  _inc?: InputMaybe<Schedule_Inc_Input>;
-  _set?: InputMaybe<Schedule_Set_Input>;
-  where: Schedule_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Schedule_By_PkArgs = {
-  _inc?: InputMaybe<Schedule_Inc_Input>;
-  _set?: InputMaybe<Schedule_Set_Input>;
-  pk_columns: Schedule_Pk_Columns_Input;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Schedule_ManyArgs = {
-  updates: Array<Schedule_Updates>;
-};
 
 /** mutation root */
 export type Mutation_RootUpdate_UsersArgs = {
@@ -9334,12 +8777,6 @@ export type Query_Root = {
   debug_aggregate: Debug_Aggregate;
   /** fetch data from the table: "debug" using primary key columns */
   debug_by_pk?: Maybe<Debug>;
-  /** fetch data from the table: "events" */
-  events: Array<Events>;
-  /** fetch aggregated fields from the table: "events" */
-  events_aggregate: Events_Aggregate;
-  /** fetch data from the table: "events" using primary key columns */
-  events_by_pk?: Maybe<Events>;
   /** fetch data from the table: "logs.diffs" */
   logs_diffs: Array<Logs_Diffs>;
   /** fetch aggregated fields from the table: "logs.diffs" */
@@ -9406,12 +8843,6 @@ export type Query_Root = {
   payments_user_payment_provider_mappings_aggregate: Payments_User_Payment_Provider_Mappings_Aggregate;
   /** fetch data from the table: "payments.user_payment_provider_mappings" using primary key columns */
   payments_user_payment_provider_mappings_by_pk?: Maybe<Payments_User_Payment_Provider_Mappings>;
-  /** fetch data from the table: "schedule" */
-  schedule: Array<Schedule>;
-  /** fetch aggregated fields from the table: "schedule" */
-  schedule_aggregate: Schedule_Aggregate;
-  /** fetch data from the table: "schedule" using primary key columns */
-  schedule_by_pk?: Maybe<Schedule>;
   /** fetch data from the table: "users" */
   users: Array<Users>;
   /** fetch aggregated fields from the table: "users" */
@@ -9477,26 +8908,6 @@ export type Query_RootDebug_AggregateArgs = {
 };
 
 export type Query_RootDebug_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Query_RootEventsArgs = {
-  distinct_on?: InputMaybe<Array<Events_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Events_Order_By>>;
-  where?: InputMaybe<Events_Bool_Exp>;
-};
-
-export type Query_RootEvents_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Events_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Events_Order_By>>;
-  where?: InputMaybe<Events_Bool_Exp>;
-};
-
-export type Query_RootEvents_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -9728,26 +9139,6 @@ export type Query_RootPayments_User_Payment_Provider_Mappings_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
-export type Query_RootScheduleArgs = {
-  distinct_on?: InputMaybe<Array<Schedule_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Schedule_Order_By>>;
-  where?: InputMaybe<Schedule_Bool_Exp>;
-};
-
-export type Query_RootSchedule_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Schedule_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Schedule_Order_By>>;
-  where?: InputMaybe<Schedule_Bool_Exp>;
-};
-
-export type Query_RootSchedule_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
 export type Query_RootUsersArgs = {
   distinct_on?: InputMaybe<Array<Users_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -9766,349 +9157,6 @@ export type Query_RootUsers_AggregateArgs = {
 
 export type Query_RootUsers_By_PkArgs = {
   id: Scalars["uuid"]["input"];
-};
-
-/** columns and relationships of "schedule" */
-export type Schedule = {
-  __typename?: "schedule";
-  created_at: Scalars["bigint"]["output"];
-  /** Cron expression for scheduling */
-  cron: Scalars["String"]["output"];
-  /** Unix timestamp end time */
-  end_at: Scalars["bigint"]["output"];
-  id: Scalars["uuid"]["output"];
-  /** Message ID reference */
-  message_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Unix timestamp start time */
-  start_at: Scalars["bigint"]["output"];
-  updated_at: Scalars["bigint"]["output"];
-  /** User who created this schedule */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** aggregated selection of "schedule" */
-export type Schedule_Aggregate = {
-  __typename?: "schedule_aggregate";
-  aggregate?: Maybe<Schedule_Aggregate_Fields>;
-  nodes: Array<Schedule>;
-};
-
-/** aggregate fields of "schedule" */
-export type Schedule_Aggregate_Fields = {
-  __typename?: "schedule_aggregate_fields";
-  avg?: Maybe<Schedule_Avg_Fields>;
-  count: Scalars["Int"]["output"];
-  max?: Maybe<Schedule_Max_Fields>;
-  min?: Maybe<Schedule_Min_Fields>;
-  stddev?: Maybe<Schedule_Stddev_Fields>;
-  stddev_pop?: Maybe<Schedule_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Schedule_Stddev_Samp_Fields>;
-  sum?: Maybe<Schedule_Sum_Fields>;
-  var_pop?: Maybe<Schedule_Var_Pop_Fields>;
-  var_samp?: Maybe<Schedule_Var_Samp_Fields>;
-  variance?: Maybe<Schedule_Variance_Fields>;
-};
-
-/** aggregate fields of "schedule" */
-export type Schedule_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Schedule_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** aggregate avg on columns */
-export type Schedule_Avg_Fields = {
-  __typename?: "schedule_avg_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp end time */
-  end_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp start time */
-  start_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Boolean expression to filter rows from the table "schedule". All fields are combined with a logical 'AND'. */
-export type Schedule_Bool_Exp = {
-  _and?: InputMaybe<Array<Schedule_Bool_Exp>>;
-  _not?: InputMaybe<Schedule_Bool_Exp>;
-  _or?: InputMaybe<Array<Schedule_Bool_Exp>>;
-  created_at?: InputMaybe<Bigint_Comparison_Exp>;
-  cron?: InputMaybe<String_Comparison_Exp>;
-  end_at?: InputMaybe<Bigint_Comparison_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  message_id?: InputMaybe<Uuid_Comparison_Exp>;
-  start_at?: InputMaybe<Bigint_Comparison_Exp>;
-  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  user_id?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "schedule" */
-export enum Schedule_Constraint {
-  /** unique or primary key constraint on columns "id" */
-  SchedulePkey = "schedule_pkey",
-}
-
-/** input type for incrementing numeric columns in table "schedule" */
-export type Schedule_Inc_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Unix timestamp end time */
-  end_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Unix timestamp start time */
-  start_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-};
-
-/** input type for inserting data into table "schedule" */
-export type Schedule_Insert_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Cron expression for scheduling */
-  cron?: InputMaybe<Scalars["String"]["input"]>;
-  /** Unix timestamp end time */
-  end_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Message ID reference */
-  message_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Unix timestamp start time */
-  start_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** User who created this schedule */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-};
-
-/** aggregate max on columns */
-export type Schedule_Max_Fields = {
-  __typename?: "schedule_max_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Cron expression for scheduling */
-  cron?: Maybe<Scalars["String"]["output"]>;
-  /** Unix timestamp end time */
-  end_at?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Message ID reference */
-  message_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Unix timestamp start time */
-  start_at?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** User who created this schedule */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** aggregate min on columns */
-export type Schedule_Min_Fields = {
-  __typename?: "schedule_min_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Cron expression for scheduling */
-  cron?: Maybe<Scalars["String"]["output"]>;
-  /** Unix timestamp end time */
-  end_at?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Message ID reference */
-  message_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Unix timestamp start time */
-  start_at?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** User who created this schedule */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** response of any mutation on the table "schedule" */
-export type Schedule_Mutation_Response = {
-  __typename?: "schedule_mutation_response";
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars["Int"]["output"];
-  /** data from the rows affected by the mutation */
-  returning: Array<Schedule>;
-};
-
-/** on_conflict condition type for table "schedule" */
-export type Schedule_On_Conflict = {
-  constraint: Schedule_Constraint;
-  update_columns?: Array<Schedule_Update_Column>;
-  where?: InputMaybe<Schedule_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "schedule". */
-export type Schedule_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  cron?: InputMaybe<Order_By>;
-  end_at?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  message_id?: InputMaybe<Order_By>;
-  start_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  user_id?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: schedule */
-export type Schedule_Pk_Columns_Input = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** select columns of table "schedule" */
-export enum Schedule_Select_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  Cron = "cron",
-  /** column name */
-  EndAt = "end_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  MessageId = "message_id",
-  /** column name */
-  StartAt = "start_at",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-}
-
-/** input type for updating data in table "schedule" */
-export type Schedule_Set_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Cron expression for scheduling */
-  cron?: InputMaybe<Scalars["String"]["input"]>;
-  /** Unix timestamp end time */
-  end_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Message ID reference */
-  message_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Unix timestamp start time */
-  start_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** User who created this schedule */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-};
-
-/** aggregate stddev on columns */
-export type Schedule_Stddev_Fields = {
-  __typename?: "schedule_stddev_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp end time */
-  end_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp start time */
-  start_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Schedule_Stddev_Pop_Fields = {
-  __typename?: "schedule_stddev_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp end time */
-  end_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp start time */
-  start_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Schedule_Stddev_Samp_Fields = {
-  __typename?: "schedule_stddev_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp end time */
-  end_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp start time */
-  start_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Streaming cursor of the table "schedule" */
-export type Schedule_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Schedule_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Schedule_Stream_Cursor_Value_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Cron expression for scheduling */
-  cron?: InputMaybe<Scalars["String"]["input"]>;
-  /** Unix timestamp end time */
-  end_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Message ID reference */
-  message_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Unix timestamp start time */
-  start_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** User who created this schedule */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-};
-
-/** aggregate sum on columns */
-export type Schedule_Sum_Fields = {
-  __typename?: "schedule_sum_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Unix timestamp end time */
-  end_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Unix timestamp start time */
-  start_at?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** update columns of table "schedule" */
-export enum Schedule_Update_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  Cron = "cron",
-  /** column name */
-  EndAt = "end_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  MessageId = "message_id",
-  /** column name */
-  StartAt = "start_at",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-}
-
-export type Schedule_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<Schedule_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Schedule_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Schedule_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type Schedule_Var_Pop_Fields = {
-  __typename?: "schedule_var_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp end time */
-  end_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp start time */
-  start_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate var_samp on columns */
-export type Schedule_Var_Samp_Fields = {
-  __typename?: "schedule_var_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp end time */
-  end_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp start time */
-  start_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate variance on columns */
-export type Schedule_Variance_Fields = {
-  __typename?: "schedule_variance_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp end time */
-  end_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Unix timestamp start time */
-  start_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
 export type Subscription_Root = {
@@ -10137,14 +9185,6 @@ export type Subscription_Root = {
   debug_by_pk?: Maybe<Debug>;
   /** fetch data from the table in a streaming manner: "debug" */
   debug_stream: Array<Debug>;
-  /** fetch data from the table: "events" */
-  events: Array<Events>;
-  /** fetch aggregated fields from the table: "events" */
-  events_aggregate: Events_Aggregate;
-  /** fetch data from the table: "events" using primary key columns */
-  events_by_pk?: Maybe<Events>;
-  /** fetch data from the table in a streaming manner: "events" */
-  events_stream: Array<Events>;
   /** fetch data from the table: "logs.diffs" */
   logs_diffs: Array<Logs_Diffs>;
   /** fetch aggregated fields from the table: "logs.diffs" */
@@ -10233,14 +9273,6 @@ export type Subscription_Root = {
   payments_user_payment_provider_mappings_by_pk?: Maybe<Payments_User_Payment_Provider_Mappings>;
   /** fetch data from the table in a streaming manner: "payments.user_payment_provider_mappings" */
   payments_user_payment_provider_mappings_stream: Array<Payments_User_Payment_Provider_Mappings>;
-  /** fetch data from the table: "schedule" */
-  schedule: Array<Schedule>;
-  /** fetch aggregated fields from the table: "schedule" */
-  schedule_aggregate: Schedule_Aggregate;
-  /** fetch data from the table: "schedule" using primary key columns */
-  schedule_by_pk?: Maybe<Schedule>;
-  /** fetch data from the table in a streaming manner: "schedule" */
-  schedule_stream: Array<Schedule>;
   /** fetch data from the table: "users" */
   users: Array<Users>;
   /** fetch aggregated fields from the table: "users" */
@@ -10327,32 +9359,6 @@ export type Subscription_RootDebug_StreamArgs = {
   batch_size: Scalars["Int"]["input"];
   cursor: Array<InputMaybe<Debug_Stream_Cursor_Input>>;
   where?: InputMaybe<Debug_Bool_Exp>;
-};
-
-export type Subscription_RootEventsArgs = {
-  distinct_on?: InputMaybe<Array<Events_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Events_Order_By>>;
-  where?: InputMaybe<Events_Bool_Exp>;
-};
-
-export type Subscription_RootEvents_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Events_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Events_Order_By>>;
-  where?: InputMaybe<Events_Bool_Exp>;
-};
-
-export type Subscription_RootEvents_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Subscription_RootEvents_StreamArgs = {
-  batch_size: Scalars["Int"]["input"];
-  cursor: Array<InputMaybe<Events_Stream_Cursor_Input>>;
-  where?: InputMaybe<Events_Bool_Exp>;
 };
 
 export type Subscription_RootLogs_DiffsArgs = {
@@ -10653,32 +9659,6 @@ export type Subscription_RootPayments_User_Payment_Provider_Mappings_StreamArgs 
     >;
     where?: InputMaybe<Payments_User_Payment_Provider_Mappings_Bool_Exp>;
   };
-
-export type Subscription_RootScheduleArgs = {
-  distinct_on?: InputMaybe<Array<Schedule_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Schedule_Order_By>>;
-  where?: InputMaybe<Schedule_Bool_Exp>;
-};
-
-export type Subscription_RootSchedule_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Schedule_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Schedule_Order_By>>;
-  where?: InputMaybe<Schedule_Bool_Exp>;
-};
-
-export type Subscription_RootSchedule_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Subscription_RootSchedule_StreamArgs = {
-  batch_size: Scalars["Int"]["input"];
-  cursor: Array<InputMaybe<Schedule_Stream_Cursor_Input>>;
-  where?: InputMaybe<Schedule_Bool_Exp>;
-};
 
 export type Subscription_RootUsersArgs = {
   distinct_on?: InputMaybe<Array<Users_Select_Column>>;
