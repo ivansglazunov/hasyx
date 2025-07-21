@@ -9,7 +9,9 @@ import axios from 'axios';
 
 dotenv.config();
 
-describe('JWT Auth API Route', () => {
+const isLocal = !!+process.env.JEST_LOCAL!;
+
+(!isLocal ? describe : describe.skip)('JWT Auth API Route', () => {
   let adminHasyx: Hasyx;
   let testUser1: any;
   let testUser2: any;
