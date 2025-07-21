@@ -1,6 +1,6 @@
 {
   "name": "hasyx",
-  "version": "0.1.350",
+  "version": "0.1.351",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.deep.foundation/",
   "engines": {
@@ -20,7 +20,9 @@
     "build:next": "next build --turbopack",
     "client": "tsx lib/build-client.ts",
     "build:android": "npm run client && npm run cli -- assets && npx cap sync android",
-    "ios": "npm run client && npm run cli -- assets && npx cap sync ios",
+    "open:android": "npx cap open android",
+    "build:ios": "npm run client && npm run cli -- assets && npx cap sync ios",
+    "open:ios": "npx cap open ios",
     "start": "NODE_ENV=production NODE_OPTIONS=\"--experimental-vm-modules\" npx -y hasyx start",
     "lint": "next lint --turbopack",
     "test": "npm run unbuild; NODE_OPTIONS=\"--experimental-vm-modules\" jest --verbose --runInBand",

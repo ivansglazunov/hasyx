@@ -215,19 +215,21 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
           } else { // OAuth Provider
             debug(`🔍 JWT Callback: OAuth sign-in via ${provider} for ${userId}`);
             
-            // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПЕРЕД ПРОВЕРКОЙ НЕОБХОДИМОСТИ ВТОРОГО ВЫЗОВА
-            debug('🚨 JWT Callback: Checking if second call to getOrCreateUserAndAccount is needed:', {
+            // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПРОВЕРКА НЕОБХОДИМОСТИ ВЫЗОВА getOrCreateUserAndAccount
+            debug('🚨 JWT Callback: Checking if getOrCreateUserAndAccount call is needed:', {
               provider: provider,
               userId: user.id,
               providerAccountId: account.providerAccountId,
-              userIdEqualsProviderAccountId: user.id === account.providerAccountId
+              userIdEqualsProviderAccountId: user.id === account.providerAccountId,
+              isCredentialsProvider: provider === 'credentials'
             });
             
-            // 🛠️ ИСПРАВЛЕНИЕ: Не делаем второй вызов если authorize уже создал пользователя
-            // Проверяем: если user.id === account.providerAccountId, значит NextAuth передал наш user.id
-            // как providerAccountId, что означает что это уже второй вызов с неправильными данными
-            if (user.id === account.providerAccountId) {
-              debug('✅ JWT Callback: Skipping second getOrCreateUserAndAccount call - user already processed in authorize');
+            // 🛠️ ИСПРАВЛЕНИЕ: Пропускаем getOrCreateUserAndAccount только для credentials провайдеров
+            // Для OAuth провайдеров user.id ВСЕГДА равен account.providerAccountId (это ID от провайдера),
+            // но это НЕ означает что пользователь уже обработан - нужно создать/найти в БД
+            // Пропускаем только для credentials провайдеров, где authorize уже вернул правильный UUID
+            if (provider === 'credentials' && user.id === account.providerAccountId) {
+              debug('✅ JWT Callback: Skipping getOrCreateUserAndAccount call - credentials provider already returned correct UUID from authorize');
               debug('🔍 JWT Callback: User already exists, using existing data:', {
                 userId: user.id,
                 provider: provider
@@ -253,10 +255,10 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
               }
               
             } else {
-              // Это действительно новый OAuth вызов с правильными данными
-              debug('🔍 JWT Callback: Making legitimate getOrCreateUserAndAccount call');
+              // OAuth провайдер или credentials с новыми данными - нужно создать/найти пользователя в БД
+              debug('🔍 JWT Callback: Making getOrCreateUserAndAccount call for provider:', provider);
               
-              // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПЕРЕД ВТОРЫМ ВЫЗОВОМ
+              // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПЕРЕД ВЫЗОВОМ getOrCreateUserAndAccount
               debug('🚨 JWT Callback: About to call getOrCreateUserAndAccount with:', {
                 provider: provider,
                 providerAccountId: account.providerAccountId,
@@ -278,11 +280,11 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
                     throw new Error('Failed to retrieve or create user from DB.');
                 }
                 
-                // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПОСЛЕ ВТОРОГО ВЫЗОВА
+                // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПОСЛЕ ВЫЗОВА getOrCreateUserAndAccount
                 debug('🔍 JWT Callback: getOrCreateUserAndAccount COMPLETED:', {
-                  originalUserId: userId,
+                  originalProviderUserId: userId,
                   dbUserId: dbUser.id,
-                  userIdChanged: userId !== dbUser.id
+                  userIdMappedToDbUser: userId !== dbUser.id
                 });
                 
                 // Update userId ONLY if it changed (e.g., mapping to existing)
