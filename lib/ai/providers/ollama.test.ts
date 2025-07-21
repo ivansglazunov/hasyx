@@ -1,9 +1,27 @@
 import { OllamaProvider } from './ollama';
 import { AIMessage } from '../ai';
+import * as os from 'os';
 
 const isLocal = !!+process.env.JEST_LOCAL!;
 
-(isLocal ? describe.skip : describe)('OllamaProvider', () => {
+// Function to get available RAM in GB
+const getAvailableRAM = (): number => {
+  const freeMemory = os.freemem();
+  const totalMemory = os.totalmem();
+  // Return free memory in GB
+  return freeMemory / (1024 * 1024 * 1024);
+};
+
+const availableRAM = getAvailableRAM();
+const hasEnoughRAM = availableRAM >= 3;
+
+const shouldSkipTest = isLocal || !hasEnoughRAM;
+
+if (!hasEnoughRAM) {
+  console.log(`Skipping Ollama tests: Available RAM (${availableRAM.toFixed(2)}GB) is less than required 3GB`);
+}
+
+(shouldSkipTest ? describe.skip : describe)('OllamaProvider', () => {
   const testModel = 'gemma2:2b'; // Make sure this model is available on your Ollama server
 
   // Helper to check if Ollama server is running
