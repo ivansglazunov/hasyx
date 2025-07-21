@@ -76,7 +76,7 @@ export function CredentialsSignInCard(props: React.HTMLAttributes<HTMLDivElement
   };
 
   return (
-    <Card {...props} className="mx-auto max-w-sm">
+    <Card {...props}>
       <CardHeader>
         <CardTitle className="text-2xl flex items-center gap-2">
           <KeyRound className="h-6 w-6" />

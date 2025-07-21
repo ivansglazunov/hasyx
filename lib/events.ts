@@ -10,12 +10,6 @@ dotenv.config();
 
 const debug = Debug('events');
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_MAIN_URL || process.env.NEXT_PUBLIC_BASE_URL;
-
-if (!API_URL) {
-  throw new Error('NEXT_PUBLIC_MAIN_URL | NEXT_PUBLIC_BASE_URL || NEXT_PUBLIC_API_URL is not set');
-}
-
 /**
  * Structure of a Hasura Event Trigger definition file
  */
@@ -241,6 +235,12 @@ export async function createOrUpdateEventTrigger(
   baseUrl?: string
 ): Promise<boolean> {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_MAIN_URL || process.env.NEXT_PUBLIC_BASE_URL;
+
+    if (!API_URL) {
+      throw new Error('NEXT_PUBLIC_MAIN_URL | NEXT_PUBLIC_BASE_URL || NEXT_PUBLIC_API_URL is not set');
+    }
+
     debug(`Creating/updating event trigger: ${trigger.name}`);
 
     // Prepare the URL - use webhook if provided, otherwise combine baseUrl with webhook_path
@@ -519,6 +519,12 @@ export async function createOrUpdateCronTrigger(
   baseUrl?: string
 ): Promise<boolean> {
   debug(`Creating/updating cron trigger: ${trigger.name}`);
+  
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_MAIN_URL || process.env.NEXT_PUBLIC_BASE_URL;
+
+  if (!API_URL) {
+    throw new Error('NEXT_PUBLIC_MAIN_URL | NEXT_PUBLIC_BASE_URL || NEXT_PUBLIC_API_URL is not set');
+  }
 
   try {
     // Validate the trigger definition
@@ -1099,6 +1105,12 @@ export async function main() {
   // Synchronize event triggers
   console.log('🔄 Synchronizing Hasura event triggers...');
   debug('Synchronizing event triggers');
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_MAIN_URL || process.env.NEXT_PUBLIC_BASE_URL;
+
+  if (!API_URL) {
+    throw new Error('NEXT_PUBLIC_MAIN_URL | NEXT_PUBLIC_BASE_URL || NEXT_PUBLIC_API_URL is not set');
+  }
   
   try {
     // Determine base URL for webhook

@@ -50,11 +50,6 @@ declare module 'next-auth/jwt' {
   }
 }
 
-// Initialize NHA Client with admin secret for backend operations
-const adminApolloClient = createApolloClient({
-  secret: process.env.HASURA_ADMIN_SECRET!,
-});
-
 // Define base OAuth providers here
 export const baseProviders = [
   GoogleProvider({
