@@ -440,7 +440,7 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
 });
 
 // New describe block for JSONB operations tests
-describe('Hasyx JSONB Operations Tests', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Hasyx JSONB Operations Tests', () => {
   let adminHasyx: Hasyx;
   const testIdBase = uuidv4(); // Base for unique IDs in this test run
   const testData = {

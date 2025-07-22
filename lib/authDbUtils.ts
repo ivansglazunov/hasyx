@@ -126,6 +126,21 @@ export async function getOrCreateUserAndAccount(
           name: profile?.name ?? existingUser.name
         };
       }
+      
+      // Create Telegram notification permission if this is a Telegram provider
+      if ((provider === 'telegram' || provider === 'telegram-miniapp') && existingUser) {
+        await ensureTelegramNotificationPermission(
+          hasyx, 
+          existingUser.id, 
+          providerAccountId,
+          {
+            provider: provider,
+            username: profile?.name,
+            image: existingUser.image
+          }
+        );
+      }
+      
       return existingUser as HasuraUser;
     }
   } catch (error) {
@@ -242,6 +257,20 @@ export async function getOrCreateUserAndAccount(
     });
     
     debug(`✅ Account ${provider}:${providerAccountId} created and linked to new user ${newUser.id}.`);
+    
+    // Create Telegram notification permission if this is a Telegram provider
+    if (provider === 'telegram' || provider === 'telegram-miniapp') {
+      await ensureTelegramNotificationPermission(
+        hasyx, 
+        newUser.id, 
+        providerAccountId,
+        {
+          provider: provider,
+          username: profile?.name,
+          image: newUser.image
+        }
+      );
+    }
 
     return newUser;
 
@@ -257,4 +286,62 @@ export async function getOrCreateUserAndAccount(
     }
     throw new Error(`Failed to create new user/account: ${(error as Error).message}`);
   }
-} 
+}
+
+/**
+ * Creates a Telegram notification permission for a user if they don't already have one
+ * @param hasyx - Hasyx client instance
+ * @param userId - User ID
+ * @param telegramUserId - Telegram user ID to use as device_token
+ * @param deviceInfo - Additional device information
+ */
+export async function ensureTelegramNotificationPermission(
+  hasyx: Hasyx,
+  userId: string,
+  telegramUserId: string,
+  deviceInfo: Record<string, any> = {}
+): Promise<void> {
+  try {
+    debug(`🔔 Ensuring Telegram notification permission for user ${userId} with Telegram ID ${telegramUserId}`);
+    
+    // Check if permission already exists
+    const existingPermissions = await hasyx.select({
+      table: 'notification_permissions',
+      where: {
+        user_id: { _eq: userId },
+        provider: { _eq: 'telegram_bot' },
+        device_token: { _eq: telegramUserId }
+      },
+      returning: ['id'],
+      limit: 1
+    });
+    
+    if (existingPermissions && existingPermissions.length > 0) {
+      debug(`✅ Telegram notification permission already exists for user ${userId}`);
+      return;
+    }
+    
+    // Create new permission
+    await hasyx.insert({
+      table: 'notification_permissions',
+      object: {
+        user_id: userId,
+        provider: 'telegram_bot',
+        device_token: telegramUserId,
+        device_info: {
+          platform: 'telegram',
+          created_via: 'auth',
+          ...deviceInfo
+        },
+        created_at: new Date().valueOf(),
+        updated_at: new Date().valueOf()
+      },
+      returning: ['id']
+    });
+    
+    debug(`✅ Created Telegram notification permission for user ${userId}`);
+  } catch (error) {
+    debug(`❌ Error creating Telegram notification permission for user ${userId}:`, error);
+    // Don't throw error - notification permission creation shouldn't break auth flow
+  }
+}

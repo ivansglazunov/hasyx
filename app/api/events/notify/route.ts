@@ -94,6 +94,11 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
         const { sendFirebaseNotification } = await import('hasyx/lib/notify-firebase');
         result = await sendFirebaseNotification(permissionData, messageData, notification, getOAuthAccessTokenForServer);
         break;
+      case 'telegram_bot':
+        debug('Sending via Telegram Bot provider');
+        const { sendTelegramNotification } = await import('hasyx/lib/notify-telegram');
+        result = await sendTelegramNotification(permissionData, messageData, notification);
+        break;
       default:
         debug(`Unsupported provider: ${permissionData.provider}`);
         result = { success: false, message: `Unsupported provider: ${permissionData.provider}` };

@@ -74,6 +74,42 @@ function getTablesFromGraphQLSchema(schemaTypes: any[], tableMappings?: Record<s
   return tables;
 }
 
+// Function to clean up test schemas
+async function cleanupTestSchemas(hasura: Hasura): Promise<void> {
+  try {
+    console.log('🧹 Cleaning up test schemas (test_*)...');
+    
+    // Get all schemas that start with 'test_'
+    const getSchemasQuery = `
+      SELECT schema_name 
+      FROM information_schema.schemata 
+      WHERE schema_name LIKE 'test_%';
+    `;
+    
+    const result = await hasura.sql(getSchemasQuery);
+    
+    if (result && result.length > 0) {
+      console.log(`Found ${result.length} test schemas to clean up`);
+      
+      for (const row of result) {
+        const schemaName = row.schema_name;
+        console.log(`Dropping test schema: ${schemaName}`);
+        
+        try {
+          await hasura.sql(`DROP SCHEMA IF EXISTS "${schemaName}" CASCADE;`);
+          console.log(`✅ Dropped schema: ${schemaName}`);
+        } catch (error) {
+          console.warn(`⚠️ Failed to drop schema ${schemaName}:`, error);
+        }
+      }
+    } else {
+      console.log('No test schemas found to clean up');
+    }
+  } catch (error) {
+    console.warn('⚠️ Error during test schema cleanup:', error);
+  }
+}
+
 export async function down(): Promise<boolean> {
   const projectRoot = process.cwd();
   debug('🚀 Starting Hasyx View migration DOWN...');
@@ -88,6 +124,9 @@ export async function down(): Promise<boolean> {
     url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!,
     secret: process.env.HASURA_ADMIN_SECRET!,
   });
+
+  // Clean up test schemas before proceeding
+  await cleanupTestSchemas(hasura);
 
   try {
 
