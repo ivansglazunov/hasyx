@@ -186,12 +186,14 @@ export async function getOrCreateUserAndAccount(
         }
         
         // Link account to this existing user
-        debug(`🔄 CREATING ACCOUNT RECORD: provider=${provider}, provider_account_id=${providerAccountId}, user_id=${existingUser?.id}`);
+        // 🛠️ НОРМАЛИЗАЦИЯ: И telegram и telegram-miniapp сохраняются в БД как 'telegram'
+        const normalizedProviderForExisting = (provider === 'telegram-miniapp') ? 'telegram' : provider;
+        debug(`🔄 CREATING ACCOUNT RECORD: original_provider=${provider}, normalized_provider=${normalizedProviderForExisting}, provider_account_id=${providerAccountId}, user_id=${existingUser?.id}`);
         await hasyx.insert({
           table: 'accounts',
           object: {
             user_id: existingUser?.id,
-            provider: provider,
+            provider: normalizedProviderForExisting,
             provider_account_id: providerAccountId,
             type: provider === 'credentials' ? 'credentials' : 'oauth', // Set type based on provider
           },
@@ -244,12 +246,14 @@ export async function getOrCreateUserAndAccount(
     debug(`✅ New user created with ID: ${newUser.id}`);
 
     // Now create the account linked to the new user
-    debug(`🔄 CREATING ACCOUNT RECORD: provider=${provider}, provider_account_id=${providerAccountId}, user_id=${newUser.id}`);
+    // 🛠️ НОРМАЛИЗАЦИЯ: И telegram и telegram-miniapp сохраняются в БД как 'telegram'
+    const normalizedProvider = (provider === 'telegram-miniapp') ? 'telegram' : provider;
+    debug(`🔄 CREATING ACCOUNT RECORD: original_provider=${provider}, normalized_provider=${normalizedProvider}, provider_account_id=${providerAccountId}, user_id=${newUser.id}`);
     await hasyx.insert({
       table: 'accounts',
       object: {
         user_id: newUser.id,
-        provider: provider,
+        provider: normalizedProvider,
         provider_account_id: providerAccountId,
         type: provider === 'credentials' ? 'credentials' : 'oauth', // Set type based on provider
       },
