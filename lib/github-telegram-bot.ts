@@ -33,7 +33,7 @@ export const handleGithubTelegramBot = newGithubTelegramBot({
   githubToken: process.env.GITHUB_TOKEN,
   telegramBotToken: process.env.TELEGRAM_BOT_TOKEN,
   openRouterApiKey: process.env.OPENROUTER_API_KEY,
-  enabled: process.env.GITHUB_TELEGRAM_BOT,
+  enabled: process.env.HASYX_GITHUB_TELEGRAM_BOT,
 
   systemPrompt: `You are a GitHub Telegram Notification Bot.
 Your ONLY task is to take the provided data and generate a single, celebratory Telegram message in English, formatted with Telegram Markdown.

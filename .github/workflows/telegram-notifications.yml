@@ -85,4 +85,4 @@ jobs:
           TELEGRAM_ADMIN_CHAT_ID: ${{ secrets.TELEGRAM_ADMIN_CHAT_ID }}
           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          GITHUB_TELEGRAM_BOT: ${{ secrets.GITHUB_TELEGRAM_BOT || '1' }}
+          HASYX_GITHUB_TELEGRAM_BOT: ${{ secrets.HASYX_GITHUB_TELEGRAM_BOT || '1' }}

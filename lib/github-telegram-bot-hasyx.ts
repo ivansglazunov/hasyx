@@ -447,14 +447,14 @@ export function newGithubTelegramBot(options: GithubTelegramBotOptions) {
     const {
       commitSha = process.env.GITHUB_SHA,
       telegramBotToken = process.env.TELEGRAM_BOT_TOKEN,
-      enabled = process.env.GITHUB_TELEGRAM_BOT,
+      enabled = process.env.HASYX_GITHUB_TELEGRAM_BOT,
       telegramChannelId = process.env.TELEGRAM_CHANNEL_ID,
     } = options;
     
     debug(`🚀 Starting GitHub Telegram Bot notification process...`);
     
     if (!enabled || (enabled !== '1' && enabled !== '2' && enabled !== 1 && enabled !== 2)) {
-      debug(`⏭️ GitHub Telegram Bot is disabled (GITHUB_TELEGRAM_BOT=${enabled})`);
+      debug(`⏭️ GitHub Telegram Bot is disabled (HASYX_GITHUB_TELEGRAM_BOT=${enabled})`);
       return { success: true, message: 'GitHub Telegram Bot is disabled', chatsSent: 0 };
     }
     
