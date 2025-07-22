@@ -18,7 +18,7 @@ export async function getJwtHandler(request: NextRequest, authOptions: any): Pro
       userId = token.sub;
     } else {
       // If no JWT token, try to get user from Next-Auth session
-      const session = await getServerSession(authOptions);
+      const session: any = await getServerSession(authOptions) as any;
       if (session?.user?.id) {
         userId = session.user.id;
       }
