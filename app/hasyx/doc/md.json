@@ -5313,8 +5313,8 @@
           "level": 2
         },
         {
-          "title": "GITHUB_TELEGRAM_BOT Modes:",
-          "url": "/hasyx/doc/TELEGRAM_BOT#github-telegram-bot-modes",
+          "title": "HASYX_GITHUB_TELEGRAM_BOT Modes:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#hasyx-github-telegram-bot-modes",
           "level": 3
         },
         {
@@ -12239,5 +12239,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-07-21T12:06:16.819Z"
+  "lastUpdated": "2025-07-22T22:03:10.659Z"
 }

@@ -424,7 +424,13 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │   └── api/
 │       ├── events/
 │       │   ├── [name]/
-│       │   |   └── 🔄 route.ts     # Default event handler for Hasura
+│       │   │   └── 🔄 route.ts     # Default event handler for Hasura
+│       │   ├── subscription-billing/
+│       │   │   └── 🔄 route.ts     # Subscription billing event handler
+│       │   ├── notify/
+│       │   │   └── 🔄 route.ts     # Notification event handler
+│       │   ├── logs-diffs/
+│       │   │   └── 🔄 route.ts     # Logs diff event handler
 │       │   └── your-custom-event-handler/
 │       │       └── ? route.ts      # Your custom event handlers (copy from [name]/route.ts)
 │       ├── auth/
@@ -433,13 +439,16 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │       │   │   └── 🔄 route.ts     # NextAuth.js main handler
 │       │   ├── verify/
 │       │   │   └── 🔄 route.ts     # Email verification or similar auth actions
-│       │   └── verify-telegram-webapp/
-│       │       └── 🔄 route.ts     # Telegram WebApp authentication validation
+│       │   ├── verify-telegram-webapp/
+│       │   │   └── 🔄 route.ts     # Telegram WebApp authentication validation
+│       │   └── get-jwt/
+│       │       └── 🔄 route.ts     # JWT token generation endpoint
 │       ├── graphql/
 │       │   └── 🔄 route.ts         # Hasyx GraphQL Proxy to Hasura
-│       └── telegram_bot/
-│           └── 🔄 route.ts         # Handler for Telegram Bot webhooks
-│       │       └── 🔄 route.ts     # (Likely for email verification)
+│       ├── telegram_bot/
+│       │   └── 🔄 route.ts         # Handler for Telegram Bot webhooks
+│       └── health/
+│           └── 🔄 route.ts         # Health check endpoint
 ├── components/
 │   ├── sidebar/
 │   │   └── ✨ layout.tsx        # Sidebar layout component

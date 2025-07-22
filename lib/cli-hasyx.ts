@@ -225,6 +225,7 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'app/options.ts': 'app/options.ts',
     'app/api/auth/verify/route.ts': 'app/api/auth/verify/route.ts',
     'app/api/auth/verify-telegram-webapp/route.ts': 'app/api/auth/verify-telegram-webapp/route.ts',
+    'app/api/auth/get-jwt/route.ts': 'app/api/auth/get-jwt/route.ts',
     'app/api/auth/route.ts': 'app/api/auth/route.ts',
     'app/api/graphql/route.ts': 'app/api/graphql/route.ts',
     'app/api/events/[name]/route.ts': 'app/api/events/[name]/route.ts',
