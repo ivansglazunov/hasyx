@@ -224,11 +224,12 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
               isCredentialsProvider: provider === 'credentials'
             });
             
-            // 🛠️ ИСПРАВЛЕНИЕ: Пропускаем getOrCreateUserAndAccount только для credentials провайдеров
-            // Для OAuth провайдеров user.id ВСЕГДА равен account.providerAccountId (это ID от провайдера),
-            // но это НЕ означает что пользователь уже обработан - нужно создать/найти в БД
-            // Пропускаем только для credentials провайдеров, где authorize уже вернул правильный UUID
-            if (provider === 'credentials' && user.id === account.providerAccountId) {
+            // 🛠️ ПРОСТОЕ РЕШЕНИЕ: Пропускаем getOrCreateUserAndAccount только для обычных credentials провайдеров
+            // Telegram провайдеры должны всегда вызывать getOrCreateUserAndAccount для связывания аккаунтов
+            const isTelegramProvider = provider === 'telegram' || provider === 'telegram-miniapp';
+            if (provider === 'credentials' && 
+                !isTelegramProvider && 
+                user.id === account.providerAccountId) {
               debug('✅ JWT Callback: Skipping getOrCreateUserAndAccount call - credentials provider already returned correct UUID from authorize');
               debug('🔍 JWT Callback: User already exists, using existing data:', {
                 userId: user.id,
