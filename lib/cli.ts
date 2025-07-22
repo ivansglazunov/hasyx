@@ -73,6 +73,7 @@ devCommandDescribe(program.command('dev')).action(devCommand);
 buildCommandDescribe(program.command('build')).action(buildCommand);
 startCommandDescribe(program.command('start')).action(startCommand);
 buildClientCommandDescribe(program.command('build:client')).action(buildClientCommand);
+buildClientCommandDescribe(program.command('client')).action(buildClientCommand);
 migrateCommandDescribe(program.command('migrate')).action(async (filter) => {
   await migrateCommand(filter);
 });

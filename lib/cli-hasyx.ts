@@ -497,7 +497,13 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     const pkgJsonPath = path.join(projectRoot, 'package.json');
     if (fs.existsSync(pkgJsonPath)) {
       const pkgJson = await fs.readJson(pkgJsonPath);
-      
+
+      if (!pkgJson.engine) {
+        pkgJson.engine = {
+          node: "^22.14",
+        };
+      }
+
       if (!pkgJson.scripts) {
         pkgJson.scripts = {};
       }
@@ -1516,6 +1522,9 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
 
   // Build client command
   buildClientCommandDescribe(program.command('build:client')).action(buildClientCommand);
+
+  // Client command (alias for build:client)
+  buildClientCommandDescribe(program.command('client')).action(buildClientCommand);
 
   // Migrate command
   migrateCommandDescribe(program.command('migrate')).action(async (filter) => {

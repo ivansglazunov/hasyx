@@ -1,10 +1,10 @@
 {
   "name": "hasyx",
-  "version": "0.1.360",
+  "version": "0.1.361",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.deep.foundation/",
   "engines": {
-    "node": "22.14"
+    "node": "^22.14"
   },
   "repository": {
     "type": "git",

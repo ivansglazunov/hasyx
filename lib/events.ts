@@ -281,6 +281,9 @@ export async function createOrUpdateEventTrigger(
       });
       debug(`Event trigger ${trigger.name} deleted successfully`);
       
+      // Clean up orphaned SQL functions and triggers
+      await cleanupHasuraEventTriggerSQL(hasura, trigger.name, trigger.table.name, trigger.table.schema);
+      
       // Verify deletion by checking metadata
       try {
         const verifyResponse = await hasura.v1({
@@ -407,6 +410,95 @@ export async function deleteEventTrigger(hasura: Hasura, name: string, source: s
   } catch (error) {
     debug(`Error deleting event trigger ${name}: ${error}`);
     return false;
+  }
+}
+
+/**
+ * Clean up orphaned Hasura SQL functions and triggers for a specific event trigger
+ * This is needed because Hasura's delete_event_trigger doesn't always clean up SQL objects
+ */
+export async function cleanupHasuraEventTriggerSQL(
+  hasura: Hasura,
+  triggerName: string,
+  tableName?: string,
+  schemaName: string = 'public'
+): Promise<void> {
+  try {
+    debug(`🧹 Cleaning up SQL objects for event trigger: ${triggerName}`);
+    
+    // Clean up SQL functions in hdb_catalog schema
+    const functionPatterns = [
+      `notify_hasura_${triggerName}_INSERT`,
+      `notify_hasura_${triggerName}_UPDATE`, 
+      `notify_hasura_${triggerName}_DELETE`
+    ];
+    
+    for (const functionName of functionPatterns) {
+      try {
+        await hasura.sql(`DROP FUNCTION IF EXISTS hdb_catalog."${functionName}"() CASCADE;`);
+        debug(`✅ Dropped function: hdb_catalog.${functionName}`);
+      } catch (err) {
+        debug(`⚠️ Failed to drop function hdb_catalog.${functionName}:`, err);
+      }
+    }
+    
+    // If table name is provided, clean up any remaining triggers on that table
+    if (tableName) {
+      const triggerPatterns = [
+        `${triggerName}_INSERT`,
+        `${triggerName}_UPDATE`,
+        `${triggerName}_DELETE`
+      ];
+      
+      for (const triggerPattern of triggerPatterns) {
+        try {
+          await hasura.sql(`DROP TRIGGER IF EXISTS "${triggerPattern}" ON "${schemaName}"."${tableName}" CASCADE;`);
+          debug(`✅ Dropped trigger: ${schemaName}.${tableName}.${triggerPattern}`);
+        } catch (err) {
+          debug(`⚠️ Failed to drop trigger ${triggerPattern}:`, err);
+        }
+      }
+    }
+    
+    debug(`✅ SQL cleanup completed for event trigger: ${triggerName}`);
+  } catch (error) {
+    debug(`❌ Error during SQL cleanup for ${triggerName}:`, error);
+  }
+}
+
+/**
+ * Clean up all orphaned Hasura event trigger SQL functions
+ * This removes all notify_hasura_* functions that may be left behind
+ */
+export async function cleanupAllOrphanedHasuraSQL(hasura: Hasura): Promise<void> {
+  try {
+    debug(`🧹 Cleaning up all orphaned Hasura SQL functions...`);
+    
+    // Get all notify_hasura_* functions
+    const result = await hasura.sql(`
+      SELECT p.proname as function_name 
+      FROM pg_proc p 
+      JOIN pg_namespace n ON p.pronamespace = n.oid 
+      WHERE n.nspname = 'hdb_catalog' 
+      AND p.proname LIKE 'notify_hasura_%';
+    `);
+    
+    if (result?.result && Array.isArray(result.result) && result.result.length > 1) {
+      // Skip header row
+      for (let i = 1; i < result.result.length; i++) {
+        const functionName = result.result[i][0];
+        try {
+          await hasura.sql(`DROP FUNCTION IF EXISTS hdb_catalog."${functionName}"() CASCADE;`);
+          debug(`✅ Dropped orphaned function: hdb_catalog.${functionName}`);
+        } catch (err) {
+          debug(`⚠️ Failed to drop orphaned function ${functionName}:`, err);
+        }
+      }
+    }
+    
+    debug(`✅ All orphaned Hasura SQL functions cleaned up`);
+  } catch (error) {
+    debug(`❌ Error during orphaned SQL cleanup:`, error);
   }
 }
 
@@ -703,6 +795,10 @@ export async function syncAllTriggersFromDirectory(eventsDir: string, hasuraUrl?
   }
 
   const hasura = new Hasura({ url, secret });
+
+  // Clean up any orphaned Hasura SQL functions before syncing
+  debug('🧹 Cleaning up orphaned Hasura SQL functions before synchronization...');
+  await cleanupAllOrphanedHasuraSQL(hasura);
 
   // Load all trigger definitions from the directory
   const { eventTriggers, cronTriggers } = await loadTriggerDefinitions(eventsDir);
