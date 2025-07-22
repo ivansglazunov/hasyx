@@ -10,25 +10,23 @@ const debug = Debug('migration:down-hasyx');
 // Function to clean up test schemas
 async function cleanupTestSchemas(hasura: Hasura): Promise<void> {
   try {
-    console.log('🧹 Очистка тестовых схем и временных объектов...');
+    console.log('🧹 Cleaning up test schemas and temporary objects...');
     
-    // 1. Очищаем несогласованные метаданные
     try {
-      debug('🔍 Проверяем несогласованные метаданные...');
+      debug('🔍 Checking inconsistent metadata...');
       const inconsistentMetadata = await hasura.getInconsistentMetadata();
       if (inconsistentMetadata && inconsistentMetadata.inconsistent_objects && inconsistentMetadata.inconsistent_objects.length > 0) {
-        debug(`Найдено ${inconsistentMetadata.inconsistent_objects.length} несогласованных объектов метаданных`);
+        debug(`Found ${inconsistentMetadata.inconsistent_objects.length} inconsistent metadata objects`);
         await hasura.dropInconsistentMetadata();
-        debug('✅ Несогласованные метаданные очищены');
+        debug('✅ Inconsistent metadata cleaned');
       } else {
-        debug('✅ Несогласованных метаданных не обнаружено');
+        debug('✅ No inconsistent metadata found');
       }
     } catch (e: any) {
-      debug('⚠️ Ошибка при очистке несогласованных метаданных:', e.message);
-      console.warn('⚠️ Ошибка при очистке несогласованных метаданных:', e.message);
+      debug('⚠️ Error cleaning inconsistent metadata:', e.message);
+      console.warn('⚠️ Error cleaning inconsistent metadata:', e.message);
     }
     
-    // 2. Получаем список всех тестовых схем
     const getSchemasQuery = `
       SELECT schema_name 
       FROM information_schema.schemata 
@@ -37,34 +35,29 @@ async function cleanupTestSchemas(hasura: Hasura): Promise<void> {
     
     const result = await hasura.sql(getSchemasQuery);
     
-    // Проверяем формат результата SQL-запроса
-    debug(`Результат запроса схем: ${JSON.stringify(result)}`);
+    debug(`Schema query result: ${JSON.stringify(result)}`);
     
     let schemas: string[] = [];
     
-    // Обрабатываем результат в формате TuplesOk
     if (result && typeof result === 'object' && 'result_type' in result && result.result_type === 'TuplesOk' && Array.isArray(result.result) && result.result.length > 1) {
-      // Первый элемент - это заголовки столбцов, пропускаем его
       for (let i = 1; i < result.result.length; i++) {
         if (Array.isArray(result.result[i]) && result.result[i].length > 0) {
-          schemas.push(String(result.result[i][0])); // Берем первый столбец каждой строки
+          schemas.push(String(result.result[i][0])); // Take first column of each row
         }
       }
     } else if (Array.isArray(result) && result.length > 0) {
-      // Старый формат результата
       schemas = result.map(row => typeof row === 'object' && row !== null && 'schema_name' in row ? String(row.schema_name) : '');
       schemas = schemas.filter(name => name !== '');
     }
     
     if (schemas.length > 0) {
-      console.log(`Найдено ${schemas.length} тестовых схем для удаления: ${schemas.join(', ')}`);
+      console.log(`Found ${schemas.length} test schemas to delete: ${schemas.join(', ')}`);
       
-      // 3. Для каждой тестовой схемы:
       for (const schemaName of schemas) {
-        console.log(`Обрабатываем тестовую схему: ${schemaName}`);
+        console.log(`Processing test schema: ${schemaName}`);
         
         try {
-          // 3.1. Получаем список таблиц в схеме
+          // 3.1. Get list of tables in schema
           const getTablesQuery = `
             SELECT table_name 
             FROM information_schema.tables 
@@ -73,14 +66,14 @@ async function cleanupTestSchemas(hasura: Hasura): Promise<void> {
           
           const tables = await hasura.sql(getTablesQuery);
           
-          // 3.2. Для каждой таблицы отключаем отслеживание через API Hasura
+          // 3.2. For each table, disable tracking via Hasura API
           if (tables && tables.length > 0) {
             for (const tableRow of tables) {
               const tableName = tableRow.table_name;
-              debug(`Отключаем отслеживание таблицы: ${schemaName}.${tableName}`);
+              debug(`Disabling table tracking: ${schemaName}.${tableName}`);
               
               try {
-                // Используем API Hasura для отключения отслеживания таблицы
+                // Use Hasura API to disable table tracking
                 await hasura.v1({
                   type: 'pg_untrack_table',
                   args: {
@@ -92,28 +85,27 @@ async function cleanupTestSchemas(hasura: Hasura): Promise<void> {
                     cascade: true
                   }
                 }).catch(e => {
-                  // Игнорируем ошибки, если таблица уже не отслеживается
-                  debug(`Игнорируем ошибку отключения отслеживания: ${e.message}`);
+                  // Ignore errors if table is already untracked
+                  debug(`Ignoring untrack error: ${e.message}`);
                 });
               } catch (e: any) {
-                debug(`⚠️ Ошибка при отключении отслеживания ${schemaName}.${tableName}: ${e.message}`);
+                debug(`⚠️ Error disabling tracking for ${schemaName}.${tableName}: ${e.message}`);
               }
             }
           }
           
-          // 3.3. Удаляем схему с CASCADE
-          debug(`Удаляем схему: ${schemaName}`);
+          // 3.3. Drop schema with CASCADE
+          debug(`Dropping schema: ${schemaName}`);
           await hasura.sql(`DROP SCHEMA IF EXISTS "${schemaName}" CASCADE;`);
-          console.log(`✅ Схема удалена: ${schemaName}`);
+          console.log(`✅ Schema dropped: ${schemaName}`);
         } catch (error) {
-          console.warn(`⚠️ Не удалось полностью удалить схему ${schemaName}:`, error);
+          console.warn(`⚠️ Failed to fully drop schema ${schemaName}:`, error);
         }
       }
     } else {
-      console.log('Тестовых схем для удаления не найдено');
+      console.log('No test schemas found for deletion');
     }
     
-    // 4. Дополнительно удаляем тестовые таблицы в схеме public
     try {
       const getTestTablesQuery = `
         SELECT table_name 
@@ -123,33 +115,30 @@ async function cleanupTestSchemas(hasura: Hasura): Promise<void> {
       `;
       
       const testTables = await hasura.sql(getTestTablesQuery);
-      debug(`Результат запроса тестовых таблиц: ${JSON.stringify(testTables)}`);
+      debug(`Test tables query result: ${JSON.stringify(testTables)}`);
       
       let tableNames: string[] = [];
       
-      // Обрабатываем результат в формате TuplesOk
       if (testTables && typeof testTables === 'object' && 'result_type' in testTables && 
           testTables.result_type === 'TuplesOk' && Array.isArray(testTables.result) && testTables.result.length > 1) {
-        // Первый элемент - это заголовки столбцов, пропускаем его
         for (let i = 1; i < testTables.result.length; i++) {
           if (Array.isArray(testTables.result[i]) && testTables.result[i].length > 0) {
-            tableNames.push(String(testTables.result[i][0])); // Берем первый столбец каждой строки
+            tableNames.push(String(testTables.result[i][0])); // Take first column of each row
           }
         }
       } else if (Array.isArray(testTables) && testTables.length > 0) {
-        // Старый формат результата
         tableNames = testTables.map(row => typeof row === 'object' && row !== null && 'table_name' in row ? String(row.table_name) : '');
         tableNames = tableNames.filter(name => name !== '');
       }
       
       if (tableNames.length > 0) {
-        console.log(`Найдено ${tableNames.length} тестовых таблиц в схеме public: ${tableNames.join(', ')}`);
+        console.log(`Found ${tableNames.length} test tables in public schema: ${tableNames.join(', ')}`);
         
         for (const tableName of tableNames) {
-          console.log(`Удаляем тестовую таблицу: public.${tableName}`);
+          console.log(`Dropping test table: public.${tableName}`);
           
           try {
-            // Сначала отключаем отслеживание таблицы
+            // First disable table tracking
             await hasura.v1({
               type: 'pg_untrack_table',
               args: {
@@ -161,40 +150,38 @@ async function cleanupTestSchemas(hasura: Hasura): Promise<void> {
                 cascade: true
               }
             }).catch(e => {
-              // Игнорируем ошибки, если таблица уже не отслеживается
-              debug(`Игнорируем ошибку отключения отслеживания: ${e.message}`);
+              debug(`Ignoring untrack error: ${e.message}`);
             });
             
-            // Затем удаляем таблицу
+            // Then drop the table
             await hasura.sql(`DROP TABLE IF EXISTS public."${tableName}" CASCADE;`);
-            console.log(`✅ Таблица удалена: public.${tableName}`);
+            console.log(`✅ Table dropped: public.${tableName}`);
           } catch (error) {
-            console.warn(`⚠️ Не удалось удалить таблицу public.${tableName}:`, error);
+            console.warn(`⚠️ Failed to drop table public.${tableName}:`, error);
           }
         }
       }
     } catch (error) {
-      console.warn('⚠️ Ошибка при удалении тестовых таблиц:', error);
+      console.warn('⚠️ Error dropping test tables:', error);
     }
     
-    // 5. Финальная очистка несогласованных метаданных
     try {
-      debug('🔍 Финальная проверка несогласованных метаданных...');
+      debug('🔍 Final inconsistent metadata check...');
       const inconsistentMetadata = await hasura.getInconsistentMetadata();
       if (inconsistentMetadata && inconsistentMetadata.inconsistent_objects && inconsistentMetadata.inconsistent_objects.length > 0) {
-        debug(`Найдено ${inconsistentMetadata.inconsistent_objects.length} несогласованных объектов метаданных`);
+        debug(`Found ${inconsistentMetadata.inconsistent_objects.length} inconsistent metadata objects`);
         await hasura.dropInconsistentMetadata();
-        debug('✅ Финальная очистка несогласованных метаданных завершена');
+        debug('✅ Final inconsistent metadata cleanup completed');
       } else {
-        debug('✅ Несогласованных метаданных не обнаружено');
+        debug('✅ No inconsistent metadata found');
       }
     } catch (e: any) {
-      debug('⚠️ Ошибка при финальной очистке метаданных:', e.message);
+      debug('⚠️ Error during final metadata cleanup:', e.message);
     }
     
-    console.log('✅ Очистка тестовых схем и объектов завершена');
+    console.log('✅ Test schemas and objects cleanup completed');
   } catch (error) {
-    console.warn('⚠️ Ошибка во время очистки тестовых схем:', error);
+    console.warn('⚠️ Error during test schemas cleanup:', error);
   }
 }
 
@@ -218,12 +205,10 @@ export async function down(): Promise<boolean> {
 
   try {
 
-    // Шаг 1: Принудительная очистка всех метаданных, связанных с hasyx, с помощью прямых SQL запросов
     debug('🔧 Начинаем принудительную очистку всех метаданных, связанных с hasyx...');
     console.log('Начинаем принудительную очистку всех метаданных, связанных с hasyx...');
     
     try {
-      // Сначала удаляем все отношения к hasyx в метаданных
       debug('🗑️ Удаляем все отношения к hasyx в метаданных...');
       console.log('Удаляем все отношения к hasyx в метаданных...');
       
@@ -255,7 +240,6 @@ export async function down(): Promise<boolean> {
       console.warn('⚠️ Ошибка при очистке метаданных через SQL:', e.message);
     }
     
-    // Шаг 2: Очистка несогласованных метаданных через API
     debug('🔍 Проверяем несогласованные метаданные...');
     try {
       await hasura.dropInconsistentMetadata();
@@ -266,30 +250,24 @@ export async function down(): Promise<boolean> {
       console.log('❗ Продолжаем выполнение несмотря на ошибку...');
     }
     
-    // Шаг 3: Удаляем представление hasyx с помощью CASCADE
     debug('🗑️ Удаляем представление public.hasyx...');
     console.log('Удаляем представление public.hasyx...');
     try {
-      // Используем модифицированный метод SQL с флагом игнорирования ошибок
       await hasura.sql('DROP VIEW IF EXISTS public.hasyx CASCADE;', 'default', true);
       debug('✅ Представление успешно удалено с CASCADE');
     } catch (e: any) {
       debug('⚠️ Ошибка при удалении представления:', e.message);
       console.warn('⚠️ Ошибка при удалении представления:', e.message);
       console.log('❗ Продолжаем выполнение несмотря на ошибку...');
-      // Продолжаем выполнение даже при ошибке
     }
     
-    // Игнорируем ошибки несогласованных метаданных и продолжаем выполнение
     debug('⚠️ Игнорируем ошибки несогласованных метаданных и продолжаем выполнение...');
     console.log('⚠️ Игнорируем ошибки несогласованных метаданных и продолжаем выполнение...');
     
-    // Найдем все отношения к таблице hasyx в метаданных и удалим их
     debug('🔍 Finding all relationships to hasyx table...');
     console.log('Finding all relationships to hasyx table...');
     
     try {
-      // Получаем метаданные для анализа
       const metadata = await hasura.exportMetadata();
       
       if (metadata && metadata.metadata && metadata.metadata.sources) {
@@ -299,10 +277,8 @@ export async function down(): Promise<boolean> {
               const schemaName = table.table.schema;
               const tableName = table.table.name;
               
-              // Пропускаем саму таблицу hasyx
               if (tableName === 'hasyx' && schemaName === 'public') continue;
               
-              // Определяем интерфейс для отношений
               interface HasyxRelation {
                 type: 'object' | 'array';
                 name: string;
@@ -310,7 +286,6 @@ export async function down(): Promise<boolean> {
                 table: string;
               }
               
-              // Ищем отношения к hasyx
               const hasyxRelations: HasyxRelation[] = [];
               
               if (table.object_relationships) {
@@ -343,7 +318,6 @@ export async function down(): Promise<boolean> {
                 }
               }
               
-              // Удаляем найденные отношения
               for (const rel of hasyxRelations) {
                 debug(`Dropping ${rel.type} relationship ${rel.name} from ${rel.schema}.${rel.table}`);
                 console.log(`Dropping ${rel.type} relationship ${rel.name} from ${rel.schema}.${rel.table}`);
@@ -372,7 +346,6 @@ export async function down(): Promise<boolean> {
       console.warn('⚠️ Error analyzing metadata for relationships:', e.message);
     }
 
-    // Untrack the view first
     debug('Untracking view public.hasyx...');
     try {
       await hasura.v1({
@@ -384,7 +357,6 @@ export async function down(): Promise<boolean> {
       debug('Failed to untrack view (may not exist):', e.message);
     }
 
-    // Drop the view
     debug('Dropping view public.hasyx...');
     try {
       await hasura.sql('DROP VIEW IF EXISTS public.hasyx;');
@@ -393,7 +365,6 @@ export async function down(): Promise<boolean> {
       debug('Failed to drop view (may not exist):', e.message);
     }
 
-    // Clean up relationships and columns from tables
     const schemaPath = path.join(projectRoot, 'public', 'hasura-schema.json');
     let tablesToClean: HasuraTable[] = [];
     let tableMappings: Record<string, { schema: string, table: string }> | undefined;
@@ -430,7 +401,6 @@ export async function down(): Promise<boolean> {
         debug('JSON parse error for schema file (down script): ', parseError);
       }
     }
-    // Дополнительная проверка на несогласованные метаданные после обработки схемы
     debug('🔍 Checking for inconsistent metadata after schema processing...');
     try {
       const inconsistentData = await hasura.getInconsistentMetadata();
@@ -438,7 +408,6 @@ export async function down(): Promise<boolean> {
         debug(`📋 Found ${inconsistentData.inconsistent_objects.length} inconsistent objects after schema processing`);
         console.log(`⚠️ Found ${inconsistentData.inconsistent_objects.length} inconsistent metadata objects after schema processing`);
         
-        // Удаляем все несогласованные метаданные
         debug('🗑️ Dropping all inconsistent metadata...');
         console.log('Dropping all inconsistent metadata...');
         await hasura.dropInconsistentMetadata();
@@ -510,7 +479,6 @@ export async function down(): Promise<boolean> {
       debug('Failed to untrack public.hasyx (may not exist or already untracked):', e.message);
     }
 
-    // Финальная проверка и очистка несогласованных метаданных
     debug('🔍 Final check for inconsistent metadata...');
     console.log('🔍 Final check for inconsistent metadata...');
     try {
@@ -519,7 +487,6 @@ export async function down(): Promise<boolean> {
         debug(`📋 Found ${inconsistentData.inconsistent_objects.length} inconsistent objects at the end of migration`);
         console.log(`⚠️ Found ${inconsistentData.inconsistent_objects.length} inconsistent metadata objects at the end of migration`);
         
-        // Удаляем все несогласованные метаданные
         debug('🗑️ Final dropping of all inconsistent metadata...');
         console.log('Final dropping of all inconsistent metadata...');
         try {
@@ -541,18 +508,15 @@ export async function down(): Promise<boolean> {
     
     debug('✨ Hasyx View migration DOWN completed successfully!');
     
-    // Явный вызов очистки тестовых схем в конце миграции
     console.log('🧹 Выполняем дополнительную очистку тестовых схем...');
     await cleanupTestSchemas(hasura);
     console.log('✅ Дополнительная очистка тестовых схем завершена');
     
     return true;
   } catch (error: any) {
-    // Записываем ошибку в лог, но не прерываем миграцию
     debug('⚠️ Ошибка во время миграции Hasyx View DOWN:', error);
     console.warn('⚠️ Ошибка во время миграции Hasyx View DOWN, но продолжаем выполнение.');
     
-    // Возвращаем true вместо false, чтобы миграция считалась успешной
     debug('✅ Продолжаем миграцию несмотря на ошибки');
     return true;
   }

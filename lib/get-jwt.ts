@@ -11,13 +11,13 @@ export async function getJwtHandler(request: NextRequest, authOptions: any): Pro
   try {
     let userId: string | undefined;
     
-    // Сначала попробуем получить пользователя из JWT токена в заголовке Authorization
+    // First try to get user from JWT token in Authorization header
     const token = await getTokenFromRequest(request);
     
     if (token && token.sub) {
       userId = token.sub;
     } else {
-      // Если нет JWT токена, попробуем получить пользователя из Next-Auth сессии
+      // If no JWT token, try to get user from Next-Auth session
       const session = await getServerSession(authOptions);
       if (session?.user?.id) {
         userId = session.user.id;
@@ -31,7 +31,7 @@ export async function getJwtHandler(request: NextRequest, authOptions: any): Pro
       );
     }
 
-    // Создаем админский клиент для получения данных пользователя
+    // Create admin client to fetch user data
     const adminApollo = createApolloClient({
       secret: process.env.HASURA_ADMIN_SECRET!,
       ws: false,
@@ -40,7 +40,7 @@ export async function getJwtHandler(request: NextRequest, authOptions: any): Pro
     const generate = Generator(hasyxSchema);
     const adminHasyx = new Hasyx(adminApollo, generate);
 
-    // Получаем данные пользователя
+    // Get user data
     const userData = await adminHasyx.select({
       table: 'users',
       pk_columns: { id: userId },
@@ -54,7 +54,7 @@ export async function getJwtHandler(request: NextRequest, authOptions: any): Pro
       );
     }
 
-    // Генерируем Hasura claims
+    // Generate Hasura claims
     const latestRole = userData.hasura_role ?? 'user';
     const isAdmin = userData.is_admin ?? false;
     const allowedRoles = [latestRole, 'me'];
@@ -68,7 +68,7 @@ export async function getJwtHandler(request: NextRequest, authOptions: any): Pro
       'x-hasura-user-id': userId,
     };
 
-    // Генерируем JWT токен
+    // Generate JWT token
     const jwt = await generateJWT(userId, hasuraClaims);
 
     return NextResponse.json({ jwt }, { status: 200 });

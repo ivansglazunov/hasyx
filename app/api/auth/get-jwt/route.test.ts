@@ -18,13 +18,13 @@ const isLocal = !!+process.env.JEST_LOCAL!;
   const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
   beforeAll(async () => {
-    // Пропускаем если нет переменных окружения
+    // Skip if no environment variables
     if (!process.env.TEST_TOKEN || !process.env.HASURA_ADMIN_SECRET) {
       console.log('Skipping JWT API tests - environment not configured');
       return;
     }
 
-    // Создаем админский клиент
+    // Create admin client
     const adminApollo = createApolloClient({
       secret: process.env.HASURA_ADMIN_SECRET!,
       ws: false,
@@ -33,7 +33,7 @@ const isLocal = !!+process.env.JEST_LOCAL!;
     const generate = Generator(hasyxSchema);
     adminHasyx = new Hasyx(adminApollo, generate);
 
-    // Создаем тестовых пользователей
+    // Create test users
     testUser1 = await adminHasyx.insert({
       table: 'users',
       object: {
@@ -61,7 +61,7 @@ const isLocal = !!+process.env.JEST_LOCAL!;
   });
 
   afterAll(async () => {
-    // Очищаем тестовых пользователей
+    // Clean up test users
     if (adminHasyx && testUser1) {
       try {
         await adminHasyx.delete({
@@ -86,17 +86,17 @@ const isLocal = !!+process.env.JEST_LOCAL!;
   });
 
   it('should allow authorized user to get their JWT token', async () => {
-    // Пропускаем если нет переменных окружения
+    // Skip if no environment variables
     if (!process.env.TEST_TOKEN || !process.env.HASURA_ADMIN_SECRET) {
       console.log('Skipping JWT API test - environment not configured');
       return;
     }
 
-    // Авторизуемся как пользователь 1
+    // Authenticate as user 1
     const { axios: axios1 } = await testAuthorize(testUser1.id, { ws: false });
     axios1.defaults.baseURL = baseURL;
 
-    // Делаем запрос к API для получения JWT
+    // Make API request to get JWT
     const response1 = await axios1.post('/api/auth/get-jwt');
 
     expect(response1.status).toBe(200);
@@ -107,21 +107,21 @@ const isLocal = !!+process.env.JEST_LOCAL!;
   });
 
   it('should allow user to get JWT and use it to get another JWT', async () => {
-    // Пропускаем если нет переменных окружения
+    // Skip if no environment variables
     if (!process.env.TEST_TOKEN || !process.env.HASURA_ADMIN_SECRET) {
       console.log('Skipping JWT API test - environment not configured');
       return;
     }
 
-    // Авторизуемся как пользователь 1
+    // Authenticate as user 1
     const { axios: axios1 } = await testAuthorize(testUser1.id, { ws: false });
     axios1.defaults.baseURL = baseURL;
 
-    // Получаем JWT токен
+    // Get JWT token
     const response1 = await axios1.post('/api/auth/get-jwt');
     const jwt1 = response1.data.jwt;
 
-    // Создаем новый axios с полученным JWT
+    // Create new axios with obtained JWT
     const axiosWithJwt = axios.create({
       baseURL: baseURL,
       headers: {
@@ -130,7 +130,7 @@ const isLocal = !!+process.env.JEST_LOCAL!;
       }
     });
 
-    // Используем JWT для получения нового JWT
+    // Use JWT to get new JWT
     const response2 = await axiosWithJwt.post('/api/auth/get-jwt');
 
     expect(response2.status).toBe(200);
@@ -141,21 +141,21 @@ const isLocal = !!+process.env.JEST_LOCAL!;
   });
 
   it('should not allow one user to impersonate another user', async () => {
-    // Пропускаем если нет переменных окружения
+    // Skip if no environment variables
     if (!process.env.TEST_TOKEN || !process.env.HASURA_ADMIN_SECRET) {
       console.log('Skipping JWT API test - environment not configured');
       return;
     }
 
-    // Авторизуемся как пользователь 1
+    // Authenticate as user 1
     const { axios: axios1 } = await testAuthorize(testUser1.id, { ws: false });
     axios1.defaults.baseURL = baseURL;
     
-    // Авторизуемся как пользователь 2
+    // Authenticate as user 2
     const { axios: axios2 } = await testAuthorize(testUser2.id, { ws: false });
     axios2.defaults.baseURL = baseURL;
 
-    // Каждый пользователь получает свой JWT
+    // Each user gets their own JWT
     const response1 = await axios1.post('/api/auth/get-jwt');
     const response2 = await axios2.post('/api/auth/get-jwt');
 
@@ -165,10 +165,10 @@ const isLocal = !!+process.env.JEST_LOCAL!;
     const jwt1 = response1.data.jwt;
     const jwt2 = response2.data.jwt;
 
-    // JWT токены должны быть разными
+    // JWT tokens should be different
     expect(jwt1).not.toBe(jwt2);
 
-    // Декодируем JWT токены чтобы проверить user ID
+    // Decode JWT tokens to check user ID
     const payload1 = JSON.parse(Buffer.from(jwt1.split('.')[1], 'base64').toString());
     const payload2 = JSON.parse(Buffer.from(jwt2.split('.')[1], 'base64').toString());
 
@@ -179,13 +179,13 @@ const isLocal = !!+process.env.JEST_LOCAL!;
   });
 
   it('should return 401 for unauthenticated requests', async () => {
-    // Пропускаем если нет переменных окружения
+    // Skip if no environment variables
     if (!process.env.TEST_TOKEN || !process.env.HASURA_ADMIN_SECRET) {
       console.log('Skipping JWT API test - environment not configured');
       return;
     }
 
-    // Создаем axios без авторизации
+    // Create axios without authorization
     const axiosUnauth = axios.create({
       baseURL: baseURL,
       headers: {
@@ -195,7 +195,7 @@ const isLocal = !!+process.env.JEST_LOCAL!;
 
     try {
       await axiosUnauth.post('/api/auth/get-jwt');
-      // Если запрос прошел, тест должен провалиться
+      // If request succeeded, test should fail
       expect(true).toBe(false);
     } catch (error: any) {
       expect(error.response.status).toBe(401);

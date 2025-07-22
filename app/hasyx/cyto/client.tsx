@@ -9,7 +9,7 @@ import projectSchema from '../../../public/hasura-schema.json';
 
 const debug = Debug('cyto');
 
-// Стили для Cytoscape
+// Styles for Cytoscape
 const stylesheet = [
   {
     selector: 'node',

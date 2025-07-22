@@ -10,7 +10,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 
 const debug = Debug('cyto');
 
-// Стили для Cytoscape
+// Styles for Cytoscape
 const stylesheet = [
   {
     selector: 'node',

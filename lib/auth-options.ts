@@ -180,7 +180,7 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
       async jwt({ token, user, account, profile, trigger }): Promise<DefaultJWT> {
         debug('JWT Callback: input', { userId: token.sub, provider: account?.provider, trigger });
 
-        // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПОЛНЫЙ КОНТЕКСТ JWT CALLBACK
+        // 🔍 DIAGNOSTIC LOG - FULL JWT CALLBACK CONTEXT
         debug('🔍 JWT Callback FULL CONTEXT:', {
           tokenSub: token.sub,
           userObject: user ? { id: user.id, name: user.name, email: user.email, image: user.image } : null,
@@ -215,7 +215,7 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
           } else { // OAuth Provider
             debug(`🔍 JWT Callback: OAuth sign-in via ${provider} for ${userId}`);
             
-            // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПРОВЕРКА НЕОБХОДИМОСТИ ВЫЗОВА getOrCreateUserAndAccount
+            // 🔍 DIAGNOSTIC LOG - CHECK IF getOrCreateUserAndAccount CALL IS NEEDED
             debug('🚨 JWT Callback: Checking if getOrCreateUserAndAccount call is needed:', {
               provider: provider,
               userId: user.id,
@@ -224,8 +224,8 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
               isCredentialsProvider: provider === 'credentials'
             });
             
-            // 🛠️ ПРОСТОЕ РЕШЕНИЕ: Пропускаем getOrCreateUserAndAccount только для обычных credentials провайдеров
-            // Telegram провайдеры должны всегда вызывать getOrCreateUserAndAccount для связывания аккаунтов
+            // 🛠️ SIMPLE SOLUTION: Skip getOrCreateUserAndAccount only for regular credentials providers
+            // Telegram providers should always call getOrCreateUserAndAccount for account linking
             const isTelegramProvider = provider === 'telegram' || provider === 'telegram-miniapp';
             if (provider === 'credentials' && 
                 !isTelegramProvider && 
@@ -236,8 +236,8 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
                 provider: provider
               });
               
-              // Просто используем существующего пользователя без повторного DB вызова
-              // Получим актуальные данные пользователя напрямую
+              // Simply use existing user without additional DB call
+              // Get current user data directly
               try {
                 const existingUser = await client.select({
                   table: 'users',
@@ -256,16 +256,16 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
               }
               
             } else {
-              // OAuth провайдер или credentials с новыми данными - нужно создать/найти пользователя в БД
+              // OAuth provider or credentials with new data - need to create/find user in DB
               debug('🔍 JWT Callback: Making getOrCreateUserAndAccount call for provider:', provider);
               
-              // 🛠️ ИСПРАВЛЕНИЕ: Для telegram провайдеров NextAuth создает синтетический account с providerAccountId = user.id
-              // Но нам нужен оригинальный Telegram ID. Получаем его из БД.
+              // 🛠️ FIX: For telegram providers NextAuth creates synthetic account with providerAccountId = user.id
+              // But we need original Telegram ID. Get it from DB.
               let actualProviderAccountId = account.providerAccountId;
               if (isTelegramProvider && account.providerAccountId === user.id) {
                 debug('🔧 JWT Callback: Detected NextAuth synthetic account for telegram provider, looking up real Telegram ID...');
                 try {
-                  // Находим существующий telegram аккаунт для этого пользователя
+                  // Find existing telegram account for this user
                   const existingTelegramAccount = await client.select({
                     table: 'accounts',
                     where: {
@@ -280,7 +280,7 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
                     actualProviderAccountId = existingTelegramAccount[0].provider_account_id;
                     debug('✅ JWT Callback: Found existing Telegram ID:', actualProviderAccountId);
                   } else if ((user as any).telegramId) {
-                    // Fallback: используем telegramId из authorize функции
+                    // Fallback: use telegramId from authorize function
                     actualProviderAccountId = (user as any).telegramId;
                     debug('🔄 JWT Callback: Using telegramId from authorize as fallback:', actualProviderAccountId);
                   } else {
@@ -291,7 +291,7 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
                 }
               }
               
-              // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПЕРЕД ВЫЗОВОМ getOrCreateUserAndAccount
+              // 🔍 DIAGNOSTIC LOG - BEFORE getOrCreateUserAndAccount CALL
               debug('🚨 JWT Callback: About to call getOrCreateUserAndAccount with:', {
                 provider: provider,
                 originalProviderAccountId: account.providerAccountId,
@@ -314,7 +314,7 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
                     throw new Error('Failed to retrieve or create user from DB.');
                 }
                 
-                // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПОСЛЕ ВЫЗОВА getOrCreateUserAndAccount
+                // 🔍 DIAGNOSTIC LOG - AFTER getOrCreateUserAndAccount CALL
                 debug('🔍 JWT Callback: getOrCreateUserAndAccount COMPLETED:', {
                   originalProviderUserId: userId,
                   dbUserId: dbUser.id,
