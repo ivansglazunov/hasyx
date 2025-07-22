@@ -4,6 +4,7 @@ import spawn from 'cross-spawn';
 import { Hasura } from './hasura';
 import Debug from './debug';
 import { DEFAULT_NAMESPACE } from './hid';
+import { getProperSchemaAndTable, getTablesFromGraphQLSchema, HasuraTable, HasuraTableColumn } from './hasyx-schema-utils';
 
 const debug = Debug('migration:up-hasyx');
 
@@ -44,95 +45,6 @@ function getCurrentProjectName(projectRoot: string): string {
     }
   }
   return projectName.replace(/[^a-zA-Z0-9-]/g, '_');
-}
-
-interface HasuraTableColumn {
-  name: string;
-  type: string;
-
-}
-
-interface HasuraTable {
-  table: {
-    schema: string;
-    name: string;
-  };
-  columns?: HasuraTableColumn[];
-  primary_key?: {
-    columns: string[];
-  } | null;
-
-}
-
-function getProperSchemaAndTable(graphQLTypeName: string, tableMappings: Record<string, { schema: string, table: string }> | undefined): { schema: string, table: string } {
-  if (tableMappings && tableMappings[graphQLTypeName]) {
-    return {
-      schema: tableMappings[graphQLTypeName].schema,
-      table: tableMappings[graphQLTypeName].table
-    };
-  }
-
-  return {
-    schema: 'public',
-    table: graphQLTypeName
-  };
-}
-
-function getTablesFromGraphQLSchema(schemaTypes: any[], tableMappings?: Record<string, { schema: string, table: string }>): HasuraTable[] {
-  const tables: HasuraTable[] = [];
-  if (!Array.isArray(schemaTypes)) {
-    debug('Schema types is not an array, cannot extract tables.');
-    return tables;
-  }
-
-  for (const type of schemaTypes) {
-  
-    if (type.kind === 'OBJECT' && type.name && !type.name.startsWith('__') && type.fields) {
-    
-    
-      if (type.name.endsWith('_aggregate') || 
-          type.name.endsWith('_avg_fields') || 
-          type.name.endsWith('_max_fields') || 
-          type.name.endsWith('_min_fields') || 
-          type.name.endsWith('_stddev_fields') || 
-          type.name.endsWith('_stddev_pop_fields') || 
-          type.name.endsWith('_stddev_samp_fields') || 
-          type.name.endsWith('_sum_fields') || 
-          type.name.endsWith('_var_pop_fields') || 
-          type.name.endsWith('_var_samp_fields') || 
-          type.name.endsWith('_variance_fields') ||
-          type.name === 'query_root' || 
-          type.name === 'mutation_root' || 
-          type.name === 'subscription_root') {
-        continue;
-      }
-
-    
-      let pkColumnName: string | undefined = undefined;
-      const idField = type.fields.find((f: any) => f.name === 'id');
-      if (idField) pkColumnName = 'id';
-      else {
-        const uuidField = type.fields.find((f: any) => f.name === 'uuid');
-        if (uuidField) pkColumnName = 'uuid';
-      }
-      
-    
-      const { schema, table } = getProperSchemaAndTable(type.name, tableMappings);
-      
-      tables.push({
-        table: {
-          schema,
-          name: table
-        },
-      
-      
-      
-        primary_key: pkColumnName ? { columns: [pkColumnName] } : null 
-      });
-    }
-  }
-  debug(`Extracted ${tables.length} potential tables from GraphQL schema types.`);
-  return tables;
 }
 
 // Function to clean up test schemas
