@@ -86,21 +86,7 @@ export const unbuildCommand = async () => {
       debug('TypeScript build info file does not exist');
     }
     
-    // Remove .next build cache if it exists
-    const nextBuildPath = path.join(projectRoot, '.next');
-    if (fs.existsSync(nextBuildPath)) {
-      try {
-        await fs.remove(nextBuildPath);
-        console.log('🗑️  Removed: .next/ (build cache)');
-        debug('Removed Next.js build cache');
-        totalFilesRemoved++;
-      } catch (error) {
-        console.warn('⚠️ Failed to remove .next/ build cache:', error);
-        debug(`Failed to remove Next.js build cache: ${error}`);
-      }
-    } else {
-      debug('Next.js build cache does not exist');
-    }
+    // Note: .next directory is preserved to avoid conflicts with running dev server
     
     console.log(`✅ Cleaned ${totalFilesRemoved} compiled files (types directory preserved)`);
     console.log('✨ Unbuild completed successfully!');
