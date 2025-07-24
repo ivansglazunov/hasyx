@@ -16,7 +16,7 @@ import Debug from './debug';
 import { GenerateOptions } from "./generator";
 import { Hasyx } from './hasyx';
 import { useSession } from './auth';
-import { useToastHandleLoadingError } from '@/hooks/toasts';
+import { useToastHandleLoadingError } from 'hasyx/hooks/toasts';
 
 const debug = Debug('client');
 
