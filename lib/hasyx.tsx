@@ -1,4 +1,4 @@
-import { useCreateApolloClient } from './apollo';
+import { useCreateApolloClient, HasyxApolloClient } from './apollo';
 
 import { ThemeProvider } from "hasyx/components/theme-provider";
 import { url, API_URL } from 'hasyx/lib/url';
@@ -10,7 +10,6 @@ import { Hasura } from './hasura';
 
 import { ApolloError, FetchResult, Observable, OperationVariables, ApolloQueryResult } from '@apollo/client/core';
 import type { MutationHookOptions as ApolloMutationHookOptions, QueryHookOptions as ApolloQueryHookOptions, SubscriptionHookOptions as ApolloSubscriptionHookOptions, QueryResult, SubscriptionResult } from '@apollo/client/react';
-import { HasyxApolloClient } from './apollo';
 import Debug from './debug';
 import { testAuthorize, TestAuthorizeOptions } from './auth';
 import { AxiosInstance } from 'axios';
@@ -603,7 +602,6 @@ export class Hasyx {
     generateOptions: ClientGeneratorOptions,
     hookOptions?: SubscriptionHookOptions<TData, TVariables> & { variables?: TVariables }
   ): SubscriptionResult<TData, TVariables> {
-
     throw new Error("This method should not be called directly from the server component.");
   }
 

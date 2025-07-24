@@ -345,7 +345,7 @@ export async function applyPermissions(hasura: Hasura) {
     operation: 'select',
     role: 'anonymous',
     filter: {},
-    columns: ['id', 'provider', 'user_id', 'provider_data', 'created_at', 'updated_at']
+    columns: ['id', 'provider', 'user_id', 'created_at', 'updated_at']
   });
 
   await hasura.definePermission({
@@ -354,36 +354,7 @@ export async function applyPermissions(hasura: Hasura) {
     operation: 'select',
     role: 'user',
     filter: {},
-    columns: ['id', 'provider', 'user_id', 'provider_data', 'created_at', 'updated_at']
-  });
-
-  // Admin permissions
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'users',
-    operation: 'select',
-    role: 'admin',
-    filter: {},
-    columns: ['id', 'name', 'email', 'email_verified', 'image', 'created_at', 'updated_at', 'is_admin', 'hasura_role']
-  });
-
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'accounts',
-    operation: 'select',
-    role: 'admin',
-    filter: {},
-    columns: ['id', 'user_id', 'type', 'provider', 'provider_account_id', 'provider_data', 'created_at']
-  });
-
-  // Auth passive permissions - only admin can access this table
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'auth_jwt',
-    operation: 'select',
-    role: 'admin',
-    filter: {},
-    columns: ['id', 'jwt', 'redirect', 'created_at']
+    columns: ['id', 'provider', 'user_id', 'created_at', 'updated_at']
   });
 
   debug('✅ Users permissions applied.');

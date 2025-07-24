@@ -11,10 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "hasyx/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "hasyx/components/ui/avatar";
-import { LogOut, LogIn, User, Settings, Github, Mail, MailCheck } from "lucide-react";
+import { LogOut, LogIn, User, Settings, Github, Mail, MailCheck, Trash2 } from "lucide-react";
 import { signOut, signIn } from "next-auth/react";
 import { useNewHasyx, useSession } from 'hasyx';
 import { useSubscription } from 'hasyx';
+import { Accounts } from '../accounts';
 import { OAuthButtons } from '../auth/oauth-buttons';
 
 function getInitials(name: string | null | undefined): string {
@@ -76,34 +77,36 @@ function getProviderIcon(provider: string) {
   }
 }
 
-function UserAccountsList({ userId }: { userId: string }) {
-  const { data: accounts = [], loading } = useSubscription(
-    {
-      table: 'accounts',
-      where: { user_id: { _eq: userId } },
-      returning: ['id', 'provider'],
-    },
+// Custom component for dropdown menu account display
+function DropdownAccountItem({ account, delete: handleDelete, _delete }: any) {
+  return (
+    <DropdownMenuItem 
+      className="flex items-center justify-between gap-3 cursor-default px-2 py-1.5"
+      onClick={(e) => e.preventDefault()}
+    >
+      <div className="flex items-center gap-2">
+        {getProviderIcon(account.provider)}
+        <span className="text-sm font-medium capitalize">{account.provider}</span>
+      </div>
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDelete(account);
+        }}
+        className="text-xs text-muted-foreground hover:text-destructive"
+        title="Delete account connection"
+      >
+        <Trash2 size={14} />
+      </button>
+    </DropdownMenuItem>
   );
+}
 
-  if (loading) {
-    return <div className="text-sm text-muted-foreground px-2 py-1">Loading accounts...</div>;
-  }
-
-  if (accounts?.length === 0) {
-    return <div className="text-sm text-muted-foreground px-2 py-1">No connected accounts</div>;
-  }
-
+function UserAccountsList({ userId }: { userId: string }) {
   return (
     <div className="space-y-1">
       <DropdownMenuLabel className="text-xs text-muted-foreground">Connected Accounts</DropdownMenuLabel>
-      {accounts.map((account) => (
-        <DropdownMenuItem key={account.id} className="flex items-center gap-3 cursor-default">
-          {getProviderIcon(account.provider)}
-          <div className="flex flex-col flex-1">
-            <span className="text-sm font-medium capitalize">{account.provider}</span>
-          </div>
-        </DropdownMenuItem>
-      ))}
+      <Accounts userId={userId} AccountComponent={DropdownAccountItem} />
     </div>
   );
 }

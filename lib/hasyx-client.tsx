@@ -16,6 +16,7 @@ import Debug from './debug';
 import { GenerateOptions } from "./generator";
 import { Hasyx } from './hasyx';
 import { useSession } from './auth';
+import { useToastHandleLoadingError } from '@/hooks/toasts';
 
 const debug = Debug('client');
 
@@ -110,6 +111,8 @@ export function useQuery<TData = any, TVariables extends OperationVariables = Op
     return extractedResult as QueryResult<TData, TVariables>;
   }, [result, queryName, generateOptions.aggregate]);
 
+  useToastHandleLoadingError(result.error, 'useQuery');
+
   return wrappedResult;
 }
 
@@ -179,6 +182,8 @@ function useWsSubscription<TData = any, TVariables extends OperationVariables = 
     return extractedResult as SubscriptionResult<TData, TVariables>;
   }, [result, queryName, generateOptions.aggregate, generateOptions.table]);
 
+  useToastHandleLoadingError(result.error, 'useWsSubscription');
+
   return wrappedResult;
 }
 
@@ -225,6 +230,8 @@ function usePollingSubscription<TData = any, TVariables extends OperationVariabl
     }
   }, [queryResult.data, initialFetchDone]);
   
+  useToastHandleLoadingError(queryResult.error, 'usePollingSubscription');
+
   return {
     ...queryResult,
     loading: !initialFetchDone && queryResult.loading,

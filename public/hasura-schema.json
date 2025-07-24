@@ -116685,14 +116685,15 @@
             "updated_at"
           ],
           "user": [
+            "created_at",
+            "fen",
             "id",
-            "user_id",
-            "sides",
             "mode",
             "side",
-            "fen",
+            "sides",
             "status",
-            "created_at"
+            "updated_at",
+            "user_id"
           ]
         }
       },
@@ -116732,12 +116733,13 @@
             "created_at"
           ],
           "user": [
-            "id",
-            "user_id",
+            "client_id",
+            "created_at",
             "game_id",
-            "side",
+            "id",
             "role",
-            "created_at"
+            "side",
+            "user_id"
           ]
         }
       },
@@ -117154,7 +117156,7 @@
         }
       }
     },
-    "timestamp": 1753228497751,
+    "timestamp": 1753348635031,
     "version": "1.0.0"
   }
 }
