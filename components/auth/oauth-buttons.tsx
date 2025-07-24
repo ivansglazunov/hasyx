@@ -11,6 +11,7 @@ const isLocalhost = process.env.NODE_ENV === 'development' && process.env.NEXT_P
 /**
  * Component with buttons for OAuth authorization through various providers
  * Automatically handles Telegram MiniApp authentication when running inside Telegram
+ * If user is already logged in, new accounts will be automatically linked to the existing user
  */
 export function OAuthButtons() {
   const { isInTelegram, isLoading } = useTelegramWebApp();

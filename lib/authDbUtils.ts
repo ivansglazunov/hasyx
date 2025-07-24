@@ -66,6 +66,7 @@ export interface HasuraUser { // Export interface for use in options.ts
  * @param providerAccountId The user's unique ID from the provider.
  * @param profile Optional profile information from the provider (name, email, image).
  * @param image Optional image URL from the provider.
+ * @param linkToUserId Optional user ID to link this account to (for account linking mode).
  * @returns The Hasura user object associated with the account.
  * @throws Error if user/account processing fails.
  */
@@ -74,12 +75,18 @@ export async function getOrCreateUserAndAccount(
   provider: string,
   providerAccountId: string,
   profile?: UserProfileFromProvider | null,
-  image?: string | null
+  image?: string | null,
+  linkToUserId?: string
 ): Promise<HasuraUser> {
-  debug(`🔍 getOrCreateUserAndAccount called for provider: ${provider}, providerAccountId: ${providerAccountId}`);
+  debug(`🔍 getOrCreateUserAndAccount called for provider: ${provider}, providerAccountId: ${providerAccountId}${linkToUserId ? ', linkToUserId: ' + linkToUserId : ''}`);
 
   // --- 1. Try to find the account --- 
   let existingUser: HasuraUser | null = null;
+  
+  // Check if we're in account linking mode with a specific user ID
+  if (linkToUserId) {
+    debug(`🔗 Account linking mode detected with linkToUserId: ${linkToUserId}`);
+  }
   try {
     debug(`🔍 Step 1: Searching for existing account with provider: ${provider}, providerAccountId: ${providerAccountId}`);
     
@@ -149,8 +156,80 @@ export async function getOrCreateUserAndAccount(
   }
 
   debug(`🔍 Step 2: No existing account found for ${provider}:${providerAccountId}. Proceeding to find/create user.`);
+  
+  // --- 2a. If in linking mode, find the user by ID ---
+  if (linkToUserId) {
+    try {
+      debug(`🔗 Step 2a: In linking mode - fetching user by ID: ${linkToUserId}`);
+      
+      const userByIdResult = await hasyx.select({
+        table: 'users',
+        pk_columns: { id: linkToUserId },
+        returning: ['id', 'name', 'email', 'email_verified', 'image', 'password', 'created_at', 'updated_at', 'is_admin', 'hasura_role'],
+      });
 
-  // --- 2. Try to find the user by email (if provided) ---
+      if (userByIdResult) {
+        existingUser = userByIdResult;
+        debug(`✅ Found existing user by ID ${linkToUserId}. Linking account.`);
+        
+        // If user exists and image is provided, update it
+        if (existingUser && image && existingUser.image !== image) {
+          debug(`Updating image for existing user ${existingUser.id} in linking mode.`);
+          await hasyx.update({
+            table: 'users',
+            pk_columns: { id: existingUser.id },
+            _set: { image: image, name: profile?.name ?? existingUser.name } // Also update name
+          });
+          // Create a new object instead of modifying readonly properties
+          existingUser = {
+            ...existingUser,
+            image: image,
+            name: profile?.name ?? existingUser.name
+          };
+        }
+        
+        // Link account to this existing user
+        // NORMALIZATION: Both telegram and telegram-miniapp are saved in DB as 'telegram'
+        const normalizedProviderForExisting = (provider === 'telegram-miniapp') ? 'telegram' : provider;
+        debug(`🔄 CREATING ACCOUNT RECORD (LINK MODE): original_provider=${provider}, normalized_provider=${normalizedProviderForExisting}, provider_account_id=${providerAccountId}, user_id=${existingUser?.id}`);
+        await hasyx.insert({
+          table: 'accounts',
+          object: {
+            user_id: existingUser?.id,
+            provider: normalizedProviderForExisting,
+            provider_account_id: providerAccountId,
+            type: provider === 'credentials' ? 'credentials' : 'oauth',
+          },
+          returning: ['id'],
+        });
+        
+        debug(`✅ Account ${provider}:${providerAccountId} linked to user ${existingUser?.id} in linking mode.`);
+        
+        // Create Telegram notification permission if this is a Telegram provider
+        if ((provider === 'telegram' || provider === 'telegram-miniapp') && existingUser) {
+          await ensureTelegramNotificationPermission(
+            hasyx, 
+            existingUser.id, 
+            providerAccountId,
+            {
+              provider: provider,
+              username: profile?.name,
+              image: existingUser.image
+            }
+          );
+        }
+        
+        return existingUser as HasuraUser;
+      } else {
+        debug(`⚠️ Linking mode enabled but user with ID ${linkToUserId} not found. Falling back to email search or new user creation.`);
+      }
+    } catch (error) {
+      debug(`⚠️ Error in linking mode when fetching user by ID ${linkToUserId}:`, error);
+      // Continue with normal flow if linking by ID fails
+    }
+  }
+
+  // --- 2b. Try to find the user by email (if provided) ---
   // Important: Only link if email is provided and preferably verified by the OAuth provider.
   // For credentials, we find the user first in the `authorize` function.
   if (profile?.email && provider !== 'credentials') { // Avoid linking for credentials here

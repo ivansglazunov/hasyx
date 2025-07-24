@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Button } from "hasyx/components/ui/button";
 import { useSubscription, useHasyx, useQuery } from 'hasyx';
-import { Trash2, Loader2 } from 'lucide-react';
+import { Trash2, Loader2, Plus } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +14,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "hasyx/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "hasyx/components/ui/dialog";
+import { OAuthButtons } from './auth/oauth-buttons';
 import { toast } from 'sonner';
 import Debug from 'hasyx/lib/debug';
 import { useToastHandleLoadingError } from '@/hooks/toasts';
@@ -109,6 +117,7 @@ export function Accounts({ userId, AccountComponent = AccountsAccount }: Account
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [accountToDelete, setAccountToDelete] = useState<Account | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [addAccountDialogOpen, setAddAccountDialogOpen] = useState(false);
 
   const { data: accounts = [], error, loading, refetch } = useQuery(
     {
@@ -184,8 +193,19 @@ export function Accounts({ userId, AccountComponent = AccountsAccount }: Account
             _delete={() => handleDeleteDirect(account)}
           />
         ))}
+        
+        {/* Add Account Button */}
+        <Button 
+          variant="outline" 
+          className="w-full flex items-center justify-center gap-2" 
+          onClick={() => setAddAccountDialogOpen(true)}
+        >
+          <Plus className="h-4 w-4" />
+          <span>+ Account</span>
+        </Button>
       </div>
 
+      {/* Delete Account Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -208,6 +228,22 @@ export function Accounts({ userId, AccountComponent = AccountsAccount }: Account
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      
+      {/* Add Account Dialog */}
+      <Dialog open={addAccountDialogOpen} onOpenChange={setAddAccountDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add Account</DialogTitle>
+            <DialogDescription>
+              Choose a provider to link a new account to your profile
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <OAuthButtons />
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -1,9 +1,9 @@
-import React from 'react';
 import { Button } from 'hasyx/components/ui/button';
-import { signIn } from 'next-auth/react';
-import { useJwt } from '../jwt-auth';
-import { API_URL } from 'hasyx/lib/url';
 import Debug from 'hasyx/lib/debug';
+import { API_URL } from 'hasyx/lib/url';
+import { signIn } from 'next-auth/react';
+import React from 'react';
+import { useJwt } from '../jwt-auth';
 
 const debug = Debug('auth:provider-button');
 
@@ -16,6 +16,7 @@ interface ProviderButtonProps {
 
 /**
  * Authorization button through provider, using the built-in signIn method from NextAuth.js
+ * If user is already logged in, it will automatically link the new account to the existing user
  */
 export function ProviderButton({ provider, icon, label, className }: ProviderButtonProps) {
   const jwtClient = useJwt();
@@ -79,6 +80,7 @@ export function ProviderButton({ provider, icon, label, className }: ProviderBut
       } else {
         // Regular NextAuth mode
         debug(`Starting ${provider} authentication in regular mode`);
+        
         await signIn(provider);
       }
     } catch (error) {
