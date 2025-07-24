@@ -2,11 +2,15 @@
 
 import Debug from '@/lib/debug';
 import { Cyto, CytoStyle, CytoNode, CytoEdge } from "hasyx/lib/cyto";
-import { Card as EntityCard, Button as EntityButton } from '../../../lib/entities';
+import { Card as EntityCard, Button as EntityButton, CytoNode as EntityCytoNode } from '../../../lib/entities';
 import { QueriesManager, QueriesRenderer } from 'hasyx/lib/renderer';
 import { useCallback, useMemo, useState } from "react";
 import projectSchema from '../hasura-schema.json';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Button } from 'hasyx/components/ui/button';
+import { useQuery } from 'hasyx';
+import { toast } from 'sonner';
+import { useToastHandleLoadingError } from 'hasyx/hooks/toasts';
 
 const debug = Debug('cyto');
 
@@ -52,6 +56,37 @@ const stylesheet = [
       'width': 5,
       'height': 5,
       'label': '',
+    }
+  },
+  {
+    selector: 'node.github-issue',
+    style: {
+      // 'background-color': '#22c55e',
+      'background-opacity': 0,
+      'shape': 'round-rectangle',
+      'width': 30,
+      'height': 20,
+      'label': 'data(label)',
+      'text-valign': 'center',
+      'text-halign': 'center',
+      'color': 'white',
+      'font-size': '10px',
+      'font-weight': 'bold',
+      'text-outline-width': 1,
+      'text-outline-color': '#000',
+    }
+  },
+  {
+    selector: 'node.github-issue.closed',
+    style: {
+      'background-color': '#ef4444',
+    }
+  },
+  {
+    selector: 'node.github-issue.pull-request',
+    style: {
+      'background-color': '#8b5cf6',
+      'shape': 'diamond',
     }
   },
   {
@@ -315,6 +350,52 @@ ${step.name}`,
 
 export default function Client() {
   const [selectedEntity, setSelectedEntity] = useState<any>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // Queries for QueriesRenderer
+  const [queries] = useState<any[]>([
+    {
+      table: 'github_issues',
+      where: {},
+      returning: [
+        'id', 'github_id', 'number', 'title', 'body', 'state', 'state_reason',
+        'locked', 'comments_count', 'author_association', 'user_data', 'assignee_data',
+        'assignees_data', 'labels_data', 'milestone_data', 'repository_owner',
+        'repository_name', 'url', 'html_url', 'created_at', 'updated_at', 'closed_at'
+      ],
+      order_by: [{ updated_at: 'desc' }],
+    }
+  ]);
+
+  const handleSyncGitHubIssues = async () => {
+    setIsSyncing(true);
+    try {
+      debug('🔄 Starting GitHub issues sync...');
+      
+      const response = await fetch('/api/github/issues', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || `HTTP ${response.status}`);
+      }
+
+      debug('✅ GitHub issues sync completed:', result);
+      toast.success(`Successfully synced ${result.synced} GitHub issues`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      debug('❌ GitHub issues sync failed:', error);
+      console.error('GitHub issues sync error:', error);
+      toast.error(`Failed to sync GitHub issues: ${errorMessage}`);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const onGraphLoaded = useCallback((cy) => {
     if (global) (global as any).cy = cy;
@@ -341,24 +422,44 @@ export default function Client() {
         buttons={true}
         layout={layoutConfig}
         leftTop={<>
-          <Card className="w-xs">
-            <CardHeader>
-              <CardTitle>🟠 Manual created Roadmap</CardTitle>
-              <CardDescription>Next steps:</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul>
-                <li>Parse all filres in project</li>
-                <li>Generate roadmap from parsed files</li>
-                <li>Sync with GitHub issues</li>
-              </ul>
-            </CardContent>
-          </Card>
+          <div className="space-y-4">
+            {/* Sync Button */}
+            <Button 
+              onClick={handleSyncGitHubIssues}
+              disabled={isSyncing}
+              className="w-full"
+            >
+              {isSyncing ? '🔄 Syncing...' : '🔄 Sync GitHub Issues'}
+            </Button>
+          </div>
         </>}
       >
         <CytoStyle stylesheet={stylesheet} />
-        <Renderer roadmap={roadmap} />
+        
+        {/* Render GitHub issues using QueriesRenderer */}
+        <QueriesRenderer
+          queries={queries}
+          schema={projectSchema}
+          // renderer={customRenderer}
+          // onClick={setSelectedEntity}
+          // EntityButtonComponent={EntityButton}
+        />
+        
+        {/* Commented out roadmap renderer */}
+        {/* <Renderer roadmap={roadmap} /> */}
       </Cyto>
+
+      {/* Modal for entity details */}
+      {/* {selectedEntity && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={closeModal}>
+          <div className='w-1/3' onClick={e => e.stopPropagation()}>
+            <EntityCard
+              data={selectedEntity}
+              onClose={closeModal}
+            />
+          </div>
+        </div>
+      )} */}
     </div>
   );
 }

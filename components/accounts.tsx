@@ -24,7 +24,6 @@ import {
 import { OAuthButtons } from './auth/oauth-buttons';
 import { toast } from 'sonner';
 import Debug from 'hasyx/lib/debug';
-import { useToastHandleLoadingError } from '@/hooks/toasts';
 
 const debug = Debug('accounts');
 

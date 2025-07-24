@@ -13,6 +13,7 @@ import { askForInput, createRlInterface, parseEnvFile } from './assist-common';
 import { setupEnvironment, setupPackageJson } from './assist-env';
 import { configureFirebaseNotifications } from './assist-firebase';
 import { checkGitHubAuth, setupRepository } from './assist-github-auth';
+import { configureGitHubToken } from './assist-github';
 import { configureHasura } from './assist-hasura';
 import { initializeHasyx } from './assist-hasyx';
 import { runMigrations } from './assist-migrations';
@@ -75,6 +76,7 @@ interface AssistOptions {
   skipPg?: boolean;
   skipDns?: boolean;
   skipDocker?: boolean;
+  skipGitHub?: boolean;
 }
 
 // NEW FUNCTION to determine OAuth callback base URL
@@ -171,6 +173,8 @@ async function assist(options: AssistOptions = {}) {
     else debug('Skipping Project User setup');
     if (!options.skipTelegram) envVars = await configureTelegramBot(rl, envPath);
     else debug('Skipping Telegram Bot setup');
+    if (!options.skipGitHub) envVars = await configureGitHubToken(rl, envPath);
+    else debug('Skipping GitHub Token setup');
     
     if (!options.skipCommit) await commitChanges(rl, { skipCommit: options.skipCommit, commitMessage: 'feat: project configured by hasyx-assist' });
     else debug('Skipping commit');

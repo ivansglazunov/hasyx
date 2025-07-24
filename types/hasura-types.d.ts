@@ -28,6 +28,7 @@ export type Scalars = {
   bigint: { input: number; output: number };
   jsonb: { input: any; output: any };
   numeric: { input: number; output: number };
+  timestamptz: { input: number; output: number };
   uuid: { input: string; output: string };
 };
 
@@ -2419,6 +2420,10 @@ export type Badma_Games = {
   moves: Array<Badma_Moves>;
   /** An aggregate relationship */
   moves_aggregate: Badma_Moves_Aggregate;
+  /** An array relationship */
+  perks: Array<Badma_Perks>;
+  /** An aggregate relationship */
+  perks_aggregate: Badma_Perks_Aggregate;
   side: Scalars["Int"]["output"];
   sides: Scalars["Int"]["output"];
   status: Scalars["String"]["output"];
@@ -2486,6 +2491,24 @@ export type Badma_GamesMoves_AggregateArgs = {
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   order_by?: InputMaybe<Array<Badma_Moves_Order_By>>;
   where?: InputMaybe<Badma_Moves_Bool_Exp>;
+};
+
+/** columns and relationships of "badma.games" */
+export type Badma_GamesPerksArgs = {
+  distinct_on?: InputMaybe<Array<Badma_Perks_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Badma_Perks_Order_By>>;
+  where?: InputMaybe<Badma_Perks_Bool_Exp>;
+};
+
+/** columns and relationships of "badma.games" */
+export type Badma_GamesPerks_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Badma_Perks_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Badma_Perks_Order_By>>;
+  where?: InputMaybe<Badma_Perks_Bool_Exp>;
 };
 
 /** columns and relationships of "badma.games" */
@@ -2607,6 +2630,8 @@ export type Badma_Games_Bool_Exp = {
   mode?: InputMaybe<String_Comparison_Exp>;
   moves?: InputMaybe<Badma_Moves_Bool_Exp>;
   moves_aggregate?: InputMaybe<Badma_Moves_Aggregate_Bool_Exp>;
+  perks?: InputMaybe<Badma_Perks_Bool_Exp>;
+  perks_aggregate?: InputMaybe<Badma_Perks_Aggregate_Bool_Exp>;
   side?: InputMaybe<Int_Comparison_Exp>;
   sides?: InputMaybe<Int_Comparison_Exp>;
   status?: InputMaybe<String_Comparison_Exp>;
@@ -2645,6 +2670,7 @@ export type Badma_Games_Insert_Input = {
   joins?: InputMaybe<Badma_Joins_Arr_Rel_Insert_Input>;
   mode?: InputMaybe<Scalars["String"]["input"]>;
   moves?: InputMaybe<Badma_Moves_Arr_Rel_Insert_Input>;
+  perks?: InputMaybe<Badma_Perks_Arr_Rel_Insert_Input>;
   side?: InputMaybe<Scalars["Int"]["input"]>;
   sides?: InputMaybe<Scalars["Int"]["input"]>;
   status?: InputMaybe<Scalars["String"]["input"]>;
@@ -2761,6 +2787,7 @@ export type Badma_Games_Order_By = {
   joins_aggregate?: InputMaybe<Badma_Joins_Aggregate_Order_By>;
   mode?: InputMaybe<Order_By>;
   moves_aggregate?: InputMaybe<Badma_Moves_Aggregate_Order_By>;
+  perks_aggregate?: InputMaybe<Badma_Perks_Aggregate_Order_By>;
   side?: InputMaybe<Order_By>;
   sides?: InputMaybe<Order_By>;
   status?: InputMaybe<Order_By>;
@@ -4847,6 +4874,509 @@ export type Badma_Moves_Variance_Fields = {
 export type Badma_Moves_Variance_Order_By = {
   created_at?: InputMaybe<Order_By>;
   side?: InputMaybe<Order_By>;
+};
+
+/** columns and relationships of "badma.perks" */
+export type Badma_Perks = {
+  __typename?: "badma_perks";
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: Maybe<Scalars["bigint"]["output"]>;
+  created_at: Scalars["bigint"]["output"];
+  /** Custom perk data (mine positions, settings, etc.) */
+  data: Scalars["jsonb"]["output"];
+  /** An object relationship */
+  game: Badma_Games;
+  /** ID of the game to which the perk was applied */
+  game_id: Scalars["uuid"]["output"];
+  id: Scalars["uuid"]["output"];
+  /** Type of perk (e.g., minefield, shield, etc.) */
+  type: Scalars["String"]["output"];
+  updated_at: Scalars["bigint"]["output"];
+  /** An object relationship */
+  user: Users;
+  /** ID of the user who applied the perk */
+  user_id: Scalars["uuid"]["output"];
+};
+
+/** columns and relationships of "badma.perks" */
+export type Badma_PerksDataArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** aggregated selection of "badma.perks" */
+export type Badma_Perks_Aggregate = {
+  __typename?: "badma_perks_aggregate";
+  aggregate?: Maybe<Badma_Perks_Aggregate_Fields>;
+  nodes: Array<Badma_Perks>;
+};
+
+export type Badma_Perks_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Badma_Perks_Aggregate_Bool_Exp_Count>;
+};
+
+export type Badma_Perks_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Badma_Perks_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+  filter?: InputMaybe<Badma_Perks_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "badma.perks" */
+export type Badma_Perks_Aggregate_Fields = {
+  __typename?: "badma_perks_aggregate_fields";
+  avg?: Maybe<Badma_Perks_Avg_Fields>;
+  count: Scalars["Int"]["output"];
+  max?: Maybe<Badma_Perks_Max_Fields>;
+  min?: Maybe<Badma_Perks_Min_Fields>;
+  stddev?: Maybe<Badma_Perks_Stddev_Fields>;
+  stddev_pop?: Maybe<Badma_Perks_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Badma_Perks_Stddev_Samp_Fields>;
+  sum?: Maybe<Badma_Perks_Sum_Fields>;
+  var_pop?: Maybe<Badma_Perks_Var_Pop_Fields>;
+  var_samp?: Maybe<Badma_Perks_Var_Samp_Fields>;
+  variance?: Maybe<Badma_Perks_Variance_Fields>;
+};
+
+/** aggregate fields of "badma.perks" */
+export type Badma_Perks_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Badma_Perks_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+/** order by aggregate values of table "badma.perks" */
+export type Badma_Perks_Aggregate_Order_By = {
+  avg?: InputMaybe<Badma_Perks_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Badma_Perks_Max_Order_By>;
+  min?: InputMaybe<Badma_Perks_Min_Order_By>;
+  stddev?: InputMaybe<Badma_Perks_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Badma_Perks_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Badma_Perks_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Badma_Perks_Sum_Order_By>;
+  var_pop?: InputMaybe<Badma_Perks_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Badma_Perks_Var_Samp_Order_By>;
+  variance?: InputMaybe<Badma_Perks_Variance_Order_By>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Badma_Perks_Append_Input = {
+  /** Custom perk data (mine positions, settings, etc.) */
+  data?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** input type for inserting array relation for remote table "badma.perks" */
+export type Badma_Perks_Arr_Rel_Insert_Input = {
+  data: Array<Badma_Perks_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Badma_Perks_On_Conflict>;
+};
+
+/** aggregate avg on columns */
+export type Badma_Perks_Avg_Fields = {
+  __typename?: "badma_perks_avg_fields";
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by avg() on columns of table "badma.perks" */
+export type Badma_Perks_Avg_Order_By = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "badma.perks". All fields are combined with a logical 'AND'. */
+export type Badma_Perks_Bool_Exp = {
+  _and?: InputMaybe<Array<Badma_Perks_Bool_Exp>>;
+  _not?: InputMaybe<Badma_Perks_Bool_Exp>;
+  _or?: InputMaybe<Array<Badma_Perks_Bool_Exp>>;
+  applied_at?: InputMaybe<Bigint_Comparison_Exp>;
+  created_at?: InputMaybe<Bigint_Comparison_Exp>;
+  data?: InputMaybe<Jsonb_Comparison_Exp>;
+  game?: InputMaybe<Badma_Games_Bool_Exp>;
+  game_id?: InputMaybe<Uuid_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  type?: InputMaybe<String_Comparison_Exp>;
+  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+  user?: InputMaybe<Users_Bool_Exp>;
+  user_id?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "badma.perks" */
+export enum Badma_Perks_Constraint {
+  /** unique or primary key constraint on columns "id" */
+  PerksPkey = "perks_pkey",
+}
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Badma_Perks_Delete_At_Path_Input = {
+  /** Custom perk data (mine positions, settings, etc.) */
+  data?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Badma_Perks_Delete_Elem_Input = {
+  /** Custom perk data (mine positions, settings, etc.) */
+  data?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Badma_Perks_Delete_Key_Input = {
+  /** Custom perk data (mine positions, settings, etc.) */
+  data?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** input type for incrementing numeric columns in table "badma.perks" */
+export type Badma_Perks_Inc_Input = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+};
+
+/** input type for inserting data into table "badma.perks" */
+export type Badma_Perks_Insert_Input = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Custom perk data (mine positions, settings, etc.) */
+  data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  game?: InputMaybe<Badma_Games_Obj_Rel_Insert_Input>;
+  /** ID of the game to which the perk was applied */
+  game_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Type of perk (e.g., minefield, shield, etc.) */
+  type?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
+  /** ID of the user who applied the perk */
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** aggregate max on columns */
+export type Badma_Perks_Max_Fields = {
+  __typename?: "badma_perks_max_fields";
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: Maybe<Scalars["bigint"]["output"]>;
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** ID of the game to which the perk was applied */
+  game_id?: Maybe<Scalars["uuid"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  /** Type of perk (e.g., minefield, shield, etc.) */
+  type?: Maybe<Scalars["String"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** ID of the user who applied the perk */
+  user_id?: Maybe<Scalars["uuid"]["output"]>;
+};
+
+/** order by max() on columns of table "badma.perks" */
+export type Badma_Perks_Max_Order_By = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  /** ID of the game to which the perk was applied */
+  game_id?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Type of perk (e.g., minefield, shield, etc.) */
+  type?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** ID of the user who applied the perk */
+  user_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Badma_Perks_Min_Fields = {
+  __typename?: "badma_perks_min_fields";
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: Maybe<Scalars["bigint"]["output"]>;
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** ID of the game to which the perk was applied */
+  game_id?: Maybe<Scalars["uuid"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  /** Type of perk (e.g., minefield, shield, etc.) */
+  type?: Maybe<Scalars["String"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** ID of the user who applied the perk */
+  user_id?: Maybe<Scalars["uuid"]["output"]>;
+};
+
+/** order by min() on columns of table "badma.perks" */
+export type Badma_Perks_Min_Order_By = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  /** ID of the game to which the perk was applied */
+  game_id?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Type of perk (e.g., minefield, shield, etc.) */
+  type?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** ID of the user who applied the perk */
+  user_id?: InputMaybe<Order_By>;
+};
+
+/** response of any mutation on the table "badma.perks" */
+export type Badma_Perks_Mutation_Response = {
+  __typename?: "badma_perks_mutation_response";
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars["Int"]["output"];
+  /** data from the rows affected by the mutation */
+  returning: Array<Badma_Perks>;
+};
+
+/** on_conflict condition type for table "badma.perks" */
+export type Badma_Perks_On_Conflict = {
+  constraint: Badma_Perks_Constraint;
+  update_columns?: Array<Badma_Perks_Update_Column>;
+  where?: InputMaybe<Badma_Perks_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "badma.perks". */
+export type Badma_Perks_Order_By = {
+  applied_at?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  data?: InputMaybe<Order_By>;
+  game?: InputMaybe<Badma_Games_Order_By>;
+  game_id?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  user?: InputMaybe<Users_Order_By>;
+  user_id?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: badma.perks */
+export type Badma_Perks_Pk_Columns_Input = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Badma_Perks_Prepend_Input = {
+  /** Custom perk data (mine positions, settings, etc.) */
+  data?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** select columns of table "badma.perks" */
+export enum Badma_Perks_Select_Column {
+  /** column name */
+  AppliedAt = "applied_at",
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Data = "data",
+  /** column name */
+  GameId = "game_id",
+  /** column name */
+  Id = "id",
+  /** column name */
+  Type = "type",
+  /** column name */
+  UpdatedAt = "updated_at",
+  /** column name */
+  UserId = "user_id",
+}
+
+/** input type for updating data in table "badma.perks" */
+export type Badma_Perks_Set_Input = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Custom perk data (mine positions, settings, etc.) */
+  data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** ID of the game to which the perk was applied */
+  game_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Type of perk (e.g., minefield, shield, etc.) */
+  type?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** ID of the user who applied the perk */
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** aggregate stddev on columns */
+export type Badma_Perks_Stddev_Fields = {
+  __typename?: "badma_perks_stddev_fields";
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev() on columns of table "badma.perks" */
+export type Badma_Perks_Stddev_Order_By = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Badma_Perks_Stddev_Pop_Fields = {
+  __typename?: "badma_perks_stddev_pop_fields";
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev_pop() on columns of table "badma.perks" */
+export type Badma_Perks_Stddev_Pop_Order_By = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Badma_Perks_Stddev_Samp_Fields = {
+  __typename?: "badma_perks_stddev_samp_fields";
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev_samp() on columns of table "badma.perks" */
+export type Badma_Perks_Stddev_Samp_Order_By = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "badma_perks" */
+export type Badma_Perks_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Badma_Perks_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Badma_Perks_Stream_Cursor_Value_Input = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Custom perk data (mine positions, settings, etc.) */
+  data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** ID of the game to which the perk was applied */
+  game_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Type of perk (e.g., minefield, shield, etc.) */
+  type?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** ID of the user who applied the perk */
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** aggregate sum on columns */
+export type Badma_Perks_Sum_Fields = {
+  __typename?: "badma_perks_sum_fields";
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: Maybe<Scalars["bigint"]["output"]>;
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** order by sum() on columns of table "badma.perks" */
+export type Badma_Perks_Sum_Order_By = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** update columns of table "badma.perks" */
+export enum Badma_Perks_Update_Column {
+  /** column name */
+  AppliedAt = "applied_at",
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Data = "data",
+  /** column name */
+  GameId = "game_id",
+  /** column name */
+  Id = "id",
+  /** column name */
+  Type = "type",
+  /** column name */
+  UpdatedAt = "updated_at",
+  /** column name */
+  UserId = "user_id",
+}
+
+export type Badma_Perks_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Badma_Perks_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Badma_Perks_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Badma_Perks_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Badma_Perks_Delete_Key_Input>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<Badma_Perks_Inc_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Badma_Perks_Prepend_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Badma_Perks_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Badma_Perks_Bool_Exp;
+};
+
+/** aggregate var_pop on columns */
+export type Badma_Perks_Var_Pop_Fields = {
+  __typename?: "badma_perks_var_pop_fields";
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by var_pop() on columns of table "badma.perks" */
+export type Badma_Perks_Var_Pop_Order_By = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** aggregate var_samp on columns */
+export type Badma_Perks_Var_Samp_Fields = {
+  __typename?: "badma_perks_var_samp_fields";
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by var_samp() on columns of table "badma.perks" */
+export type Badma_Perks_Var_Samp_Order_By = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** aggregate variance on columns */
+export type Badma_Perks_Variance_Fields = {
+  __typename?: "badma_perks_variance_fields";
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by variance() on columns of table "badma.perks" */
+export type Badma_Perks_Variance_Order_By = {
+  /** Timestamp when the perk was activated in the game */
+  applied_at?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** columns and relationships of "badma.servers" */
@@ -7534,6 +8064,796 @@ export type Debug_Variance_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** columns and relationships of "github_issues" */
+export type Github_Issues = {
+  __typename?: "github_issues";
+  /** Reason for locking the issue */
+  active_lock_reason?: Maybe<Scalars["String"]["output"]>;
+  /** GitHub user assigned to the issue */
+  assignee_data?: Maybe<Scalars["jsonb"]["output"]>;
+  /** Array of GitHub users assigned to the issue */
+  assignees_data?: Maybe<Scalars["jsonb"]["output"]>;
+  /** Author association with repository */
+  author_association?: Maybe<Scalars["String"]["output"]>;
+  /** Issue body/description */
+  body?: Maybe<Scalars["String"]["output"]>;
+  /** When the issue was closed */
+  closed_at?: Maybe<Scalars["timestamptz"]["output"]>;
+  /** GitHub user who closed the issue */
+  closed_by_data?: Maybe<Scalars["jsonb"]["output"]>;
+  /** Number of comments on the issue */
+  comments_count: Scalars["Int"]["output"];
+  created_at: Scalars["bigint"]["output"];
+  /** GitHub issue ID from API */
+  github_id: Scalars["bigint"]["output"];
+  /** GitHub web URL for the issue */
+  html_url: Scalars["String"]["output"];
+  id: Scalars["uuid"]["output"];
+  /** Array of labels attached to the issue */
+  labels_data?: Maybe<Scalars["jsonb"]["output"]>;
+  /** Whether issue is locked */
+  locked: Scalars["Boolean"]["output"];
+  /** Milestone data if assigned */
+  milestone_data?: Maybe<Scalars["jsonb"]["output"]>;
+  /** GitHub GraphQL node ID */
+  node_id: Scalars["String"]["output"];
+  /** Issue number in repository */
+  number: Scalars["Int"]["output"];
+  /** Pull request data if issue is a PR */
+  pull_request_data?: Maybe<Scalars["jsonb"]["output"]>;
+  /** Repository name */
+  repository_name: Scalars["String"]["output"];
+  /** Repository owner name */
+  repository_owner: Scalars["String"]["output"];
+  /** Issue state: open, closed */
+  state: Scalars["String"]["output"];
+  /** Reason for state change */
+  state_reason?: Maybe<Scalars["String"]["output"]>;
+  /** Issue title */
+  title: Scalars["String"]["output"];
+  updated_at: Scalars["bigint"]["output"];
+  /** GitHub API URL for the issue */
+  url: Scalars["String"]["output"];
+  /** GitHub user who created the issue */
+  user_data?: Maybe<Scalars["jsonb"]["output"]>;
+};
+
+/** columns and relationships of "github_issues" */
+export type Github_IssuesAssignee_DataArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** columns and relationships of "github_issues" */
+export type Github_IssuesAssignees_DataArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** columns and relationships of "github_issues" */
+export type Github_IssuesClosed_By_DataArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** columns and relationships of "github_issues" */
+export type Github_IssuesLabels_DataArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** columns and relationships of "github_issues" */
+export type Github_IssuesMilestone_DataArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** columns and relationships of "github_issues" */
+export type Github_IssuesPull_Request_DataArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** columns and relationships of "github_issues" */
+export type Github_IssuesUser_DataArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** aggregated selection of "github_issues" */
+export type Github_Issues_Aggregate = {
+  __typename?: "github_issues_aggregate";
+  aggregate?: Maybe<Github_Issues_Aggregate_Fields>;
+  nodes: Array<Github_Issues>;
+};
+
+/** aggregate fields of "github_issues" */
+export type Github_Issues_Aggregate_Fields = {
+  __typename?: "github_issues_aggregate_fields";
+  avg?: Maybe<Github_Issues_Avg_Fields>;
+  count: Scalars["Int"]["output"];
+  max?: Maybe<Github_Issues_Max_Fields>;
+  min?: Maybe<Github_Issues_Min_Fields>;
+  stddev?: Maybe<Github_Issues_Stddev_Fields>;
+  stddev_pop?: Maybe<Github_Issues_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Github_Issues_Stddev_Samp_Fields>;
+  sum?: Maybe<Github_Issues_Sum_Fields>;
+  var_pop?: Maybe<Github_Issues_Var_Pop_Fields>;
+  var_samp?: Maybe<Github_Issues_Var_Samp_Fields>;
+  variance?: Maybe<Github_Issues_Variance_Fields>;
+};
+
+/** aggregate fields of "github_issues" */
+export type Github_Issues_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Github_Issues_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Github_Issues_Append_Input = {
+  /** GitHub user assigned to the issue */
+  assignee_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Array of GitHub users assigned to the issue */
+  assignees_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** GitHub user who closed the issue */
+  closed_by_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Array of labels attached to the issue */
+  labels_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Milestone data if assigned */
+  milestone_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Pull request data if issue is a PR */
+  pull_request_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** GitHub user who created the issue */
+  user_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** aggregate avg on columns */
+export type Github_Issues_Avg_Fields = {
+  __typename?: "github_issues_avg_fields";
+  /** Number of comments on the issue */
+  comments_count?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  /** GitHub issue ID from API */
+  github_id?: Maybe<Scalars["Float"]["output"]>;
+  /** Issue number in repository */
+  number?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** Boolean expression to filter rows from the table "github_issues". All fields are combined with a logical 'AND'. */
+export type Github_Issues_Bool_Exp = {
+  _and?: InputMaybe<Array<Github_Issues_Bool_Exp>>;
+  _not?: InputMaybe<Github_Issues_Bool_Exp>;
+  _or?: InputMaybe<Array<Github_Issues_Bool_Exp>>;
+  active_lock_reason?: InputMaybe<String_Comparison_Exp>;
+  assignee_data?: InputMaybe<Jsonb_Comparison_Exp>;
+  assignees_data?: InputMaybe<Jsonb_Comparison_Exp>;
+  author_association?: InputMaybe<String_Comparison_Exp>;
+  body?: InputMaybe<String_Comparison_Exp>;
+  closed_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  closed_by_data?: InputMaybe<Jsonb_Comparison_Exp>;
+  comments_count?: InputMaybe<Int_Comparison_Exp>;
+  created_at?: InputMaybe<Bigint_Comparison_Exp>;
+  github_id?: InputMaybe<Bigint_Comparison_Exp>;
+  html_url?: InputMaybe<String_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  labels_data?: InputMaybe<Jsonb_Comparison_Exp>;
+  locked?: InputMaybe<Boolean_Comparison_Exp>;
+  milestone_data?: InputMaybe<Jsonb_Comparison_Exp>;
+  node_id?: InputMaybe<String_Comparison_Exp>;
+  number?: InputMaybe<Int_Comparison_Exp>;
+  pull_request_data?: InputMaybe<Jsonb_Comparison_Exp>;
+  repository_name?: InputMaybe<String_Comparison_Exp>;
+  repository_owner?: InputMaybe<String_Comparison_Exp>;
+  state?: InputMaybe<String_Comparison_Exp>;
+  state_reason?: InputMaybe<String_Comparison_Exp>;
+  title?: InputMaybe<String_Comparison_Exp>;
+  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+  url?: InputMaybe<String_Comparison_Exp>;
+  user_data?: InputMaybe<Jsonb_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "github_issues" */
+export enum Github_Issues_Constraint {
+  /** unique or primary key constraint on columns "github_id" */
+  GithubIssuesGithubIdKey = "github_issues_github_id_key",
+  /** unique or primary key constraint on columns "id" */
+  GithubIssuesPkey = "github_issues_pkey",
+}
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Github_Issues_Delete_At_Path_Input = {
+  /** GitHub user assigned to the issue */
+  assignee_data?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  /** Array of GitHub users assigned to the issue */
+  assignees_data?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  /** GitHub user who closed the issue */
+  closed_by_data?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  /** Array of labels attached to the issue */
+  labels_data?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  /** Milestone data if assigned */
+  milestone_data?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  /** Pull request data if issue is a PR */
+  pull_request_data?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  /** GitHub user who created the issue */
+  user_data?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Github_Issues_Delete_Elem_Input = {
+  /** GitHub user assigned to the issue */
+  assignee_data?: InputMaybe<Scalars["Int"]["input"]>;
+  /** Array of GitHub users assigned to the issue */
+  assignees_data?: InputMaybe<Scalars["Int"]["input"]>;
+  /** GitHub user who closed the issue */
+  closed_by_data?: InputMaybe<Scalars["Int"]["input"]>;
+  /** Array of labels attached to the issue */
+  labels_data?: InputMaybe<Scalars["Int"]["input"]>;
+  /** Milestone data if assigned */
+  milestone_data?: InputMaybe<Scalars["Int"]["input"]>;
+  /** Pull request data if issue is a PR */
+  pull_request_data?: InputMaybe<Scalars["Int"]["input"]>;
+  /** GitHub user who created the issue */
+  user_data?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Github_Issues_Delete_Key_Input = {
+  /** GitHub user assigned to the issue */
+  assignee_data?: InputMaybe<Scalars["String"]["input"]>;
+  /** Array of GitHub users assigned to the issue */
+  assignees_data?: InputMaybe<Scalars["String"]["input"]>;
+  /** GitHub user who closed the issue */
+  closed_by_data?: InputMaybe<Scalars["String"]["input"]>;
+  /** Array of labels attached to the issue */
+  labels_data?: InputMaybe<Scalars["String"]["input"]>;
+  /** Milestone data if assigned */
+  milestone_data?: InputMaybe<Scalars["String"]["input"]>;
+  /** Pull request data if issue is a PR */
+  pull_request_data?: InputMaybe<Scalars["String"]["input"]>;
+  /** GitHub user who created the issue */
+  user_data?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** input type for incrementing numeric columns in table "github_issues" */
+export type Github_Issues_Inc_Input = {
+  /** Number of comments on the issue */
+  comments_count?: InputMaybe<Scalars["Int"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** GitHub issue ID from API */
+  github_id?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Issue number in repository */
+  number?: InputMaybe<Scalars["Int"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+};
+
+/** input type for inserting data into table "github_issues" */
+export type Github_Issues_Insert_Input = {
+  /** Reason for locking the issue */
+  active_lock_reason?: InputMaybe<Scalars["String"]["input"]>;
+  /** GitHub user assigned to the issue */
+  assignee_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Array of GitHub users assigned to the issue */
+  assignees_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Author association with repository */
+  author_association?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue body/description */
+  body?: InputMaybe<Scalars["String"]["input"]>;
+  /** When the issue was closed */
+  closed_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  /** GitHub user who closed the issue */
+  closed_by_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Number of comments on the issue */
+  comments_count?: InputMaybe<Scalars["Int"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** GitHub issue ID from API */
+  github_id?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** GitHub web URL for the issue */
+  html_url?: InputMaybe<Scalars["String"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Array of labels attached to the issue */
+  labels_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Whether issue is locked */
+  locked?: InputMaybe<Scalars["Boolean"]["input"]>;
+  /** Milestone data if assigned */
+  milestone_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** GitHub GraphQL node ID */
+  node_id?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue number in repository */
+  number?: InputMaybe<Scalars["Int"]["input"]>;
+  /** Pull request data if issue is a PR */
+  pull_request_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Repository name */
+  repository_name?: InputMaybe<Scalars["String"]["input"]>;
+  /** Repository owner name */
+  repository_owner?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue state: open, closed */
+  state?: InputMaybe<Scalars["String"]["input"]>;
+  /** Reason for state change */
+  state_reason?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue title */
+  title?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** GitHub API URL for the issue */
+  url?: InputMaybe<Scalars["String"]["input"]>;
+  /** GitHub user who created the issue */
+  user_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** aggregate max on columns */
+export type Github_Issues_Max_Fields = {
+  __typename?: "github_issues_max_fields";
+  /** Reason for locking the issue */
+  active_lock_reason?: Maybe<Scalars["String"]["output"]>;
+  /** Author association with repository */
+  author_association?: Maybe<Scalars["String"]["output"]>;
+  /** Issue body/description */
+  body?: Maybe<Scalars["String"]["output"]>;
+  /** When the issue was closed */
+  closed_at?: Maybe<Scalars["timestamptz"]["output"]>;
+  /** Number of comments on the issue */
+  comments_count?: Maybe<Scalars["Int"]["output"]>;
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** GitHub issue ID from API */
+  github_id?: Maybe<Scalars["bigint"]["output"]>;
+  /** GitHub web URL for the issue */
+  html_url?: Maybe<Scalars["String"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  /** GitHub GraphQL node ID */
+  node_id?: Maybe<Scalars["String"]["output"]>;
+  /** Issue number in repository */
+  number?: Maybe<Scalars["Int"]["output"]>;
+  /** Repository name */
+  repository_name?: Maybe<Scalars["String"]["output"]>;
+  /** Repository owner name */
+  repository_owner?: Maybe<Scalars["String"]["output"]>;
+  /** Issue state: open, closed */
+  state?: Maybe<Scalars["String"]["output"]>;
+  /** Reason for state change */
+  state_reason?: Maybe<Scalars["String"]["output"]>;
+  /** Issue title */
+  title?: Maybe<Scalars["String"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** GitHub API URL for the issue */
+  url?: Maybe<Scalars["String"]["output"]>;
+};
+
+/** aggregate min on columns */
+export type Github_Issues_Min_Fields = {
+  __typename?: "github_issues_min_fields";
+  /** Reason for locking the issue */
+  active_lock_reason?: Maybe<Scalars["String"]["output"]>;
+  /** Author association with repository */
+  author_association?: Maybe<Scalars["String"]["output"]>;
+  /** Issue body/description */
+  body?: Maybe<Scalars["String"]["output"]>;
+  /** When the issue was closed */
+  closed_at?: Maybe<Scalars["timestamptz"]["output"]>;
+  /** Number of comments on the issue */
+  comments_count?: Maybe<Scalars["Int"]["output"]>;
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** GitHub issue ID from API */
+  github_id?: Maybe<Scalars["bigint"]["output"]>;
+  /** GitHub web URL for the issue */
+  html_url?: Maybe<Scalars["String"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  /** GitHub GraphQL node ID */
+  node_id?: Maybe<Scalars["String"]["output"]>;
+  /** Issue number in repository */
+  number?: Maybe<Scalars["Int"]["output"]>;
+  /** Repository name */
+  repository_name?: Maybe<Scalars["String"]["output"]>;
+  /** Repository owner name */
+  repository_owner?: Maybe<Scalars["String"]["output"]>;
+  /** Issue state: open, closed */
+  state?: Maybe<Scalars["String"]["output"]>;
+  /** Reason for state change */
+  state_reason?: Maybe<Scalars["String"]["output"]>;
+  /** Issue title */
+  title?: Maybe<Scalars["String"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** GitHub API URL for the issue */
+  url?: Maybe<Scalars["String"]["output"]>;
+};
+
+/** response of any mutation on the table "github_issues" */
+export type Github_Issues_Mutation_Response = {
+  __typename?: "github_issues_mutation_response";
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars["Int"]["output"];
+  /** data from the rows affected by the mutation */
+  returning: Array<Github_Issues>;
+};
+
+/** on_conflict condition type for table "github_issues" */
+export type Github_Issues_On_Conflict = {
+  constraint: Github_Issues_Constraint;
+  update_columns?: Array<Github_Issues_Update_Column>;
+  where?: InputMaybe<Github_Issues_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "github_issues". */
+export type Github_Issues_Order_By = {
+  active_lock_reason?: InputMaybe<Order_By>;
+  assignee_data?: InputMaybe<Order_By>;
+  assignees_data?: InputMaybe<Order_By>;
+  author_association?: InputMaybe<Order_By>;
+  body?: InputMaybe<Order_By>;
+  closed_at?: InputMaybe<Order_By>;
+  closed_by_data?: InputMaybe<Order_By>;
+  comments_count?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  github_id?: InputMaybe<Order_By>;
+  html_url?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  labels_data?: InputMaybe<Order_By>;
+  locked?: InputMaybe<Order_By>;
+  milestone_data?: InputMaybe<Order_By>;
+  node_id?: InputMaybe<Order_By>;
+  number?: InputMaybe<Order_By>;
+  pull_request_data?: InputMaybe<Order_By>;
+  repository_name?: InputMaybe<Order_By>;
+  repository_owner?: InputMaybe<Order_By>;
+  state?: InputMaybe<Order_By>;
+  state_reason?: InputMaybe<Order_By>;
+  title?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  url?: InputMaybe<Order_By>;
+  user_data?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: github_issues */
+export type Github_Issues_Pk_Columns_Input = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Github_Issues_Prepend_Input = {
+  /** GitHub user assigned to the issue */
+  assignee_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Array of GitHub users assigned to the issue */
+  assignees_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** GitHub user who closed the issue */
+  closed_by_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Array of labels attached to the issue */
+  labels_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Milestone data if assigned */
+  milestone_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Pull request data if issue is a PR */
+  pull_request_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** GitHub user who created the issue */
+  user_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** select columns of table "github_issues" */
+export enum Github_Issues_Select_Column {
+  /** column name */
+  ActiveLockReason = "active_lock_reason",
+  /** column name */
+  AssigneeData = "assignee_data",
+  /** column name */
+  AssigneesData = "assignees_data",
+  /** column name */
+  AuthorAssociation = "author_association",
+  /** column name */
+  Body = "body",
+  /** column name */
+  ClosedAt = "closed_at",
+  /** column name */
+  ClosedByData = "closed_by_data",
+  /** column name */
+  CommentsCount = "comments_count",
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  GithubId = "github_id",
+  /** column name */
+  HtmlUrl = "html_url",
+  /** column name */
+  Id = "id",
+  /** column name */
+  LabelsData = "labels_data",
+  /** column name */
+  Locked = "locked",
+  /** column name */
+  MilestoneData = "milestone_data",
+  /** column name */
+  NodeId = "node_id",
+  /** column name */
+  Number = "number",
+  /** column name */
+  PullRequestData = "pull_request_data",
+  /** column name */
+  RepositoryName = "repository_name",
+  /** column name */
+  RepositoryOwner = "repository_owner",
+  /** column name */
+  State = "state",
+  /** column name */
+  StateReason = "state_reason",
+  /** column name */
+  Title = "title",
+  /** column name */
+  UpdatedAt = "updated_at",
+  /** column name */
+  Url = "url",
+  /** column name */
+  UserData = "user_data",
+}
+
+/** input type for updating data in table "github_issues" */
+export type Github_Issues_Set_Input = {
+  /** Reason for locking the issue */
+  active_lock_reason?: InputMaybe<Scalars["String"]["input"]>;
+  /** GitHub user assigned to the issue */
+  assignee_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Array of GitHub users assigned to the issue */
+  assignees_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Author association with repository */
+  author_association?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue body/description */
+  body?: InputMaybe<Scalars["String"]["input"]>;
+  /** When the issue was closed */
+  closed_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  /** GitHub user who closed the issue */
+  closed_by_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Number of comments on the issue */
+  comments_count?: InputMaybe<Scalars["Int"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** GitHub issue ID from API */
+  github_id?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** GitHub web URL for the issue */
+  html_url?: InputMaybe<Scalars["String"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Array of labels attached to the issue */
+  labels_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Whether issue is locked */
+  locked?: InputMaybe<Scalars["Boolean"]["input"]>;
+  /** Milestone data if assigned */
+  milestone_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** GitHub GraphQL node ID */
+  node_id?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue number in repository */
+  number?: InputMaybe<Scalars["Int"]["input"]>;
+  /** Pull request data if issue is a PR */
+  pull_request_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Repository name */
+  repository_name?: InputMaybe<Scalars["String"]["input"]>;
+  /** Repository owner name */
+  repository_owner?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue state: open, closed */
+  state?: InputMaybe<Scalars["String"]["input"]>;
+  /** Reason for state change */
+  state_reason?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue title */
+  title?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** GitHub API URL for the issue */
+  url?: InputMaybe<Scalars["String"]["input"]>;
+  /** GitHub user who created the issue */
+  user_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** aggregate stddev on columns */
+export type Github_Issues_Stddev_Fields = {
+  __typename?: "github_issues_stddev_fields";
+  /** Number of comments on the issue */
+  comments_count?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  /** GitHub issue ID from API */
+  github_id?: Maybe<Scalars["Float"]["output"]>;
+  /** Issue number in repository */
+  number?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Github_Issues_Stddev_Pop_Fields = {
+  __typename?: "github_issues_stddev_pop_fields";
+  /** Number of comments on the issue */
+  comments_count?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  /** GitHub issue ID from API */
+  github_id?: Maybe<Scalars["Float"]["output"]>;
+  /** Issue number in repository */
+  number?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Github_Issues_Stddev_Samp_Fields = {
+  __typename?: "github_issues_stddev_samp_fields";
+  /** Number of comments on the issue */
+  comments_count?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  /** GitHub issue ID from API */
+  github_id?: Maybe<Scalars["Float"]["output"]>;
+  /** Issue number in repository */
+  number?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** Streaming cursor of the table "github_issues" */
+export type Github_Issues_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Github_Issues_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Github_Issues_Stream_Cursor_Value_Input = {
+  /** Reason for locking the issue */
+  active_lock_reason?: InputMaybe<Scalars["String"]["input"]>;
+  /** GitHub user assigned to the issue */
+  assignee_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Array of GitHub users assigned to the issue */
+  assignees_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Author association with repository */
+  author_association?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue body/description */
+  body?: InputMaybe<Scalars["String"]["input"]>;
+  /** When the issue was closed */
+  closed_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  /** GitHub user who closed the issue */
+  closed_by_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Number of comments on the issue */
+  comments_count?: InputMaybe<Scalars["Int"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** GitHub issue ID from API */
+  github_id?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** GitHub web URL for the issue */
+  html_url?: InputMaybe<Scalars["String"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Array of labels attached to the issue */
+  labels_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Whether issue is locked */
+  locked?: InputMaybe<Scalars["Boolean"]["input"]>;
+  /** Milestone data if assigned */
+  milestone_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** GitHub GraphQL node ID */
+  node_id?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue number in repository */
+  number?: InputMaybe<Scalars["Int"]["input"]>;
+  /** Pull request data if issue is a PR */
+  pull_request_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+  /** Repository name */
+  repository_name?: InputMaybe<Scalars["String"]["input"]>;
+  /** Repository owner name */
+  repository_owner?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue state: open, closed */
+  state?: InputMaybe<Scalars["String"]["input"]>;
+  /** Reason for state change */
+  state_reason?: InputMaybe<Scalars["String"]["input"]>;
+  /** Issue title */
+  title?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** GitHub API URL for the issue */
+  url?: InputMaybe<Scalars["String"]["input"]>;
+  /** GitHub user who created the issue */
+  user_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** aggregate sum on columns */
+export type Github_Issues_Sum_Fields = {
+  __typename?: "github_issues_sum_fields";
+  /** Number of comments on the issue */
+  comments_count?: Maybe<Scalars["Int"]["output"]>;
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** GitHub issue ID from API */
+  github_id?: Maybe<Scalars["bigint"]["output"]>;
+  /** Issue number in repository */
+  number?: Maybe<Scalars["Int"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** update columns of table "github_issues" */
+export enum Github_Issues_Update_Column {
+  /** column name */
+  ActiveLockReason = "active_lock_reason",
+  /** column name */
+  AssigneeData = "assignee_data",
+  /** column name */
+  AssigneesData = "assignees_data",
+  /** column name */
+  AuthorAssociation = "author_association",
+  /** column name */
+  Body = "body",
+  /** column name */
+  ClosedAt = "closed_at",
+  /** column name */
+  ClosedByData = "closed_by_data",
+  /** column name */
+  CommentsCount = "comments_count",
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  GithubId = "github_id",
+  /** column name */
+  HtmlUrl = "html_url",
+  /** column name */
+  Id = "id",
+  /** column name */
+  LabelsData = "labels_data",
+  /** column name */
+  Locked = "locked",
+  /** column name */
+  MilestoneData = "milestone_data",
+  /** column name */
+  NodeId = "node_id",
+  /** column name */
+  Number = "number",
+  /** column name */
+  PullRequestData = "pull_request_data",
+  /** column name */
+  RepositoryName = "repository_name",
+  /** column name */
+  RepositoryOwner = "repository_owner",
+  /** column name */
+  State = "state",
+  /** column name */
+  StateReason = "state_reason",
+  /** column name */
+  Title = "title",
+  /** column name */
+  UpdatedAt = "updated_at",
+  /** column name */
+  Url = "url",
+  /** column name */
+  UserData = "user_data",
+}
+
+export type Github_Issues_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Github_Issues_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Github_Issues_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Github_Issues_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Github_Issues_Delete_Key_Input>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<Github_Issues_Inc_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Github_Issues_Prepend_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Github_Issues_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Github_Issues_Bool_Exp;
+};
+
+/** aggregate var_pop on columns */
+export type Github_Issues_Var_Pop_Fields = {
+  __typename?: "github_issues_var_pop_fields";
+  /** Number of comments on the issue */
+  comments_count?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  /** GitHub issue ID from API */
+  github_id?: Maybe<Scalars["Float"]["output"]>;
+  /** Issue number in repository */
+  number?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate var_samp on columns */
+export type Github_Issues_Var_Samp_Fields = {
+  __typename?: "github_issues_var_samp_fields";
+  /** Number of comments on the issue */
+  comments_count?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  /** GitHub issue ID from API */
+  github_id?: Maybe<Scalars["Float"]["output"]>;
+  /** Issue number in repository */
+  number?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate variance on columns */
+export type Github_Issues_Variance_Fields = {
+  __typename?: "github_issues_variance_fields";
+  /** Number of comments on the issue */
+  comments_count?: Maybe<Scalars["Float"]["output"]>;
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  /** GitHub issue ID from API */
+  github_id?: Maybe<Scalars["Float"]["output"]>;
+  /** Issue number in repository */
+  number?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
 /** columns and relationships of "hasyx" */
 export type Hasyx = {
   __typename?: "hasyx";
@@ -8625,6 +9945,10 @@ export type Mutation_Root = {
   delete_badma_moves?: Maybe<Badma_Moves_Mutation_Response>;
   /** delete single row from the table: "badma.moves" */
   delete_badma_moves_by_pk?: Maybe<Badma_Moves>;
+  /** delete data from the table: "badma.perks" */
+  delete_badma_perks?: Maybe<Badma_Perks_Mutation_Response>;
+  /** delete single row from the table: "badma.perks" */
+  delete_badma_perks_by_pk?: Maybe<Badma_Perks>;
   /** delete data from the table: "badma.servers" */
   delete_badma_servers?: Maybe<Badma_Servers_Mutation_Response>;
   /** delete single row from the table: "badma.servers" */
@@ -8653,6 +9977,10 @@ export type Mutation_Root = {
   delete_debug?: Maybe<Debug_Mutation_Response>;
   /** delete single row from the table: "debug" */
   delete_debug_by_pk?: Maybe<Debug>;
+  /** delete data from the table: "github_issues" */
+  delete_github_issues?: Maybe<Github_Issues_Mutation_Response>;
+  /** delete single row from the table: "github_issues" */
+  delete_github_issues_by_pk?: Maybe<Github_Issues>;
   /** delete data from the table: "logs.diffs" */
   delete_logs_diffs?: Maybe<Logs_Diffs_Mutation_Response>;
   /** delete single row from the table: "logs.diffs" */
@@ -8741,6 +10069,10 @@ export type Mutation_Root = {
   insert_badma_moves?: Maybe<Badma_Moves_Mutation_Response>;
   /** insert a single row into the table: "badma.moves" */
   insert_badma_moves_one?: Maybe<Badma_Moves>;
+  /** insert data into the table: "badma.perks" */
+  insert_badma_perks?: Maybe<Badma_Perks_Mutation_Response>;
+  /** insert a single row into the table: "badma.perks" */
+  insert_badma_perks_one?: Maybe<Badma_Perks>;
   /** insert data into the table: "badma.servers" */
   insert_badma_servers?: Maybe<Badma_Servers_Mutation_Response>;
   /** insert a single row into the table: "badma.servers" */
@@ -8769,6 +10101,10 @@ export type Mutation_Root = {
   insert_debug?: Maybe<Debug_Mutation_Response>;
   /** insert a single row into the table: "debug" */
   insert_debug_one?: Maybe<Debug>;
+  /** insert data into the table: "github_issues" */
+  insert_github_issues?: Maybe<Github_Issues_Mutation_Response>;
+  /** insert a single row into the table: "github_issues" */
+  insert_github_issues_one?: Maybe<Github_Issues>;
   /** insert data into the table: "logs.diffs" */
   insert_logs_diffs?: Maybe<Logs_Diffs_Mutation_Response>;
   /** insert a single row into the table: "logs.diffs" */
@@ -8881,6 +10217,12 @@ export type Mutation_Root = {
   update_badma_moves_by_pk?: Maybe<Badma_Moves>;
   /** update multiples rows of table: "badma.moves" */
   update_badma_moves_many?: Maybe<Array<Maybe<Badma_Moves_Mutation_Response>>>;
+  /** update data of the table: "badma.perks" */
+  update_badma_perks?: Maybe<Badma_Perks_Mutation_Response>;
+  /** update single row of the table: "badma.perks" */
+  update_badma_perks_by_pk?: Maybe<Badma_Perks>;
+  /** update multiples rows of table: "badma.perks" */
+  update_badma_perks_many?: Maybe<Array<Maybe<Badma_Perks_Mutation_Response>>>;
   /** update data of the table: "badma.servers" */
   update_badma_servers?: Maybe<Badma_Servers_Mutation_Response>;
   /** update single row of the table: "badma.servers" */
@@ -8935,6 +10277,14 @@ export type Mutation_Root = {
   update_debug_by_pk?: Maybe<Debug>;
   /** update multiples rows of table: "debug" */
   update_debug_many?: Maybe<Array<Maybe<Debug_Mutation_Response>>>;
+  /** update data of the table: "github_issues" */
+  update_github_issues?: Maybe<Github_Issues_Mutation_Response>;
+  /** update single row of the table: "github_issues" */
+  update_github_issues_by_pk?: Maybe<Github_Issues>;
+  /** update multiples rows of table: "github_issues" */
+  update_github_issues_many?: Maybe<
+    Array<Maybe<Github_Issues_Mutation_Response>>
+  >;
   /** update data of the table: "logs.diffs" */
   update_logs_diffs?: Maybe<Logs_Diffs_Mutation_Response>;
   /** update single row of the table: "logs.diffs" */
@@ -9128,6 +10478,16 @@ export type Mutation_RootDelete_Badma_Moves_By_PkArgs = {
 };
 
 /** mutation root */
+export type Mutation_RootDelete_Badma_PerksArgs = {
+  where: Badma_Perks_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootDelete_Badma_Perks_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** mutation root */
 export type Mutation_RootDelete_Badma_ServersArgs = {
   where: Badma_Servers_Bool_Exp;
 };
@@ -9194,6 +10554,16 @@ export type Mutation_RootDelete_DebugArgs = {
 
 /** mutation root */
 export type Mutation_RootDelete_Debug_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** mutation root */
+export type Mutation_RootDelete_Github_IssuesArgs = {
+  where: Github_Issues_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootDelete_Github_Issues_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -9439,6 +10809,18 @@ export type Mutation_RootInsert_Badma_Moves_OneArgs = {
 };
 
 /** mutation root */
+export type Mutation_RootInsert_Badma_PerksArgs = {
+  objects: Array<Badma_Perks_Insert_Input>;
+  on_conflict?: InputMaybe<Badma_Perks_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsert_Badma_Perks_OneArgs = {
+  object: Badma_Perks_Insert_Input;
+  on_conflict?: InputMaybe<Badma_Perks_On_Conflict>;
+};
+
+/** mutation root */
 export type Mutation_RootInsert_Badma_ServersArgs = {
   objects: Array<Badma_Servers_Insert_Input>;
   on_conflict?: InputMaybe<Badma_Servers_On_Conflict>;
@@ -9520,6 +10902,18 @@ export type Mutation_RootInsert_DebugArgs = {
 export type Mutation_RootInsert_Debug_OneArgs = {
   object: Debug_Insert_Input;
   on_conflict?: InputMaybe<Debug_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsert_Github_IssuesArgs = {
+  objects: Array<Github_Issues_Insert_Input>;
+  on_conflict?: InputMaybe<Github_Issues_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsert_Github_Issues_OneArgs = {
+  object: Github_Issues_Insert_Input;
+  on_conflict?: InputMaybe<Github_Issues_On_Conflict>;
 };
 
 /** mutation root */
@@ -9888,6 +11282,35 @@ export type Mutation_RootUpdate_Badma_Moves_ManyArgs = {
 };
 
 /** mutation root */
+export type Mutation_RootUpdate_Badma_PerksArgs = {
+  _append?: InputMaybe<Badma_Perks_Append_Input>;
+  _delete_at_path?: InputMaybe<Badma_Perks_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Badma_Perks_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Badma_Perks_Delete_Key_Input>;
+  _inc?: InputMaybe<Badma_Perks_Inc_Input>;
+  _prepend?: InputMaybe<Badma_Perks_Prepend_Input>;
+  _set?: InputMaybe<Badma_Perks_Set_Input>;
+  where: Badma_Perks_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Badma_Perks_By_PkArgs = {
+  _append?: InputMaybe<Badma_Perks_Append_Input>;
+  _delete_at_path?: InputMaybe<Badma_Perks_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Badma_Perks_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Badma_Perks_Delete_Key_Input>;
+  _inc?: InputMaybe<Badma_Perks_Inc_Input>;
+  _prepend?: InputMaybe<Badma_Perks_Prepend_Input>;
+  _set?: InputMaybe<Badma_Perks_Set_Input>;
+  pk_columns: Badma_Perks_Pk_Columns_Input;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Badma_Perks_ManyArgs = {
+  updates: Array<Badma_Perks_Updates>;
+};
+
+/** mutation root */
 export type Mutation_RootUpdate_Badma_ServersArgs = {
   _inc?: InputMaybe<Badma_Servers_Inc_Input>;
   _set?: InputMaybe<Badma_Servers_Set_Input>;
@@ -10038,6 +11461,35 @@ export type Mutation_RootUpdate_Debug_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Debug_ManyArgs = {
   updates: Array<Debug_Updates>;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Github_IssuesArgs = {
+  _append?: InputMaybe<Github_Issues_Append_Input>;
+  _delete_at_path?: InputMaybe<Github_Issues_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Github_Issues_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Github_Issues_Delete_Key_Input>;
+  _inc?: InputMaybe<Github_Issues_Inc_Input>;
+  _prepend?: InputMaybe<Github_Issues_Prepend_Input>;
+  _set?: InputMaybe<Github_Issues_Set_Input>;
+  where: Github_Issues_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Github_Issues_By_PkArgs = {
+  _append?: InputMaybe<Github_Issues_Append_Input>;
+  _delete_at_path?: InputMaybe<Github_Issues_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Github_Issues_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Github_Issues_Delete_Key_Input>;
+  _inc?: InputMaybe<Github_Issues_Inc_Input>;
+  _prepend?: InputMaybe<Github_Issues_Prepend_Input>;
+  _set?: InputMaybe<Github_Issues_Set_Input>;
+  pk_columns: Github_Issues_Pk_Columns_Input;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Github_Issues_ManyArgs = {
+  updates: Array<Github_Issues_Updates>;
 };
 
 /** mutation root */
@@ -16328,6 +17780,12 @@ export type Query_Root = {
   badma_moves_aggregate: Badma_Moves_Aggregate;
   /** fetch data from the table: "badma.moves" using primary key columns */
   badma_moves_by_pk?: Maybe<Badma_Moves>;
+  /** fetch data from the table: "badma.perks" */
+  badma_perks: Array<Badma_Perks>;
+  /** fetch aggregated fields from the table: "badma.perks" */
+  badma_perks_aggregate: Badma_Perks_Aggregate;
+  /** fetch data from the table: "badma.perks" using primary key columns */
+  badma_perks_by_pk?: Maybe<Badma_Perks>;
   /** fetch data from the table: "badma.servers" */
   badma_servers: Array<Badma_Servers>;
   /** fetch aggregated fields from the table: "badma.servers" */
@@ -16370,6 +17828,12 @@ export type Query_Root = {
   debug_aggregate: Debug_Aggregate;
   /** fetch data from the table: "debug" using primary key columns */
   debug_by_pk?: Maybe<Debug>;
+  /** fetch data from the table: "github_issues" */
+  github_issues: Array<Github_Issues>;
+  /** fetch aggregated fields from the table: "github_issues" */
+  github_issues_aggregate: Github_Issues_Aggregate;
+  /** fetch data from the table: "github_issues" using primary key columns */
+  github_issues_by_pk?: Maybe<Github_Issues>;
   /** fetch data from the table: "hasyx" */
   hasyx: Array<Hasyx>;
   /** fetch aggregated fields from the table: "hasyx" */
@@ -16648,6 +18112,26 @@ export type Query_RootBadma_Moves_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
+export type Query_RootBadma_PerksArgs = {
+  distinct_on?: InputMaybe<Array<Badma_Perks_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Badma_Perks_Order_By>>;
+  where?: InputMaybe<Badma_Perks_Bool_Exp>;
+};
+
+export type Query_RootBadma_Perks_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Badma_Perks_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Badma_Perks_Order_By>>;
+  where?: InputMaybe<Badma_Perks_Bool_Exp>;
+};
+
+export type Query_RootBadma_Perks_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
 export type Query_RootBadma_ServersArgs = {
   distinct_on?: InputMaybe<Array<Badma_Servers_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -16785,6 +18269,26 @@ export type Query_RootDebug_AggregateArgs = {
 };
 
 export type Query_RootDebug_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+export type Query_RootGithub_IssuesArgs = {
+  distinct_on?: InputMaybe<Array<Github_Issues_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Github_Issues_Order_By>>;
+  where?: InputMaybe<Github_Issues_Bool_Exp>;
+};
+
+export type Query_RootGithub_Issues_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Github_Issues_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Github_Issues_Order_By>>;
+  where?: InputMaybe<Github_Issues_Bool_Exp>;
+};
+
+export type Query_RootGithub_Issues_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -17134,6 +18638,14 @@ export type Subscription_Root = {
   badma_moves_by_pk?: Maybe<Badma_Moves>;
   /** fetch data from the table in a streaming manner: "badma.moves" */
   badma_moves_stream: Array<Badma_Moves>;
+  /** fetch data from the table: "badma.perks" */
+  badma_perks: Array<Badma_Perks>;
+  /** fetch aggregated fields from the table: "badma.perks" */
+  badma_perks_aggregate: Badma_Perks_Aggregate;
+  /** fetch data from the table: "badma.perks" using primary key columns */
+  badma_perks_by_pk?: Maybe<Badma_Perks>;
+  /** fetch data from the table in a streaming manner: "badma.perks" */
+  badma_perks_stream: Array<Badma_Perks>;
   /** fetch data from the table: "badma.servers" */
   badma_servers: Array<Badma_Servers>;
   /** fetch aggregated fields from the table: "badma.servers" */
@@ -17190,6 +18702,14 @@ export type Subscription_Root = {
   debug_by_pk?: Maybe<Debug>;
   /** fetch data from the table in a streaming manner: "debug" */
   debug_stream: Array<Debug>;
+  /** fetch data from the table: "github_issues" */
+  github_issues: Array<Github_Issues>;
+  /** fetch aggregated fields from the table: "github_issues" */
+  github_issues_aggregate: Github_Issues_Aggregate;
+  /** fetch data from the table: "github_issues" using primary key columns */
+  github_issues_by_pk?: Maybe<Github_Issues>;
+  /** fetch data from the table in a streaming manner: "github_issues" */
+  github_issues_stream: Array<Github_Issues>;
   /** fetch data from the table: "hasyx" */
   hasyx: Array<Hasyx>;
   /** fetch aggregated fields from the table: "hasyx" */
@@ -17554,6 +19074,32 @@ export type Subscription_RootBadma_Moves_StreamArgs = {
   where?: InputMaybe<Badma_Moves_Bool_Exp>;
 };
 
+export type Subscription_RootBadma_PerksArgs = {
+  distinct_on?: InputMaybe<Array<Badma_Perks_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Badma_Perks_Order_By>>;
+  where?: InputMaybe<Badma_Perks_Bool_Exp>;
+};
+
+export type Subscription_RootBadma_Perks_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Badma_Perks_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Badma_Perks_Order_By>>;
+  where?: InputMaybe<Badma_Perks_Bool_Exp>;
+};
+
+export type Subscription_RootBadma_Perks_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+export type Subscription_RootBadma_Perks_StreamArgs = {
+  batch_size: Scalars["Int"]["input"];
+  cursor: Array<InputMaybe<Badma_Perks_Stream_Cursor_Input>>;
+  where?: InputMaybe<Badma_Perks_Bool_Exp>;
+};
+
 export type Subscription_RootBadma_ServersArgs = {
   distinct_on?: InputMaybe<Array<Badma_Servers_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -17734,6 +19280,32 @@ export type Subscription_RootDebug_StreamArgs = {
   batch_size: Scalars["Int"]["input"];
   cursor: Array<InputMaybe<Debug_Stream_Cursor_Input>>;
   where?: InputMaybe<Debug_Bool_Exp>;
+};
+
+export type Subscription_RootGithub_IssuesArgs = {
+  distinct_on?: InputMaybe<Array<Github_Issues_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Github_Issues_Order_By>>;
+  where?: InputMaybe<Github_Issues_Bool_Exp>;
+};
+
+export type Subscription_RootGithub_Issues_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Github_Issues_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Github_Issues_Order_By>>;
+  where?: InputMaybe<Github_Issues_Bool_Exp>;
+};
+
+export type Subscription_RootGithub_Issues_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+export type Subscription_RootGithub_Issues_StreamArgs = {
+  batch_size: Scalars["Int"]["input"];
+  cursor: Array<InputMaybe<Github_Issues_Stream_Cursor_Input>>;
+  where?: InputMaybe<Github_Issues_Bool_Exp>;
 };
 
 export type Subscription_RootHasyxArgs = {
@@ -18081,6 +19653,19 @@ export type Subscription_RootUsers_StreamArgs = {
   batch_size: Scalars["Int"]["input"];
   cursor: Array<InputMaybe<Users_Stream_Cursor_Input>>;
   where?: InputMaybe<Users_Bool_Exp>;
+};
+
+/** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
+export type Timestamptz_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  _gt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  _gte?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  _in?: InputMaybe<Array<Scalars["timestamptz"]["input"]>>;
+  _is_null?: InputMaybe<Scalars["Boolean"]["input"]>;
+  _lt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  _lte?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  _neq?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  _nin?: InputMaybe<Array<Scalars["timestamptz"]["input"]>>;
 };
 
 /** columns and relationships of "users" */
