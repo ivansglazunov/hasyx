@@ -200,7 +200,7 @@ export function Accounts({ userId, AccountComponent = AccountsAccount }: Account
           onClick={() => setAddAccountDialogOpen(true)}
         >
           <Plus className="h-4 w-4" />
-          <span>+ Account</span>
+          <span>Account</span>
         </Button>
       </div>
 
