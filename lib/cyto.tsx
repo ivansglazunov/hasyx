@@ -33,6 +33,7 @@ cytoscape.use(edgehandles);
 
 // @ts-ignore
 import CytoscapeComponent from 'react-cytoscapejs';
+import { cn } from "./utils";
 
 let cytoscapeLasso;
 let cytoscapeTidyTree;
@@ -124,7 +125,7 @@ function resolveCssVars(styleArray: any[]): Promise<any[]> {
   });
 }
 
-export const Cyto = memo(function Graph({
+export const Cyto = memo(function Cyto({
   onLoaded: _onLoaded,
   onInsert,
 
@@ -135,7 +136,12 @@ export const Cyto = memo(function Graph({
   rightBottom = null,
   layout: _layout,
 
+  className,
+  style: _style = {},
+  
   children = null,
+
+  ...props
 }: {
   onLoaded?: (cy) => void;
   onInsert?: (inserted, insertQuery) => void;
@@ -147,7 +153,12 @@ export const Cyto = memo(function Graph({
   rightBottom?: React.ReactNode;
   layout?: any;
 
+  className?: string;
+  style?: React.CSSProperties;
+
   children?: any;
+
+  [key: string]: any;
 }) {
   const [_cy, setCy] = useState<any>();
   const { theme } = useTheme();
@@ -426,10 +437,11 @@ export const Cyto = memo(function Graph({
       )}
       <div
         ref={bgRef}
-        className="absolute inset-0"
+        {...props}
+        className={(cn("absolute inset-0", className))}
         style={{
           width: '100%',
-        height: '100%',
+          height: '100%',
           backgroundImage: `
             radial-gradient(circle at 0 0, ${gridColor} 1px, transparent 1px),
             radial-gradient(circle at .1em .1em, ${gridColor} 1px, transparent 1px),
@@ -439,6 +451,7 @@ export const Cyto = memo(function Graph({
           backgroundSize: '3em 3em',
           backgroundPosition: '0 0, 0 0, 0 0, 0 0',
           backgroundRepeat: 'repeat',
+          ...(_style || {}),
         }}
       />
       {cytoscape}
