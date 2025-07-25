@@ -21,6 +21,10 @@ type CarouselProps = {
   setApi?: (api: CarouselApi) => void
 }
 
+interface CarouselContentProps extends React.ComponentProps<"div"> {
+  root?: any;
+}
+
 type CarouselContextProps = {
   carouselRef: ReturnType<typeof useEmblaCarousel>[0]
   api: ReturnType<typeof useEmblaCarousel>[1]
@@ -132,14 +136,15 @@ function Carousel({
   )
 }
 
-function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
+function CarouselContent({ className, root, ...props }: CarouselContentProps) {
   const { carouselRef, orientation } = useCarousel()
 
   return (
     <div
       ref={carouselRef}
-      className="overflow-hidden"
       data-slot="carousel-content"
+      {...root}
+      className={cn("overflow-hidden", root?.className)}
     >
       <div
         className={cn(
