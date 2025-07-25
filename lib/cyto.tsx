@@ -158,6 +158,9 @@ export const Cyto = memo(function Cyto({
 
   children?: any;
 
+  zoomHandler?: (zoom: number) => void;
+  translateHandler?: (x: number, y: number) => [number, number];
+
   [key: string]: any;
 }) {
   const [_cy, setCy] = useState<any>();
@@ -171,6 +174,9 @@ export const Cyto = memo(function Cyto({
   const rootRef = useRef<any>(undefined);
   const { width, height } = useResizeDetector({ targetRef: rootRef });
   const [viewport, setViewport] = useState<{ zoom: number; pan: { x: number; y: number; } }>({ zoom: 1, pan: { x: 0, y: 0 } });
+
+  const zoomHandler = useMemo(() => props?.zoomHandler || ((zoom: number) => zoom), [props?.zoomHandler]);
+  const translateHandler = useMemo(() => props?.translateHandler || ((x: number, y: number) => [x, y]), [props?.translateHandler]);
 
   const gridColor = '#747474';
 
@@ -186,10 +192,12 @@ export const Cyto = memo(function Cyto({
       const translateX = pan.x;
       const translateY = pan.y;
 
+      const _zoom = zoomHandler(zoom * 3);
+      const [x, y] = translateHandler(translateX, translateY);
 
       if (bgRef.current) {
-        bgRef.current.style['background-size'] = `${zoom * 3}em ${zoom * 3}em`;
-        bgRef.current.style['background-position'] = `${translateX}px ${translateY}px`;
+        bgRef.current.style['background-size'] = `${_zoom}em ${_zoom}em`;
+        bgRef.current.style['background-position'] = `${x}px ${y}px`;
       }
 
       if (overlayRef.current && pan) {
