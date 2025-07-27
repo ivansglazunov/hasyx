@@ -141,6 +141,9 @@ export const Cyto = memo(function Cyto({
   
   children = null,
 
+  zoomHandler: _zoomHandler,
+  translateHandler: _translateHandler,
+
   ...props
 }: {
   onLoaded?: (cy) => void;
@@ -175,8 +178,8 @@ export const Cyto = memo(function Cyto({
   const { width, height } = useResizeDetector({ targetRef: rootRef });
   const [viewport, setViewport] = useState<{ zoom: number; pan: { x: number; y: number; } }>({ zoom: 1, pan: { x: 0, y: 0 } });
 
-  const zoomHandler = useMemo(() => props?.zoomHandler || ((zoom: number) => zoom), [props?.zoomHandler]);
-  const translateHandler = useMemo(() => props?.translateHandler || ((x: number, y: number) => [x, y]), [props?.translateHandler]);
+  const zoomHandler = useMemo(() => _zoomHandler || ((zoom: number) => zoom), [_zoomHandler]);
+  const translateHandler = useMemo(() => _translateHandler || ((x: number, y: number) => [x, y]), [_translateHandler]);
 
   const gridColor = '#747474';
 
