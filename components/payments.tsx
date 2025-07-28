@@ -187,7 +187,6 @@ export default function Payments({ sidebarData }: PaymentsProps) {
   const [currentPaymentOperation, setCurrentPaymentOperation] = useState<string | null>(null);
 
   const hasyx = useHasyx();
-  const { data: session } = useSession();
   
   // Subscriptions for data
   const { data: providers, loading: providersLoading } = useQuery({
@@ -201,7 +200,7 @@ export default function Payments({ sidebarData }: PaymentsProps) {
 
   const { data: paymentMethods, loading: methodsLoading } = useQuery({
     table: "payments_methods",
-    where: { user_id: { _eq: session?.user?.id || "never-match" } },
+    where: { user_id: { _eq: hasyx?.userId || "never-match" } },
     returning: [
       "id",
       // "user_id", "provider_id", "external_id", "type", "details", 
@@ -227,7 +226,7 @@ export default function Payments({ sidebarData }: PaymentsProps) {
 
   const { data: subscriptions, loading: subscriptionsLoading } = useQuery({
     table: "payments_subscriptions",
-    where: { user_id: { _eq: session?.user?.id || "never-match" } },
+    where: { user_id: { _eq: hasyx?.userId || "never-match" } },
     returning: [
       "id", "user_id", "method_id", "provider_id", "plan_id", "status",
       "current_period_start", "current_period_end", "computed_next_billing_date",
@@ -247,7 +246,7 @@ export default function Payments({ sidebarData }: PaymentsProps) {
 
   const { data: operations, loading: operationsLoading } = useQuery({
     table: "payments_operations",
-    where: { user_id: { _eq: session?.user?.id || "never-match" } },
+    where: { user_id: { _eq: hasyx?.userId || "never-match" } },
     returning: [
       "id", "user_id", "amount", "currency", "status", "description", 
       "method_id", "provider_id", "created_at", "subscription_id"
@@ -398,7 +397,7 @@ export default function Payments({ sidebarData }: PaymentsProps) {
           interval_count: parseInt(newPlan.interval_count),
           trial_period_days: parseInt(newPlan.trial_period_days),
           features: newPlan.features ? JSON.parse(newPlan.features) : null,
-          user_id: session?.user?.id,
+          user_id: hasyx?.userId,
         },
       });
 
@@ -688,7 +687,7 @@ export default function Payments({ sidebarData }: PaymentsProps) {
                       >
                         Subscribe
                       </Button>
-                      {plan.user_id === session?.user?.id && (
+                      {plan.user_id === hasyx?.userId && (
                         <Button 
                           variant="destructive" 
                           size="sm" 

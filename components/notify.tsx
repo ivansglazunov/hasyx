@@ -61,10 +61,9 @@ export const useNotify = () => useContext(NotificationContext);
 
 // Notification context provider
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
-  const { data: session } = useSession();
+  const hasyx = useHasyx();
   // Safer retrieval of userId, assuming id is added to the session
-  const userId = (session?.user as { id?: string; })?.id;
-  const client = useHasyx();
+  const userId = hasyx?.userId;
 
   const [isSupported, setIsSupported] = useState<boolean>(false); // Browser support + Firebase config
   const [isFcmInitialized, setIsFcmInitialized] = useState<boolean>(false);
@@ -242,7 +241,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
       // Check if permission already exists for this token and user
       // This uses the client directly, which might cause a re-render if its context changes, but it's a one-off check.
-      const existingPermissions = await client.select<NotificationPermission[]>({
+      const existingPermissions = await hasyx.select<NotificationPermission[]>({
         table: 'notification_permissions',
         where: { user_id: { _eq: userId }, device_token: { _eq: token } },
         returning: ['id']
@@ -267,7 +266,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         updated_at: new Date().toISOString(),
       };
 
-      await client.insert({
+      await hasyx.insert({
         table: 'notification_permissions',
         object: newPermissionRecord,
       });
@@ -282,11 +281,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       setLoading(false);
       return false;
     }
-  }, [isSupported, isFcmInitialized, userId, client, firebaseMessaging, firebaseConfig]);
+  }, [isSupported, isFcmInitialized, userId, hasyx, firebaseMessaging, firebaseConfig]);
 
   // Function to remove notification permission
   const removePermission = useCallback(async (): Promise<boolean> => {
-    if (!userId || !deviceToken || !client || !firebaseMessaging) {
+    if (!userId || !deviceToken || !hasyx || !firebaseMessaging) {
       setError("Cannot remove permission: missing user, token, client or Firebase messaging instance.");
       return false;
     }
@@ -306,7 +305,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
       // Delete permission from DB
       if (currentDbPermission) {
-        await client.delete({
+        await hasyx.delete({
           table: 'notification_permissions',
           where: { id: { _eq: currentDbPermission.id } }
         });
@@ -323,7 +322,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       setLoading(false);
       return false;
     }
-  }, [userId, deviceToken, client, currentDbPermission, firebaseMessaging]);
+  }, [userId, deviceToken, hasyx, currentDbPermission, firebaseMessaging]);
 
   // Function to send a test notification (creates records in DB, actual sending is by backend worker)
   const sendTestNotification = useCallback(async (
@@ -331,9 +330,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     body: string,
     data?: Record<string, any>
   ): Promise<boolean> => {
-    if (!currentDbPermission || !userId || !client) {
+    if (!currentDbPermission || !userId || !hasyx) {
       setError('No permission to send notifications or user not authenticated.');
-      debug('Send test notification prerequisites not met:', { currentDbPermission: !!currentDbPermission, userId: !!userId, client: !!client });
+      debug('Send test notification prerequisites not met:', { currentDbPermission: !!currentDbPermission, userId: !!userId, client: !!hasyx });
       return false;
     }
     setLoading(true);
@@ -349,14 +348,14 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         data: data || { test: true },
         created_at: new Date().toISOString(),
       };
-      await client.insert({
+      await hasyx.insert({
         table: 'notification_messages',
         object: messageRecord,
       });
       debug('Test notification message created in DB.');
 
       // Create notification, linked to the message and permission
-      await client.insert({
+      await hasyx.insert({
         table: 'notifications',
         object: {
           id: uuidv4(),
@@ -377,7 +376,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       setLoading(false);
       return false;
     }
-  }, [userId, client, currentDbPermission]);
+  }, [userId, hasyx, currentDbPermission]);
 
   const isEnabled = permissionStatus === 'granted' && !!currentDbPermission;
 
@@ -402,9 +401,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
 // Enhanced notification card component with multi-provider support
 export function NotificationCard() {
-  const { data: session } = useSession();
-  const client = useHasyx();
-  const userId = (session?.user as { id?: string; })?.id;
+  const hasyx = useHasyx();
+  const userId = hasyx?.userId;
   
   const [notificationTitle, setNotificationTitle] = useState('Test Notification');
   const [notificationBody, setNotificationBody] = useState('This is a test notification!');
@@ -487,7 +485,7 @@ export function NotificationCard() {
     setIsSending(true);
     try {
       // Create notification message
-      const messageResult = await client.insert({
+      const messageResult = await hasyx.insert({
         table: 'notification_messages',
         object: {
           title: notificationTitle.trim(),
@@ -504,7 +502,7 @@ export function NotificationCard() {
       
       // Create notification records for each selected provider
       const notificationPromises = selectedProviders.map(permissionId => 
-        client.insert({
+        hasyx.insert({
           table: 'notifications',
           object: {
             message_id: messageResult.id,
@@ -569,7 +567,7 @@ export function NotificationCard() {
     }
   };
   
-  if (!session) {
+  if (!userId) {
     return (
       <Card className="w-full max-w-2xl">
         <CardHeader>

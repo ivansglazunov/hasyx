@@ -1,22 +1,13 @@
 "use client"
 
-import * as React from "react"
-import { Check, ChevronsUpDown, GalleryVerticalEnd } from "lucide-react"
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "hasyx/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "hasyx/components/ui/sidebar"
+} from "hasyx/components/ui/sidebar";
 
 import Image from "next/image"
-import { Label } from 'hasyx/components/ui/label'
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
@@ -28,7 +19,7 @@ export function ProjectAndVersion({
   name: string;
   logo?: string;
   version: string;
-}) {    
+}) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>

@@ -38,3 +38,5 @@ export {
   useDelete, 
   useSubscribe 
 } from './hasyx-client';
+
+export * from './i18n/hook';

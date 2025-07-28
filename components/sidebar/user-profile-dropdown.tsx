@@ -13,7 +13,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "hasyx/components/ui/avatar";
 import { LogOut, LogIn, User, Settings, Github, Mail, MailCheck, Trash2 } from "lucide-react";
 import { signOut, signIn } from "next-auth/react";
-import { useNewHasyx, useSession } from 'hasyx';
+import { useHasyx, useNewHasyx, useSession } from 'hasyx';
 import { useSubscription } from 'hasyx';
 import { Accounts } from '../accounts';
 import { OAuthButtons } from '../auth/oauth-buttons';
@@ -111,31 +111,28 @@ function UserAccountsList({ userId }: { userId: string }) {
   );
 }
 
-function AuthenticatedUserMenu({ session }: { session: any }) {
+// function AuthenticatedUserMenu({ session }: { session: any }) {
+function AuthenticatedUserMenu({}: {}) {
+  const hasyx = useHasyx();
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' });
+    hasyx.logout({ callbackUrl: '/' });
   };
 
   return (
     <>
       <DropdownMenuLabel className="font-normal">
         <div className="flex flex-col space-y-1">
-          <p className="text-sm font-medium leading-none">{session.user?.name || 'User'}</p>
+          <p className="text-sm font-medium leading-none">{hasyx.user?.name || 'User'}</p>
           <div className="flex items-center gap-1">
             <p className="text-xs leading-none text-muted-foreground">
-              {session.user?.email}
+              {hasyx.user?.email}
             </p>
-            {session.hasuraClaims?.['x-hasura-user-id'] && (
-              <div className="ml-1">
-                {/* Email verification status will be shown via subscription in accounts list */}
-              </div>
-            )}
           </div>
         </div>
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       
-      {session.user?.id && <UserAccountsList userId={session.user.id} />}
+      {hasyx.userId && <UserAccountsList userId={hasyx.userId} />}
       
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={handleSignOut} className="text-red-600 focus:text-red-600">
@@ -159,11 +156,12 @@ function UnauthenticatedUserMenu() {
 }
 
 export function UserProfileDropdown() {
-  const { data: session, status } = useSession();
+  const hasyx = useHasyx();
   const [open, setOpen] = useState(false);
 
-  const isLoading = status === 'loading';
-  const isAuthenticated = status === 'authenticated' && session?.user;
+  const isAuthenticated = hasyx?.userId;
+  console.log('UserProfileDropdown', { hasyx, userId: hasyx?.userId, user: hasyx?.user, isAuthenticated });
+  const isLoading = false;
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -177,12 +175,12 @@ export function UserProfileDropdown() {
           ) : isAuthenticated ? (
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium hidden sm:inline-block">
-                {session.user?.name || 'User'}
+                {hasyx?.user?.name || 'User'}
               </span>
               <Avatar className="h-6 w-6">
-                <AvatarImage src={session.user?.image || undefined} alt={session.user?.name || 'User'} />
+                <AvatarImage src={hasyx?.user?.image || undefined} alt={hasyx?.user?.name || 'User'} />
                 <AvatarFallback className="text-xs">
-                  {getInitials(session.user?.name)}
+                  {getInitials(hasyx?.user?.name)}
                 </AvatarFallback>
               </Avatar>
             </div>
@@ -196,7 +194,7 @@ export function UserProfileDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64" align="end">
         {isAuthenticated ? (
-          <AuthenticatedUserMenu session={session} />
+          <AuthenticatedUserMenu />
         ) : (
           <UnauthenticatedUserMenu />
         )}

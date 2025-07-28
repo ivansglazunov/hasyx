@@ -7,11 +7,12 @@ import { Label } from "hasyx/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "hasyx/components/ui/tabs";
 import { CodeBlock } from 'hasyx/components/code-block';
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
 import { useJwt } from "hasyx/components/jwt-auth";
 import { useState, useEffect } from "react";
+import { useHasyx , useSession } from "hasyx";
 
 export function JwtDebugCard() {
+  const hasyx = useHasyx();
   const { data: session } = useSession();
   const jwtClient = useJwt();
   const [jwtInput, setJwtInput] = useState('');

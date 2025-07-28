@@ -666,6 +666,8 @@ export class Hasyx {
       return undefined;
     }
   }
+
+  logout(options?: any) {}
 } type ClientGeneratorOptions = Omit<GenerateOptions, 'operation'>;
 
 type BaseHookOptions = {

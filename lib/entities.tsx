@@ -86,7 +86,5 @@ export function CytoNode({ data, ...props }: EntityCytoNodeProps) {
   const typename = entityData?.__typename;
   
   const EntityComponent = getEntityComponent(typename);
-  console.log('CytoNode', data, EntityComponent);
-  
   return <EntityComponent.CytoNode data={data as any} {...props} />;
 } 

@@ -1,6 +1,6 @@
 {
   "name": "hasyx",
-  "version": "0.1.373",
+  "version": "0.1.374",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.deep.foundation/",
   "engines": {
@@ -168,6 +168,7 @@
     "mock-local-storage": "^1.1.24",
     "next": "15.3.1",
     "next-auth": "4.24.11",
+    "next-intl": "^4.3.4",
     "next-themes": "0.4.6",
     "next-ws": "2.0.7",
     "octokit": "^5.0.3",
@@ -208,7 +209,8 @@
     "vercel": "41.7.3",
     "vm-browserify": "1.1.2",
     "ws": "8.18.2",
-    "zod": "3.25.4"
+    "zod": "3.25.4",
+    "zustand": "^5.0.6"
   },
   "bin": {
     "hasyx": "./lib/cli.js"

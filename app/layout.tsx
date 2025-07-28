@@ -8,6 +8,12 @@ import { Generator } from "hasyx";
 import schema from "../public/hasura-schema.json";
 import { useEffect } from "react";
 
+import { useLocale } from "hasyx/components/locale-switcher";
+
+import {NextIntlClientProvider} from 'next-intl';
+import {getLocale} from 'next-intl/server';
+import {i18nMessages} from 'hasyx/lib/i18n/messages';
+
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 import cola from 'cytoscape-cola';
@@ -24,7 +30,14 @@ cytoscape.use(edgehandles);
 
 const generate = Generator(schema);
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  locale: defaultLocale = 'en',
+  children,
+}: {
+  locale?: string;
+  children: React.ReactNode
+}) {
+  const { locale, setLocale } = useLocale(defaultLocale);
   useEffect(() => {
     try {
       import('eruda').then(eruda => eruda?.default?.init());
@@ -32,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }, []);
   return (
     <>
-      <html lang="en" suppressHydrationWarning>
+      <html lang={locale} suppressHydrationWarning>
         <head>
           {/* Favicon */}
           <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -76,7 +89,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </head>
         <body>
           <HasyxProvider generate={generate}>
-            {children}
+            <NextIntlClientProvider locale={locale} messages={i18nMessages(locale)}>
+              {children}
+            </NextIntlClientProvider>
             
             {/* PWA Components - available on all pages */}
             <PWAInstallPrompt />

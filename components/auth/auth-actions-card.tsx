@@ -8,7 +8,7 @@ import { Github, LogIn, LogOut, MailCheck, MailWarning, Loader2 } from "lucide-r
 import { signIn, signOut } from "next-auth/react";
 import Image from 'next/image';
 import React from "react";
-import { useSession, useSubscription } from 'hasyx';
+import { useHasyx, useSession, useSubscription } from 'hasyx';
 import { OAuthButtons } from './oauth-buttons';
 import { Accounts } from '../accounts';
 import Debug from 'hasyx/lib/debug';
@@ -20,9 +20,12 @@ import Debug from 'hasyx/lib/debug';
 const debug = Debug('auth:actions-card');
 
 export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
+  const hasyx = useHasyx();
   const { data: session, status } = useSession();
   const loading = status === 'loading';
   const userId = session?.user?.id;
+
+  console.log('AuthActionsCard', { hasyx, session, loading, userId });
 
   // --- Subscription for email verification status ---
   const { 
@@ -47,11 +50,11 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
   const handleSignOut = async () => {
     // Call standard signOut
     // Specify callbackUrl to return to homepage on localhost after signing out from Vercel
-    await signOut({ callbackUrl: '/' }); 
+    hasyx.logout();
   };
 
   // If user is not authenticated, show original content without tabs
-  if (!session || loading) {
+  if (!hasyx?.userId || loading) {
     return (
       <Card {...props}>
         <CardHeader>
@@ -60,11 +63,10 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid w-full items-center gap-2">
-            <Label>Client Session Status (useSession)</Label>
+            <Label>Client Session status (useSession().user.id())</Label>
             {loading && <p className="flex items-center"><Loader2 className="mr-2 h-4 w-4 animate-spin" />Loading session...</p>}
             {!session && !loading && <p>Not signed in</p>}
           </div>
-
           <div className="grid w-full items-center gap-2">
             <Label>Sign In with OAuth</Label>
             <OAuthButtons />
@@ -89,7 +91,7 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
           </TabsList>
           <TabsContent value="auth" className="mt-4 space-y-4">
             <div className="grid w-full items-center gap-2">
-              <Label>Client Session Status (useSession)</Label>
+              <Label>Client Session Status (useSession().user.id)</Label>
               <div className="flex items-center space-x-2 flex-wrap">
                 {/* Email Verification Status from Subscription */}
                 {userId && (
@@ -116,17 +118,17 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
                   </span>
                 )}
                 {/* User Avatar */}
-                {session.user?.image && (
+                {session?.user?.image && (
                   <Image
-                    src={session.user.image}
-                    alt={session.user.name || 'User avatar'}
+                    src={session?.user.image}
+                    alt={session?.user.name || 'User avatar'}
                     width={24}
                     height={24}
                     className="rounded-full"
                   />
                 )}
                 {/* User Name/Email */}
-                <span>Signed in as {session.user?.name || session.user?.email} {session.provider ? `(${session.provider})` : ''}</span>
+                <span>Signed in as {session?.user?.name || session?.user?.email} {session?.provider ? `(${session.provider})` : ''}</span>
               </div>
             </div>
 

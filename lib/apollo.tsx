@@ -42,6 +42,7 @@ export interface HasyxApolloClient extends ApolloClient<any> {
   hasyxGenerator: Generate;
   graphqlWsClient?: GraphQLWSClientInstance;
   terminate?: () => void;
+  reconnectWebSocket?: () => void;
 }
 
 const createRoleLink = () => setContext((request: GraphQLRequest, previousContext: any) => {
@@ -205,8 +206,17 @@ export function createApolloClient(options: ApolloOptions = {}): HasyxApolloClie
         connectionParams: () => {
           debug('apollo', '⚙️ Evaluating connectionParams function...');
 
-          if (secret) {
+          // Динамически читаем JWT токен из localStorage при каждом подключении
+          let activeToken = token;
+          if (!activeToken && typeof window !== 'undefined' && !!+process.env.NEXT_PUBLIC_JWT_AUTH!) {
+            const jwtToken = localStorage.getItem('nextauth_jwt');
+            if (jwtToken) {
+              activeToken = jwtToken;
+              debug('apollo', '🔓 Dynamically reading JWT token from localStorage for WS connection');
+            }
+          }
 
+          if (secret) {
             debug('🔒 Adding admin secret to WebSocket connection');
             return {
               headers: {
@@ -216,7 +226,22 @@ export function createApolloClient(options: ApolloOptions = {}): HasyxApolloClie
             };
           }
 
-          return wsConnectionParams;
+          if (activeToken) {
+            debug('apollo', '🔒 Using dynamically read JWT token for WS connectionParams');
+            return {
+              headers: {
+                'X-Hasura-Role': role,
+                Authorization: `Bearer ${activeToken}`,
+              },
+            };
+          }
+
+          debug('apollo', '🔓 No auth for WS connectionParams');
+          return {
+            headers: {
+              'X-Hasura-Role': role,
+            },
+          };
         },
 
         on: {
@@ -325,6 +350,106 @@ export function createApolloClient(options: ApolloOptions = {}): HasyxApolloClie
       apolloClientInstance.clearStore();
     } catch (error) {
       debug('apollo', 'Error during Apollo Client cleanup:', error);
+    }
+  };
+
+  apolloClientInstance.reconnectWebSocket = () => {
+    if (apolloClientInstance.graphqlWsClient) {
+      debug('apollo', '🔄 Forcing WebSocket reconnection...');
+      apolloClientInstance.graphqlWsClient?.dispose();
+      
+      // Создаем новый WebSocket клиент с обновленными параметрами
+      if (ws && wsClientInstance) {
+        try {
+          const newWsClient = graphqlWSClient({
+            url: createWebSocketUrl(url),
+            webSocketImpl: isClient ? undefined : isomorphicWs,
+            lazy: false,
+            retryAttempts: 5,
+            connectionParams: () => {
+              debug('apollo', '⚙️ Evaluating connectionParams function for reconnection...');
+
+              // Динамически читаем JWT токен из localStorage при каждом подключении
+              let activeToken = token;
+              if (!activeToken && typeof window !== 'undefined' && !!+process.env.NEXT_PUBLIC_JWT_AUTH!) {
+                const jwtToken = localStorage.getItem('nextauth_jwt');
+                if (jwtToken) {
+                  activeToken = jwtToken;
+                  debug('apollo', '🔓 Dynamically reading JWT token from localStorage for WS reconnection');
+                }
+              }
+
+              if (secret) {
+                debug('🔒 Adding admin secret to WebSocket reconnection');
+                return {
+                  headers: {
+                    'X-Hasura-Role': role,
+                    'x-hasura-admin-secret': secret,
+                  },
+                };
+              }
+
+              if (activeToken) {
+                debug('apollo', '🔒 Using dynamically read JWT token for WS reconnection');
+                return {
+                  headers: {
+                    'X-Hasura-Role': role,
+                    Authorization: `Bearer ${activeToken}`,
+                  },
+                };
+              }
+
+              debug('apollo', '🔓 No auth for WS reconnection');
+              return {
+                headers: {
+                  'X-Hasura-Role': role,
+                },
+              };
+            },
+            on: {
+              connected: (socket) => {
+                debug('apollo', '🔗 [graphql-ws] WebSocket reconnected:', socket);
+                debug('Apollo WebSocket Reconnected Successfully!');
+              },
+              connecting: () => debug('apollo', '🔄 [graphql-ws] WebSocket reconnecting...'),
+              ping: (received) => debug('apollo', `➡️ [graphql-ws] Ping ${received ? 'received' : 'sent'}`),
+              pong: (received) => debug('apollo', `⬅️ [graphql-ws] Pong ${received ? 'received' : 'sent'}`),
+              error: (err) => {
+                debug('apollo', '❌ [graphql-ws] WebSocket reconnection error:', err);
+                console.error('WebSocket Reconnection Error:', err);
+              },
+              closed: (event) => debug('apollo', '🚪 [graphql-ws] WebSocket reconnection closed:', event),
+            }
+          });
+
+          // Обновляем ссылки на новый WebSocket клиент
+          apolloClientInstance.graphqlWsClient = newWsClient;
+          wsClientInstance = newWsClient;
+
+          // Создаем новый WebSocket link
+          const newWsLink = new GraphQLWsLink(newWsClient);
+          
+          // Обновляем split link с новым WebSocket link
+          const newLink = split(
+            ({ query }) => {
+              const definition = getMainDefinition(query);
+              const isSubscription = definition.kind === 'OperationDefinition' &&
+                definition.operation === 'subscription';
+              return isSubscription;
+            },
+            newWsLink,
+            httpLink
+          );
+
+          // Обновляем link в Apollo клиенте
+          apolloClientInstance.setLink(newLink);
+          
+          debug('apollo', '✅ WebSocket reconnection completed successfully');
+        } catch (error) {
+          debug('apollo', '❌ Error during WebSocket reconnection:', error);
+          console.error('WebSocket Reconnection Error:', error);
+        }
+      }
     }
   };
 
