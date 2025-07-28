@@ -142,7 +142,7 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
   // Create Hasyx instance when Apollo client changes
   const hasyxInstance = useMemo(() => {
     debug('Creating new Hasyx instance with Apollo client');
-    const hasyx = new HasyxClient(apolloClient, generate);
+    const hasyxInstance = new HasyxClient(apolloClient, generate);
     // In JWT mode, prefer JWT user over session user
     const effectiveUser = jwtUser
       ? jwtUser 
@@ -160,7 +160,7 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
         signOut(options);
       }
     };
-    return hasyx;
+    return hasyxInstance;
   }, [apolloClient, generate, session, jwtUser]);
 
   // @ts-ignore

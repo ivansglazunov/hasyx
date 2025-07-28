@@ -4,7 +4,7 @@ import Diagnostics from "hasyx/lib/diagnostics"
 import useSsr, { SsrResult } from "hasyx/lib/ssr"
 
 export default async function DiagnosticsPage() {
-  const { session } = useSsr() as SsrResult;
+  const { session } = await useSsr(authOptions) as SsrResult;
 
   return (
     <Diagnostics 
