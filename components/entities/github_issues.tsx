@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'hasyx/
 import { X, GitBranch, MessageCircle, Calendar, User, Tag, ExternalLink } from 'lucide-react';
 import { CytoNode as CytoNodeComponent, CytoEdge } from 'hasyx/lib/cyto';
 import { cn } from 'hasyx/lib/utils';
+import { parseIssue } from 'hasyx/lib/issues';
 
 interface GitHubIssueData {
   id?: string;
@@ -109,20 +110,35 @@ interface GitHubIssueData {
   [key: string]: any;
 }
 
-// Function to extract issue references from body text
-function extractIssueReferences(body: string | null): number[] {
-  if (!body) return [];
+// Function to extract issue references from body text and relations
+function extractIssueReferences(body: string | null, relations: any = {}): number[] {
+  const references: number[] = [];
+  
+  if (!body) return references;
 
-  // Match patterns like #123, #456
+  // Match patterns like #123, #456 in body text
   const issuePattern = /#(\d+)/g;
-  const matches: any = [];
   let match;
 
   while ((match = issuePattern.exec(body)) !== null) {
-    matches.push(parseInt(match[1], 10));
+    references.push(parseInt(match[1], 10));
   }
 
-  return matches;
+  // Extract issue references from relations (including the new 'issues' key)
+  Object.entries(relations).forEach(([key, relationIds]: [string, any]) => {
+    if (Array.isArray(relationIds)) {
+      relationIds.forEach((id: string) => {
+        if (typeof id === 'string' && id.startsWith('issue:')) {
+          const issueNumber = parseInt(id.split(':')[1], 10);
+          if (!isNaN(issueNumber)) {
+            references.push(issueNumber);
+          }
+        }
+      });
+    }
+  });
+
+  return [...new Set(references)]; // Remove duplicates
 }
 
 export function Button({ data, ...props }: {
@@ -230,7 +246,7 @@ export function Card({ data, onClose, ...props }: {
           {/* Body preview - limited to 3 lines */}
           {issueData.body && (
             <div className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
-              {issueData.body}
+              {parseIssue(issueData.body).content}
             </div>
           )}
         </CardContent>
@@ -260,10 +276,15 @@ export function CytoNode({ data, availableIssues, ...props }: {
   const stateColor = data?.state === 'open' ? '#22c55e' : '#ef4444';
   const isPR = !!data?.pull_request_data;
 
-  // Extract issue references from body for creating edges
-  const referencedIssues = useMemo(() => {
-    return extractIssueReferences(data?.body || '');
+  // Parse issue body and extract relations
+  const { content, relations } = useMemo(() => {
+    return parseIssue(data?.body || '');
   }, [data?.body]);
+
+  // Extract issue references from body and relations for creating edges
+  const referencedIssues = useMemo(() => {
+    return extractIssueReferences(content, relations);
+  }, [content, relations]);
 
   // Generate edges to referenced issues (only to those that exist in availableIssues)
   const edges = useMemo(() => {
@@ -299,15 +320,17 @@ export function CytoNode({ data, availableIssues, ...props }: {
 
   return (
     <>
+      {/* Root node with database ID */}
       <CytoNodeComponent {...props}
         element={{
-          id: `github_issue${data.github_id}`, // Use numeric github_id as specified
+          id: data.id, // Use database ID as root node ID
           data: {
-            id: `github_issue${data.github_id}`,
+            id: data.id,
             label: `#${data.number}`,
             title: title,
             state: data.state,
             isPR: isPR,
+            github_id: data.github_id,
           },
           ...props?.element,
           classes: cn(
@@ -321,6 +344,24 @@ export function CytoNode({ data, availableIssues, ...props }: {
         // Always visible children (not optionally opened like users)
         children={<Card data={data} />}
       />
+      
+      {/* Invisible node with GitHub ID for edge connections */}
+      <CytoNodeComponent
+        element={{
+          id: `github_issue${data.github_id}`, // Use GitHub ID for edge connections
+          data: {
+            id: `github_issue${data.github_id}`,
+            label: '', // Invisible
+            title: title,
+            state: data.state,
+            isPR: isPR,
+            invisible: true,
+          },
+          classes: ['ghost'], // Make it invisible
+        }}
+        ghost={true}
+      />
+      
       {/* Render edges to referenced issues */}
       {edges}
     </>

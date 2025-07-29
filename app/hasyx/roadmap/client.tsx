@@ -11,6 +11,7 @@ import { Button } from 'hasyx/components/ui/button';
 import { useQuery } from 'hasyx';
 import { toast } from 'sonner';
 import { useToastHandleLoadingError } from 'hasyx/hooks/toasts';
+import { parseIssue, generateIssue } from 'hasyx/lib/issues';
 
 const debug = Debug('cyto');
 
@@ -415,6 +416,27 @@ export default function Client() {
 
   const closeModal = useCallback(() => setSelectedEntity(null), []);
 
+  // Example usage of parseIssue and generateIssue
+  const exampleIssueBody = `## Problem
+Currently, our project's environment variables are managed through npx hasyx assist.
+
+## Solution
+Introduce a centralized environment configuration file.
+
+<details>
+<summary>Relations</summary>
+\`\`\`json
+{
+  "depends_on": ["issue:123", "commit:abc123"],
+  "blocks": ["issue:456"],
+  "related_to": ["issue:789"]
+}
+\`\`\`
+</details>`;
+
+  const { content, relations } = parseIssue(exampleIssueBody);
+  const regeneratedBody = generateIssue(content, relations);
+
   return (
     <div className="w-full h-full relative">
       <Cyto
@@ -431,6 +453,27 @@ export default function Client() {
             >
               {isSyncing ? '🔄 Syncing...' : '🔄 Sync GitHub Issues'}
             </Button>
+            
+            {/* Debug info */}
+            <Card className="w-64">
+              <CardHeader>
+                <CardTitle className="text-sm">Issue Relations Debug</CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs">
+                <div className="space-y-2">
+                  <div>
+                    <strong>Content:</strong>
+                    <div className="truncate">{content.substring(0, 50)}...</div>
+                  </div>
+                  <div>
+                    <strong>Relations:</strong>
+                    <pre className="text-xs bg-muted p-1 rounded">
+                      {JSON.stringify(relations, null, 2)}
+                    </pre>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </>}
       >

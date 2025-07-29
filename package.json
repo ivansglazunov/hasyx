@@ -1,6 +1,6 @@
 {
   "name": "hasyx",
-  "version": "0.1.375",
+  "version": "0.1.376",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.deep.foundation/",
   "engines": {
@@ -44,7 +44,8 @@
     "ollama": "ollama",
     "logs": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs",
     "logs-diffs": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs-diffs",
-    "logs-states": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs-states"
+    "logs-states": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs-states",
+    "env": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli.ts env"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -209,6 +210,7 @@
     "vercel": "41.7.3",
     "vm-browserify": "1.1.2",
     "ws": "8.18.2",
+    "yaml": "^2.8.0",
     "zod": "3.25.4",
     "zustand": "^5.0.6"
   },

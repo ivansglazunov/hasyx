@@ -30,6 +30,7 @@ import { Generator } from './generator';
 import { Hasyx } from './hasyx';
 import { configureDns } from './assist-dns';
 import { configureDocker } from './assist-docker';
+import { configureStorage } from './assist-storage';
 
 // Ensure dotenv is configured only once
 if (require.main === module) {
@@ -77,6 +78,7 @@ interface AssistOptions {
   skipDns?: boolean;
   skipDocker?: boolean;
   skipGitHub?: boolean;
+  skipStorage?: boolean;
 }
 
 // NEW FUNCTION to determine OAuth callback base URL
@@ -163,6 +165,8 @@ async function assist(options: AssistOptions = {}) {
     else debug('Skipping DNS configuration');
     if (!options.skipDocker) envVars = await configureDocker(rl, envPath);
     else debug('Skipping Docker configuration');
+    if (!options.skipStorage) await configureStorage(rl, envPath, { skipStorage: options.skipStorage });
+    else debug('Skipping Storage configuration');
     if (!options.skipVercel) await setupVercel(rl, envPath, envVars);
     else debug('Skipping Vercel setup');
     if (!options.skipSync) await syncEnvironmentVariables(rl, envPath, {});

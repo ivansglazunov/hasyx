@@ -569,7 +569,7 @@ const CytoReactNode = ({ id, children, boxRefCallback }) => {
         ref={boxRefCallback}
         style={{
           position: 'absolute',
-          pointerEvents: 'all',
+          // pointerEvents: 'all',
         }}
       >
         {children}

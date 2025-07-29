@@ -32,6 +32,7 @@ import {
   logsCommandDescribe, logsCommand,
   logsDiffsCommandDescribe, logsDiffsCommand,
   logsStatesCommandDescribe, logsStatesCommand,
+  envCommandDescribe, envCommand,
   assetsCommand,
   eventsCommand,
   unbuildCommand,
@@ -132,6 +133,10 @@ logsDiffsCommandDescribe(program.command('logs-diffs')).action(async () => {
 
 logsStatesCommandDescribe(program.command('logs-states')).action(async () => {
   await logsStatesCommand();
+});
+
+envCommandDescribe(program.command('env')).action(async () => {
+  await envCommand();
 });
 
 subdomainCommandDescribe(program.command('subdomain'));
