@@ -37,6 +37,7 @@ Hasyx provides a robust starting point and a set of tools for building applicati
 [![Subdomain Management Documentation](https://img.shields.io/badge/Subdomain%20Manager-MD-purple)](SUBDOMAIN.md)
 [![Docker Hub Publishing Documentation](https://img.shields.io/badge/Docker%20Hub-MD-blue)](DOCKER.md)
 [![URL Query State Management Documentation](https://img.shields.io/badge/Use%20Query%20Hook-MD-lightblue)](USE-QUERY.md)
+[![Files Storage Documentation](https://img.shields.io/badge/Files%20Storage-MD-darkgreen)](FILES.md)
 
 ## Technologies Used
 
@@ -169,6 +170,7 @@ Explore the different modules and functionalities of Hasyx:
 *   **[SUBDOMAIN.md](SUBDOMAIN.md):** Documentation for subdomain management.
 *   **[DOCKER.md](DOCKER.md):** Complete Docker containerization guide with automated Hub publishing, multi-architecture builds, and interactive configuration tools.
 *   **[USE-QUERY.md](USE-QUERY.md):** Complete guide to URL query state management with the `use-query` hook for synchronizing state between multiple components through URL parameters.
+*   **[FILES.md](FILES.md):** Complete guide to Hasyx Files Storage system with S3-compatible storage, file upload/download, metadata management, and REST API integration.
 
 ## 🚀 Quick Start
 

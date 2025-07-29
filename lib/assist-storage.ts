@@ -64,7 +64,7 @@ export async function configureStorage(
     const setupStorage = await askYesNo(
       rl,
       'Would you like to configure file storage for your Hasura project?',
-      true
+      false
     );
 
     if (!setupStorage) {
@@ -163,11 +163,36 @@ async function configureCloudStorage(rl: any, options: StorageSetupOptions): Pro
   console.log('-'.repeat(40));
 
   const providers = [
-    { name: 'AWS S3', value: 'aws' },
-    { name: 'Google Cloud Storage', value: 'gcp' },
-    { name: 'Azure Blob Storage', value: 'azure' },
-    { name: 'DigitalOcean Spaces', value: 'digitalocean' },
-    { name: 'Cloudflare R2', value: 'cloudflare' }
+    { 
+      name: 'AWS S3', 
+      value: 'aws',
+      docsLink: 'https://console.aws.amazon.com/iam/',
+      instructions: '1. Go to AWS IAM Console\n2. Create a new user or use existing one\n3. Attach "AmazonS3FullAccess" policy or create custom policy\n4. Create Access Key and Secret Access Key\n5. Create S3 bucket in your chosen region'
+    },
+    { 
+      name: 'Google Cloud Storage', 
+      value: 'gcp',
+      docsLink: 'https://console.cloud.google.com/iam-admin/serviceaccounts',
+      instructions: '1. Go to Google Cloud Console\n2. Create a new project or select existing\n3. Enable Cloud Storage API\n4. Create Service Account with "Storage Admin" role\n5. Create and download JSON key file\n6. Create bucket in your chosen region\n\nNote: For GCP, you\'ll need to extract Access Key ID and Secret from the JSON key file. The Access Key ID is the "client_email" field, and the Secret is the "private_key" field.'
+    },
+    { 
+      name: 'Azure Blob Storage', 
+      value: 'azure',
+      docsLink: 'https://portal.azure.com/#blade/Microsoft_Azure_Storage/Blade',
+      instructions: '1. Go to Azure Portal\n2. Create Storage Account\n3. Create Container (bucket)\n4. Go to "Access keys" section\n5. Copy Storage Account Name and Key\n\nNote: For Azure, the Access Key ID is the Storage Account Name, and the Secret Access Key is one of the two access keys.'
+    },
+    { 
+      name: 'DigitalOcean Spaces', 
+      value: 'digitalocean',
+      docsLink: 'https://cloud.digitalocean.com/spaces',
+      instructions: '1. Go to DigitalOcean Cloud Console\n2. Navigate to Spaces section\n3. Create a new Space (bucket)\n4. Go to API section\n5. Generate Spaces Access Key and Secret\n\nNote: For DigitalOcean Spaces, the region should be in format like "nyc3", "sfo3", "fra1", etc. The endpoint will be automatically configured based on your region.'
+    },
+    { 
+      name: 'Cloudflare R2', 
+      value: 'cloudflare',
+      docsLink: 'https://dash.cloudflare.com/r2/overview',
+      instructions: '1. Go to Cloudflare Dashboard\n2. Navigate to R2 Object Storage\n3. Create a new bucket\n4. Go to "Manage R2 API tokens"\n5. Create API token with "Object Read & Write" permissions\n\nNote: For Cloudflare R2, you\'ll need to use your Account ID as the Access Key ID and the API Token as the Secret Access Key. The endpoint will be automatically configured.'
+    }
   ];
 
   console.log('Available cloud storage providers:');
@@ -182,7 +207,14 @@ async function configureCloudStorage(rl: any, options: StorageSetupOptions): Pro
   );
 
   const providerIndex = parseInt(providerChoice) - 1;
-  const provider = (providers[providerIndex]?.value || 'aws') as 'aws' | 'gcp' | 'azure' | 'digitalocean' | 'cloudflare';
+  const selectedProvider = providers[providerIndex] || providers[0];
+
+  console.log(`\n📋 Setting up ${selectedProvider.name}...`);
+  console.log(`📖 Documentation: ${selectedProvider.docsLink}`);
+  console.log(`📝 Instructions:`);
+  console.log(selectedProvider.instructions);
+  console.log('\nPress Enter when you have your credentials ready...');
+  await new Promise(resolve => rl.question('', resolve));
 
   const bucket = await askQuestion(
     rl,
@@ -211,7 +243,7 @@ async function configureCloudStorage(rl: any, options: StorageSetupOptions): Pro
   let endpoint = '';
   let forcePathStyle = false;
 
-  switch (provider) {
+  switch (selectedProvider.value) {
     case 'aws':
       endpoint = 'https://s3.amazonaws.com';
       break;
@@ -222,17 +254,17 @@ async function configureCloudStorage(rl: any, options: StorageSetupOptions): Pro
       endpoint = 'https://blob.core.windows.net';
       break;
     case 'digitalocean':
-      endpoint = 'https://nyc3.digitaloceanspaces.com';
+      endpoint = 'https://{region}.digitaloceanspaces.com';
       forcePathStyle = true;
       break;
     case 'cloudflare':
-      endpoint = 'https://pub-1234567890.r2.dev';
+      endpoint = 'https://{account-id}.r2.cloudflarestorage.com';
       forcePathStyle = true;
       break;
   }
 
   return {
-    provider,
+    provider: selectedProvider.value as 'aws' | 'gcp' | 'azure' | 'digitalocean' | 'cloudflare',
     bucket,
     region,
     accessKeyId,
