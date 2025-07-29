@@ -1,17 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Plus, ExternalLink, AlertCircle } from 'lucide-react';
-import { toast } from 'sonner';
+"use client";
 
-interface GitHubIssue {
+import React from 'react';
+import { Button as UIButton } from '@/components/ui/button';
+import { Card as UICard, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { CytoNode as CytoNodeComponent } from '@/lib/cyto';
+import { X, Github, ExternalLink } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface GitHubIssueData {
   id: number;
   number: number;
   title: string;
@@ -27,296 +26,219 @@ interface GitHubIssue {
   comments: number;
   locked: boolean;
   draft: boolean;
+  __typename?: string;
+  [key: string]: any;
 }
 
-interface CreateIssueForm {
-  title: string;
-  body: string;
-  labels: string[];
+function getStateColor(state: string) {
+  return state === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
 }
 
-export function GitHubIssues() {
-  const { data: session } = useSession();
-  const [issues, setIssues] = useState<GitHubIssue[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [formData, setFormData] = useState<CreateIssueForm>({
-    title: '',
-    body: '',
-    labels: []
+function formatDate(timestamp: number) {
+  return new Date(timestamp).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   });
+}
 
-  // Fetch issues
-  useEffect(() => {
-    fetchIssues();
-  }, []);
-
-  const fetchIssues = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/github/issues', {
-        method: 'POST'
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch issues');
-      }
-      
-      const data = await response.json();
-      if (data.success) {
-        // Fetch issues from database
-        const issuesResponse = await fetch('/api/github/issues', {
-          method: 'GET'
-        });
-        
-        if (issuesResponse.ok) {
-          const issuesData = await issuesResponse.json();
-          setIssues(issuesData.issues || []);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching issues:', error);
-      toast.error('Failed to fetch GitHub issues');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createIssue = async () => {
-    if (!formData.title.trim()) {
-      toast.error('Issue title is required');
-      return;
-    }
-
-    try {
-      setCreating(true);
-      const response = await fetch('/api/github/issues', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        toast.success(`Issue #${data.issue.number} created successfully`);
-        
-        // Reset form and hide it
-        setFormData({ title: '', body: '', labels: [] });
-        setShowCreateForm(false);
-        
-        // Refresh issues list
-        await fetchIssues();
-      } else {
-        throw new Error(data.error || 'Failed to create issue');
-      }
-    } catch (error) {
-      console.error('Error creating issue:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to create issue');
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getStateColor = (state: string) => {
-    return state === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
-  };
-
-  if (loading) {
+export function Button({ data, ...props }: {
+  data: GitHubIssueData;
+  [key: string]: any;
+}) {
+  const issueData = typeof data === 'object' ? data : null;
+  const issueId = typeof data === 'string' ? data : data?.id;
+  
+  if (!issueData) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Loading GitHub issues...</span>
+      <UIButton
+        variant="outline"
+        className="h-auto p-2 justify-start gap-2 min-w-0"
+        {...props}
+      >
+        <Github className="w-4 h-4 flex-shrink-0" />
+        <span className="truncate text-xs">Issue {issueId}</span>
+      </UIButton>
+    );
+  }
+
+  const displayName = `#${issueData.number} ${issueData.title}`;
+
+  return (
+    <UIButton
+      variant="outline"
+      className="h-auto p-2 justify-start gap-2 min-w-0"
+      {...props}
+    >
+      <Github className="w-4 h-4 flex-shrink-0" />
+      <div className="flex flex-col items-start min-w-0 flex-1">
+        <span className="truncate text-xs font-medium">{displayName}</span>
+        <div className="flex items-center gap-1">
+          <Badge className={cn("text-xs", getStateColor(issueData.state))}>
+            {issueData.state}
+          </Badge>
+          {issueData.comments > 0 && (
+            <span className="text-xs text-muted-foreground">
+              {issueData.comments} comments
+            </span>
+          )}
+        </div>
       </div>
+    </UIButton>
+  );
+}
+
+export function Card({ data, onClose, ...props }: {
+  data: GitHubIssueData;
+  onClose?: () => void;
+  [key: string]: any;
+}) {
+  const issueData = typeof data === 'object' ? data : null;
+  
+  if (!issueData && typeof data === 'string') {
+    return (
+      <UICard className="w-80" {...props}>
+        <CardContent className="p-4">
+          <div className="text-sm text-muted-foreground">
+            Issue ID: {data}
+            <br />
+            <span className="text-xs">No additional data available</span>
+          </div>
+        </CardContent>
+      </UICard>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">GitHub Issues</h2>
-          <p className="text-muted-foreground">
-            Manage issues for the repository
-          </p>
+    <UICard className="w-80" {...props}>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-full">
+              <Github className="w-5 h-5" />
+            </div>
+            <div>
+              <CardTitle className="text-base">Issue #{issueData?.number}</CardTitle>
+              <p className="text-sm text-muted-foreground">GitHub Issue</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {issueData?.html_url && (
+              <UIButton
+                variant="ghost"
+                size="sm"
+                onClick={() => window.open(issueData.html_url, '_blank')}
+                className="h-6 w-6 p-0"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </UIButton>
+            )}
+            {onClose && (
+              <UIButton
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="h-6 w-6 p-0"
+              >
+                <X className="h-4 w-4" />
+              </UIButton>
+            )}
+          </div>
         </div>
-        
-        {session?.user && (
-          <Button
-            onClick={() => setShowCreateForm(!showCreateForm)}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Create Issue
-          </Button>
-        )}
-      </div>
-
-      {/* Create Issue Form */}
-      {showCreateForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Create New Issue</CardTitle>
-            <CardDescription>
-              Create a new issue in the GitHub repository
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+      </CardHeader>
+      <CardContent className="pt-0">
+        <div className="space-y-3">
+          {/* Title */}
+          <div>
+            <h3 className="font-medium text-sm mb-1">{issueData?.title}</h3>
+          </div>
+          
+          {/* Status badges */}
+          <div className="flex flex-wrap items-center gap-1">
+            <Badge className={getStateColor(issueData?.state || 'unknown')}>
+              {issueData?.state}
+            </Badge>
+            {issueData?.locked && (
+              <Badge variant="secondary" className="text-xs">Locked</Badge>
+            )}
+            {issueData?.draft && (
+              <Badge variant="outline" className="text-xs">Draft</Badge>
+            )}
+          </div>
+          
+          {/* Description */}
+          {issueData?.body && (
+            <div className="text-xs text-muted-foreground line-clamp-3">
+              {issueData.body}
+            </div>
+          )}
+          
+          {/* Metadata */}
+          <div className="space-y-1 text-xs text-muted-foreground">
+            {issueData?.user && (
+              <div>Opened by {issueData.user}</div>
+            )}
+            <div>Created: {formatDate(issueData?.created_at || 0)}</div>
+            {issueData?.updated_at && issueData.updated_at !== issueData.created_at && (
+              <div>Updated: {formatDate(issueData.updated_at)}</div>
+            )}
+            {issueData?.closed_at && (
+              <div>Closed: {formatDate(issueData.closed_at)}</div>
+            )}
+            {issueData?.comments && issueData.comments > 0 && (
+              <div>{issueData.comments} comments</div>
+            )}
+          </div>
+          
+          {/* Labels */}
+          {issueData?.labels && issueData.labels.length > 0 && (
             <div>
-              <label htmlFor="title" className="block text-sm font-medium mb-2">
-                Title *
-              </label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Issue title"
-                disabled={creating}
-              />
+              <div className="text-xs font-medium mb-1">Labels:</div>
+              <div className="flex flex-wrap gap-1">
+                {issueData.labels.map((label) => (
+                  <Badge key={label} variant="outline" className="text-xs">
+                    {label}
+                  </Badge>
+                ))}
+              </div>
             </div>
-            
+          )}
+          
+          {/* Assignees */}
+          {issueData?.assignees && issueData.assignees.length > 0 && (
             <div>
-              <label htmlFor="body" className="block text-sm font-medium mb-2">
-                Description
-              </label>
-              <Textarea
-                id="body"
-                value={formData.body}
-                onChange={(e) => setFormData({ ...formData, body: e.target.value })}
-                placeholder="Describe the issue..."
-                rows={4}
-                disabled={creating}
-              />
+              <div className="text-xs font-medium mb-1">Assignees:</div>
+              <div className="flex flex-wrap gap-1">
+                {issueData.assignees.map((assignee) => (
+                  <Badge key={assignee} variant="secondary" className="text-xs">
+                    {assignee}
+                  </Badge>
+                ))}
+              </div>
             </div>
-            
-            <div>
-              <label htmlFor="labels" className="block text-sm font-medium mb-2">
-                Labels (comma-separated)
-              </label>
-              <Input
-                id="labels"
-                value={formData.labels.join(', ')}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  labels: e.target.value.split(',').map(l => l.trim()).filter(Boolean)
-                })}
-                placeholder="bug, enhancement, help wanted"
-                disabled={creating}
-              />
-            </div>
-            
-            <div className="flex gap-2">
-              <Button
-                onClick={createIssue}
-                disabled={creating || !formData.title.trim()}
-                className="flex items-center gap-2"
-              >
-                {creating && <Loader2 className="h-4 w-4 animate-spin" />}
-                Create Issue
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowCreateForm(false);
-                  setFormData({ title: '', body: '', labels: [] });
-                }}
-                disabled={creating}
-              >
-                Cancel
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Issues List */}
-      <div className="space-y-4">
-        {issues.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No issues found</p>
-            </CardContent>
-          </Card>
-        ) : (
-          issues.map((issue) => (
-            <Card key={issue.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className={getStateColor(issue.state)}>
-                        {issue.state}
-                      </Badge>
-                      {issue.locked && (
-                        <Badge variant="secondary">Locked</Badge>
-                      )}
-                      {issue.draft && (
-                        <Badge variant="outline">Draft</Badge>
-                      )}
-                    </div>
-                    
-                    <h3 className="text-lg font-semibold mb-2">
-                      #{issue.number} {issue.title}
-                    </h3>
-                    
-                    {issue.body && (
-                      <p className="text-muted-foreground mb-4 line-clamp-3">
-                        {issue.body}
-                      </p>
-                    )}
-                    
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>Opened by {issue.user || 'Unknown'}</span>
-                      <span>•</span>
-                      <span>{formatDate(issue.created_at)}</span>
-                      {issue.comments > 0 && (
-                        <>
-                          <span>•</span>
-                          <span>{issue.comments} comments</span>
-                        </>
-                      )}
-                    </div>
-                    
-                    {issue.labels.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-3">
-                        {issue.labels.map((label) => (
-                          <Badge key={label} variant="outline" className="text-xs">
-                            {label}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => window.open(issue.html_url, '_blank')}
-                    className="flex items-center gap-1"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    View
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
-    </div>
+          )}
+        </div>
+      </CardContent>
+    </UICard>
   );
+}
+
+export function CytoNode({ data, ...props }: {
+  data: GitHubIssueData;
+  [key: string]: any;
+}) {
+  const issueData = typeof data === 'object' ? data : null;
+  const label = issueData ? `#${issueData.number} ${issueData.title}` : data?.id || 'Issue';
+  
+  return <CytoNodeComponent {...props} element={{
+    id: data.id,
+    data: {
+      id: data.id,
+      label: label,
+    },
+    ...props?.element,
+    classes: cn('github-issue', props.classes)
+  }} />;
 }
