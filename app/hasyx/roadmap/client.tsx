@@ -453,27 +453,6 @@ Introduce a centralized environment configuration file.
             >
               {isSyncing ? '🔄 Syncing...' : '🔄 Sync GitHub Issues'}
             </Button>
-            
-            {/* Debug info */}
-            <Card className="w-64">
-              <CardHeader>
-                <CardTitle className="text-sm">Issue Relations Debug</CardTitle>
-              </CardHeader>
-              <CardContent className="text-xs">
-                <div className="space-y-2">
-                  <div>
-                    <strong>Content:</strong>
-                    <div className="truncate">{content.substring(0, 50)}...</div>
-                  </div>
-                  <div>
-                    <strong>Relations:</strong>
-                    <pre className="text-xs bg-muted p-1 rounded">
-                      {JSON.stringify(relations, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </>}
       >

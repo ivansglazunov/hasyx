@@ -39,6 +39,7 @@ import {
   assist,
   localCommand,
   vercelCommand,
+  configureStorage,
 } from 'hasyx/lib/cli-hasyx';
 
 // Ask command is handled separately with its own imports
@@ -138,6 +139,23 @@ logsStatesCommandDescribe(program.command('logs-states')).action(async () => {
 envCommandDescribe(program.command('env')).action(async () => {
   await envCommand();
 });
+
+// Storage command
+program.command('storage')
+  .description('Configure hasura-storage with S3-compatible cloud or local storage')
+  .option('--skip-local', 'Skip local storage option')
+  .option('--skip-cloud', 'Skip cloud storage option')
+  .option('--skip-antivirus', 'Skip antivirus configuration')
+  .option('--skip-image-manipulation', 'Skip image manipulation configuration')
+  .action(async (options) => {
+    const rl = require('readline').createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+    const envPath = path.join(process.cwd(), '.env');
+    await configureStorage(rl, envPath, options);
+    rl.close();
+  });
 
 subdomainCommandDescribe(program.command('subdomain'));
 

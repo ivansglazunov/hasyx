@@ -1,369 +1,322 @@
-"use client";
+'use client';
 
-import React, { useMemo } from 'react';
-import { useQuery } from 'hasyx';
-import { Button as UIButton } from 'hasyx/components/ui/button';
-import { Card as UICard, CardContent, CardHeader, CardTitle } from 'hasyx/components/ui/card';
-import { Badge } from 'hasyx/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from 'hasyx/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'hasyx/components/ui/tooltip';
-import { X, GitBranch, MessageCircle, Calendar, User, Tag, ExternalLink } from 'lucide-react';
-import { CytoNode as CytoNodeComponent, CytoEdge } from 'hasyx/lib/cyto';
-import { cn } from 'hasyx/lib/utils';
-import { parseIssue } from 'hasyx/lib/issues';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, Plus, ExternalLink, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
-interface GitHubIssueData {
-  id?: string;
-  github_id?: number;
-  number?: number;
-  title?: string;
-  body?: string;
-  state?: string;
-  state_reason?: string;
-  locked?: boolean;
-  comments_count?: number;
-  author_association?: string;
-  user_data?: {
-    id: number;
-    login: string;
-    avatar_url: string;
-    html_url: string;
-    type?: string;
-    user_view_type?: string;
-    node_id?: string;
-    gists_url?: string;
-    repos_url?: string;
-    events_url?: string;
-    site_admin?: boolean;
-    gravatar_id?: string;
-    starred_url?: string;
-    followers_url?: string;
-    following_url?: string;
-    organizations_url?: string;
-    subscriptions_url?: string;
-    received_events_url?: string;
-  };
-  assignee_data?: {
-    id: number;
-    login: string;
-    avatar_url: string;
-    html_url: string;
-    type?: string;
-    user_view_type?: string;
-    node_id?: string;
-    gists_url?: string;
-    repos_url?: string;
-    events_url?: string;
-    site_admin?: boolean;
-    gravatar_id?: string;
-    starred_url?: string;
-    followers_url?: string;
-    following_url?: string;
-    organizations_url?: string;
-    subscriptions_url?: string;
-    received_events_url?: string;
-  } | null;
-  assignees_data?: Array<{
-    id: number;
-    login: string;
-    avatar_url: string;
-    html_url: string;
-    type?: string;
-    user_view_type?: string;
-    node_id?: string;
-    gists_url?: string;
-    repos_url?: string;
-    events_url?: string;
-    site_admin?: boolean;
-    gravatar_id?: string;
-    starred_url?: string;
-    followers_url?: string;
-    following_url?: string;
-    organizations_url?: string;
-    subscriptions_url?: string;
-    received_events_url?: string;
-  }>;
-  labels_data?: Array<{
-    id: number;
-    name: string;
-    color: string;
-    description?: string;
-    default?: boolean;
-    node_id?: string;
-    url?: string;
-  }>;
-  milestone_data?: {
-    id: number;
-    title: string;
-    description?: string;
-    state: string;
-  } | null;
-  pull_request_data?: any | null;
-  repository_owner?: string;
-  repository_name?: string;
-  url?: string;
-  html_url?: string;
-  created_at?: number;
-  updated_at?: number;
-  closed_at?: number | null;
-  __typename?: string;
-  [key: string]: any;
+interface GitHubIssue {
+  id: number;
+  number: number;
+  title: string;
+  body: string | null;
+  state: string;
+  user: string | null;
+  assignees: string[];
+  labels: string[];
+  created_at: number;
+  updated_at: number;
+  closed_at: number | null;
+  html_url: string;
+  comments: number;
+  locked: boolean;
+  draft: boolean;
 }
 
-// Function to extract issue references from body text and relations
-function extractIssueReferences(body: string | null, relations: any = {}): number[] {
-  const references: number[] = [];
-  
-  if (!body) return references;
+interface CreateIssueForm {
+  title: string;
+  body: string;
+  labels: string[];
+}
 
-  // Match patterns like #123, #456 in body text
-  const issuePattern = /#(\d+)/g;
-  let match;
-
-  while ((match = issuePattern.exec(body)) !== null) {
-    references.push(parseInt(match[1], 10));
-  }
-
-  // Extract issue references from relations (including the new 'issues' key)
-  Object.entries(relations).forEach(([key, relationIds]: [string, any]) => {
-    if (Array.isArray(relationIds)) {
-      relationIds.forEach((id: string) => {
-        if (typeof id === 'string' && id.startsWith('issue:')) {
-          const issueNumber = parseInt(id.split(':')[1], 10);
-          if (!isNaN(issueNumber)) {
-            references.push(issueNumber);
-          }
-        }
-      });
-    }
+export function GitHubIssues() {
+  const { data: session } = useSession();
+  const [issues, setIssues] = useState<GitHubIssue[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [formData, setFormData] = useState<CreateIssueForm>({
+    title: '',
+    body: '',
+    labels: []
   });
 
-  return [...new Set(references)]; // Remove duplicates
-}
+  // Fetch issues
+  useEffect(() => {
+    fetchIssues();
+  }, []);
 
-export function Button({ data, ...props }: {
-  data: GitHubIssueData;
-  [key: string]: any;
-}) {
-  const issueData = data;
+  const fetchIssues = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/github/issues', {
+        method: 'POST'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch issues');
+      }
+      
+      const data = await response.json();
+      if (data.success) {
+        // Fetch issues from database
+        const issuesResponse = await fetch('/api/github/issues', {
+          method: 'GET'
+        });
+        
+        if (issuesResponse.ok) {
+          const issuesData = await issuesResponse.json();
+          setIssues(issuesData.issues || []);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching issues:', error);
+      toast.error('Failed to fetch GitHub issues');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const displayTitle = issueData?.title || `Issue #${issueData?.number}`;
-  const stateColor = issueData?.state === 'open' ? 'bg-green-500' : 'bg-red-500';
+  const createIssue = async () => {
+    if (!formData.title.trim()) {
+      toast.error('Issue title is required');
+      return;
+    }
+
+    try {
+      setCreating(true);
+      const response = await fetch('/api/github/issues', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success(`Issue #${data.issue.number} created successfully`);
+        
+        // Reset form and hide it
+        setFormData({ title: '', body: '', labels: [] });
+        setShowCreateForm(false);
+        
+        // Refresh issues list
+        await fetchIssues();
+      } else {
+        throw new Error(data.error || 'Failed to create issue');
+      }
+    } catch (error) {
+      console.error('Error creating issue:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to create issue');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getStateColor = (state: string) => {
+    return state === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Loading GitHub issues...</span>
+      </div>
+    );
+  }
 
   return (
-    <UIButton
-      variant="outline"
-      className="h-auto p-2 justify-start gap-2 min-w-0"
-      {...props}
-    >
-      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${stateColor}`} />
-      <span className="truncate text-xs">#{issueData?.number} {displayTitle}</span>
-    </UIButton>
-  );
-}
-
-export function Card({ data, onClose, ...props }: {
-  data: GitHubIssueData;
-  onClose?: () => void;
-  [key: string]: any;
-}) {
-  const issueData = data;
-
-  const isPR = !!issueData.pull_request_data;
-
-  return (
-    <div className="relative group pointer-events-none">
-      {/* Labels above card */}
-      {issueData.labels_data && issueData.labels_data.length > 0 && (
-        <div className="flex items-center gap-1 flex-wrap pb-3">
-          {issueData.labels_data.map((label) => (
-            <Badge
-              key={label.id}
-              variant="outline"
-              className="text-xs pointer-events-auto"
-              style={{
-                backgroundColor: `#${label.color}20`,
-                borderColor: `#${label.color}`,
-                color: `#${label.color}`
-              }}
-            >
-              {label.name}
-            </Badge>
-          ))}
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">GitHub Issues</h2>
+          <p className="text-muted-foreground">
+            Manage issues for the repository
+          </p>
         </div>
+        
+        {session?.user && (
+          <Button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Create Issue
+          </Button>
+        )}
+      </div>
+
+      {/* Create Issue Form */}
+      {showCreateForm && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Create New Issue</CardTitle>
+            <CardDescription>
+              Create a new issue in the GitHub repository
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium mb-2">
+                Title *
+              </label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Issue title"
+                disabled={creating}
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="body" className="block text-sm font-medium mb-2">
+                Description
+              </label>
+              <Textarea
+                id="body"
+                value={formData.body}
+                onChange={(e) => setFormData({ ...formData, body: e.target.value })}
+                placeholder="Describe the issue..."
+                rows={4}
+                disabled={creating}
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="labels" className="block text-sm font-medium mb-2">
+                Labels (comma-separated)
+              </label>
+              <Input
+                id="labels"
+                value={formData.labels.join(', ')}
+                onChange={(e) => setFormData({ 
+                  ...formData, 
+                  labels: e.target.value.split(',').map(l => l.trim()).filter(Boolean)
+                })}
+                placeholder="bug, enhancement, help wanted"
+                disabled={creating}
+              />
+            </div>
+            
+            <div className="flex gap-2">
+              <Button
+                onClick={createIssue}
+                disabled={creating || !formData.title.trim()}
+                className="flex items-center gap-2"
+              >
+                {creating && <Loader2 className="h-4 w-4 animate-spin" />}
+                Create Issue
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowCreateForm(false);
+                  setFormData({ title: '', body: '', labels: [] });
+                }}
+                disabled={creating}
+              >
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
-      <UICard className="w-80 relative gap-1 z-1 pointer-events-auto" {...props}>
-        <CardHeader className="pb-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-start gap-2 min-w-0">
-              <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-2 ${issueData.state === 'open' ? 'bg-green-500' : 'bg-red-500'}`}>
-                {issueData.assignees_data && issueData.assignees_data.length > 0 && (
-                  <div className="absolute left-0 top-5 flex flex-col gap-1 z-10 -ml-4">
-                    {issueData.assignees_data.map((assignee, index) => (
-                      <Tooltip key={assignee.id}>
-                        <TooltipTrigger asChild>
-                          <Avatar className="w-8 h-8 border-2 border-white shadow-sm cursor-pointer">
-                            <AvatarImage src={assignee.avatar_url} />
-                            <AvatarFallback className="text-xs">
-                              {assignee.login.substring(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                        </TooltipTrigger>
-                        <TooltipContent side="right" className="text-xs">
-                          <p>{assignee.login}</p>
-                          {issueData.author_association && <p className="text-muted-foreground">{issueData.author_association}</p>}
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
+      {/* Issues List */}
+      <div className="space-y-4">
+        {issues.length === 0 ? (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">No issues found</p>
+            </CardContent>
+          </Card>
+        ) : (
+          issues.map((issue) => (
+            <Card key={issue.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge className={getStateColor(issue.state)}>
+                        {issue.state}
+                      </Badge>
+                      {issue.locked && (
+                        <Badge variant="secondary">Locked</Badge>
+                      )}
+                      {issue.draft && (
+                        <Badge variant="outline">Draft</Badge>
+                      )}
+                    </div>
+                    
+                    <h3 className="text-lg font-semibold mb-2">
+                      #{issue.number} {issue.title}
+                    </h3>
+                    
+                    {issue.body && (
+                      <p className="text-muted-foreground mb-4 line-clamp-3">
+                        {issue.body}
+                      </p>
+                    )}
+                    
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span>Opened by {issue.user || 'Unknown'}</span>
+                      <span>•</span>
+                      <span>{formatDate(issue.created_at)}</span>
+                      {issue.comments > 0 && (
+                        <>
+                          <span>•</span>
+                          <span>{issue.comments} comments</span>
+                        </>
+                      )}
+                    </div>
+                    
+                    {issue.labels.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-3">
+                        {issue.labels.map((label) => (
+                          <Badge key={label} variant="outline" className="text-xs">
+                            {label}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              {issueData.html_url ? (
-                <a
-                  href={issueData.html_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium hover:underline hover:text-white transition-colors"
-                >
-                  {issueData.title}
-                </a>
-              ) : (
-                <CardTitle className="text-sm">
-                  {issueData.title}
-                </CardTitle>
-              )}
-            </div>
-            {onClose && (
-              <UIButton variant="ghost" size="sm" onClick={onClose} className="flex-shrink-0">
-                <X className="w-4 h-4" />
-              </UIButton>
-            )}
-          </div>
-        </CardHeader>
-
-        <CardContent className="pt-0">
-          {/* Body preview - limited to 3 lines */}
-          {issueData.body && (
-            <div className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
-              {parseIssue(issueData.body).content}
-            </div>
-          )}
-        </CardContent>
-      </UICard>
-      <div className="absolute group-hover:top-[100%] top-[50%] z-0 transition-all delay-500 left-0 w-full px-2 pt-1 flex justify-end">
-        {/* Comments button in bottom right corner */}
-        {issueData.comments_count !== undefined && (
-          <UIButton
-            variant="ghost"
-            className="text-xs pointer-events-auto"
-          >
-            <MessageCircle className="w-3 h-3 mr-1" />
-            {issueData.comments_count}
-          </UIButton>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => window.open(issue.html_url, '_blank')}
+                    className="flex items-center gap-1"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    View
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))
         )}
       </div>
     </div>
-  );
-}
-
-export function CytoNode({ data, availableIssues, ...props }: {
-  data: GitHubIssueData;
-  availableIssues?: GitHubIssueData[]; // Optional list of available issues for edge creation
-  [key: string]: any;
-}) {
-  const title = data?.title || `Issue #${data?.number}`;
-  const stateColor = data?.state === 'open' ? '#22c55e' : '#ef4444';
-  const isPR = !!data?.pull_request_data;
-
-  // Parse issue body and extract relations
-  const { content, relations } = useMemo(() => {
-    return parseIssue(data?.body || '');
-  }, [data?.body]);
-
-  // Extract issue references from body and relations for creating edges
-  const referencedIssues = useMemo(() => {
-    return extractIssueReferences(content, relations);
-  }, [content, relations]);
-
-  // Generate edges to referenced issues (only to those that exist in availableIssues)
-  const edges = useMemo(() => {
-    if (!referencedIssues.length || !availableIssues) return [];
-
-    // Create a map of issue numbers to github_ids for quick lookup
-    const issueNumberToGithubId = new Map();
-    availableIssues.forEach(issue => {
-      if (issue.number && issue.github_id) {
-        issueNumberToGithubId.set(issue.number, issue.github_id);
-      }
-    });
-
-    return referencedIssues
-      .filter(issueNumber => issueNumberToGithubId.has(issueNumber)) // Only create edges to existing issues
-      .map((issueNumber) => {
-        const targetGithubId = issueNumberToGithubId.get(issueNumber);
-        return (
-          <CytoEdge
-            key={`edge-github_issue${data.github_id}-github_issue${targetGithubId}`}
-            element={{
-              id: `edge-github_issue${data.github_id}-github_issue${targetGithubId}`,
-              data: {
-                id: `edge-github_issue${data.github_id}-github_issue${targetGithubId}`,
-                source: `github_issue${data.github_id}`,
-                target: `github_issue${targetGithubId}`,
-              },
-            }}
-          />
-        );
-      });
-  }, [referencedIssues, data.github_id, availableIssues]);
-
-  return (
-    <>
-      {/* Root node with database ID */}
-      <CytoNodeComponent {...props}
-        element={{
-          id: data.id, // Use database ID as root node ID
-          data: {
-            id: data.id,
-            label: `#${data.number}`,
-            title: title,
-            state: data.state,
-            isPR: isPR,
-            github_id: data.github_id,
-          },
-          ...props?.element,
-          classes: cn(
-            'entity',
-            'github-issue',
-            // data.state,
-            { 'pull-request': isPR },
-            props.classes,
-          )
-        }}
-        // Always visible children (not optionally opened like users)
-        children={<Card data={data} />}
-      />
-      
-      {/* Invisible node with GitHub ID for edge connections */}
-      <CytoNodeComponent
-        element={{
-          id: `github_issue${data.github_id}`, // Use GitHub ID for edge connections
-          data: {
-            id: `github_issue${data.github_id}`,
-            label: '', // Invisible
-            title: title,
-            state: data.state,
-            isPR: isPR,
-            invisible: true,
-          },
-          classes: ['ghost'], // Make it invisible
-        }}
-        ghost={true}
-      />
-      
-      {/* Render edges to referenced issues */}
-      {edges}
-    </>
   );
 }

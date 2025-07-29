@@ -191,7 +191,7 @@ async function configureCloudStorage(rl: any, options: StorageSetupOptions): Pro
       name: 'Cloudflare R2', 
       value: 'cloudflare',
       docsLink: 'https://dash.cloudflare.com/r2/overview',
-      instructions: '1. Go to Cloudflare Dashboard\n2. Navigate to R2 Object Storage\n3. Create a new bucket\n4. Go to "Manage R2 API tokens"\n5. Create API token with "Object Read & Write" permissions\n\nNote: For Cloudflare R2, you\'ll need to use your Account ID as the Access Key ID and the API Token as the Secret Access Key. The endpoint will be automatically configured.'
+      instructions: '1. Go to Cloudflare Dashboard\n2. Navigate to R2 Object Storage\n3. Create a new bucket\n4. Go to "Manage R2 API tokens"\n5. Create API token with "Object Read & Write" permissions\n6. Copy your Account ID (found in dashboard right sidebar)\n7. Copy the API Token you just created\n\nNote: For Cloudflare R2:\n- Access Key ID = Your Cloudflare Account ID\n- Secret Access Key = Your R2 API Token\n- Endpoint will be automatically configured with your Account ID'
     }
   ];
 
@@ -228,15 +228,24 @@ async function configureCloudStorage(rl: any, options: StorageSetupOptions): Pro
     'us-east-1'
   );
 
+  let accessKeyIdPrompt = 'Enter access key ID:';
+  let secretAccessKeyPrompt = 'Enter secret access key:';
+  
+  // Customize prompts for Cloudflare R2
+  if (selectedProvider.value === 'cloudflare') {
+    accessKeyIdPrompt = 'Enter your Cloudflare Account ID:';
+    secretAccessKeyPrompt = 'Enter your Cloudflare R2 API Token:';
+  }
+
   const accessKeyId = await askQuestion(
     rl,
-    'Enter access key ID:',
+    accessKeyIdPrompt,
     ''
   );
 
   const secretAccessKey = await askQuestion(
     rl,
-    'Enter secret access key:',
+    secretAccessKeyPrompt,
     ''
   );
 
@@ -254,11 +263,11 @@ async function configureCloudStorage(rl: any, options: StorageSetupOptions): Pro
       endpoint = 'https://blob.core.windows.net';
       break;
     case 'digitalocean':
-      endpoint = 'https://{region}.digitaloceanspaces.com';
+      endpoint = `https://${region}.digitaloceanspaces.com`;
       forcePathStyle = true;
       break;
     case 'cloudflare':
-      endpoint = 'https://{account-id}.r2.cloudflarestorage.com';
+      endpoint = `https://${accessKeyId}.r2.cloudflarestorage.com`;
       forcePathStyle = true;
       break;
   }

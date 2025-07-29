@@ -433,6 +433,8 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │       │   │   └── 🔄 route.ts     # Notification event handler
 │       │   ├── logs-diffs/
 │       │   │   └── 🔄 route.ts     # Logs diff event handler
+│       │   ├── github-issues/
+│       │   │   └── 🔄 route.ts     # GitHub issues event handler for bidirectional sync
 │       │   └── your-custom-event-handler/
 │       │       └── ? route.ts      # Your custom event handlers (copy from [name]/route.ts)
 │       ├── auth/
@@ -445,6 +447,9 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │       │   │   └── 🔄 route.ts     # Telegram WebApp authentication validation
 │       │   └── get-jwt/
 │       │       └── 🔄 route.ts     # JWT token generation endpoint
+│       ├── github/
+│       │   └── issues/
+│       │       └── 🔄 route.ts     # GitHub issues API (GET, POST, PUT, PATCH for webhooks)
 │       ├── graphql/
 │       │   └── 🔄 route.ts         # Hasyx GraphQL Proxy to Hasura
 │       ├── telegram_bot/
@@ -511,6 +516,7 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │   ├── ✨ schedule-cron.json    # Default Hasura event trigger definition for schedule-cron
 │   ├── ✨ subscription-billing.json # Default Hasura event trigger definition for subscription-billing
 │   ├── ✨ logs-diffs.json       # Default Hasura event trigger definition for logs-diffs
+│   └── ✨ github-issues.json    # GitHub issues event trigger for bidirectional sync
 ├── .vscode/
 │   └── ✨ extensions.json       # Recommended VS Code extensions
 ├── ✨ .gitignore               # Git ignore patterns (from .gitignore.template)
@@ -666,6 +672,107 @@ Synchronize Hasura event triggers with local definitions
 - Option: `--clean` - Remove security headers from event definitions (they will be added automatically during sync)
 
 The CLI automatically loads environment variables from the `.env` file in your project root. This ensures that commands like `npx hasyx events`
+
+---
+
+### `assist` 🔧
+
+**Interactive Project Configuration Assistant**
+
+Interactive assistant to set up and configure your Hasyx project with step-by-step prompts for all major components.
+
+```bash
+# Run the full assistant (recommended for new projects)
+npx hasyx assist
+
+# Skip specific steps
+npx hasyx assist --skip-auth --skip-repo --skip-env --skip-package --skip-init --skip-hasura --skip-secrets --skip-oauth --skip-resend --skip-vercel --skip-sync --skip-commit --skip-migrations --skip-firebase --skip-telegram --skip-project-user --skip-openrouter --skip-pg --skip-dns --skip-docker --skip-github --skip-storage
+```
+
+**🎯 Available Configuration Options:**
+
+**Authentication & Security:**
+- `--skip-auth` - Skip GitHub authentication check
+- `--skip-secrets` - Skip authentication secrets setup
+- `--skip-oauth` - Skip OAuth configuration
+
+**Project Setup:**
+- `--skip-repo` - Skip repository setup
+- `--skip-env` - Skip environment setup
+- `--skip-package` - Skip package.json setup
+- `--skip-init` - Skip hasyx initialization
+
+**Database & Backend:**
+- `--skip-hasura` - Skip Hasura configuration
+- `--skip-pg` - Skip PostgreSQL configuration
+- `--skip-migrations` - Skip migrations check
+
+**External Services:**
+- `--skip-resend` - Skip Resend configuration
+- `--skip-firebase` - Skip Firebase configuration
+- `--skip-telegram` - Skip Telegram Bot configuration
+- `--skip-openrouter` - Skip OpenRouter API Key setup
+- `--skip-github` - Skip GitHub Token setup
+- `--skip-github-webhooks` - Skip GitHub webhooks configuration
+
+**Infrastructure:**
+- `--skip-dns` - Skip DNS configuration
+- `--skip-docker` - Skip Docker configuration
+- `--skip-storage` - Skip Storage configuration
+- `--skip-vercel` - Skip Vercel setup
+
+**Development:**
+- `--skip-sync` - Skip environment variable sync
+- `--skip-commit` - Skip commit step
+- `--skip-project-user` - Skip setting up project user
+
+**✨ Assistant Features:**
+
+**Interactive Configuration:**
+- Step-by-step setup with clear prompts
+- Automatic environment variable management
+- Base URL detection for OAuth callbacks
+- Repository validation and formatting
+
+**GitHub Integration:**
+- GitHub OAuth app configuration
+- Webhook setup for issues synchronization
+- Automatic secret generation
+- Repository owner/repo name parsing
+
+**Storage Configuration:**
+- Local MinIO setup
+- Cloud storage providers (AWS S3, GCP, Azure, DigitalOcean, Cloudflare R2)
+- Antivirus scanning (ClamAV)
+- Image manipulation and optimization
+
+**Documentation Generation:**
+- Creates detailed setup instructions
+- Generates configuration files
+- Provides troubleshooting guides
+- Updates environment variables
+
+**Example Workflows:**
+
+**New Project Setup:**
+```bash
+# Complete setup for a new project
+npx hasyx assist
+```
+
+**GitHub Webhooks Only:**
+```bash
+# Configure only GitHub webhooks
+npx hasyx assist --skip-auth --skip-repo --skip-env --skip-package --skip-init --skip-hasura --skip-secrets --skip-oauth --skip-resend --skip-vercel --skip-sync --skip-commit --skip-migrations --skip-firebase --skip-telegram --skip-project-user --skip-openrouter --skip-pg --skip-dns --skip-docker --skip-github --skip-storage
+```
+
+**Storage Configuration Only:**
+```bash
+# Configure only storage
+npx hasyx assist --skip-auth --skip-repo --skip-env --skip-package --skip-init --skip-hasura --skip-secrets --skip-oauth --skip-resend --skip-vercel --skip-sync --skip-commit --skip-migrations --skip-firebase --skip-telegram --skip-project-user --skip-openrouter --skip-pg --skip-dns --skip-docker --skip-github --skip-github-webhooks
+```
+
+**📖 See [GITHUB-WEBHOOKS.md](GITHUB-WEBHOOKS.md) for detailed webhook setup instructions.**
 
 ---
 

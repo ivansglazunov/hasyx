@@ -2022,6 +2022,334 @@
       "level": 1
     },
     {
+      "title": "Hasyx Files Storage",
+      "url": "/hasyx/doc/FILES",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/FILES#overview",
+          "level": 2
+        },
+        {
+          "title": "Quick Start",
+          "url": "/hasyx/doc/FILES#quick-start",
+          "level": 2
+        },
+        {
+          "title": "1. Configure File Storage",
+          "url": "/hasyx/doc/FILES#1-configure-file-storage",
+          "level": 3
+        },
+        {
+          "title": "2. Apply Migrations",
+          "url": "/hasyx/doc/FILES#2-apply-migrations",
+          "level": 3
+        },
+        {
+          "title": "3. Generate Types",
+          "url": "/hasyx/doc/FILES#3-generate-types",
+          "level": 3
+        },
+        {
+          "title": "Configuration",
+          "url": "/hasyx/doc/FILES#configuration",
+          "level": 2
+        },
+        {
+          "title": "Local Storage (MinIO)",
+          "url": "/hasyx/doc/FILES#local-storage-minio",
+          "level": 3
+        },
+        {
+          "title": "Cloud Storage",
+          "url": "/hasyx/doc/FILES#cloud-storage",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/FILES#environment-variables",
+          "level": 2
+        },
+        {
+          "title": "Database Schema",
+          "url": "/hasyx/doc/FILES#database-schema",
+          "level": 2
+        },
+        {
+          "title": "files",
+          "url": "/hasyx/doc/FILES#files",
+          "level": 3
+        },
+        {
+          "title": "file_versions",
+          "url": "/hasyx/doc/FILES#file-versions",
+          "level": 3
+        },
+        {
+          "title": "Permissions",
+          "url": "/hasyx/doc/FILES#permissions",
+          "level": 2
+        },
+        {
+          "title": "User Permissions",
+          "url": "/hasyx/doc/FILES#user-permissions",
+          "level": 3
+        },
+        {
+          "title": "Admin Permissions",
+          "url": "/hasyx/doc/FILES#admin-permissions",
+          "level": 3
+        },
+        {
+          "title": "API Endpoints",
+          "url": "/hasyx/doc/FILES#api-endpoints",
+          "level": 2
+        },
+        {
+          "title": "Upload File",
+          "url": "/hasyx/doc/FILES#upload-file",
+          "level": 3
+        },
+        {
+          "title": "Get File Info",
+          "url": "/hasyx/doc/FILES#get-file-info",
+          "level": 3
+        },
+        {
+          "title": "List Files",
+          "url": "/hasyx/doc/FILES#list-files",
+          "level": 3
+        },
+        {
+          "title": "Download File",
+          "url": "/hasyx/doc/FILES#download-file",
+          "level": 3
+        },
+        {
+          "title": "Update File",
+          "url": "/hasyx/doc/FILES#update-file",
+          "level": 3
+        },
+        {
+          "title": "Delete File",
+          "url": "/hasyx/doc/FILES#delete-file",
+          "level": 3
+        },
+        {
+          "title": "Usage Examples",
+          "url": "/hasyx/doc/FILES#usage-examples",
+          "level": 2
+        },
+        {
+          "title": "Upload File",
+          "url": "/hasyx/doc/FILES#upload-file",
+          "level": 3
+        },
+        {
+          "title": "Get File Info",
+          "url": "/hasyx/doc/FILES#get-file-info",
+          "level": 3
+        },
+        {
+          "title": "List Files",
+          "url": "/hasyx/doc/FILES#list-files",
+          "level": 3
+        },
+        {
+          "title": "Download File",
+          "url": "/hasyx/doc/FILES#download-file",
+          "level": 3
+        },
+        {
+          "title": "Update File",
+          "url": "/hasyx/doc/FILES#update-file",
+          "level": 3
+        },
+        {
+          "title": "Delete File",
+          "url": "/hasyx/doc/FILES#delete-file",
+          "level": 3
+        },
+        {
+          "title": "Using REST API",
+          "url": "/hasyx/doc/FILES#using-rest-api",
+          "level": 2
+        },
+        {
+          "title": "Upload File via API",
+          "url": "/hasyx/doc/FILES#upload-file-via-api",
+          "level": 3
+        },
+        {
+          "title": "Get File List",
+          "url": "/hasyx/doc/FILES#get-file-list",
+          "level": 3
+        },
+        {
+          "title": "Download File",
+          "url": "/hasyx/doc/FILES#download-file",
+          "level": 3
+        },
+        {
+          "title": "Hasura Integration",
+          "url": "/hasyx/doc/FILES#hasura-integration",
+          "level": 2
+        },
+        {
+          "title": "GraphQL Queries",
+          "url": "/hasyx/doc/FILES#graphql-queries",
+          "level": 3
+        },
+        {
+          "title": "GraphQL Mutations",
+          "url": "/hasyx/doc/FILES#graphql-mutations",
+          "level": 3
+        },
+        {
+          "title": "Security",
+          "url": "/hasyx/doc/FILES#security",
+          "level": 2
+        },
+        {
+          "title": "File Validation",
+          "url": "/hasyx/doc/FILES#file-validation",
+          "level": 3
+        },
+        {
+          "title": "Access Control",
+          "url": "/hasyx/doc/FILES#access-control",
+          "level": 3
+        },
+        {
+          "title": "API Security",
+          "url": "/hasyx/doc/FILES#api-security",
+          "level": 3
+        },
+        {
+          "title": "Performance",
+          "url": "/hasyx/doc/FILES#performance",
+          "level": 2
+        },
+        {
+          "title": "Caching",
+          "url": "/hasyx/doc/FILES#caching",
+          "level": 3
+        },
+        {
+          "title": "Optimization",
+          "url": "/hasyx/doc/FILES#optimization",
+          "level": 3
+        },
+        {
+          "title": "Monitoring",
+          "url": "/hasyx/doc/FILES#monitoring",
+          "level": 2
+        },
+        {
+          "title": "Health Checks",
+          "url": "/hasyx/doc/FILES#health-checks",
+          "level": 3
+        },
+        {
+          "title": "Logs",
+          "url": "/hasyx/doc/FILES#logs",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/FILES#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/FILES#common-issues",
+          "level": 3
+        },
+        {
+          "title": "Debug Mode",
+          "url": "/hasyx/doc/FILES#debug-mode",
+          "level": 3
+        },
+        {
+          "title": "Migrations",
+          "url": "/hasyx/doc/FILES#migrations",
+          "level": 2
+        },
+        {
+          "title": "Apply Migrations",
+          "url": "/hasyx/doc/FILES#apply-migrations",
+          "level": 3
+        },
+        {
+          "title": "Rollback Migrations",
+          "url": "/hasyx/doc/FILES#rollback-migrations",
+          "level": 3
+        },
+        {
+          "title": "Custom Migrations",
+          "url": "/hasyx/doc/FILES#custom-migrations",
+          "level": 3
+        },
+        {
+          "title": "Backup and Recovery",
+          "url": "/hasyx/doc/FILES#backup-and-recovery",
+          "level": 2
+        },
+        {
+          "title": "Database Backup",
+          "url": "/hasyx/doc/FILES#database-backup",
+          "level": 3
+        },
+        {
+          "title": "File Backup",
+          "url": "/hasyx/doc/FILES#file-backup",
+          "level": 3
+        },
+        {
+          "title": "Restore",
+          "url": "/hasyx/doc/FILES#restore",
+          "level": 3
+        },
+        {
+          "title": "Development",
+          "url": "/hasyx/doc/FILES#development",
+          "level": 2
+        },
+        {
+          "title": "Local Development",
+          "url": "/hasyx/doc/FILES#local-development",
+          "level": 3
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/FILES#testing",
+          "level": 3
+        },
+        {
+          "title": "Production Deployment",
+          "url": "/hasyx/doc/FILES#production-deployment",
+          "level": 2
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/FILES#environment-variables",
+          "level": 3
+        },
+        {
+          "title": "Security",
+          "url": "/hasyx/doc/FILES#security",
+          "level": 3
+        },
+        {
+          "title": "Monitoring",
+          "url": "/hasyx/doc/FILES#monitoring",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Query Generator",
       "url": "/hasyx/doc/GENERATOR",
       "collapse": true,
@@ -2190,6 +2518,84 @@
           "title": "Real-world Tournament Example",
           "url": "/hasyx/doc/GENERATOR#real-world-tournament-example",
           "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "GitHub Webhooks Setup",
+      "url": "/hasyx/doc/GITHUB-WEBHOOKS",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#overview",
+          "level": 2
+        },
+        {
+          "title": "Prerequisites",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#prerequisites",
+          "level": 2
+        },
+        {
+          "title": "Setup Steps",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#setup-steps",
+          "level": 2
+        },
+        {
+          "title": "1. Generate Webhook Secret",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#1-generate-webhook-secret",
+          "level": 3
+        },
+        {
+          "title": "2. Configure GitHub Webhook",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#2-configure-github-webhook",
+          "level": 3
+        },
+        {
+          "title": "3. Webhook Events Handled",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#3-webhook-events-handled",
+          "level": 3
+        },
+        {
+          "title": "4. Webhook Payload Structure",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#4-webhook-payload-structure",
+          "level": 3
+        },
+        {
+          "title": "5. Security Considerations",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#5-security-considerations",
+          "level": 3
+        },
+        {
+          "title": "6. Testing Webhooks",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#6-testing-webhooks",
+          "level": 3
+        },
+        {
+          "title": "7. Troubleshooting",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#7-troubleshooting",
+          "level": 3
+        },
+        {
+          "title": "8. Monitoring",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#8-monitoring",
+          "level": 3
+        },
+        {
+          "title": "9. Environment Variables",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#9-environment-variables",
+          "level": 3
+        },
+        {
+          "title": "10. API Endpoints",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#10-api-endpoints",
+          "level": 3
+        },
+        {
+          "title": "Integration with Events System",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#integration-with-events-system",
+          "level": 2
         }
       ],
       "level": 1
@@ -12109,7 +12515,95 @@
         }
       ],
       "level": 1
+    },
+    {
+      "title": "Hasura Storage Integration Tasks",
+      "url": "/hasyx/doc/storage.tasks",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Изучение и планирование",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Создание docker-compose.yml",
+          "url": "/hasyx/doc/storage.tasks#docker-composeyml",
+          "level": 2
+        },
+        {
+          "title": "Интеграция в ассистент",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Поддержка облачных провайдеров",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Конфигурация hasura-storage",
+          "url": "/hasyx/doc/storage.tasks#hasura-storage",
+          "level": 2
+        },
+        {
+          "title": "Миграции и схема",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Тестирование",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Документация",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "CLI команды",
+          "url": "/hasyx/doc/storage.tasks#cli",
+          "level": 2
+        },
+        {
+          "title": "UI компоненты",
+          "url": "/hasyx/doc/storage.tasks#ui",
+          "level": 2
+        },
+        {
+          "title": "Безопасность",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Производительность",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Мониторинг и логирование",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Интеграция с существующими сервисами",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Примеры использования",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Дополнительные возможности",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        }
+      ],
+      "level": 1
     }
   ],
-  "lastUpdated": "2025-07-28T01:03:37.581Z"
+  "lastUpdated": "2025-07-29T21:54:24.784Z"
 }

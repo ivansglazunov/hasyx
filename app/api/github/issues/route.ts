@@ -3,6 +3,10 @@ import { Octokit } from 'octokit';
 import { createApolloClient } from 'hasyx/lib/apollo';
 import { Generator } from 'hasyx/lib/generator';
 import { Hasyx } from 'hasyx/lib/hasyx';
+import { getGitHubAccessToken, hasGitHubScope } from 'hasyx/lib/authDbUtils';
+import { getServerSession } from 'next-auth';
+import authOptions from 'hasyx/app/options';
+import { validateGitHubWebhook } from 'hasyx/lib/github-webhook';
 import schema from '../../../../public/hasura-schema.json';
 import Debug from 'hasyx/lib/debug';
 
@@ -49,160 +53,462 @@ export async function POST(request: NextRequest) {
     });
     let since: string | undefined;
     
-    if (lastIssueResult && Array.isArray(lastIssueResult) && lastIssueResult.length > 0) {
-      // Convert unix timestamp back to ISO string for GitHub API
-      const lastUpdatedTimestamp = lastIssueResult[0].updated_at;
-      // Add 1 second buffer to avoid missing issues with exact same timestamp
-      const sinceTimestamp = lastUpdatedTimestamp + 1000; // Add 1 second in milliseconds
-      since = new Date(sinceTimestamp).toISOString();
-      debug(`📅 Last updated issue timestamp: ${lastUpdatedTimestamp} (${new Date(lastUpdatedTimestamp).toISOString()})`);
-      debug(`📅 Syncing issues since: ${since} (with 1s buffer)`);
+    if (lastIssueResult?.length > 0 && lastIssueResult[0]?.updated_at) {
+      since = new Date(lastIssueResult[0].updated_at).toISOString();
+      debug(`📅 Syncing issues since: ${since}`);
     } else {
-      debug('📅 No existing issues found, syncing all issues');
+      debug('📅 No previous issues found, syncing all issues');
     }
     
-    debug(`🔍 Fetching issues from GitHub (owner: ${GITHUB_OWNER}, repo: ${GITHUB_REPO})...`);
-    
-    // Fetch issues from GitHub API
+    // Fetch issues from GitHub
     const issuesResponse = await octokit.rest.issues.listForRepo({
       owner: GITHUB_OWNER,
       repo: GITHUB_REPO,
-      state: 'all', // Get both open and closed issues
+      state: 'all',
+      per_page: 100,
       since: since,
-      per_page: 100, // Maximum allowed per page
-      sort: 'updated',
-      direction: 'asc'
     });
     
     const issues = issuesResponse.data;
-    debug(`📥 Fetched ${issues.length} issues from GitHub`);
+    debug(`📋 Found ${issues.length} issues from GitHub`);
     
-    // Debug: log first issue structure and date conversion
-    if (issues.length > 0) {
-      const firstIssue = issues[0];
-      const createdAtMs = new Date(firstIssue.created_at).getTime();
-      const updatedAtMs = new Date(firstIssue.updated_at).getTime();
-      
-      debug('🔍 Sample issue structure:', {
-        id: firstIssue.id,
-        id_type: typeof firstIssue.id,
-        number: firstIssue.number,
-        title: firstIssue.title,
-        state: firstIssue.state,
-        created_at_iso: firstIssue.created_at,
-        created_at_ms: createdAtMs,
-        updated_at_iso: firstIssue.updated_at,
-        updated_at_ms: updatedAtMs
-      });
-    }
-    
-    if (issues.length === 0) {
-      debug('✅ No new issues to sync');
-      return NextResponse.json({
-        success: true,
-        message: 'No new issues to sync',
-        synced: 0
-      });
-    }
-    
-    debug('💾 Syncing issues to database...');
-    
-    // Process each issue
-    let syncedCount = 0;
+    // Process and save issues
     for (const issue of issues) {
+      const issueData = {
+        id: issue.id,
+        number: issue.number,
+        title: issue.title,
+        body: issue.body,
+        state: issue.state,
+        user: issue.user?.login,
+        assignees: issue.assignees?.map(a => a.login) || [],
+        labels: issue.labels?.map(l => typeof l === 'string' ? l : l.name).filter(Boolean) || [],
+        created_at: new Date(issue.created_at).getTime(),
+        updated_at: new Date(issue.updated_at).getTime(),
+        closed_at: issue.closed_at ? new Date(issue.closed_at).getTime() : null,
+        html_url: issue.html_url,
+        comments_url: issue.comments_url,
+        events_url: issue.events_url,
+        node_id: issue.node_id,
+        url: issue.url,
+        repository_url: issue.repository_url,
+        labels_url: issue.labels_url,
+        comments: issue.comments,
+        assignee: issue.assignee?.login,
+        milestone: issue.milestone?.title,
+        locked: issue.locked,
+        active_lock_reason: issue.active_lock_reason,
+        draft: issue.draft,
+        pull_request: issue.pull_request ? {
+          url: issue.pull_request.url,
+          html_url: issue.pull_request.html_url,
+          diff_url: issue.pull_request.diff_url,
+          patch_url: issue.pull_request.patch_url,
+        } : null,
+        body_html: issue.body_html,
+        body_text: issue.body_text,
+        timeline_url: issue.timeline_url,
+        performed_via_github_app: issue.performed_via_github_app,
+        reactions: issue.reactions,
+      };
+      
       try {
-        // Ensure proper data types for database insertion
-        const issueData = {
-          github_id: Number(issue.id), // Ensure it's a number
-          node_id: issue.node_id || '',
-          number: Number(issue.number),
-          title: issue.title || '',
-          body: issue.body || null,
-          state: issue.state || 'open',
-          state_reason: issue.state_reason || null,
-          locked: Boolean(issue.locked),
-          active_lock_reason: issue.active_lock_reason || null,
-          comments_count: Number(issue.comments) || 0,
-          author_association: issue.author_association || null,
-          user_data: issue.user || null,
-          assignee_data: issue.assignee || null,
-          assignees_data: issue.assignees || [],
-          labels_data: issue.labels || [],
-          milestone_data: issue.milestone || null,
-          pull_request_data: issue.pull_request || null,
-          closed_by_data: issue.closed_by || null,
-          repository_owner: GITHUB_OWNER,
-          repository_name: GITHUB_REPO,
-          url: issue.url || '',
-          html_url: issue.html_url || '',
-          created_at: issue.created_at ? new Date(issue.created_at).getTime() : Date.now(),
-          updated_at: issue.updated_at ? new Date(issue.updated_at).getTime() : Date.now(),
-          closed_at: issue.closed_at ? new Date(issue.closed_at).getTime() : null
-        };
-        
-        // Validate date conversions
-        if (isNaN(issueData.created_at) || isNaN(issueData.updated_at)) {
-          debug(`⚠️ Invalid date conversion for issue #${issue.number}:`, {
-            created_at_iso: issue.created_at,
-            created_at_ms: issueData.created_at,
-            updated_at_iso: issue.updated_at,
-            updated_at_ms: issueData.updated_at
-          });
-          throw new Error(`Invalid date conversion for issue #${issue.number}`);
-        }
-        
-        debug(`📝 Processing issue #${issue.number}: ${issue.title} (ID: ${issue.id})`);
-        debug('📊 Issue data:', { 
-          github_id: issueData.github_id, 
-          number: issueData.number, 
-          title: issueData.title,
-          state: issueData.state,
-          created_at_iso: issue.created_at,
-          created_at_ms: issueData.created_at,
-          updated_at_iso: issue.updated_at,
-          updated_at_ms: issueData.updated_at
-        });
-        
-        // Use insert with on_conflict to update existing issues
-        await hasyx.insert({
+        // Upsert issue (insert or update)
+        await hasyx.upsert({
           table: 'github_issues',
-          objects: [issueData],
+          object: issueData,
           on_conflict: {
-            constraint: 'github_issues_github_id_key',
+            constraint: 'github_issues_id_key',
             update_columns: [
-              'node_id', 'number', 'title', 'body', 'state', 'state_reason',
-              'locked', 'active_lock_reason', 'comments_count', 'author_association',
-              'user_data', 'assignee_data', 'assignees_data', 'labels_data',
-              'milestone_data', 'pull_request_data', 'closed_by_data',
-              'url', 'html_url', 'updated_at', 'closed_at'
+              'title', 'body', 'state', 'user', 'assignees', 'labels',
+              'updated_at', 'closed_at', 'locked', 'active_lock_reason',
+              'draft', 'pull_request', 'body_html', 'body_text',
+              'performed_via_github_app', 'reactions'
             ]
           }
         });
-        
-        syncedCount++;
-        debug(`✅ Synced issue #${issue.number}: ${issue.title}`);
+        debug(`✅ Saved issue #${issue.number}`);
       } catch (error) {
-        debug(`❌ Error syncing issue #${issue.number}:`, error);
-        // Continue with other issues even if one fails
+        debug(`❌ Error saving issue #${issue.number}:`, error);
       }
     }
     
-    debug(`✅ GitHub issues sync completed. Synced ${syncedCount}/${issues.length} issues`);
-    
-    return NextResponse.json({
-      success: true,
-      message: `Successfully synced ${syncedCount} GitHub issues`,
-      synced: syncedCount,
-      total: issues.length
+    debug('✅ GitHub issues sync completed');
+    return NextResponse.json({ 
+      success: true, 
+      synced: issues.length,
+      message: `Successfully synced ${issues.length} issues`
     });
     
   } catch (error) {
-    debug('❌ GitHub issues sync failed:', error);
+    debug('❌ Error during GitHub issues sync:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to sync GitHub issues',
-        details: error instanceof Error ? error.message : 'Unknown error'
+      { error: 'Failed to sync GitHub issues', details: (error as Error).message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  if (!GITHUB_OWNER || !GITHUB_REPO) {
+    return NextResponse.json(
+      { error: 'GITHUB_OWNER or GITHUB_REPO not configured' },
+      { status: 500 }
+    );
+  }
+
+  try {
+    // Get user session
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
+    debug(`🔍 User ${userId} requesting to create GitHub issue`);
+
+    // Initialize Hasyx client
+    const apolloClient = createApolloClient();
+    const generator = Generator(schema);
+    const hasyx = new Hasyx(apolloClient, generator);
+
+    // Check if user has GitHub access token with required scope
+    const hasRepoScope = await hasGitHubScope(hasyx, userId, 'repo');
+    const hasPublicRepoScope = await hasGitHubScope(hasyx, userId, 'public_repo');
+    
+    if (!hasRepoScope && !hasPublicRepoScope) {
+      return NextResponse.json(
+        { error: 'GitHub authorization required. Please sign in with GitHub and grant repository access.' },
+        { status: 403 }
+      );
+    }
+
+    // Get user's GitHub access token
+    const accessToken = await getGitHubAccessToken(hasyx, userId);
+    if (!accessToken) {
+      return NextResponse.json(
+        { error: 'GitHub access token not found. Please re-authenticate with GitHub.' },
+        { status: 403 }
+      );
+    }
+
+    // Parse request body
+    const body = await request.json();
+    const { title, body: issueBody, labels = [] } = body;
+
+    if (!title) {
+      return NextResponse.json(
+        { error: 'Issue title is required' },
+        { status: 400 }
+      );
+    }
+
+    // Initialize Octokit with user's token
+    const octokit = new Octokit({
+      auth: accessToken,
+    });
+
+    // Create issue
+    const issueResponse = await octokit.rest.issues.create({
+      owner: GITHUB_OWNER,
+      repo: GITHUB_REPO,
+      title: title,
+      body: issueBody,
+      labels: labels,
+    });
+
+    const issue = issueResponse.data;
+    debug(`✅ Created GitHub issue #${issue.number} for user ${userId}`);
+
+    // Save the new issue to our database
+    const issueData = {
+      id: issue.id,
+      number: issue.number,
+      title: issue.title,
+      body: issue.body,
+      state: issue.state,
+      user: issue.user?.login,
+      assignees: issue.assignees?.map(a => a.login) || [],
+      labels: issue.labels?.map(l => typeof l === 'string' ? l : l.name).filter(Boolean) || [],
+      created_at: new Date(issue.created_at).getTime(),
+      updated_at: new Date(issue.updated_at).getTime(),
+      closed_at: issue.closed_at ? new Date(issue.closed_at).getTime() : null,
+      html_url: issue.html_url,
+      comments_url: issue.comments_url,
+      events_url: issue.events_url,
+      node_id: issue.node_id,
+      url: issue.url,
+      repository_url: issue.repository_url,
+      labels_url: issue.labels_url,
+      comments: issue.comments,
+      assignee: issue.assignee?.login,
+      milestone: issue.milestone?.title,
+      locked: issue.locked,
+      active_lock_reason: issue.active_lock_reason,
+      draft: issue.draft,
+      pull_request: issue.pull_request ? {
+        url: issue.pull_request.url,
+        html_url: issue.pull_request.html_url,
+        diff_url: issue.pull_request.diff_url,
+        patch_url: issue.pull_request.patch_url,
+      } : null,
+      body_html: issue.body_html,
+      body_text: issue.body_text,
+      timeline_url: issue.timeline_url,
+      performed_via_github_app: issue.performed_via_github_app,
+      reactions: issue.reactions,
+    };
+
+    await hasyx.upsert({
+      table: 'github_issues',
+      object: issueData,
+      on_conflict: {
+        constraint: 'github_issues_id_key',
+        update_columns: [
+          'title', 'body', 'state', 'user', 'assignees', 'labels',
+          'updated_at', 'closed_at', 'locked', 'active_lock_reason',
+          'draft', 'pull_request', 'body_html', 'body_text',
+          'performed_via_github_app', 'reactions'
+        ]
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      issue: {
+        id: issue.id,
+        number: issue.number,
+        title: issue.title,
+        html_url: issue.html_url,
+        created_at: issue.created_at,
       },
+      message: `Issue #${issue.number} created successfully`
+    });
+
+  } catch (error) {
+    debug('❌ Error creating GitHub issue:', error);
+    return NextResponse.json(
+      { error: 'Failed to create GitHub issue', details: (error as Error).message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  if (!GITHUB_OWNER || !GITHUB_REPO) {
+    return NextResponse.json(
+      { error: 'GITHUB_OWNER or GITHUB_REPO not configured' },
+      { status: 500 }
+    );
+  }
+
+  try {
+    // Initialize Hasyx client
+    const apolloClient = createApolloClient();
+    const generator = Generator(schema);
+    const hasyx = new Hasyx(apolloClient, generator);
+    
+    debug('📊 Fetching issues from database...');
+    
+    // Get issues from database
+    const issuesResult = await hasyx.select({
+      table: 'github_issues',
+      returning: [
+        'id', 'number', 'title', 'body', 'state', 'user', 'assignees', 'labels',
+        'created_at', 'updated_at', 'closed_at', 'html_url', 'comments',
+        'locked', 'draft'
+      ],
+      order_by: [{ number: 'desc' }],
+      limit: 100
+    });
+    
+    const issues = issuesResult || [];
+    debug(`✅ Found ${issues.length} issues in database`);
+    
+    return NextResponse.json({
+      success: true,
+      issues: issues,
+      count: issues.length
+    });
+    
+  } catch (error) {
+    debug('❌ Error fetching issues from database:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch issues from database', details: (error as Error).message },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * GitHub Webhook handler
+ * Processes webhook events from GitHub and updates the database
+ */
+export async function PATCH(request: NextRequest) {
+  if (!GITHUB_OWNER || !GITHUB_REPO) {
+    return NextResponse.json(
+      { error: 'GITHUB_OWNER or GITHUB_REPO not configured' },
+      { status: 500 }
+    );
+  }
+
+  try {
+    // Get raw body for signature verification
+    const body = await request.text();
+    
+    // Validate GitHub webhook
+    const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      debug('❌ GITHUB_WEBHOOK_SECRET not configured');
+      return NextResponse.json(
+        { error: 'Webhook secret not configured' },
+        { status: 500 }
+      );
+    }
+
+    const validation = validateGitHubWebhook(body, Object.fromEntries(request.headers), webhookSecret);
+    
+    if (!validation.isValid) {
+      debug(`❌ Invalid webhook: ${validation.error}`);
+      return NextResponse.json(
+        { error: validation.error || 'Invalid webhook' },
+        { status: 401 }
+      );
+    }
+
+    const { eventType, payload } = validation;
+    
+    debug(`📥 Received GitHub webhook: ${eventType}`, { 
+      action: payload.action,
+      issueNumber: payload.issue?.number 
+    });
+
+    // Only process issues events
+    if (eventType !== 'issues') {
+      debug(`⏭️ Skipping non-issues event: ${eventType}`);
+      return NextResponse.json({ success: true, message: 'Event ignored' });
+    }
+
+    // Initialize Hasyx client
+    const apolloClient = createApolloClient();
+    const generator = Generator(schema);
+    const hasyx = new Hasyx(apolloClient, generator);
+
+    const issue = payload.issue;
+    if (!issue) {
+      debug('❌ No issue data in webhook payload');
+      return NextResponse.json(
+        { error: 'No issue data in payload' },
+        { status: 400 }
+      );
+    }
+
+    // Convert GitHub issue to our database format
+    const issueData = {
+      id: issue.id,
+      number: issue.number,
+      title: issue.title,
+      body: issue.body,
+      state: issue.state,
+      user: issue.user?.login,
+      assignees: issue.assignees?.map((a: any) => a.login) || [],
+      labels: issue.labels?.map((l: any) => typeof l === 'string' ? l : l.name).filter(Boolean) || [],
+      created_at: new Date(issue.created_at).getTime(),
+      updated_at: new Date(issue.updated_at).getTime(),
+      closed_at: issue.closed_at ? new Date(issue.closed_at).getTime() : null,
+      html_url: issue.html_url,
+      comments_url: issue.comments_url,
+      events_url: issue.events_url,
+      node_id: issue.node_id,
+      url: issue.url,
+      repository_url: issue.repository_url,
+      labels_url: issue.labels_url,
+      comments: issue.comments,
+      assignee: issue.assignee?.login,
+      milestone: issue.milestone?.title,
+      locked: issue.locked,
+      active_lock_reason: issue.active_lock_reason,
+      draft: issue.draft,
+      pull_request: issue.pull_request ? {
+        url: issue.pull_request.url,
+        html_url: issue.pull_request.html_url,
+        diff_url: issue.pull_request.diff_url,
+        patch_url: issue.pull_request.patch_url,
+      } : null,
+      body_html: issue.body_html,
+      body_text: issue.body_text,
+      timeline_url: issue.timeline_url,
+      performed_via_github_app: issue.performed_via_github_app,
+      reactions: issue.reactions,
+    };
+
+    // Handle different webhook actions
+    switch (payload.action) {
+      case 'opened':
+      case 'created':
+        debug(`✅ Creating/updating issue #${issue.number}`);
+        await hasyx.upsert({
+          table: 'github_issues',
+          object: issueData,
+          on_conflict: {
+            constraint: 'github_issues_id_key',
+            update_columns: [
+              'title', 'body', 'state', 'user', 'assignees', 'labels',
+              'updated_at', 'closed_at', 'locked', 'active_lock_reason',
+              'draft', 'pull_request', 'body_html', 'body_text',
+              'performed_via_github_app', 'reactions'
+            ]
+          }
+        });
+        break;
+
+      case 'edited':
+      case 'reopened':
+      case 'closed':
+        debug(`✅ Updating issue #${issue.number}`);
+        await hasyx.upsert({
+          table: 'github_issues',
+          object: issueData,
+          on_conflict: {
+            constraint: 'github_issues_id_key',
+            update_columns: [
+              'title', 'body', 'state', 'user', 'assignees', 'labels',
+              'updated_at', 'closed_at', 'locked', 'active_lock_reason',
+              'draft', 'pull_request', 'body_html', 'body_text',
+              'performed_via_github_app', 'reactions'
+            ]
+          }
+        });
+        break;
+
+      case 'deleted':
+        debug(`🗑️ Deleting issue #${issue.number}`);
+        await hasyx.delete({
+          table: 'github_issues',
+          pk_columns: { id: issue.id }
+        });
+        break;
+
+      default:
+        debug(`⏭️ Ignoring action: ${payload.action}`);
+        return NextResponse.json({ success: true, message: 'Action ignored' });
+    }
+
+    debug(`✅ Successfully processed GitHub webhook for issue #${issue.number}`);
+    return NextResponse.json({
+      success: true,
+      message: `Issue #${issue.number} ${payload.action} successfully`,
+      action: payload.action,
+      issue_number: issue.number
+    });
+
+  } catch (error) {
+    debug('❌ Error processing GitHub webhook:', error);
+    return NextResponse.json(
+      { error: 'Failed to process webhook', details: (error as Error).message },
       { status: 500 }
     );
   }

@@ -3,7 +3,7 @@ import spawn from 'cross-spawn';
 import fs from 'fs-extra';
 import path from 'path';
 import Debug from './debug';
-import { createRlInterface, askYesNo, askForInput, parseEnvFile, writeEnvFile } from './assist-common';
+import { createRlInterface, askYesNo, askForInput, parseEnvFile, writeEnvFile, maskDisplaySecret } from './assist-common';
 
 const debug = Debug('assist:docker');
 
@@ -414,6 +414,34 @@ export async function configureDocker(rl: readline.Interface, envPath: string): 
 
   console.log('✅ Docker is installed and ready');
   
+  // Ask first if user wants to configure Docker Hub credentials
+  const currentDockerUsername = envVars.DOCKER_USERNAME;
+  const currentDockerPassword = envVars.DOCKER_PASSWORD;
+  const hasExistingConfig = (currentDockerUsername && currentDockerUsername.trim() !== '') || 
+                           (currentDockerPassword && currentDockerPassword.trim() !== '');
+  
+  let shouldConfigure = false;
+  
+  if (hasExistingConfig) {
+    console.log('🐳 Docker Hub credentials are already configured.');
+    if (currentDockerUsername) {
+      console.log(`   Current username: ${currentDockerUsername}`);
+    }
+    if (currentDockerPassword) {
+      console.log(`   Current password/token: ${maskDisplaySecret(currentDockerPassword)}`);
+    }
+    shouldConfigure = await askYesNo(rl, 'Do you want to reconfigure Docker Hub credentials?', false);
+  } else {
+    shouldConfigure = await askYesNo(rl, 'Do you want to configure Docker Hub credentials for automatic publishing?', false);
+  }
+  
+  if (!shouldConfigure) {
+    console.log('⏭️ Skipping Docker Hub credentials configuration.');
+    return envVars;
+  }
+  
+  console.log('🐳 Configuring Docker Hub credentials...');
+  
   // Configure Docker Hub credentials for automatic publishing
   console.log('\n📋 Docker Hub Credentials Configuration');
   console.log('========================================');
@@ -426,7 +454,6 @@ export async function configureDocker(rl: readline.Interface, envPath: string): 
   console.log('   Generate at: https://hub.docker.com/settings/security');
 
   // Ask for Docker username
-  const currentDockerUsername = envVars.DOCKER_USERNAME;
   if (currentDockerUsername) {
     console.log(`\n🔍 Current Docker username: ${currentDockerUsername}`);
     const keepUsername = await askYesNo(rl, 'Keep this Docker username?', true);
@@ -460,9 +487,8 @@ export async function configureDocker(rl: readline.Interface, envPath: string): 
   }
 
   // Ask for Docker password/token
-  const currentDockerPassword = envVars.DOCKER_PASSWORD;
   if (currentDockerPassword) {
-    console.log(`\n🔍 Docker password/token is already set (${currentDockerPassword.substring(0, 4)}****)`);
+    console.log(`\n🔍 Docker password/token is already set (${maskDisplaySecret(currentDockerPassword)})`);
     const keepPassword = await askYesNo(rl, 'Keep this Docker password/token?', true);
     
     if (!keepPassword) {
@@ -546,7 +572,7 @@ export async function configureDocker(rl: readline.Interface, envPath: string): 
   }
   
   if (envVars.DOCKER_PASSWORD) {
-    console.log(`🔐 Docker Hub Password/Token: ${envVars.DOCKER_PASSWORD.substring(0, 4)}****`);
+    console.log(`🔐 Docker Hub Password/Token: ${maskDisplaySecret(envVars.DOCKER_PASSWORD)}`);
   } else {
     console.log('🔐 Docker Hub Password/Token: Not configured');
   }

@@ -63,6 +63,11 @@ export const baseProviders = [
   GitHubProvider({
     clientId: process.env.GITHUB_ID!,
     clientSecret: process.env.GITHUB_SECRET!,
+    authorization: {
+      params: {
+        scope: 'read:user user:email repo public_repo'
+      }
+    }
   }),
   FacebookProvider({
     clientId: process.env.FACEBOOK_CLIENT_ID!,
@@ -363,7 +368,32 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
                 // Update userId ONLY if it changed (e.g., mapping to existing)
                 userId = dbUser.id; 
                 emailVerified = dbUser.email_verified ? new Date(dbUser.email_verified).toISOString() : null; // Convert unix timestamp to ISO string for NextAuth
-                // Cannot determine isNewUser directly from this return type assumption
+                
+                // 🔧 Save GitHub access token for issues management
+                if (provider === 'github' && account?.access_token) {
+                  debug('🔧 Saving GitHub access token for user:', userId);
+                  try {
+                    // Update the account record with the access token
+                    await client.update({
+                      table: 'accounts',
+                      pk_columns: { 
+                        provider: 'github',
+                        provider_account_id: actualProviderAccountId!
+                      },
+                      _set: {
+                        access_token: account.access_token,
+                        token_type: account.token_type || 'Bearer',
+                        scope: account.scope || 'read:user user:email repo public_repo',
+                        expires_at: account.expires_at ? Math.floor(account.expires_at / 1000) : null
+                      }
+                    });
+                    debug('✅ GitHub access token saved successfully');
+                  } catch (tokenError) {
+                    debug('⚠️ Error saving GitHub access token:', tokenError);
+                    // Don't fail the auth process if token saving fails
+                  }
+                }
+                
                 debug(`JWT Callback: OAuth DB sync completed for ${userId}`); 
               } catch (error) {
                 console.error('JWT Callback: Critical OAuth user sync error:', error);
