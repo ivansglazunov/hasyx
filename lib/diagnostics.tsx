@@ -12,6 +12,7 @@ import { UsersCard } from "hasyx/components/users/users-card";
 import { NotificationCard } from "hasyx/components/notify";
 // import { TelegramDebugCard } from "hasyx/components/auth/telegram-debug-card";
 import { Session } from "next-auth";
+import { Toaster } from "hasyx/components/ui/sonner";
 
 interface DiagnosticsProps {
   serverSession: Session | null;
@@ -43,6 +44,7 @@ export default function Diagnostics({ serverSession, sidebarData }: DiagnosticsP
         </div>
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
       </div>
+      <Toaster />
     </SidebarLayout>
   );
 } 

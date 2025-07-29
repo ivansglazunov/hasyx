@@ -8,8 +8,11 @@ import { Button } from 'hasyx/components/ui/button';
 import { useSession, signOut } from 'next-auth/react';
 import { useTelegramWebApp } from 'hasyx/hooks/use-telegram-webapp';
 import { Smartphone, LogOut, Info, Settings } from 'lucide-react';
+import { useHasyx } from 'hasyx';
+import { Hasyx } from './hasyx';
 
 export default function TelegramMiniAppPage() {
+  const hasyx = useHasyx();
   const { data: session, status } = useSession();
   const {
     isInTelegram,
@@ -37,7 +40,7 @@ export default function TelegramMiniAppPage() {
     const confirmed = await showConfirm('Are you sure you want to sign out?');
     if (confirmed) {
       haptic.impact('medium');
-      await signOut({ callbackUrl: '/' });
+      hasyx.logout({ callbackUrl: '/' });
     }
   };
 

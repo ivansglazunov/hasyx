@@ -5,6 +5,7 @@ import React from 'react';
 // Import all available entity components
 import * as UsersEntity from 'hasyx/components/entities/users';
 import * as AccountsEntity from 'hasyx/components/entities/accounts';
+import * as GitHubIssuesEntity from 'hasyx/components/entities/github_issues';
 import * as DefaultEntity from 'hasyx/components/entities/default';
 
 interface EntityData {
@@ -33,6 +34,7 @@ interface EntityCardProps {
 const ENTITY_REGISTRY = {
   'users': UsersEntity,
   'accounts': AccountsEntity,
+  'issues': GitHubIssuesEntity,
   'default': DefaultEntity,
   // Add more entities here as they are created
   // 'notifications': NotificationsEntity,
@@ -84,6 +86,5 @@ export function CytoNode({ data, ...props }: EntityCytoNodeProps) {
   const typename = entityData?.__typename;
   
   const EntityComponent = getEntityComponent(typename);
-  
   return <EntityComponent.CytoNode data={data as any} {...props} />;
 } 

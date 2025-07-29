@@ -37,6 +37,7 @@ Hasyx provides a robust starting point and a set of tools for building applicati
 [![Subdomain Management Documentation](https://img.shields.io/badge/Subdomain%20Manager-MD-purple)](SUBDOMAIN.md)
 [![Docker Hub Publishing Documentation](https://img.shields.io/badge/Docker%20Hub-MD-blue)](DOCKER.md)
 [![URL Query State Management Documentation](https://img.shields.io/badge/Use%20Query%20Hook-MD-lightblue)](USE-QUERY.md)
+[![Files Storage Documentation](https://img.shields.io/badge/Files%20Storage-MD-darkgreen)](FILES.md)
 
 ## Technologies Used
 
@@ -64,7 +65,7 @@ Hasyx takes responsibility for:
 *   **Server-side Debug Logging:** Built-in `debug()` method for database logging when `HASYX_DEBUG=1` is enabled, storing structured debug data in a dedicated `debug` table for monitoring and troubleshooting production systems.
 *   **Progressive Web App (PWA) Support:** Complete PWA functionality with service workers, offline support, installability, and push notifications. See [`PWA.md`](PWA.md) for details.
 *   **Audit Trail & Logs System:** Comprehensive audit trail functionality with configurable database triggers for tracking granular string changes (using diff-match-patch) and complete state snapshots. Features include CLI management with `npx hasyx logs`, JSON-based configuration via `hasyx.config.json`, selective column tracking, and complete Hasura permissions integration. See [`LOGS.md`](LOGS.md) for details.
-*   **GitHub → Telegram Bot Integration:** Automated CI/CD notifications via Telegram bot with AI-generated commit summaries, strict status reporting, and privacy-focused messaging. Features strict workflow status reporting (PASSED/FAILED for tests, builds, deploys), privacy-focused messaging (no author names), smart MD file linking, and rich English-language notifications. Waits for all workflows to complete, then sends detailed messages with commit analysis, test results, deployment URLs, and direct links to repository and documentation. Uses a modular architecture: **`github-telegram-bot-hasyx.ts`** (core functionality with generator function), **`github-telegram-bot.ts`** (project-specific configuration), and **`github-telegram-bot.template`** (template for child projects). Configurable via `GITHUB_TELEGRAM_BOT` environment variable. See [`TELEGRAM_BOT.md`](lib/TELEGRAM_BOT.md) for setup and configuration details.
+*   **GitHub → Telegram Bot Integration:** Automated CI/CD notifications via Telegram bot with AI-generated commit summaries, strict status reporting, and privacy-focused messaging. Features strict workflow status reporting (PASSED/FAILED for tests, builds, deploys), privacy-focused messaging (no author names), smart MD file linking, and rich English-language notifications. Waits for all workflows to complete, then sends detailed messages with commit analysis, test results, deployment URLs, and direct links to repository and documentation. Uses a modular architecture: **`github-telegram-bot-hasyx.ts`** (core functionality with generator function), **`github-telegram-bot.ts`** (project-specific configuration), and **`github-telegram-bot.template`** (template for child projects). Configurable via `HASYX_GITHUB_TELEGRAM_BOT` environment variable. See [`TELEGRAM_BOT.md`](lib/TELEGRAM_BOT.md) for setup and configuration details.
 *   [Coming Soon] Preparing Capacitor for building cross-platform applications (Android, iOS, Desktop, Browser Extensions, etc.).
 *   **Cytoscape Integration:** A powerful set of React components for graph visualizations using Cytoscape.js, allowing for custom HTML rendering within nodes and reactive style updates. See [`CYTO.md`](CYTO.md) for details.
 *   **DNS and SSL Management:** Comprehensive subdomain management with automated HTTPS setup using CloudFlare DNS, Let's Encrypt SSL certificates, and nginx configuration. Features include DNS propagation waiting, automatic certificate renewal, idempotent operations, and complete subdomain lifecycle management. Use `npx hasyx assist dns` to configure CloudFlare API credentials and domain settings. See [`CLOUDFLARE.md`](CLOUDFLARE.md), [`SSL.md`](SSL.md), [`NGINX.md`](NGINX.md), and [`SUBDOMAIN.md`](SUBDOMAIN.md) for details.
@@ -169,6 +170,7 @@ Explore the different modules and functionalities of Hasyx:
 *   **[SUBDOMAIN.md](SUBDOMAIN.md):** Documentation for subdomain management.
 *   **[DOCKER.md](DOCKER.md):** Complete Docker containerization guide with automated Hub publishing, multi-architecture builds, and interactive configuration tools.
 *   **[USE-QUERY.md](USE-QUERY.md):** Complete guide to URL query state management with the `use-query` hook for synchronizing state between multiple components through URL parameters.
+*   **[FILES.md](FILES.md):** Complete guide to Hasyx Files Storage system with S3-compatible storage, file upload/download, metadata management, and REST API integration.
 
 ## 🚀 Quick Start
 
@@ -424,7 +426,15 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │   └── api/
 │       ├── events/
 │       │   ├── [name]/
-│       │   |   └── 🔄 route.ts     # Default event handler for Hasura
+│       │   │   └── 🔄 route.ts     # Default event handler for Hasura
+│       │   ├── subscription-billing/
+│       │   │   └── 🔄 route.ts     # Subscription billing event handler
+│       │   ├── notify/
+│       │   │   └── 🔄 route.ts     # Notification event handler
+│       │   ├── logs-diffs/
+│       │   │   └── 🔄 route.ts     # Logs diff event handler
+│       │   ├── github-issues/
+│       │   │   └── 🔄 route.ts     # GitHub issues event handler for bidirectional sync
 │       │   └── your-custom-event-handler/
 │       │       └── ? route.ts      # Your custom event handlers (copy from [name]/route.ts)
 │       ├── auth/
@@ -433,13 +443,19 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │       │   │   └── 🔄 route.ts     # NextAuth.js main handler
 │       │   ├── verify/
 │       │   │   └── 🔄 route.ts     # Email verification or similar auth actions
-│       │   └── verify-telegram-webapp/
-│       │       └── 🔄 route.ts     # Telegram WebApp authentication validation
+│       │   ├── verify-telegram-webapp/
+│       │   │   └── 🔄 route.ts     # Telegram WebApp authentication validation
+│       │   └── get-jwt/
+│       │       └── 🔄 route.ts     # JWT token generation endpoint
+│       ├── github/
+│       │   └── issues/
+│       │       └── 🔄 route.ts     # GitHub issues API (GET, POST, PUT, PATCH for webhooks)
 │       ├── graphql/
 │       │   └── 🔄 route.ts         # Hasyx GraphQL Proxy to Hasura
-│       └── telegram_bot/
-│           └── 🔄 route.ts         # Handler for Telegram Bot webhooks
-│       │       └── 🔄 route.ts     # (Likely for email verification)
+│       ├── telegram_bot/
+│       │   └── 🔄 route.ts         # Handler for Telegram Bot webhooks
+│       └── health/
+│           └── 🔄 route.ts         # Health check endpoint
 ├── components/
 │   ├── sidebar/
 │   │   └── ✨ layout.tsx        # Sidebar layout component
@@ -500,6 +516,7 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │   ├── ✨ schedule-cron.json    # Default Hasura event trigger definition for schedule-cron
 │   ├── ✨ subscription-billing.json # Default Hasura event trigger definition for subscription-billing
 │   ├── ✨ logs-diffs.json       # Default Hasura event trigger definition for logs-diffs
+│   └── ✨ github-issues.json    # GitHub issues event trigger for bidirectional sync
 ├── .vscode/
 │   └── ✨ extensions.json       # Recommended VS Code extensions
 ├── ✨ .gitignore               # Git ignore patterns (from .gitignore.template)
@@ -655,6 +672,107 @@ Synchronize Hasura event triggers with local definitions
 - Option: `--clean` - Remove security headers from event definitions (they will be added automatically during sync)
 
 The CLI automatically loads environment variables from the `.env` file in your project root. This ensures that commands like `npx hasyx events`
+
+---
+
+### `assist` 🔧
+
+**Interactive Project Configuration Assistant**
+
+Interactive assistant to set up and configure your Hasyx project with step-by-step prompts for all major components.
+
+```bash
+# Run the full assistant (recommended for new projects)
+npx hasyx assist
+
+# Skip specific steps
+npx hasyx assist --skip-auth --skip-repo --skip-env --skip-package --skip-init --skip-hasura --skip-secrets --skip-oauth --skip-resend --skip-vercel --skip-sync --skip-commit --skip-migrations --skip-firebase --skip-telegram --skip-project-user --skip-openrouter --skip-pg --skip-dns --skip-docker --skip-github --skip-storage
+```
+
+**🎯 Available Configuration Options:**
+
+**Authentication & Security:**
+- `--skip-auth` - Skip GitHub authentication check
+- `--skip-secrets` - Skip authentication secrets setup
+- `--skip-oauth` - Skip OAuth configuration
+
+**Project Setup:**
+- `--skip-repo` - Skip repository setup
+- `--skip-env` - Skip environment setup
+- `--skip-package` - Skip package.json setup
+- `--skip-init` - Skip hasyx initialization
+
+**Database & Backend:**
+- `--skip-hasura` - Skip Hasura configuration
+- `--skip-pg` - Skip PostgreSQL configuration
+- `--skip-migrations` - Skip migrations check
+
+**External Services:**
+- `--skip-resend` - Skip Resend configuration
+- `--skip-firebase` - Skip Firebase configuration
+- `--skip-telegram` - Skip Telegram Bot configuration
+- `--skip-openrouter` - Skip OpenRouter API Key setup
+- `--skip-github` - Skip GitHub Token setup
+- `--skip-github-webhooks` - Skip GitHub webhooks configuration
+
+**Infrastructure:**
+- `--skip-dns` - Skip DNS configuration
+- `--skip-docker` - Skip Docker configuration
+- `--skip-storage` - Skip Storage configuration
+- `--skip-vercel` - Skip Vercel setup
+
+**Development:**
+- `--skip-sync` - Skip environment variable sync
+- `--skip-commit` - Skip commit step
+- `--skip-project-user` - Skip setting up project user
+
+**✨ Assistant Features:**
+
+**Interactive Configuration:**
+- Step-by-step setup with clear prompts
+- Automatic environment variable management
+- Base URL detection for OAuth callbacks
+- Repository validation and formatting
+
+**GitHub Integration:**
+- GitHub OAuth app configuration
+- Webhook setup for issues synchronization
+- Automatic secret generation
+- Repository owner/repo name parsing
+
+**Storage Configuration:**
+- Local MinIO setup
+- Cloud storage providers (AWS S3, GCP, Azure, DigitalOcean, Cloudflare R2)
+- Antivirus scanning (ClamAV)
+- Image manipulation and optimization
+
+**Documentation Generation:**
+- Creates detailed setup instructions
+- Generates configuration files
+- Provides troubleshooting guides
+- Updates environment variables
+
+**Example Workflows:**
+
+**New Project Setup:**
+```bash
+# Complete setup for a new project
+npx hasyx assist
+```
+
+**GitHub Webhooks Only:**
+```bash
+# Configure only GitHub webhooks
+npx hasyx assist --skip-auth --skip-repo --skip-env --skip-package --skip-init --skip-hasura --skip-secrets --skip-oauth --skip-resend --skip-vercel --skip-sync --skip-commit --skip-migrations --skip-firebase --skip-telegram --skip-project-user --skip-openrouter --skip-pg --skip-dns --skip-docker --skip-github --skip-storage
+```
+
+**Storage Configuration Only:**
+```bash
+# Configure only storage
+npx hasyx assist --skip-auth --skip-repo --skip-env --skip-package --skip-init --skip-hasura --skip-secrets --skip-oauth --skip-resend --skip-vercel --skip-sync --skip-commit --skip-migrations --skip-firebase --skip-telegram --skip-project-user --skip-openrouter --skip-pg --skip-dns --skip-docker --skip-github --skip-github-webhooks
+```
+
+**📖 See [GITHUB-WEBHOOKS.md](GITHUB-WEBHOOKS.md) for detailed webhook setup instructions.**
 
 ---
 

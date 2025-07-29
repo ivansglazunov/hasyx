@@ -2022,6 +2022,334 @@
       "level": 1
     },
     {
+      "title": "Hasyx Files Storage",
+      "url": "/hasyx/doc/FILES",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/FILES#overview",
+          "level": 2
+        },
+        {
+          "title": "Quick Start",
+          "url": "/hasyx/doc/FILES#quick-start",
+          "level": 2
+        },
+        {
+          "title": "1. Configure File Storage",
+          "url": "/hasyx/doc/FILES#1-configure-file-storage",
+          "level": 3
+        },
+        {
+          "title": "2. Apply Migrations",
+          "url": "/hasyx/doc/FILES#2-apply-migrations",
+          "level": 3
+        },
+        {
+          "title": "3. Generate Types",
+          "url": "/hasyx/doc/FILES#3-generate-types",
+          "level": 3
+        },
+        {
+          "title": "Configuration",
+          "url": "/hasyx/doc/FILES#configuration",
+          "level": 2
+        },
+        {
+          "title": "Local Storage (MinIO)",
+          "url": "/hasyx/doc/FILES#local-storage-minio",
+          "level": 3
+        },
+        {
+          "title": "Cloud Storage",
+          "url": "/hasyx/doc/FILES#cloud-storage",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/FILES#environment-variables",
+          "level": 2
+        },
+        {
+          "title": "Database Schema",
+          "url": "/hasyx/doc/FILES#database-schema",
+          "level": 2
+        },
+        {
+          "title": "files",
+          "url": "/hasyx/doc/FILES#files",
+          "level": 3
+        },
+        {
+          "title": "file_versions",
+          "url": "/hasyx/doc/FILES#file-versions",
+          "level": 3
+        },
+        {
+          "title": "Permissions",
+          "url": "/hasyx/doc/FILES#permissions",
+          "level": 2
+        },
+        {
+          "title": "User Permissions",
+          "url": "/hasyx/doc/FILES#user-permissions",
+          "level": 3
+        },
+        {
+          "title": "Admin Permissions",
+          "url": "/hasyx/doc/FILES#admin-permissions",
+          "level": 3
+        },
+        {
+          "title": "API Endpoints",
+          "url": "/hasyx/doc/FILES#api-endpoints",
+          "level": 2
+        },
+        {
+          "title": "Upload File",
+          "url": "/hasyx/doc/FILES#upload-file",
+          "level": 3
+        },
+        {
+          "title": "Get File Info",
+          "url": "/hasyx/doc/FILES#get-file-info",
+          "level": 3
+        },
+        {
+          "title": "List Files",
+          "url": "/hasyx/doc/FILES#list-files",
+          "level": 3
+        },
+        {
+          "title": "Download File",
+          "url": "/hasyx/doc/FILES#download-file",
+          "level": 3
+        },
+        {
+          "title": "Update File",
+          "url": "/hasyx/doc/FILES#update-file",
+          "level": 3
+        },
+        {
+          "title": "Delete File",
+          "url": "/hasyx/doc/FILES#delete-file",
+          "level": 3
+        },
+        {
+          "title": "Usage Examples",
+          "url": "/hasyx/doc/FILES#usage-examples",
+          "level": 2
+        },
+        {
+          "title": "Upload File",
+          "url": "/hasyx/doc/FILES#upload-file",
+          "level": 3
+        },
+        {
+          "title": "Get File Info",
+          "url": "/hasyx/doc/FILES#get-file-info",
+          "level": 3
+        },
+        {
+          "title": "List Files",
+          "url": "/hasyx/doc/FILES#list-files",
+          "level": 3
+        },
+        {
+          "title": "Download File",
+          "url": "/hasyx/doc/FILES#download-file",
+          "level": 3
+        },
+        {
+          "title": "Update File",
+          "url": "/hasyx/doc/FILES#update-file",
+          "level": 3
+        },
+        {
+          "title": "Delete File",
+          "url": "/hasyx/doc/FILES#delete-file",
+          "level": 3
+        },
+        {
+          "title": "Using REST API",
+          "url": "/hasyx/doc/FILES#using-rest-api",
+          "level": 2
+        },
+        {
+          "title": "Upload File via API",
+          "url": "/hasyx/doc/FILES#upload-file-via-api",
+          "level": 3
+        },
+        {
+          "title": "Get File List",
+          "url": "/hasyx/doc/FILES#get-file-list",
+          "level": 3
+        },
+        {
+          "title": "Download File",
+          "url": "/hasyx/doc/FILES#download-file",
+          "level": 3
+        },
+        {
+          "title": "Hasura Integration",
+          "url": "/hasyx/doc/FILES#hasura-integration",
+          "level": 2
+        },
+        {
+          "title": "GraphQL Queries",
+          "url": "/hasyx/doc/FILES#graphql-queries",
+          "level": 3
+        },
+        {
+          "title": "GraphQL Mutations",
+          "url": "/hasyx/doc/FILES#graphql-mutations",
+          "level": 3
+        },
+        {
+          "title": "Security",
+          "url": "/hasyx/doc/FILES#security",
+          "level": 2
+        },
+        {
+          "title": "File Validation",
+          "url": "/hasyx/doc/FILES#file-validation",
+          "level": 3
+        },
+        {
+          "title": "Access Control",
+          "url": "/hasyx/doc/FILES#access-control",
+          "level": 3
+        },
+        {
+          "title": "API Security",
+          "url": "/hasyx/doc/FILES#api-security",
+          "level": 3
+        },
+        {
+          "title": "Performance",
+          "url": "/hasyx/doc/FILES#performance",
+          "level": 2
+        },
+        {
+          "title": "Caching",
+          "url": "/hasyx/doc/FILES#caching",
+          "level": 3
+        },
+        {
+          "title": "Optimization",
+          "url": "/hasyx/doc/FILES#optimization",
+          "level": 3
+        },
+        {
+          "title": "Monitoring",
+          "url": "/hasyx/doc/FILES#monitoring",
+          "level": 2
+        },
+        {
+          "title": "Health Checks",
+          "url": "/hasyx/doc/FILES#health-checks",
+          "level": 3
+        },
+        {
+          "title": "Logs",
+          "url": "/hasyx/doc/FILES#logs",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/FILES#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/FILES#common-issues",
+          "level": 3
+        },
+        {
+          "title": "Debug Mode",
+          "url": "/hasyx/doc/FILES#debug-mode",
+          "level": 3
+        },
+        {
+          "title": "Migrations",
+          "url": "/hasyx/doc/FILES#migrations",
+          "level": 2
+        },
+        {
+          "title": "Apply Migrations",
+          "url": "/hasyx/doc/FILES#apply-migrations",
+          "level": 3
+        },
+        {
+          "title": "Rollback Migrations",
+          "url": "/hasyx/doc/FILES#rollback-migrations",
+          "level": 3
+        },
+        {
+          "title": "Custom Migrations",
+          "url": "/hasyx/doc/FILES#custom-migrations",
+          "level": 3
+        },
+        {
+          "title": "Backup and Recovery",
+          "url": "/hasyx/doc/FILES#backup-and-recovery",
+          "level": 2
+        },
+        {
+          "title": "Database Backup",
+          "url": "/hasyx/doc/FILES#database-backup",
+          "level": 3
+        },
+        {
+          "title": "File Backup",
+          "url": "/hasyx/doc/FILES#file-backup",
+          "level": 3
+        },
+        {
+          "title": "Restore",
+          "url": "/hasyx/doc/FILES#restore",
+          "level": 3
+        },
+        {
+          "title": "Development",
+          "url": "/hasyx/doc/FILES#development",
+          "level": 2
+        },
+        {
+          "title": "Local Development",
+          "url": "/hasyx/doc/FILES#local-development",
+          "level": 3
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/FILES#testing",
+          "level": 3
+        },
+        {
+          "title": "Production Deployment",
+          "url": "/hasyx/doc/FILES#production-deployment",
+          "level": 2
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/FILES#environment-variables",
+          "level": 3
+        },
+        {
+          "title": "Security",
+          "url": "/hasyx/doc/FILES#security",
+          "level": 3
+        },
+        {
+          "title": "Monitoring",
+          "url": "/hasyx/doc/FILES#monitoring",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Query Generator",
       "url": "/hasyx/doc/GENERATOR",
       "collapse": true,
@@ -2190,6 +2518,84 @@
           "title": "Real-world Tournament Example",
           "url": "/hasyx/doc/GENERATOR#real-world-tournament-example",
           "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "GitHub Webhooks Setup",
+      "url": "/hasyx/doc/GITHUB-WEBHOOKS",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#overview",
+          "level": 2
+        },
+        {
+          "title": "Prerequisites",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#prerequisites",
+          "level": 2
+        },
+        {
+          "title": "Setup Steps",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#setup-steps",
+          "level": 2
+        },
+        {
+          "title": "1. Generate Webhook Secret",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#1-generate-webhook-secret",
+          "level": 3
+        },
+        {
+          "title": "2. Configure GitHub Webhook",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#2-configure-github-webhook",
+          "level": 3
+        },
+        {
+          "title": "3. Webhook Events Handled",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#3-webhook-events-handled",
+          "level": 3
+        },
+        {
+          "title": "4. Webhook Payload Structure",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#4-webhook-payload-structure",
+          "level": 3
+        },
+        {
+          "title": "5. Security Considerations",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#5-security-considerations",
+          "level": 3
+        },
+        {
+          "title": "6. Testing Webhooks",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#6-testing-webhooks",
+          "level": 3
+        },
+        {
+          "title": "7. Troubleshooting",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#7-troubleshooting",
+          "level": 3
+        },
+        {
+          "title": "8. Monitoring",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#8-monitoring",
+          "level": 3
+        },
+        {
+          "title": "9. Environment Variables",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#9-environment-variables",
+          "level": 3
+        },
+        {
+          "title": "10. API Endpoints",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#10-api-endpoints",
+          "level": 3
+        },
+        {
+          "title": "Integration with Events System",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#integration-with-events-system",
+          "level": 2
         }
       ],
       "level": 1
@@ -3983,134 +4389,6 @@
       "level": 1
     },
     {
-      "title": "Отчет об исследовании механики Schedule в проекте hasyx",
-      "url": "/hasyx/doc/SCHEDULE_REPORT",
-      "collapse": true,
-      "items": [
-        {
-          "title": "Обзор",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 2
-        },
-        {
-          "title": "Анализ тестирования (использование моков vs реальной базы данных)",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#vs",
-          "level": 2
-        },
-        {
-          "title": "✅ Тесты НЕ используют моки/фейки - работают с реальной базой данных",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 3
-        },
-        {
-          "title": "Тестовые сценарии:",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 3
-        },
-        {
-          "title": "Конфигурация events/*.json",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#eventsjson",
-          "level": 2
-        },
-        {
-          "title": "events/schedule.json - Event Trigger для таблицы schedule",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#eventsschedulejson-event-trigger-schedule",
-          "level": 3
-        },
-        {
-          "title": "events/schedule-cron.json - Cron Trigger для обработки событий",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#eventsschedule-cronjson-cron-trigger",
-          "level": 3
-        },
-        {
-          "title": "events/events.json - Event Trigger для таблицы events",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#eventseventsjson-event-trigger-events",
-          "level": 3
-        },
-        {
-          "title": "Архитектура системы планирования",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 2
-        },
-        {
-          "title": "Основные компоненты:",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 3
-        },
-        {
-          "title": "Поток выполнения:",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 3
-        },
-        {
-          "title": "Функциональность",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 2
-        },
-        {
-          "title": "Ключевые функции (lib/schedule-event.ts):",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#libschedule-eventts",
-          "level": 3
-        },
-        {
-          "title": "Поддерживаемые cron-выражения:",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#cron",
-          "level": 3
-        },
-        {
-          "title": "Документация",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 2
-        },
-        {
-          "title": "Существующая документация:",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 3
-        },
-        {
-          "title": "❌ Отсутствует специализированная документация по Schedule",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#schedule",
-          "level": 3
-        },
-        {
-          "title": "Рекомендации",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 2
-        },
-        {
-          "title": "1. Состояние тестирования - ОТЛИЧНО ✅",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#1",
-          "level": 3
-        },
-        {
-          "title": "2. Конфигурация - ОТЛИЧНО ✅",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#2",
-          "level": 3
-        },
-        {
-          "title": "3. Функциональность - ОТЛИЧНО ✅",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#3",
-          "level": 3
-        },
-        {
-          "title": "4. Документация - ТРЕБУЕТ УЛУЧШЕНИЯ ❌",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#4",
-          "level": 3
-        },
-        {
-          "title": "Следующие шаги",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 2
-        },
-        {
-          "title": "Заключение",
-          "url": "/hasyx/doc/SCHEDULE_REPORT#",
-          "level": 2
-        }
-      ],
-      "level": 1
-    },
-    {
       "title": "SSL Certificate Management",
       "url": "/hasyx/doc/SSL",
       "collapse": true,
@@ -5313,8 +5591,8 @@
           "level": 2
         },
         {
-          "title": "GITHUB_TELEGRAM_BOT Modes:",
-          "url": "/hasyx/doc/TELEGRAM_BOT#github-telegram-bot-modes",
+          "title": "HASYX_GITHUB_TELEGRAM_BOT Modes:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#hasyx-github-telegram-bot-modes",
           "level": 3
         },
         {
@@ -6570,6 +6848,234 @@
       "level": 1
     },
     {
+      "title": "CloudFlare DNS Management",
+      "url": "/hasyx/doc/CLOUDFLARE",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Purpose",
+          "url": "/hasyx/doc/CLOUDFLARE#purpose",
+          "level": 2
+        },
+        {
+          "title": "Core Features",
+          "url": "/hasyx/doc/CLOUDFLARE#core-features",
+          "level": 2
+        },
+        {
+          "title": "DNS Record Management",
+          "url": "/hasyx/doc/CLOUDFLARE#dns-record-management",
+          "level": 3
+        },
+        {
+          "title": "SSL Integration Support",
+          "url": "/hasyx/doc/CLOUDFLARE#ssl-integration-support",
+          "level": 3
+        },
+        {
+          "title": "API Integration",
+          "url": "/hasyx/doc/CLOUDFLARE#api-integration",
+          "level": 3
+        },
+        {
+          "title": "Idempotent Operations",
+          "url": "/hasyx/doc/CLOUDFLARE#idempotent-operations",
+          "level": 3
+        },
+        {
+          "title": "Prerequisites and Configuration",
+          "url": "/hasyx/doc/CLOUDFLARE#prerequisites-and-configuration",
+          "level": 2
+        },
+        {
+          "title": "Environment Configuration with Assist",
+          "url": "/hasyx/doc/CLOUDFLARE#environment-configuration-with-assist",
+          "level": 3
+        },
+        {
+          "title": "Manual Environment Configuration",
+          "url": "/hasyx/doc/CLOUDFLARE#manual-environment-configuration",
+          "level": 3
+        },
+        {
+          "title": "Getting CloudFlare Credentials",
+          "url": "/hasyx/doc/CLOUDFLARE#getting-cloudflare-credentials",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables Usage",
+          "url": "/hasyx/doc/CLOUDFLARE#environment-variables-usage",
+          "level": 3
+        },
+        {
+          "title": "Usage",
+          "url": "/hasyx/doc/CLOUDFLARE#usage",
+          "level": 2
+        },
+        {
+          "title": "Basic Usage",
+          "url": "/hasyx/doc/CLOUDFLARE#basic-usage",
+          "level": 3
+        },
+        {
+          "title": "Environment-Based Configuration",
+          "url": "/hasyx/doc/CLOUDFLARE#environment-based-configuration",
+          "level": 3
+        },
+        {
+          "title": "Advanced Usage",
+          "url": "/hasyx/doc/CLOUDFLARE#advanced-usage",
+          "level": 3
+        },
+        {
+          "title": "Configuration Options",
+          "url": "/hasyx/doc/CLOUDFLARE#configuration-options",
+          "level": 2
+        },
+        {
+          "title": "CloudflareConfig Interface",
+          "url": "/hasyx/doc/CLOUDFLARE#cloudflareconfig-interface",
+          "level": 3
+        },
+        {
+          "title": "SubdomainDnsConfig Interface",
+          "url": "/hasyx/doc/CLOUDFLARE#subdomaindnsconfig-interface",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/CLOUDFLARE#environment-variables",
+          "level": 3
+        },
+        {
+          "title": "Core Methods",
+          "url": "/hasyx/doc/CLOUDFLARE#core-methods",
+          "level": 2
+        },
+        {
+          "title": "DNS Record Information",
+          "url": "/hasyx/doc/CLOUDFLARE#dns-record-information",
+          "level": 3
+        },
+        {
+          "title": "DNS Record Operations",
+          "url": "/hasyx/doc/CLOUDFLARE#dns-record-operations",
+          "level": 3
+        },
+        {
+          "title": "Idempotent Operations",
+          "url": "/hasyx/doc/CLOUDFLARE#idempotent-operations",
+          "level": 3
+        },
+        {
+          "title": "SSL Integration Methods",
+          "url": "/hasyx/doc/CLOUDFLARE#ssl-integration-methods",
+          "level": 3
+        },
+        {
+          "title": "DNS Record Structure",
+          "url": "/hasyx/doc/CLOUDFLARE#dns-record-structure",
+          "level": 2
+        },
+        {
+          "title": "DnsRecord Interface",
+          "url": "/hasyx/doc/CLOUDFLARE#dnsrecord-interface",
+          "level": 3
+        },
+        {
+          "title": "Integration with Other Modules",
+          "url": "/hasyx/doc/CLOUDFLARE#integration-with-other-modules",
+          "level": 2
+        },
+        {
+          "title": "With SSL Management",
+          "url": "/hasyx/doc/CLOUDFLARE#with-ssl-management",
+          "level": 3
+        },
+        {
+          "title": "With Nginx Configuration",
+          "url": "/hasyx/doc/CLOUDFLARE#with-nginx-configuration",
+          "level": 3
+        },
+        {
+          "title": "Complete Subdomain Setup",
+          "url": "/hasyx/doc/CLOUDFLARE#complete-subdomain-setup",
+          "level": 3
+        },
+        {
+          "title": "Error Handling",
+          "url": "/hasyx/doc/CLOUDFLARE#error-handling",
+          "level": 2
+        },
+        {
+          "title": "Common Error Scenarios",
+          "url": "/hasyx/doc/CLOUDFLARE#common-error-scenarios",
+          "level": 3
+        },
+        {
+          "title": "Configuration Validation",
+          "url": "/hasyx/doc/CLOUDFLARE#configuration-validation",
+          "level": 3
+        },
+        {
+          "title": "Best Practices",
+          "url": "/hasyx/doc/CLOUDFLARE#best-practices",
+          "level": 2
+        },
+        {
+          "title": "1. Use Define/Undefine for Idempotency",
+          "url": "/hasyx/doc/CLOUDFLARE#1-use-defineundefine-for-idempotency",
+          "level": 3
+        },
+        {
+          "title": "2. Configure TTL Appropriately",
+          "url": "/hasyx/doc/CLOUDFLARE#2-configure-ttl-appropriately",
+          "level": 3
+        },
+        {
+          "title": "3. Use Proxied Records Wisely",
+          "url": "/hasyx/doc/CLOUDFLARE#3-use-proxied-records-wisely",
+          "level": 3
+        },
+        {
+          "title": "4. Environment-Based Configuration",
+          "url": "/hasyx/doc/CLOUDFLARE#4-environment-based-configuration",
+          "level": 3
+        },
+        {
+          "title": "Security Considerations",
+          "url": "/hasyx/doc/CLOUDFLARE#security-considerations",
+          "level": 2
+        },
+        {
+          "title": "API Token Security",
+          "url": "/hasyx/doc/CLOUDFLARE#api-token-security",
+          "level": 3
+        },
+        {
+          "title": "DNS Security",
+          "url": "/hasyx/doc/CLOUDFLARE#dns-security",
+          "level": 3
+        },
+        {
+          "title": "Domain Management",
+          "url": "/hasyx/doc/CLOUDFLARE#domain-management",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/CLOUDFLARE#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/CLOUDFLARE#common-issues",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "🏗️ Hasyx Query Constructor",
       "url": "/hasyx/doc/CONSTRUCTOR",
       "collapse": true,
@@ -6904,6 +7410,169 @@
           "title": "Key Aspects and Benefits",
           "url": "/hasyx/doc/CYTO#key-aspects-and-benefits",
           "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Docker Management for Hasyx",
+      "url": "/hasyx/doc/DOCKER",
+      "collapse": true,
+      "items": [
+        {
+          "title": "🚀 Quick Start",
+          "url": "/hasyx/doc/DOCKER#quick-start",
+          "level": 2
+        },
+        {
+          "title": "Prerequisites",
+          "url": "/hasyx/doc/DOCKER#prerequisites",
+          "level": 3
+        },
+        {
+          "title": "Basic Commands",
+          "url": "/hasyx/doc/DOCKER#basic-commands",
+          "level": 3
+        },
+        {
+          "title": "🐳 How It Works",
+          "url": "/hasyx/doc/DOCKER#how-it-works",
+          "level": 2
+        },
+        {
+          "title": "Ports",
+          "url": "/hasyx/doc/DOCKER#ports",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/DOCKER#environment-variables",
+          "level": 3
+        },
+        {
+          "title": "Automatic Updates",
+          "url": "/hasyx/doc/DOCKER#automatic-updates",
+          "level": 3
+        },
+        {
+          "title": "Container Naming",
+          "url": "/hasyx/doc/DOCKER#container-naming",
+          "level": 3
+        },
+        {
+          "title": "📋 Project Setup",
+          "url": "/hasyx/doc/DOCKER#project-setup",
+          "level": 2
+        },
+        {
+          "title": "1. package.json",
+          "url": "/hasyx/doc/DOCKER#1-packagejson",
+          "level": 3
+        },
+        {
+          "title": "2. .env file",
+          "url": "/hasyx/doc/DOCKER#2-env-file",
+          "level": 3
+        },
+        {
+          "title": "3. Dockerfile",
+          "url": "/hasyx/doc/DOCKER#3-dockerfile",
+          "level": 3
+        },
+        {
+          "title": "🔧 CI/CD with GitHub Actions",
+          "url": "/hasyx/doc/DOCKER#cicd-with-github-actions",
+          "level": 2
+        },
+        {
+          "title": "Architecture Support",
+          "url": "/hasyx/doc/DOCKER#architecture-support",
+          "level": 3
+        },
+        {
+          "title": "Security & Environment Variables",
+          "url": "/hasyx/doc/DOCKER#security-environment-variables",
+          "level": 3
+        },
+        {
+          "title": "Setup GitHub Secrets",
+          "url": "/hasyx/doc/DOCKER#setup-github-secrets",
+          "level": 3
+        },
+        {
+          "title": "Automatic Publishing",
+          "url": "/hasyx/doc/DOCKER#automatic-publishing",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting Build Issues",
+          "url": "/hasyx/doc/DOCKER#troubleshooting-build-issues",
+          "level": 3
+        },
+        {
+          "title": "🛠️ Usage Examples",
+          "url": "/hasyx/doc/DOCKER#usage-examples",
+          "level": 2
+        },
+        {
+          "title": "Local Development",
+          "url": "/hasyx/doc/DOCKER#local-development",
+          "level": 3
+        },
+        {
+          "title": "Production Deployment",
+          "url": "/hasyx/doc/DOCKER#production-deployment",
+          "level": 3
+        },
+        {
+          "title": "Monitoring",
+          "url": "/hasyx/doc/DOCKER#monitoring",
+          "level": 3
+        },
+        {
+          "title": "🔍 Troubleshooting",
+          "url": "/hasyx/doc/DOCKER#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Docker Not Installed",
+          "url": "/hasyx/doc/DOCKER#docker-not-installed",
+          "level": 3
+        },
+        {
+          "title": "Image Not Found",
+          "url": "/hasyx/doc/DOCKER#image-not-found",
+          "level": 3
+        },
+        {
+          "title": "Container Won't Start",
+          "url": "/hasyx/doc/DOCKER#container-wont-start",
+          "level": 3
+        },
+        {
+          "title": "Port Already in Use",
+          "url": "/hasyx/doc/DOCKER#port-already-in-use",
+          "level": 3
+        },
+        {
+          "title": "🎯 Integration with assist",
+          "url": "/hasyx/doc/DOCKER#integration-with-assist",
+          "level": 2
+        },
+        {
+          "title": "🔄 Workflow Integration",
+          "url": "/hasyx/doc/DOCKER#workflow-integration",
+          "level": 2
+        },
+        {
+          "title": "GitHub Actions Workflow",
+          "url": "/hasyx/doc/DOCKER#github-actions-workflow",
+          "level": 3
+        },
+        {
+          "title": "Container Features",
+          "url": "/hasyx/doc/DOCKER#container-features",
+          "level": 3
         }
       ],
       "level": 1
@@ -7918,6 +8587,194 @@
       "level": 1
     },
     {
+      "title": "Hasyx Logs System",
+      "url": "/hasyx/doc/LOGS",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/LOGS#overview",
+          "level": 2
+        },
+        {
+          "title": "Architecture",
+          "url": "/hasyx/doc/LOGS#architecture",
+          "level": 2
+        },
+        {
+          "title": "Database Schema",
+          "url": "/hasyx/doc/LOGS#database-schema",
+          "level": 3
+        },
+        {
+          "title": "Configuration",
+          "url": "/hasyx/doc/LOGS#configuration",
+          "level": 2
+        },
+        {
+          "title": "hasyx.config.json",
+          "url": "/hasyx/doc/LOGS#hasyxconfigjson",
+          "level": 3
+        },
+        {
+          "title": "CLI Commands",
+          "url": "/hasyx/doc/LOGS#cli-commands",
+          "level": 2
+        },
+        {
+          "title": "Apply Configuration",
+          "url": "/hasyx/doc/LOGS#apply-configuration",
+          "level": 3
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/LOGS#testing",
+          "level": 3
+        },
+        {
+          "title": "Diffs System",
+          "url": "/hasyx/doc/LOGS#diffs-system",
+          "level": 2
+        },
+        {
+          "title": "Features",
+          "url": "/hasyx/doc/LOGS#features",
+          "level": 3
+        },
+        {
+          "title": "Workflow",
+          "url": "/hasyx/doc/LOGS#workflow",
+          "level": 3
+        },
+        {
+          "title": "Implementation",
+          "url": "/hasyx/doc/LOGS#implementation",
+          "level": 3
+        },
+        {
+          "title": "States System",
+          "url": "/hasyx/doc/LOGS#states-system",
+          "level": 2
+        },
+        {
+          "title": "Features",
+          "url": "/hasyx/doc/LOGS#features",
+          "level": 3
+        },
+        {
+          "title": "Workflow",
+          "url": "/hasyx/doc/LOGS#workflow",
+          "level": 3
+        },
+        {
+          "title": "Implementation",
+          "url": "/hasyx/doc/LOGS#implementation",
+          "level": 3
+        },
+        {
+          "title": "Event Triggers",
+          "url": "/hasyx/doc/LOGS#event-triggers",
+          "level": 2
+        },
+        {
+          "title": "Diffs Event Trigger",
+          "url": "/hasyx/doc/LOGS#diffs-event-trigger",
+          "level": 3
+        },
+        {
+          "title": "Workflow Example",
+          "url": "/hasyx/doc/LOGS#workflow-example",
+          "level": 3
+        },
+        {
+          "title": "Security & Permissions",
+          "url": "/hasyx/doc/LOGS#security-permissions",
+          "level": 2
+        },
+        {
+          "title": "Database Protections",
+          "url": "/hasyx/doc/LOGS#database-protections",
+          "level": 3
+        },
+        {
+          "title": "Trigger Protection",
+          "url": "/hasyx/doc/LOGS#trigger-protection",
+          "level": 3
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/LOGS#testing",
+          "level": 2
+        },
+        {
+          "title": "Test Coverage",
+          "url": "/hasyx/doc/LOGS#test-coverage",
+          "level": 3
+        },
+        {
+          "title": "Test Strategy",
+          "url": "/hasyx/doc/LOGS#test-strategy",
+          "level": 3
+        },
+        {
+          "title": "Dependencies",
+          "url": "/hasyx/doc/LOGS#dependencies",
+          "level": 2
+        },
+        {
+          "title": "Migration",
+          "url": "/hasyx/doc/LOGS#migration",
+          "level": 2
+        },
+        {
+          "title": "Migration File Structure",
+          "url": "/hasyx/doc/LOGS#migration-file-structure",
+          "level": 3
+        },
+        {
+          "title": "Apply Migration",
+          "url": "/hasyx/doc/LOGS#apply-migration",
+          "level": 3
+        },
+        {
+          "title": "Production Considerations",
+          "url": "/hasyx/doc/LOGS#production-considerations",
+          "level": 2
+        },
+        {
+          "title": "Performance",
+          "url": "/hasyx/doc/LOGS#performance",
+          "level": 3
+        },
+        {
+          "title": "Monitoring",
+          "url": "/hasyx/doc/LOGS#monitoring",
+          "level": 3
+        },
+        {
+          "title": "Security",
+          "url": "/hasyx/doc/LOGS#security",
+          "level": 3
+        },
+        {
+          "title": "Scalability",
+          "url": "/hasyx/doc/LOGS#scalability",
+          "level": 3
+        },
+        {
+          "title": "Integration",
+          "url": "/hasyx/doc/LOGS#integration",
+          "level": 2
+        },
+        {
+          "title": "CLI Integration",
+          "url": "/hasyx/doc/LOGS#cli-integration",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Markdown Terminal",
       "url": "/hasyx/doc/MARKDOWN-TERMINAL",
       "collapse": true,
@@ -8121,6 +8978,234 @@
       "level": 1
     },
     {
+      "title": "Nginx Configuration Management",
+      "url": "/hasyx/doc/NGINX",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Purpose",
+          "url": "/hasyx/doc/NGINX#purpose",
+          "level": 2
+        },
+        {
+          "title": "Core Features",
+          "url": "/hasyx/doc/NGINX#core-features",
+          "level": 2
+        },
+        {
+          "title": "Path Auto-Detection",
+          "url": "/hasyx/doc/NGINX#path-auto-detection",
+          "level": 3
+        },
+        {
+          "title": "Site Management",
+          "url": "/hasyx/doc/NGINX#site-management",
+          "level": 3
+        },
+        {
+          "title": "Safety Features",
+          "url": "/hasyx/doc/NGINX#safety-features",
+          "level": 3
+        },
+        {
+          "title": "Prerequisites",
+          "url": "/hasyx/doc/NGINX#prerequisites",
+          "level": 2
+        },
+        {
+          "title": "Usage",
+          "url": "/hasyx/doc/NGINX#usage",
+          "level": 2
+        },
+        {
+          "title": "Basic Usage",
+          "url": "/hasyx/doc/NGINX#basic-usage",
+          "level": 3
+        },
+        {
+          "title": "Custom Path Configuration",
+          "url": "/hasyx/doc/NGINX#custom-path-configuration",
+          "level": 3
+        },
+        {
+          "title": "SSL Configuration",
+          "url": "/hasyx/doc/NGINX#ssl-configuration",
+          "level": 3
+        },
+        {
+          "title": "Configuration Options",
+          "url": "/hasyx/doc/NGINX#configuration-options",
+          "level": 2
+        },
+        {
+          "title": "NginxConfig Interface",
+          "url": "/hasyx/doc/NGINX#nginxconfig-interface",
+          "level": 3
+        },
+        {
+          "title": "SiteConfig Interface",
+          "url": "/hasyx/doc/NGINX#siteconfig-interface",
+          "level": 3
+        },
+        {
+          "title": "Core Methods",
+          "url": "/hasyx/doc/NGINX#core-methods",
+          "level": 2
+        },
+        {
+          "title": "Site Information",
+          "url": "/hasyx/doc/NGINX#site-information",
+          "level": 3
+        },
+        {
+          "title": "Site Operations",
+          "url": "/hasyx/doc/NGINX#site-operations",
+          "level": 3
+        },
+        {
+          "title": "Idempotent Operations",
+          "url": "/hasyx/doc/NGINX#idempotent-operations",
+          "level": 3
+        },
+        {
+          "title": "Enable/Disable Operations",
+          "url": "/hasyx/doc/NGINX#enabledisable-operations",
+          "level": 3
+        },
+        {
+          "title": "Configuration Examples",
+          "url": "/hasyx/doc/NGINX#configuration-examples",
+          "level": 2
+        },
+        {
+          "title": "Basic HTTP Reverse Proxy",
+          "url": "/hasyx/doc/NGINX#basic-http-reverse-proxy",
+          "level": 3
+        },
+        {
+          "title": "HTTPS with SSL Certificates",
+          "url": "/hasyx/doc/NGINX#https-with-ssl-certificates",
+          "level": 3
+        },
+        {
+          "title": "Custom Configuration with Multiple Locations",
+          "url": "/hasyx/doc/NGINX#custom-configuration-with-multiple-locations",
+          "level": 3
+        },
+        {
+          "title": "Integration with Other Modules",
+          "url": "/hasyx/doc/NGINX#integration-with-other-modules",
+          "level": 2
+        },
+        {
+          "title": "With SSL Management",
+          "url": "/hasyx/doc/NGINX#with-ssl-management",
+          "level": 3
+        },
+        {
+          "title": "With CloudFlare DNS",
+          "url": "/hasyx/doc/NGINX#with-cloudflare-dns",
+          "level": 3
+        },
+        {
+          "title": "Generated Configuration",
+          "url": "/hasyx/doc/NGINX#generated-configuration",
+          "level": 2
+        },
+        {
+          "title": "HTTP Only Configuration",
+          "url": "/hasyx/doc/NGINX#http-only-configuration",
+          "level": 3
+        },
+        {
+          "title": "HTTPS with Redirect Configuration",
+          "url": "/hasyx/doc/NGINX#https-with-redirect-configuration",
+          "level": 3
+        },
+        {
+          "title": "Path Detection Logic",
+          "url": "/hasyx/doc/NGINX#path-detection-logic",
+          "level": 2
+        },
+        {
+          "title": "Supported Distributions",
+          "url": "/hasyx/doc/NGINX#supported-distributions",
+          "level": 3
+        },
+        {
+          "title": "Error Handling",
+          "url": "/hasyx/doc/NGINX#error-handling",
+          "level": 2
+        },
+        {
+          "title": "Common Error Scenarios",
+          "url": "/hasyx/doc/NGINX#common-error-scenarios",
+          "level": 3
+        },
+        {
+          "title": "Configuration Validation",
+          "url": "/hasyx/doc/NGINX#configuration-validation",
+          "level": 3
+        },
+        {
+          "title": "Best Practices",
+          "url": "/hasyx/doc/NGINX#best-practices",
+          "level": 2
+        },
+        {
+          "title": "1. Use Define/Undefine for Idempotency",
+          "url": "/hasyx/doc/NGINX#1-use-defineundefine-for-idempotency",
+          "level": 3
+        },
+        {
+          "title": "2. Always Use SSL in Production",
+          "url": "/hasyx/doc/NGINX#2-always-use-ssl-in-production",
+          "level": 3
+        },
+        {
+          "title": "3. Configure Proper Proxy Headers",
+          "url": "/hasyx/doc/NGINX#3-configure-proper-proxy-headers",
+          "level": 3
+        },
+        {
+          "title": "4. Use Custom Configuration for Complex Setups",
+          "url": "/hasyx/doc/NGINX#4-use-custom-configuration-for-complex-setups",
+          "level": 3
+        },
+        {
+          "title": "Security Considerations",
+          "url": "/hasyx/doc/NGINX#security-considerations",
+          "level": 2
+        },
+        {
+          "title": "SSL Configuration",
+          "url": "/hasyx/doc/NGINX#ssl-configuration",
+          "level": 3
+        },
+        {
+          "title": "Proxy Security",
+          "url": "/hasyx/doc/NGINX#proxy-security",
+          "level": 3
+        },
+        {
+          "title": "File Permissions",
+          "url": "/hasyx/doc/NGINX#file-permissions",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/NGINX#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/NGINX#common-issues",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Web Push Notifications with Firebase Cloud Messaging (FCM) in Hasyx",
       "url": "/hasyx/doc/NOTIFY-FIREBASE",
       "collapse": true,
@@ -8230,6 +9315,49 @@
           "title": "Platform Support Status",
           "url": "/hasyx/doc/NOTIFY#platform-support-status",
           "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Ollama Integration",
+      "url": "/hasyx/doc/OLLAMA",
+      "collapse": true,
+      "items": [
+        {
+          "title": "1. Installation and Setup",
+          "url": "/hasyx/doc/OLLAMA#1-installation-and-setup",
+          "level": 2
+        },
+        {
+          "title": "Install Ollama",
+          "url": "/hasyx/doc/OLLAMA#install-ollama",
+          "level": 3
+        },
+        {
+          "title": "Download Models",
+          "url": "/hasyx/doc/OLLAMA#download-models",
+          "level": 3
+        },
+        {
+          "title": "Manage Models",
+          "url": "/hasyx/doc/OLLAMA#manage-models",
+          "level": 3
+        },
+        {
+          "title": "2. Usage with Hasyx `ask` CLI",
+          "url": "/hasyx/doc/OLLAMA#2-usage-with-hasyx-ask-cli",
+          "level": 2
+        },
+        {
+          "title": "Non-Interactive Mode",
+          "url": "/hasyx/doc/OLLAMA#non-interactive-mode",
+          "level": 3
+        },
+        {
+          "title": "Interactive Mode",
+          "url": "/hasyx/doc/OLLAMA#interactive-mode",
+          "level": 3
         }
       ],
       "level": 1
@@ -8714,6 +9842,668 @@
       "level": 1
     },
     {
+      "title": "Hasyx Data Renderer for Graph Visualizations",
+      "url": "/hasyx/doc/RENDERER",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/RENDERER#overview",
+          "level": 2
+        },
+        {
+          "title": "Core Components",
+          "url": "/hasyx/doc/RENDERER#core-components",
+          "level": 2
+        },
+        {
+          "title": "1. `<QueriesManager />`",
+          "url": "/hasyx/doc/RENDERER#1-queriesmanager",
+          "level": 3
+        },
+        {
+          "title": "2. `<QueriesRenderer />`",
+          "url": "/hasyx/doc/RENDERER#2-queriesrenderer",
+          "level": 3
+        },
+        {
+          "title": "3. `<CytoNodeRenderer />`",
+          "url": "/hasyx/doc/RENDERER#3-cytonoderenderer",
+          "level": 3
+        },
+        {
+          "title": "4. `<CytoEdgeRenderer />`",
+          "url": "/hasyx/doc/RENDERER#4-cytoedgerenderer",
+          "level": 3
+        },
+        {
+          "title": "5. `RowParser()`",
+          "url": "/hasyx/doc/RENDERER#5-rowparser",
+          "level": 3
+        },
+        {
+          "title": "Comprehensive Usage Example",
+          "url": "/hasyx/doc/RENDERER#comprehensive-usage-example",
+          "level": 2
+        },
+        {
+          "title": "Summary",
+          "url": "/hasyx/doc/RENDERER#summary",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Schedule System Documentation",
+      "url": "/hasyx/doc/SCHEDULE",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/SCHEDULE#overview",
+          "level": 2
+        },
+        {
+          "title": "Architecture",
+          "url": "/hasyx/doc/SCHEDULE#architecture",
+          "level": 2
+        },
+        {
+          "title": "Database Schema",
+          "url": "/hasyx/doc/SCHEDULE#database-schema",
+          "level": 3
+        },
+        {
+          "title": "System Components",
+          "url": "/hasyx/doc/SCHEDULE#system-components",
+          "level": 3
+        },
+        {
+          "title": "Getting Started",
+          "url": "/hasyx/doc/SCHEDULE#getting-started",
+          "level": 2
+        },
+        {
+          "title": "1. Database Setup",
+          "url": "/hasyx/doc/SCHEDULE#1-database-setup",
+          "level": 3
+        },
+        {
+          "title": "2. Event Triggers Configuration",
+          "url": "/hasyx/doc/SCHEDULE#2-event-triggers-configuration",
+          "level": 3
+        },
+        {
+          "title": "3. Sync Event Triggers",
+          "url": "/hasyx/doc/SCHEDULE#3-sync-event-triggers",
+          "level": 3
+        },
+        {
+          "title": "Usage",
+          "url": "/hasyx/doc/SCHEDULE#usage",
+          "level": 2
+        },
+        {
+          "title": "Creating a Schedule",
+          "url": "/hasyx/doc/SCHEDULE#creating-a-schedule",
+          "level": 3
+        },
+        {
+          "title": "Querying Schedules and Events",
+          "url": "/hasyx/doc/SCHEDULE#querying-schedules-and-events",
+          "level": 3
+        },
+        {
+          "title": "Updating and Deleting Schedules",
+          "url": "/hasyx/doc/SCHEDULE#updating-and-deleting-schedules",
+          "level": 3
+        },
+        {
+          "title": "Cron Expression Guide",
+          "url": "/hasyx/doc/SCHEDULE#cron-expression-guide",
+          "level": 2
+        },
+        {
+          "title": "Basic Patterns",
+          "url": "/hasyx/doc/SCHEDULE#basic-patterns",
+          "level": 3
+        },
+        {
+          "title": "Cron Format",
+          "url": "/hasyx/doc/SCHEDULE#cron-format",
+          "level": 3
+        },
+        {
+          "title": "Advanced Examples",
+          "url": "/hasyx/doc/SCHEDULE#advanced-examples",
+          "level": 3
+        },
+        {
+          "title": "Event Lifecycle",
+          "url": "/hasyx/doc/SCHEDULE#event-lifecycle",
+          "level": 2
+        },
+        {
+          "title": "Event States",
+          "url": "/hasyx/doc/SCHEDULE#event-states",
+          "level": 3
+        },
+        {
+          "title": "Event Flow",
+          "url": "/hasyx/doc/SCHEDULE#event-flow",
+          "level": 3
+        },
+        {
+          "title": "Custom Event Handlers",
+          "url": "/hasyx/doc/SCHEDULE#custom-event-handlers",
+          "level": 2
+        },
+        {
+          "title": "Creating Custom Event Processors",
+          "url": "/hasyx/doc/SCHEDULE#creating-custom-event-processors",
+          "level": 3
+        },
+        {
+          "title": "Using Custom Handlers in Cron Processor",
+          "url": "/hasyx/doc/SCHEDULE#using-custom-handlers-in-cron-processor",
+          "level": 3
+        },
+        {
+          "title": "Real-time Subscriptions",
+          "url": "/hasyx/doc/SCHEDULE#real-time-subscriptions",
+          "level": 2
+        },
+        {
+          "title": "Subscribe to Schedule Changes",
+          "url": "/hasyx/doc/SCHEDULE#subscribe-to-schedule-changes",
+          "level": 3
+        },
+        {
+          "title": "Subscribe to Event Updates",
+          "url": "/hasyx/doc/SCHEDULE#subscribe-to-event-updates",
+          "level": 3
+        },
+        {
+          "title": "Error Handling and Debugging",
+          "url": "/hasyx/doc/SCHEDULE#error-handling-and-debugging",
+          "level": 2
+        },
+        {
+          "title": "Common Issues and Solutions",
+          "url": "/hasyx/doc/SCHEDULE#common-issues-and-solutions",
+          "level": 3
+        },
+        {
+          "title": "Debug Mode",
+          "url": "/hasyx/doc/SCHEDULE#debug-mode",
+          "level": 3
+        },
+        {
+          "title": "Monitoring Schedules",
+          "url": "/hasyx/doc/SCHEDULE#monitoring-schedules",
+          "level": 3
+        },
+        {
+          "title": "Best Practices",
+          "url": "/hasyx/doc/SCHEDULE#best-practices",
+          "level": 2
+        },
+        {
+          "title": "1. Schedule Design",
+          "url": "/hasyx/doc/SCHEDULE#1-schedule-design",
+          "level": 3
+        },
+        {
+          "title": "2. Event Processing",
+          "url": "/hasyx/doc/SCHEDULE#2-event-processing",
+          "level": 3
+        },
+        {
+          "title": "3. Database Management",
+          "url": "/hasyx/doc/SCHEDULE#3-database-management",
+          "level": 3
+        },
+        {
+          "title": "4. Testing",
+          "url": "/hasyx/doc/SCHEDULE#4-testing",
+          "level": 3
+        },
+        {
+          "title": "API Reference",
+          "url": "/hasyx/doc/SCHEDULE#api-reference",
+          "level": 2
+        },
+        {
+          "title": "Schedule Functions",
+          "url": "/hasyx/doc/SCHEDULE#schedule-functions",
+          "level": 3
+        },
+        {
+          "title": "Performance Considerations",
+          "url": "/hasyx/doc/SCHEDULE#performance-considerations",
+          "level": 2
+        },
+        {
+          "title": "Scaling Schedules",
+          "url": "/hasyx/doc/SCHEDULE#scaling-schedules",
+          "level": 3
+        },
+        {
+          "title": "Memory Management",
+          "url": "/hasyx/doc/SCHEDULE#memory-management",
+          "level": 3
+        },
+        {
+          "title": "Security Considerations",
+          "url": "/hasyx/doc/SCHEDULE#security-considerations",
+          "level": 2
+        },
+        {
+          "title": "Access Control",
+          "url": "/hasyx/doc/SCHEDULE#access-control",
+          "level": 3
+        },
+        {
+          "title": "Data Protection",
+          "url": "/hasyx/doc/SCHEDULE#data-protection",
+          "level": 3
+        },
+        {
+          "title": "Migration Guide",
+          "url": "/hasyx/doc/SCHEDULE#migration-guide",
+          "level": 2
+        },
+        {
+          "title": "From Manual Scheduling",
+          "url": "/hasyx/doc/SCHEDULE#from-manual-scheduling",
+          "level": 3
+        },
+        {
+          "title": "Database Migration",
+          "url": "/hasyx/doc/SCHEDULE#database-migration",
+          "level": 3
+        },
+        {
+          "title": "Related Documentation",
+          "url": "/hasyx/doc/SCHEDULE#related-documentation",
+          "level": 2
+        },
+        {
+          "title": "Support",
+          "url": "/hasyx/doc/SCHEDULE#support",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Отчет об исследовании механики Schedule в проекте hasyx",
+      "url": "/hasyx/doc/SCHEDULE_REPORT",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Обзор",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "Анализ тестирования (использование моков vs реальной базы данных)",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#vs",
+          "level": 2
+        },
+        {
+          "title": "✅ Тесты НЕ используют моки/фейки - работают с реальной базой данных",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 3
+        },
+        {
+          "title": "Тестовые сценарии:",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 3
+        },
+        {
+          "title": "Конфигурация events/*.json",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#eventsjson",
+          "level": 2
+        },
+        {
+          "title": "events/schedule.json - Event Trigger для таблицы schedule",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#eventsschedulejson-event-trigger-schedule",
+          "level": 3
+        },
+        {
+          "title": "events/schedule-cron.json - Cron Trigger для обработки событий",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#eventsschedule-cronjson-cron-trigger",
+          "level": 3
+        },
+        {
+          "title": "events/events.json - Event Trigger для таблицы events",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#eventseventsjson-event-trigger-events",
+          "level": 3
+        },
+        {
+          "title": "Архитектура системы планирования",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "Основные компоненты:",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 3
+        },
+        {
+          "title": "Поток выполнения:",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 3
+        },
+        {
+          "title": "Функциональность",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "Ключевые функции (lib/schedule-event.ts):",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#libschedule-eventts",
+          "level": 3
+        },
+        {
+          "title": "Поддерживаемые cron-выражения:",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#cron",
+          "level": 3
+        },
+        {
+          "title": "Документация",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "Существующая документация:",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 3
+        },
+        {
+          "title": "❌ Отсутствует специализированная документация по Schedule",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#schedule",
+          "level": 3
+        },
+        {
+          "title": "Рекомендации",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "1. Состояние тестирования - ОТЛИЧНО ✅",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#1",
+          "level": 3
+        },
+        {
+          "title": "2. Конфигурация - ОТЛИЧНО ✅",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#2",
+          "level": 3
+        },
+        {
+          "title": "3. Функциональность - ОТЛИЧНО ✅",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#3",
+          "level": 3
+        },
+        {
+          "title": "4. Документация - ТРЕБУЕТ УЛУЧШЕНИЯ ❌",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#4",
+          "level": 3
+        },
+        {
+          "title": "Следующие шаги",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        },
+        {
+          "title": "Заключение",
+          "url": "/hasyx/doc/SCHEDULE_REPORT#",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "SSL Certificate Management",
+      "url": "/hasyx/doc/SSL",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Purpose",
+          "url": "/hasyx/doc/SSL#purpose",
+          "level": 2
+        },
+        {
+          "title": "Core Features",
+          "url": "/hasyx/doc/SSL#core-features",
+          "level": 2
+        },
+        {
+          "title": "Certificate Management",
+          "url": "/hasyx/doc/SSL#certificate-management",
+          "level": 3
+        },
+        {
+          "title": "Wildcard SSL Support",
+          "url": "/hasyx/doc/SSL#wildcard-ssl-support",
+          "level": 3
+        },
+        {
+          "title": "DNS Integration",
+          "url": "/hasyx/doc/SSL#dns-integration",
+          "level": 3
+        },
+        {
+          "title": "Idempotent Operations",
+          "url": "/hasyx/doc/SSL#idempotent-operations",
+          "level": 3
+        },
+        {
+          "title": "Prerequisites and Configuration",
+          "url": "/hasyx/doc/SSL#prerequisites-and-configuration",
+          "level": 2
+        },
+        {
+          "title": "System Requirements",
+          "url": "/hasyx/doc/SSL#system-requirements",
+          "level": 3
+        },
+        {
+          "title": "Environment Configuration with Assist",
+          "url": "/hasyx/doc/SSL#environment-configuration-with-assist",
+          "level": 3
+        },
+        {
+          "title": "Manual Environment Configuration",
+          "url": "/hasyx/doc/SSL#manual-environment-configuration",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables Usage",
+          "url": "/hasyx/doc/SSL#environment-variables-usage",
+          "level": 3
+        },
+        {
+          "title": "Usage",
+          "url": "/hasyx/doc/SSL#usage",
+          "level": 2
+        },
+        {
+          "title": "Basic Individual Certificate Usage",
+          "url": "/hasyx/doc/SSL#basic-individual-certificate-usage",
+          "level": 3
+        },
+        {
+          "title": "Wildcard Certificate Usage",
+          "url": "/hasyx/doc/SSL#wildcard-certificate-usage",
+          "level": 3
+        },
+        {
+          "title": "Environment-Based Configuration",
+          "url": "/hasyx/doc/SSL#environment-based-configuration",
+          "level": 3
+        },
+        {
+          "title": "Advanced Usage with DNS Waiting",
+          "url": "/hasyx/doc/SSL#advanced-usage-with-dns-waiting",
+          "level": 3
+        },
+        {
+          "title": "Configuration Options",
+          "url": "/hasyx/doc/SSL#configuration-options",
+          "level": 2
+        },
+        {
+          "title": "SSLConfig Interface",
+          "url": "/hasyx/doc/SSL#sslconfig-interface",
+          "level": 3
+        },
+        {
+          "title": "WildcardCertificateInfo Interface",
+          "url": "/hasyx/doc/SSL#wildcardcertificateinfo-interface",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/SSL#environment-variables",
+          "level": 3
+        },
+        {
+          "title": "Core Methods",
+          "url": "/hasyx/doc/SSL#core-methods",
+          "level": 2
+        },
+        {
+          "title": "Certificate Information",
+          "url": "/hasyx/doc/SSL#certificate-information",
+          "level": 3
+        },
+        {
+          "title": "Certificate Operations",
+          "url": "/hasyx/doc/SSL#certificate-operations",
+          "level": 3
+        },
+        {
+          "title": "Idempotent Operations",
+          "url": "/hasyx/doc/SSL#idempotent-operations",
+          "level": 3
+        },
+        {
+          "title": "DNS and Renewal Operations",
+          "url": "/hasyx/doc/SSL#dns-and-renewal-operations",
+          "level": 3
+        },
+        {
+          "title": "Helper Methods",
+          "url": "/hasyx/doc/SSL#helper-methods",
+          "level": 3
+        },
+        {
+          "title": "Integration with Other Modules",
+          "url": "/hasyx/doc/SSL#integration-with-other-modules",
+          "level": 2
+        },
+        {
+          "title": "With CloudFlare DNS",
+          "url": "/hasyx/doc/SSL#with-cloudflare-dns",
+          "level": 3
+        },
+        {
+          "title": "With Nginx",
+          "url": "/hasyx/doc/SSL#with-nginx",
+          "level": 3
+        },
+        {
+          "title": "Certificate Information Structure",
+          "url": "/hasyx/doc/SSL#certificate-information-structure",
+          "level": 2
+        },
+        {
+          "title": "CertificateInfo Interface",
+          "url": "/hasyx/doc/SSL#certificateinfo-interface",
+          "level": 3
+        },
+        {
+          "title": "DNSPropagationResult Interface",
+          "url": "/hasyx/doc/SSL#dnspropagationresult-interface",
+          "level": 3
+        },
+        {
+          "title": "Error Handling",
+          "url": "/hasyx/doc/SSL#error-handling",
+          "level": 2
+        },
+        {
+          "title": "Common Error Scenarios",
+          "url": "/hasyx/doc/SSL#common-error-scenarios",
+          "level": 3
+        },
+        {
+          "title": "Validation Checks",
+          "url": "/hasyx/doc/SSL#validation-checks",
+          "level": 3
+        },
+        {
+          "title": "Best Practices",
+          "url": "/hasyx/doc/SSL#best-practices",
+          "level": 2
+        },
+        {
+          "title": "1. Use Define/Undefine for Idempotency",
+          "url": "/hasyx/doc/SSL#1-use-defineundefine-for-idempotency",
+          "level": 3
+        },
+        {
+          "title": "2. Always Wait for DNS Propagation",
+          "url": "/hasyx/doc/SSL#2-always-wait-for-dns-propagation",
+          "level": 3
+        },
+        {
+          "title": "3. Monitor Certificate Expiration",
+          "url": "/hasyx/doc/SSL#3-monitor-certificate-expiration",
+          "level": 3
+        },
+        {
+          "title": "4. Environment Configuration",
+          "url": "/hasyx/doc/SSL#4-environment-configuration",
+          "level": 3
+        },
+        {
+          "title": "Security Considerations",
+          "url": "/hasyx/doc/SSL#security-considerations",
+          "level": 2
+        },
+        {
+          "title": "Certificate Storage",
+          "url": "/hasyx/doc/SSL#certificate-storage",
+          "level": 3
+        },
+        {
+          "title": "Email Security",
+          "url": "/hasyx/doc/SSL#email-security",
+          "level": 3
+        },
+        {
+          "title": "DNS Security",
+          "url": "/hasyx/doc/SSL#dns-security",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/SSL#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/SSL#common-issues",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "📋 Финальное ТЗ: Проверка соответствия документации реальному стримингу",
       "url": "/hasyx/doc/STREAMING_FINAL_TEST",
       "collapse": true,
@@ -8807,6 +10597,219 @@
           "title": "📝 Итоговый отчет",
           "url": "/hasyx/doc/STREAMING_FINAL_TEST#",
           "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Subdomain Management",
+      "url": "/hasyx/doc/SUBDOMAIN",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Purpose",
+          "url": "/hasyx/doc/SUBDOMAIN#purpose",
+          "level": 2
+        },
+        {
+          "title": "CLI Command 🌐",
+          "url": "/hasyx/doc/SUBDOMAIN#cli-command",
+          "level": 2
+        },
+        {
+          "title": "CLI Subcommands",
+          "url": "/hasyx/doc/SUBDOMAIN#cli-subcommands",
+          "level": 3
+        },
+        {
+          "title": "CLI Environment Requirements",
+          "url": "/hasyx/doc/SUBDOMAIN#cli-environment-requirements",
+          "level": 3
+        },
+        {
+          "title": "Core Features",
+          "url": "/hasyx/doc/SUBDOMAIN#core-features",
+          "level": 2
+        },
+        {
+          "title": "Integrated Workflow",
+          "url": "/hasyx/doc/SUBDOMAIN#integrated-workflow",
+          "level": 3
+        },
+        {
+          "title": "Wildcard SSL Optimization",
+          "url": "/hasyx/doc/SUBDOMAIN#wildcard-ssl-optimization",
+          "level": 3
+        },
+        {
+          "title": "Compatibility & Migration",
+          "url": "/hasyx/doc/SUBDOMAIN#compatibility-migration",
+          "level": 3
+        },
+        {
+          "title": "Safety and Reliability",
+          "url": "/hasyx/doc/SUBDOMAIN#safety-and-reliability",
+          "level": 3
+        },
+        {
+          "title": "Error Handling",
+          "url": "/hasyx/doc/SUBDOMAIN#error-handling",
+          "level": 3
+        },
+        {
+          "title": "Prerequisites and Configuration",
+          "url": "/hasyx/doc/SUBDOMAIN#prerequisites-and-configuration",
+          "level": 2
+        },
+        {
+          "title": "Environment Configuration with Assist",
+          "url": "/hasyx/doc/SUBDOMAIN#environment-configuration-with-assist",
+          "level": 3
+        },
+        {
+          "title": "Manual Environment Configuration",
+          "url": "/hasyx/doc/SUBDOMAIN#manual-environment-configuration",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables Usage",
+          "url": "/hasyx/doc/SUBDOMAIN#environment-variables-usage",
+          "level": 3
+        },
+        {
+          "title": "Usage",
+          "url": "/hasyx/doc/SUBDOMAIN#usage",
+          "level": 2
+        },
+        {
+          "title": "Basic Usage",
+          "url": "/hasyx/doc/SUBDOMAIN#basic-usage",
+          "level": 3
+        },
+        {
+          "title": "Environment-Based Configuration",
+          "url": "/hasyx/doc/SUBDOMAIN#environment-based-configuration",
+          "level": 3
+        },
+        {
+          "title": "Advanced Usage - Wildcard SSL Benefits",
+          "url": "/hasyx/doc/SUBDOMAIN#advanced-usage-wildcard-ssl-benefits",
+          "level": 3
+        },
+        {
+          "title": "Configuration Options",
+          "url": "/hasyx/doc/SUBDOMAIN#configuration-options",
+          "level": 2
+        },
+        {
+          "title": "SubdomainConfig Interface",
+          "url": "/hasyx/doc/SUBDOMAIN#subdomainconfig-interface",
+          "level": 3
+        },
+        {
+          "title": "SubdomainManagerConfig Interface",
+          "url": "/hasyx/doc/SUBDOMAIN#subdomainmanagerconfig-interface",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/SUBDOMAIN#environment-variables",
+          "level": 3
+        },
+        {
+          "title": "Core Methods",
+          "url": "/hasyx/doc/SUBDOMAIN#core-methods",
+          "level": 2
+        },
+        {
+          "title": "Subdomain Operations",
+          "url": "/hasyx/doc/SUBDOMAIN#subdomain-operations",
+          "level": 3
+        },
+        {
+          "title": "Workflow Details",
+          "url": "/hasyx/doc/SUBDOMAIN#workflow-details",
+          "level": 2
+        },
+        {
+          "title": "Complete Subdomain Creation Process",
+          "url": "/hasyx/doc/SUBDOMAIN#complete-subdomain-creation-process",
+          "level": 3
+        },
+        {
+          "title": "Error Handling and Cleanup",
+          "url": "/hasyx/doc/SUBDOMAIN#error-handling-and-cleanup",
+          "level": 3
+        },
+        {
+          "title": "Integration Examples",
+          "url": "/hasyx/doc/SUBDOMAIN#integration-examples",
+          "level": 2
+        },
+        {
+          "title": "With Express.js Application",
+          "url": "/hasyx/doc/SUBDOMAIN#with-expressjs-application",
+          "level": 3
+        },
+        {
+          "title": "Multi-Service Deployment",
+          "url": "/hasyx/doc/SUBDOMAIN#multi-service-deployment",
+          "level": 3
+        },
+        {
+          "title": "SubdomainStatus Structure",
+          "url": "/hasyx/doc/SUBDOMAIN#subdomainstatus-structure",
+          "level": 2
+        },
+        {
+          "title": "Error Handling",
+          "url": "/hasyx/doc/SUBDOMAIN#error-handling",
+          "level": 2
+        },
+        {
+          "title": "Common Error Scenarios",
+          "url": "/hasyx/doc/SUBDOMAIN#common-error-scenarios",
+          "level": 3
+        },
+        {
+          "title": "Configuration Validation",
+          "url": "/hasyx/doc/SUBDOMAIN#configuration-validation",
+          "level": 3
+        },
+        {
+          "title": "Best Practices",
+          "url": "/hasyx/doc/SUBDOMAIN#best-practices",
+          "level": 2
+        },
+        {
+          "title": "1. Use Environment Configuration",
+          "url": "/hasyx/doc/SUBDOMAIN#1-use-environment-configuration",
+          "level": 3
+        },
+        {
+          "title": "2. Always Use Define/Undefine",
+          "url": "/hasyx/doc/SUBDOMAIN#2-always-use-defineundefine",
+          "level": 3
+        },
+        {
+          "title": "3. Check Status Before Operations",
+          "url": "/hasyx/doc/SUBDOMAIN#3-check-status-before-operations",
+          "level": 3
+        },
+        {
+          "title": "4. Monitor SSL Expiration",
+          "url": "/hasyx/doc/SUBDOMAIN#4-monitor-ssl-expiration",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/SUBDOMAIN#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/SUBDOMAIN#common-issues",
+          "level": 3
         }
       ],
       "level": 1
@@ -9447,6 +11450,335 @@
       "level": 1
     },
     {
+      "title": "Telegram WebApp Integration",
+      "url": "/hasyx/doc/TELEGRAM-WEBAPP",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Архитектура",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#",
+          "level": 2
+        },
+        {
+          "title": "OAuth провайдеры:",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#oauth",
+          "level": 3
+        },
+        {
+          "title": "Credentials провайдеры:",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#credentials",
+          "level": 3
+        },
+        {
+          "title": "Telegram WebApp Integration",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#telegram-webapp-integration",
+          "level": 2
+        },
+        {
+          "title": "Компоненты",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#",
+          "level": 3
+        },
+        {
+          "title": "Настройка",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#",
+          "level": 3
+        },
+        {
+          "title": "Безопасность",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#",
+          "level": 3
+        },
+        {
+          "title": "Функционал WebApp",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#webapp",
+          "level": 3
+        },
+        {
+          "title": "Тестирование",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#",
+          "level": 3
+        },
+        {
+          "title": "Развертывание",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#",
+          "level": 3
+        },
+        {
+          "title": "Отладка",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#",
+          "level": 3
+        },
+        {
+          "title": "SDK Dependencies",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#sdk-dependencies",
+          "level": 3
+        },
+        {
+          "title": "Заключение",
+          "url": "/hasyx/doc/TELEGRAM-WEBAPP#",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Telegram Bot Webhook Configuration",
+      "url": "/hasyx/doc/TELEGRAM-WEBHOOK",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#overview",
+          "level": 2
+        },
+        {
+          "title": "Features",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#features",
+          "level": 2
+        },
+        {
+          "title": "Automatic Webhook Setup",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#automatic-webhook-setup",
+          "level": 3
+        },
+        {
+          "title": "Security Features",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#security-features",
+          "level": 3
+        },
+        {
+          "title": "Usage",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#usage",
+          "level": 2
+        },
+        {
+          "title": "CLI Commands",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#cli-commands",
+          "level": 3
+        },
+        {
+          "title": "Configuration Process",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#configuration-process",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#environment-variables",
+          "level": 3
+        },
+        {
+          "title": "Webhook Endpoint",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#webhook-endpoint",
+          "level": 3
+        },
+        {
+          "title": "Technical Implementation",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#technical-implementation",
+          "level": 2
+        },
+        {
+          "title": "URL Processing",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#url-processing",
+          "level": 3
+        },
+        {
+          "title": "API Call",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#api-call",
+          "level": 3
+        },
+        {
+          "title": "Error Handling",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#error-handling",
+          "level": 3
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#testing",
+          "level": 2
+        },
+        {
+          "title": "Integration",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#integration",
+          "level": 2
+        },
+        {
+          "title": "Security Notes",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#security-notes",
+          "level": 2
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#common-issues",
+          "level": 3
+        },
+        {
+          "title": "Debug Information",
+          "url": "/hasyx/doc/TELEGRAM-WEBHOOK#debug-information",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "GitHub → Telegram Bot Integration",
+      "url": "/hasyx/doc/TELEGRAM_BOT",
+      "collapse": true,
+      "items": [
+        {
+          "title": "🎯 Overview",
+          "url": "/hasyx/doc/TELEGRAM_BOT#overview",
+          "level": 2
+        },
+        {
+          "title": "🏗️ Architecture",
+          "url": "/hasyx/doc/TELEGRAM_BOT#architecture",
+          "level": 2
+        },
+        {
+          "title": "Components:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#components",
+          "level": 3
+        },
+        {
+          "title": "🔧 Setup Instructions",
+          "url": "/hasyx/doc/TELEGRAM_BOT#setup-instructions",
+          "level": 2
+        },
+        {
+          "title": "1. Enable in Your Project",
+          "url": "/hasyx/doc/TELEGRAM_BOT#1-enable-in-your-project",
+          "level": 3
+        },
+        {
+          "title": "2. Configure Environment Variables",
+          "url": "/hasyx/doc/TELEGRAM_BOT#2-configure-environment-variables",
+          "level": 3
+        },
+        {
+          "title": "3. GitHub Repository Secrets",
+          "url": "/hasyx/doc/TELEGRAM_BOT#3-github-repository-secrets",
+          "level": 3
+        },
+        {
+          "title": "4. Telegram Bot Setup",
+          "url": "/hasyx/doc/TELEGRAM_BOT#4-telegram-bot-setup",
+          "level": 3
+        },
+        {
+          "title": "📋 Configuration Options",
+          "url": "/hasyx/doc/TELEGRAM_BOT#configuration-options",
+          "level": 2
+        },
+        {
+          "title": "GITHUB_TELEGRAM_BOT Modes:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#github-telegram-bot-modes",
+          "level": 3
+        },
+        {
+          "title": "Target Workflows:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#target-workflows",
+          "level": 3
+        },
+        {
+          "title": "🔄 How It Works",
+          "url": "/hasyx/doc/TELEGRAM_BOT#how-it-works",
+          "level": 2
+        },
+        {
+          "title": "Workflow Sequence:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#workflow-sequence",
+          "level": 3
+        },
+        {
+          "title": "Message Content:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#message-content",
+          "level": 3
+        },
+        {
+          "title": "🧪 Testing",
+          "url": "/hasyx/doc/TELEGRAM_BOT#testing",
+          "level": 2
+        },
+        {
+          "title": "Test Mode:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#test-mode",
+          "level": 3
+        },
+        {
+          "title": "Local Testing:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#local-testing",
+          "level": 3
+        },
+        {
+          "title": "📊 API Integrations",
+          "url": "/hasyx/doc/TELEGRAM_BOT#api-integrations",
+          "level": 2
+        },
+        {
+          "title": "GitHub API:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#github-api",
+          "level": 3
+        },
+        {
+          "title": "OpenRouter AI API:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#openrouter-ai-api",
+          "level": 3
+        },
+        {
+          "title": "Telegram Bot API:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#telegram-bot-api",
+          "level": 3
+        },
+        {
+          "title": "🛠️ Customization",
+          "url": "/hasyx/doc/TELEGRAM_BOT#customization",
+          "level": 2
+        },
+        {
+          "title": "Message Templates:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#message-templates",
+          "level": 3
+        },
+        {
+          "title": "Workflow Timing:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#workflow-timing",
+          "level": 3
+        },
+        {
+          "title": "Target Workflows:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#target-workflows",
+          "level": 3
+        },
+        {
+          "title": "🔍 Troubleshooting",
+          "url": "/hasyx/doc/TELEGRAM_BOT#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#common-issues",
+          "level": 3
+        },
+        {
+          "title": "🔗 Related Documentation",
+          "url": "/hasyx/doc/TELEGRAM_BOT#related-documentation",
+          "level": 2
+        },
+        {
+          "title": "🤝 Contributing",
+          "url": "/hasyx/doc/TELEGRAM_BOT#contributing",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Terminal Library",
       "url": "/hasyx/doc/TERMINAL",
       "collapse": true,
@@ -9768,6 +12100,347 @@
       "level": 1
     },
     {
+      "title": "Use-Query Hook",
+      "url": "/hasyx/doc/USE-QUERY",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Features",
+          "url": "/hasyx/doc/USE-QUERY#features",
+          "level": 2
+        },
+        {
+          "title": "Installation",
+          "url": "/hasyx/doc/USE-QUERY#installation",
+          "level": 2
+        },
+        {
+          "title": "Basic Usage",
+          "url": "/hasyx/doc/USE-QUERY#basic-usage",
+          "level": 2
+        },
+        {
+          "title": "1. Create Individual Query Hooks",
+          "url": "/hasyx/doc/USE-QUERY#1-create-individual-query-hooks",
+          "level": 3
+        },
+        {
+          "title": "2. Create Multiple Queries at Once",
+          "url": "/hasyx/doc/USE-QUERY#2-create-multiple-queries-at-once",
+          "level": 3
+        },
+        {
+          "title": "3. Utility Hooks for Common Types",
+          "url": "/hasyx/doc/USE-QUERY#3-utility-hooks-for-common-types",
+          "level": 3
+        },
+        {
+          "title": "API Reference",
+          "url": "/hasyx/doc/USE-QUERY#api-reference",
+          "level": 2
+        },
+        {
+          "title": "Utility Hooks",
+          "url": "/hasyx/doc/USE-QUERY#utility-hooks",
+          "level": 3
+        },
+        {
+          "title": "Setter Functions",
+          "url": "/hasyx/doc/USE-QUERY#setter-functions",
+          "level": 2
+        },
+        {
+          "title": "Direct Value Setting",
+          "url": "/hasyx/doc/USE-QUERY#direct-value-setting",
+          "level": 3
+        },
+        {
+          "title": "Functional Updates",
+          "url": "/hasyx/doc/USE-QUERY#functional-updates",
+          "level": 3
+        },
+        {
+          "title": "URL Behavior",
+          "url": "/hasyx/doc/USE-QUERY#url-behavior",
+          "level": 2
+        },
+        {
+          "title": "Parameter Serialization",
+          "url": "/hasyx/doc/USE-QUERY#parameter-serialization",
+          "level": 3
+        },
+        {
+          "title": "URL Examples",
+          "url": "/hasyx/doc/USE-QUERY#url-examples",
+          "level": 3
+        },
+        {
+          "title": "Empty Values",
+          "url": "/hasyx/doc/USE-QUERY#empty-values",
+          "level": 3
+        },
+        {
+          "title": "Real-World Example",
+          "url": "/hasyx/doc/USE-QUERY#real-world-example",
+          "level": 2
+        },
+        {
+          "title": "Best Practices",
+          "url": "/hasyx/doc/USE-QUERY#best-practices",
+          "level": 2
+        },
+        {
+          "title": "1. Choose Meaningful Parameter Names",
+          "url": "/hasyx/doc/USE-QUERY#1-choose-meaningful-parameter-names",
+          "level": 3
+        },
+        {
+          "title": "2. Provide Sensible Defaults",
+          "url": "/hasyx/doc/USE-QUERY#2-provide-sensible-defaults",
+          "level": 3
+        },
+        {
+          "title": "3. Use TypeScript for Complex Objects",
+          "url": "/hasyx/doc/USE-QUERY#3-use-typescript-for-complex-objects",
+          "level": 3
+        },
+        {
+          "title": "4. Keep URLs Clean",
+          "url": "/hasyx/doc/USE-QUERY#4-keep-urls-clean",
+          "level": 3
+        },
+        {
+          "title": "5. Group Related Queries",
+          "url": "/hasyx/doc/USE-QUERY#5-group-related-queries",
+          "level": 3
+        },
+        {
+          "title": "Integration with Next.js",
+          "url": "/hasyx/doc/USE-QUERY#integration-with-nextjs",
+          "level": 2
+        },
+        {
+          "title": "Performance Considerations",
+          "url": "/hasyx/doc/USE-QUERY#performance-considerations",
+          "level": 2
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/USE-QUERY#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/USE-QUERY#common-issues",
+          "level": 3
+        },
+        {
+          "title": "Debug Tips",
+          "url": "/hasyx/doc/USE-QUERY#debug-tips",
+          "level": 3
+        },
+        {
+          "title": "Migration from Other State Management",
+          "url": "/hasyx/doc/USE-QUERY#migration-from-other-state-management",
+          "level": 2
+        },
+        {
+          "title": "From useState",
+          "url": "/hasyx/doc/USE-QUERY#from-usestate",
+          "level": 3
+        },
+        {
+          "title": "From Zustand",
+          "url": "/hasyx/doc/USE-QUERY#from-zustand",
+          "level": 3
+        },
+        {
+          "title": "From Redux",
+          "url": "/hasyx/doc/USE-QUERY#from-redux",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Wstunnel Integration",
+      "url": "/hasyx/doc/WSTUNNEL",
+      "collapse": true,
+      "items": [
+        {
+          "title": "⚠️ КРИТИЧЕСКИ ВАЖНО: Системные требования",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 2
+        },
+        {
+          "title": "Обязательная установка wstunnel binary",
+          "url": "/hasyx/doc/WSTUNNEL#wstunnel-binary",
+          "level": 3
+        },
+        {
+          "title": "Обзор",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 2
+        },
+        {
+          "title": "Архитектура",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 2
+        },
+        {
+          "title": "Компоненты",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 2
+        },
+        {
+          "title": "1. API Endpoint",
+          "url": "/hasyx/doc/WSTUNNEL#1-api-endpoint",
+          "level": 3
+        },
+        {
+          "title": "2. Основная логика",
+          "url": "/hasyx/doc/WSTUNNEL#2",
+          "level": 3
+        },
+        {
+          "title": "3. Утилиты",
+          "url": "/hasyx/doc/WSTUNNEL#3",
+          "level": 3
+        },
+        {
+          "title": "Переменные окружения",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 2
+        },
+        {
+          "title": "Использование",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 2
+        },
+        {
+          "title": "Программный API",
+          "url": "/hasyx/doc/WSTUNNEL#api",
+          "level": 3
+        },
+        {
+          "title": "HTTP API",
+          "url": "/hasyx/doc/WSTUNNEL#http-api",
+          "level": 3
+        },
+        {
+          "title": "Тестовый клиент",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 3
+        },
+        {
+          "title": "Безопасность",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 2
+        },
+        {
+          "title": "Vercel Protection",
+          "url": "/hasyx/doc/WSTUNNEL#vercel-protection",
+          "level": 3
+        },
+        {
+          "title": "Изоляция процессов",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 3
+        },
+        {
+          "title": "Тестирование",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 2
+        },
+        {
+          "title": "Запуск тестов",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 3
+        },
+        {
+          "title": "Структура тестов",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 3
+        },
+        {
+          "title": "Условное выполнение",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 3
+        },
+        {
+          "title": "Требования системы",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 2
+        },
+        {
+          "title": "Обязательные зависимости",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 3
+        },
+        {
+          "title": "Проверка зависимостей",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 3
+        },
+        {
+          "title": "Примеры интеграции",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 2
+        },
+        {
+          "title": "Express.js приложение",
+          "url": "/hasyx/doc/WSTUNNEL#expressjs",
+          "level": 3
+        },
+        {
+          "title": "Next.js API Route",
+          "url": "/hasyx/doc/WSTUNNEL#nextjs-api-route",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/WSTUNNEL#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Частые проблемы",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 3
+        },
+        {
+          "title": "Логирование",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 3
+        },
+        {
+          "title": "Производительность",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 2
+        },
+        {
+          "title": "Лимиты",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 3
+        },
+        {
+          "title": "Мониторинг",
+          "url": "/hasyx/doc/WSTUNNEL#",
+          "level": 3
+        },
+        {
+          "title": "Changelog",
+          "url": "/hasyx/doc/WSTUNNEL#changelog",
+          "level": 2
+        },
+        {
+          "title": "v1.0.0 (2025-01-XX)",
+          "url": "/hasyx/doc/WSTUNNEL#v100-2025-01-xx",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Sidebar Components",
       "url": "/hasyx/doc/README",
       "collapse": true,
@@ -9842,7 +12515,95 @@
         }
       ],
       "level": 1
+    },
+    {
+      "title": "Hasura Storage Integration Tasks",
+      "url": "/hasyx/doc/storage.tasks",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Изучение и планирование",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Создание docker-compose.yml",
+          "url": "/hasyx/doc/storage.tasks#docker-composeyml",
+          "level": 2
+        },
+        {
+          "title": "Интеграция в ассистент",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Поддержка облачных провайдеров",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Конфигурация hasura-storage",
+          "url": "/hasyx/doc/storage.tasks#hasura-storage",
+          "level": 2
+        },
+        {
+          "title": "Миграции и схема",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Тестирование",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Документация",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "CLI команды",
+          "url": "/hasyx/doc/storage.tasks#cli",
+          "level": 2
+        },
+        {
+          "title": "UI компоненты",
+          "url": "/hasyx/doc/storage.tasks#ui",
+          "level": 2
+        },
+        {
+          "title": "Безопасность",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Производительность",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Мониторинг и логирование",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Интеграция с существующими сервисами",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Примеры использования",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Дополнительные возможности",
+          "url": "/hasyx/doc/storage.tasks#",
+          "level": 2
+        }
+      ],
+      "level": 1
     }
   ],
-  "lastUpdated": "2025-07-21T12:10:43.761Z"
+  "lastUpdated": "2025-07-29T21:54:24.784Z"
 }

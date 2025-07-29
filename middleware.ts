@@ -5,7 +5,6 @@ import { corsHeaders } from './lib/graphql-proxy';
 
 const debug = Debug('middleware');
 
-// This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
   if (
     request.nextUrl.protocol === 'http:' && 

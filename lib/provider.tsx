@@ -13,6 +13,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { HasyxClient } from './hasyx-client';
 import { TelegramMiniappProvider, useTelegramMiniapp } from './telegram-miniapp';
 import { JwtAuthProvider } from '../components/jwt-auth';
+import { signOut, signIn } from "next-auth/react";
 
 const debug = Debug('provider');
 
@@ -70,6 +71,7 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
           }
         } else {
           setJwtUser(null);
+          debug('JWT user not found');
         }
       }
     };
@@ -104,14 +106,20 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
 
     // Define the base API URL (GraphQL endpoint)
     let apiUrl: string;
-    if (isLocalhost && !urlOverride) {
+    if (jwtToken) {
+      debug('Creating new Apollo client with JWT token:', jwtToken);
+      apiUrl = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!;
+    } else if (isLocalhost && !urlOverride) {
       // Local development without override - use API_URL with http
+      debug('Creating new Apollo client using API_URL:', API_URL);
       apiUrl = url('http', API_URL, '/api/graphql');
     } else if (urlOverride) {
       // Override URL provided - use it with appropriate protocol
+      debug('Creating new Apollo client with urlOverride:', urlOverride);
       apiUrl = url('http', urlOverride, '/api/graphql');
     } else {
       // Production/Preview - use API_URL with appropriate protocol  
+      debug('Creating new Apollo client using API_URL:', API_URL);
       apiUrl = url('http', API_URL, '/api/graphql');
     }
     
@@ -128,27 +136,32 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
   // Keep the generator on Apollo client for compatibility
   apolloClient.hasyxGenerator = generate;
 
+  // Get session and update hasyx user when session changes
+  const { data: session } = useSessionNextAuth();
+
   // Create Hasyx instance when Apollo client changes
   const hasyxInstance = useMemo(() => {
     debug('Creating new Hasyx instance with Apollo client');
-    return new HasyxClient(apolloClient, generate);
-  }, [apolloClient, generate]);
-
-  // Get session and update hasyx user when session changes
-  const { data: session } = useSessionNextAuth();
-  
-  useEffect(() => {
-    if (hasyxInstance) {
-      // In JWT mode, prefer JWT user over session user
-      const effectiveUser = (process.env.NEXT_PUBLIC_JWT_AUTH && jwtUser) 
-        ? jwtUser 
-        : (session?.user || null);
-        
-      hasyxInstance.user = effectiveUser;
-      debug('Updated hasyx user:', effectiveUser);
-      debug('Source:', process.env.NEXT_PUBLIC_JWT_AUTH && jwtUser ? 'jwt' : 'session');
-    }
-  }, [hasyxInstance, session?.user, jwtUser]);
+    const hasyxInstance = new HasyxClient(apolloClient, generate);
+    // In JWT mode, prefer JWT user over session user
+    const effectiveUser = jwtUser
+      ? jwtUser 
+      : (session?.user || null);
+      
+    hasyxInstance.user = effectiveUser;
+    hasyxInstance.logout = (options?: any) => {
+      const jwt = localStorage.getItem('nextauth_jwt');
+      if (jwt) {
+        debug('Logging out with JWT');
+        localStorage.removeItem('nextauth_jwt');
+        setJwtToken(null);
+      } else {
+        debug('Logging out with session');
+        signOut(options);
+      }
+    };
+    return hasyxInstance;
+  }, [apolloClient, generate, session, jwtUser]);
 
   // @ts-ignore
   global.hasyx = hasyxInstance;

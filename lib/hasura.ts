@@ -236,27 +236,108 @@ export class Hasura {
     return this.clientInstance;
   }
 
-  async sql(sql: string, source: string = 'default', cascade: boolean = true): Promise<any> {
-    debug('🔧 Executing SQL via /v2/query...');
+  /**
+   * Universal wrapper for operations that might fail due to inconsistent metadata.
+   * Automatically cleans up inconsistent metadata and retries the operation.
+   */
+  private async withInconsistentMetadataHandling<T>(operation: () => Promise<T>, operationName: string): Promise<T> {
     try {
-      const response = await this.clientInstance.post('/v2/query', {
-        type: 'run_sql',
-        args: {
-          source,
-          sql,
-          cascade,
-        },
-      });
-      debug('✅ SQL executed successfully.');
-      return response.data;
+      return await operation();
     } catch (error: any) {
-      const errorMessage = `❌ Error executing SQL: ${error.response?.data?.error || error.message}`;
-      debug(errorMessage, error.response?.data || error);
-      throw new Error(errorMessage); // Re-throw after logging
+      const errorMessage = error.message || error.response?.data?.error || '';
+      
+      // Check if error is related to inconsistent metadata
+      if (errorMessage.includes('inconsistent metadata') || errorMessage.includes('cannot continue due to newly found inconsistent metadata')) {
+        debug(`🔧 Inconsistent metadata detected in ${operationName}, attempting cleanup...`);
+        
+        try {
+          // Get inconsistent metadata for debugging
+          const inconsistentData = await this.getInconsistentMetadata();
+          if (inconsistentData?.is_consistent === false && inconsistentData?.inconsistent_objects?.length > 0) {
+            debug(`📋 Found ${inconsistentData.inconsistent_objects.length} inconsistent objects:`, 
+              inconsistentData.inconsistent_objects.map((obj: any) => `${obj.type}: ${obj.name} - ${obj.reason}`));
+          }
+        } catch (getError) {
+          debug('⚠️ Could not retrieve inconsistent metadata details:', getError);
+        }
+        
+        // Drop inconsistent metadata
+        await this.dropInconsistentMetadata();
+        debug(`🗑️ Inconsistent metadata cleaned up, retrying ${operationName}...`);
+        
+        // Retry the operation
+        try {
+          return await operation();
+        } catch (retryError: any) {
+          // If still failing, it might be a different issue
+          const retryErrorMessage = retryError.message || retryError.response?.data?.error || '';
+          if (retryErrorMessage.includes('inconsistent metadata')) {
+            // If still inconsistent metadata, try one more cleanup and direct approach
+            debug(`🔄 Still inconsistent metadata after cleanup, attempting final cleanup for ${operationName}...`);
+            await this.dropInconsistentMetadata();
+            return await operation();
+          } else {
+            // Different error after cleanup, throw it
+            throw retryError;
+          }
+        }
+      } else {
+        // Not an inconsistent metadata error, re-throw
+        throw error;
+      }
     }
   }
 
+  async sql(sql: string, source: string = 'default', cascade: boolean = true): Promise<any> {
+    return await this.withInconsistentMetadataHandling(async () => {
+      debug('🔧 Executing SQL via /v2/query...');
+      try {
+        const response = await this.clientInstance.post('/v2/query', {
+          type: 'run_sql',
+          args: {
+            source,
+            sql,
+            cascade,
+          },
+        });
+        debug('✅ SQL executed successfully.');
+        return response.data;
+      } catch (error: any) {
+        const errorMessage = `❌ Error executing SQL: ${error.response?.data?.error || error.message}`;
+        debug(errorMessage, error.response?.data || error);
+        throw new Error(errorMessage); // Re-throw after logging
+      }
+    }, `SQL: ${sql.substring(0, 50)}...`);
+  }
+
   async v1(request: { type: string; args: object }): Promise<any> {
+    // Operations that commonly fail due to inconsistent metadata and should be auto-handled
+    const inconsistentMetadataSensitiveOperations = [
+      'pg_untrack_table',
+      'pg_track_table', 
+      'pg_drop_relationship',
+      'pg_create_object_relationship',
+      'pg_create_array_relationship',
+      'pg_delete_permission',
+      'pg_create_select_permission',
+      'pg_create_insert_permission',
+      'pg_create_update_permission',
+      'pg_create_delete_permission',
+      'bulk'
+    ];
+    
+    const shouldHandleInconsistentMetadata = inconsistentMetadataSensitiveOperations.includes(request.type);
+    
+    if (shouldHandleInconsistentMetadata) {
+      return await this.withInconsistentMetadataHandling(async () => {
+        return await this._executeV1Request(request);
+      }, `v1/${request.type}`);
+    } else {
+      return await this._executeV1Request(request);
+    }
+  }
+  
+  async _executeV1Request(request: { type: string; args: object }): Promise<any> {
     debug(`🚀 Sending request to /v1/metadata: ${request.type}`);
     try {
       const response = await this.clientInstance.post('/v1/metadata', request);

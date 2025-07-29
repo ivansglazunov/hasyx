@@ -19,6 +19,7 @@ import { assetsCommand } from './assets';
 import { eventsCommand } from './events-cli';
 import { unbuildCommand } from './unbuild';
 import { runTelegramSetupAndCalibration } from './assist';
+import { configureStorage } from './assist-storage';
 import { localCommand } from './local';
 import { vercelCommand } from './vercel';
 import { CloudFlare, CloudflareConfig, DnsRecord } from './cloudflare';
@@ -28,11 +29,20 @@ import { configureDocker, listContainers, defineContainer, undefineContainer, sh
 import { processLogs } from './logs';
 import { processConfiguredDiffs } from './logs-diffs';
 import { processConfiguredStates } from './logs-states';
+import { envCommand } from './env';
 
 export {
-  assetsCommand, eventsCommand, unbuildCommand, assist, localCommand, vercelCommand, processLogs, processConfiguredDiffs, processConfiguredStates };
+  assetsCommand, eventsCommand, unbuildCommand, assist, localCommand, vercelCommand, processLogs, processConfiguredDiffs, processConfiguredStates, configureStorage, envCommand };
 
-dotenv.config({ path: path.join(process.cwd(), '.env') });
+// Load .env file from current working directory
+const envResult = dotenv.config({ path: path.join(process.cwd(), '.env') });
+
+if (envResult.error) {
+  // Only log in debug mode to avoid cluttering output for users without .env files
+  console.debug('Failed to load .env file:', envResult.error);
+} else {
+  console.debug('.env file loaded successfully');
+}
 
 // Create a debugger instance for the CLI
 const debug = Debug('cli');
@@ -204,7 +214,11 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
   }
 
   // Prevent hasyx from initializing itself
-  if (projectName === packageName) {
+  // Only block if we're actually in a hasyx project directory (has package.json with hasyx name)
+  const pkgJsonPath = path.join(projectRoot, 'package.json');
+  const hasPackageJson = fs.existsSync(pkgJsonPath);
+  
+  if (projectName === packageName && hasPackageJson) {
     console.warn(
       `❌ Error: Running \`${packageName} init\` within the \`${packageName}\` project itself is not allowed.\n` +
       'This command is intended to initialize hasyx in other projects.\n' +
@@ -225,9 +239,12 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'app/options.ts': 'app/options.ts',
     'app/api/auth/verify/route.ts': 'app/api/auth/verify/route.ts',
     'app/api/auth/verify-telegram-webapp/route.ts': 'app/api/auth/verify-telegram-webapp/route.ts',
+    'app/api/auth/get-jwt/route.ts': 'app/api/auth/get-jwt/route.ts',
     'app/api/auth/route.ts': 'app/api/auth/route.ts',
     'app/api/graphql/route.ts': 'app/api/graphql/route.ts',
     'app/api/events/[name]/route.ts': 'app/api/events/[name]/route.ts',
+    'app/api/events/github-issues/route.ts': 'app/api/events/github-issues/route.ts',
+    'app/api/github/issues/route.ts': 'app/api/github/issues/route.ts',
     'app/api/telegram_bot/route.ts': 'app/api/telegram_bot/route.ts',
     'app/api/health/route.ts': 'app/api/health/route.ts',
     'app/auth/callback/page.tsx': 'app/auth/callback/page.tsx',
@@ -280,25 +297,20 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'migrations/1746837333136-hasyx-debug/down.ts': 'migrations/1746837333136-hasyx-debug/down.ts',
     'migrations/1748511896530-hasyx-payments/up.ts': 'migrations/1748511896530-hasyx-payments/up.ts',
     'migrations/1748511896530-hasyx-payments/down.ts': 'migrations/1748511896530-hasyx-payments/down.ts',
-    'migrations/1750929424636-schedule/up.ts': 'migrations/1750929424636-schedule/up.ts',
-    'migrations/1750929424636-schedule/down.ts': 'migrations/1750929424636-schedule/down.ts',
     'migrations/1746999999999-hasyx-logs/up.ts': 'migrations/1746999999999-hasyx-logs/up.ts',
     'migrations/1746999999999-hasyx-logs/down.ts': 'migrations/1746999999999-hasyx-logs/down.ts',
     'migrations/29991231235959999-hasyx/up.ts': 'migrations/29991231235959999-hasyx/up.ts',
     'migrations/29991231235959999-hasyx/down.ts': 'migrations/29991231235959999-hasyx/down.ts',
     'events/notify.json': 'events/notify.json',
-    'events/schedule.json': 'events/schedule.json',
     'events/events.json': 'events/events.json',
-    'events/schedule-cron.json': 'events/schedule-cron.json',
     'events/subscription-billing.json': 'events/subscription-billing.json',
     'events/logs-diffs.json': 'events/logs-diffs.json',
+    'events/github-issues.json': 'events/github-issues.json',
     'lib/debug.ts': 'lib/debug.template',
     'lib/cli.ts': 'lib/cli.template',
-    'lib/schedule-event.ts': 'lib/schedule-event.template',
     'lib/github-telegram-bot.ts': 'lib/github-telegram-bot.template',
-    'app/api/events/schedule-cron/route.ts': 'app/api/events/schedule-cron/route.ts',
+    'env.template': 'env.template',
     'app/api/events/subscription-billing/route.ts': 'app/api/events/subscription-billing/route.ts',
-    'app/api/events/schedule/route.ts': 'app/api/events/schedule/route.ts',
     'app/api/events/notify/route.ts': 'app/api/events/notify/route.ts',
     'app/api/events/logs-diffs/route.ts': 'app/api/events/logs-diffs/route.ts',
   };
@@ -313,11 +325,13 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'app/api/auth/verify-telegram-webapp',
     'app/api/graphql',
     'app/api/events/[name]',
+    'app/api/events/github-issues',
     'app/api/events/schedule-cron',
     'app/api/events/subscription-billing',
     'app/api/events/schedule',
     'app/api/events/notify',
     'app/api/events/logs-diffs',
+    'app/api/github/issues',
     'app/api/telegram_bot',
     'app/api/health',
     'migrations/1746660891582-hasyx-users',
@@ -363,6 +377,27 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
        console.error(`❌ Failed to process ${targetPath} from template ${templateName}: ${error}`);
        debug(`Error writing file ${fullTargetPath}: ${error}`);
     }
+  }
+
+  // Special handling for .env file
+  debug('Special handling for .env file');
+  try {
+    const envPath = path.join(targetDir, '.env');
+    const hasEnv = fs.existsSync(envPath);
+    
+    if (!hasEnv) {
+      const envTemplateContent = getTemplateContent('env.template');
+      fs.writeFileSync(envPath, envTemplateContent);
+      console.log('✅ Created .env file from template');
+      console.log('📝 Please edit .env file and fill in your configuration values');
+      debug('Created .env file from template');
+    } else {
+      console.log('⏩ .env file already exists, skipping creation');
+      debug('.env file already exists, skipping creation');
+    }
+  } catch (error) {
+    console.error(`❌ Failed to create .env file: ${error}`);
+    debug(`Error creating .env file: ${error}`);
   }
 
   // Special handling for CONTRIBUTING.md
@@ -504,7 +539,13 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     const pkgJsonPath = path.join(projectRoot, 'package.json');
     if (fs.existsSync(pkgJsonPath)) {
       const pkgJson = await fs.readJson(pkgJsonPath);
-      
+
+      if (!pkgJson.engine) {
+        pkgJson.engine = {
+          node: "^22.14",
+        };
+      }
+
       if (!pkgJson.scripts) {
         pkgJson.scripts = {};
       }
@@ -530,7 +571,8 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
         "tsx": `NODE_OPTIONS=\"--experimental-vm-modules\" npx ${packageName} tsx`,
         "logs": `npx ${packageName} logs`,
         "logs-diffs": `npx ${packageName} logs-diffs`,
-        "logs-states": `npx ${packageName} logs-states`
+        "logs-states": `npx ${packageName} logs-states`,
+        "env": `npx ${packageName} env`
       };
       
       let scriptsModified = false;
@@ -1442,6 +1484,10 @@ export const logsStatesCommandDescribe = (cmd: Command) => {
   return cmd.description('Apply logs-states configuration from hasyx.config.json');
 };
 
+export const envCommandDescribe = (cmd: Command) => {
+  return cmd.description('Update environment variables in docker-compose.yml and restart running container if needed');
+};
+
 export const dockerCommandDescribe = (cmd: Command) => {
   const subCmd = cmd
     .description('Manage Docker containers with automatic updates via Watchtower')
@@ -1524,6 +1570,9 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
   // Build client command
   buildClientCommandDescribe(program.command('build:client')).action(buildClientCommand);
 
+  // Client command (alias for build:client)
+  buildClientCommandDescribe(program.command('client')).action(buildClientCommand);
+
   // Migrate command
   migrateCommandDescribe(program.command('migrate')).action(async (filter) => {
     await migrateCommand(filter);
@@ -1569,6 +1618,23 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
     runTelegramSetupAndCalibration(options);
   });
 
+  // Storage command
+  program.command('storage')
+    .description('Configure hasura-storage with S3-compatible cloud or local storage')
+    .option('--skip-local', 'Skip local storage option')
+    .option('--skip-cloud', 'Skip cloud storage option')
+    .option('--skip-antivirus', 'Skip antivirus configuration')
+    .option('--skip-image-manipulation', 'Skip image manipulation configuration')
+    .action(async (options) => {
+      const rl = require('readline').createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
+      const envPath = path.join(process.cwd(), '.env');
+      await configureStorage(rl, envPath, options);
+      rl.close();
+    });
+
   // Local command
   localCommandDescribe(program.command('local')).action(async () => {
     localCommand();
@@ -1604,6 +1670,18 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
   // Logs-states command
   logsStatesCommandDescribe(program.command('logs-states')).action(async () => {
     await logsStatesCommand();
+  });
+
+  // Env command
+  envCommandDescribe(program.command('env')).action(async () => {
+    console.log('🚀 CLI: Starting env command...');
+    try {
+      await envCommand();
+      console.log('✅ CLI: Env command completed successfully');
+    } catch (error) {
+      console.error('❌ CLI: Env command failed:', error);
+      process.exit(1);
+    }
   });
 
   // Docker command

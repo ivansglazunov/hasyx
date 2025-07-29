@@ -1,4 +1,10 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin(
+  './lib/i18n/request.ts',
+);
+
 // Removed fs, path imports as they are no longer needed here
 
 // Use environment variables to determine build mode and base path
@@ -91,4 +97,4 @@ const config: NextConfig = {
   reactStrictMode: false,
 };
 
-export default config;
+export default withNextIntl(config);

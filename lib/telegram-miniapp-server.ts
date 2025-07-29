@@ -253,6 +253,8 @@ export function TelegramMiniappCredentialsProvider({ hasyx }: { hasyx: Hasyx }) 
           name: dbUser.name,
           email: dbUser.email || `${telegramUser.id}@telegram.user`,
           image: dbUser.image,
+          // Добавляем telegramId как fallback для JWT callback
+          telegramId: providerAccountId,
         };
       } catch (error) {
         authorizeDebug('Error during authorization:', error);

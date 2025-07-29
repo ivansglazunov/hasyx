@@ -33,6 +33,7 @@ cytoscape.use(edgehandles);
 
 // @ts-ignore
 import CytoscapeComponent from 'react-cytoscapejs';
+import { cn } from "./utils";
 
 let cytoscapeLasso;
 let cytoscapeTidyTree;
@@ -124,7 +125,7 @@ function resolveCssVars(styleArray: any[]): Promise<any[]> {
   });
 }
 
-export const Cyto = memo(function Graph({
+export const Cyto = memo(function Cyto({
   onLoaded: _onLoaded,
   onInsert,
 
@@ -135,7 +136,15 @@ export const Cyto = memo(function Graph({
   rightBottom = null,
   layout: _layout,
 
+  className,
+  style: _style = {},
+  
   children = null,
+
+  zoomHandler: _zoomHandler,
+  translateHandler: _translateHandler,
+
+  ...props
 }: {
   onLoaded?: (cy) => void;
   onInsert?: (inserted, insertQuery) => void;
@@ -147,7 +156,15 @@ export const Cyto = memo(function Graph({
   rightBottom?: React.ReactNode;
   layout?: any;
 
+  className?: string;
+  style?: React.CSSProperties;
+
   children?: any;
+
+  zoomHandler?: (zoom: number) => void;
+  translateHandler?: (x: number, y: number) => [number, number];
+
+  [key: string]: any;
 }) {
   const [_cy, setCy] = useState<any>();
   const { theme } = useTheme();
@@ -160,6 +177,9 @@ export const Cyto = memo(function Graph({
   const rootRef = useRef<any>(undefined);
   const { width, height } = useResizeDetector({ targetRef: rootRef });
   const [viewport, setViewport] = useState<{ zoom: number; pan: { x: number; y: number; } }>({ zoom: 1, pan: { x: 0, y: 0 } });
+
+  const zoomHandler = useMemo(() => _zoomHandler || ((zoom: number) => zoom), [_zoomHandler]);
+  const translateHandler = useMemo(() => _translateHandler || ((x: number, y: number) => [x, y]), [_translateHandler]);
 
   const gridColor = '#747474';
 
@@ -175,10 +195,12 @@ export const Cyto = memo(function Graph({
       const translateX = pan.x;
       const translateY = pan.y;
 
+      const _zoom = zoomHandler(zoom * 3);
+      const [x, y] = translateHandler(translateX, translateY);
 
       if (bgRef.current) {
-        bgRef.current.style['background-size'] = `${zoom * 3}em ${zoom * 3}em`;
-        bgRef.current.style['background-position'] = `${translateX}px ${translateY}px`;
+        bgRef.current.style['background-size'] = `${_zoom}em ${_zoom}em`;
+        bgRef.current.style['background-position'] = `${x}px ${y}px`;
       }
 
       if (overlayRef.current && pan) {
@@ -426,10 +448,11 @@ export const Cyto = memo(function Graph({
       )}
       <div
         ref={bgRef}
-        className="absolute inset-0"
+        {...props}
+        className={(cn("absolute inset-0", className))}
         style={{
           width: '100%',
-        height: '100%',
+          height: '100%',
           backgroundImage: `
             radial-gradient(circle at 0 0, ${gridColor} 1px, transparent 1px),
             radial-gradient(circle at .1em .1em, ${gridColor} 1px, transparent 1px),
@@ -439,6 +462,7 @@ export const Cyto = memo(function Graph({
           backgroundSize: '3em 3em',
           backgroundPosition: '0 0, 0 0, 0 0, 0 0',
           backgroundRepeat: 'repeat',
+          ...(_style || {}),
         }}
       />
       {cytoscape}
@@ -545,7 +569,7 @@ const CytoReactNode = ({ id, children, boxRefCallback }) => {
         ref={boxRefCallback}
         style={{
           position: 'absolute',
-          pointerEvents: 'all',
+          // pointerEvents: 'all',
         }}
       >
         {children}

@@ -243,7 +243,7 @@ export async function calibrateTelegramBot(rl: readline.Interface, envPath: stri
     console.log(`   • OPENROUTER_API_KEY - For AI-generated commit summaries`);
     console.log(`   • TELEGRAM_ADMIN_CHAT_ID - Optional admin notifications`);
     console.log(`   • TELEGRAM_CHANNEL_ID - Optional channel announcements`);
-    console.log(`   • GITHUB_TELEGRAM_BOT - Control notifications (1=enabled, 2=test mode)`);
+    console.log(`   • HASYX_GITHUB_TELEGRAM_BOT - Control notifications (1=enabled, 2=test mode)`);
     console.log(`   \\n   The GitHub Actions workflow is automatically created with 'npx hasyx init'.`);
     console.log(`   See TELEGRAM_BOT.md for full setup documentation.`);
 

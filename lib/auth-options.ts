@@ -63,6 +63,11 @@ export const baseProviders = [
   GitHubProvider({
     clientId: process.env.GITHUB_ID!,
     clientSecret: process.env.GITHUB_SECRET!,
+    authorization: {
+      params: {
+        scope: 'read:user user:email repo public_repo'
+      }
+    }
   }),
   FacebookProvider({
     clientId: process.env.FACEBOOK_CLIENT_ID!,
@@ -157,45 +162,54 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
     callbacks: {
       // Handle automatic account linking via signIn callback
       async signIn({ user, account, profile, email, credentials }) {
-        console.log('🔐 SignIn Callback START:', {
-          provider: account?.provider,
-          userId: user?.id,
-          userEmail: user?.email,
-          profileEmail: profile?.email,
-          accountProviderAccountId: account?.providerAccountId
-        });
+        
+        // Check if there's an existing user session for account linking
+        if (account?.provider !== 'credentials') {
+          try {
+            // Try to get existing session from cookies
+            // This is a server-side context, so we need to access cookies differently
+            const { cookies } = await import('next/headers');
+            const cookieStore = await cookies();
+            
+            // Look for existing NextAuth session cookie
+            const sessionCookieName = process.env.NEXTAUTH_URL?.includes('localhost') 
+              ? 'next-auth.session-token' 
+              : '__Secure-next-auth.session-token';
+            
+            const existingSessionCookie = cookieStore.get(sessionCookieName);
+            
+            if (existingSessionCookie) {
+              
+              // Decode the existing JWT to get the current user ID
+              const { getToken } = await import('next-auth/jwt');
+              const existingToken = await getToken({ 
+                req: { 
+                  cookies: { [sessionCookieName]: existingSessionCookie.value } 
+                } as any,
+                secret: process.env.NEXTAUTH_SECRET 
+              });
+              
+              if (existingToken && existingToken.userId && existingToken.userId !== user.id) {
+                // Store the linking information in the user object for JWT callback
+                (user as any).linkToUserId = existingToken.userId;
+              }
+            }
+          } catch (error) {
+          }
+        }
         
         // Allow all credentials logins (internal auth)
         if (account?.provider === 'credentials') {
-          console.log('✅ SignIn: Credentials login allowed');
           return true;
         }
         
         // For OAuth providers, always allow sign in
         // The JWT callback will handle linking/creating accounts
-        console.log('✅ SignIn: OAuth login allowed for provider:', account?.provider);
         return true;
       },
 
       async jwt({ token, user, account, profile, trigger }): Promise<DefaultJWT> {
         debug('JWT Callback: input', { userId: token.sub, provider: account?.provider, trigger });
-
-        // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПОЛНЫЙ КОНТЕКСТ JWT CALLBACK
-        debug('🔍 JWT Callback FULL CONTEXT:', {
-          tokenSub: token.sub,
-          userObject: user ? { id: user.id, name: user.name, email: user.email, image: user.image } : null,
-          accountObject: account ? { 
-            provider: account.provider, 
-            providerAccountId: account.providerAccountId,
-            type: account.type 
-          } : null,
-          profileObject: profile ? {
-            name: profile?.name,
-            email: profile?.email,
-            image: profile?.image
-          } : null,
-          trigger: trigger
-        });
 
         let userId: string | undefined = token.sub;
         let provider: string | undefined = account?.provider;
@@ -215,7 +229,7 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
           } else { // OAuth Provider
             debug(`🔍 JWT Callback: OAuth sign-in via ${provider} for ${userId}`);
             
-            // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПРОВЕРКА НЕОБХОДИМОСТИ ВЫЗОВА getOrCreateUserAndAccount
+            // 🔍 DIAGNOSTIC LOG - CHECK IF getOrCreateUserAndAccount CALL IS NEEDED
             debug('🚨 JWT Callback: Checking if getOrCreateUserAndAccount call is needed:', {
               provider: provider,
               userId: user.id,
@@ -224,19 +238,20 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
               isCredentialsProvider: provider === 'credentials'
             });
             
-            // 🛠️ ИСПРАВЛЕНИЕ: Пропускаем getOrCreateUserAndAccount только для credentials провайдеров
-            // Для OAuth провайдеров user.id ВСЕГДА равен account.providerAccountId (это ID от провайдера),
-            // но это НЕ означает что пользователь уже обработан - нужно создать/найти в БД
-            // Пропускаем только для credentials провайдеров, где authorize уже вернул правильный UUID
-            if (provider === 'credentials' && user.id === account.providerAccountId) {
+            // 🛠️ SIMPLE SOLUTION: Skip getOrCreateUserAndAccount only for regular credentials providers
+            // Telegram providers should always call getOrCreateUserAndAccount for account linking
+            const isTelegramProvider = provider === 'telegram' || provider === 'telegram-miniapp';
+            if (provider === 'credentials' && 
+                !isTelegramProvider && 
+                user.id === account.providerAccountId) {
               debug('✅ JWT Callback: Skipping getOrCreateUserAndAccount call - credentials provider already returned correct UUID from authorize');
               debug('🔍 JWT Callback: User already exists, using existing data:', {
                 userId: user.id,
                 provider: provider
               });
               
-              // Просто используем существующего пользователя без повторного DB вызова
-              // Получим актуальные данные пользователя напрямую
+              // Simply use existing user without additional DB call
+              // Get current user data directly
               try {
                 const existingUser = await client.select({
                   table: 'users',
@@ -255,13 +270,75 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
               }
               
             } else {
-              // OAuth провайдер или credentials с новыми данными - нужно создать/найти пользователя в БД
+              // OAuth provider or credentials with new data - need to create/find user in DB
               debug('🔍 JWT Callback: Making getOrCreateUserAndAccount call for provider:', provider);
               
-              // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПЕРЕД ВЫЗОВОМ getOrCreateUserAndAccount
+              // Check if we're in account linking mode
+              // Check if token.sub corresponds to an existing user in the database
+              let linkToUserId: string | undefined = undefined;
+              
+              // Check if we have account linking information from signIn callback
+              let userLinkToUserId: string | undefined = (user as any).linkToUserId;
+              
+              if (userLinkToUserId) {
+                try {
+                  // Verify that the user to link to actually exists
+                  const existingUser = await client.select({
+                    table: 'users',
+                    pk_columns: { id: userLinkToUserId },
+                    returning: ['id']
+                  });
+                  
+                  if (existingUser) {
+                    linkToUserId = userLinkToUserId;
+                    debug(`🔗 JWT Callback: Account linking mode confirmed - linking new account (${user.id}) to existing user: ${linkToUserId}`);
+                  } else {
+                    debug(`⚠️ JWT Callback: User to link to not found in DB, creating new user instead`);
+                  }
+                } catch (error) {
+                  debug(`⚠️ JWT Callback: Error verifying user to link to:`, error);
+                }
+              } else {
+                debug(`🆕 JWT Callback: No linking information found, creating new user`);
+              }
+              
+              // 🛠️ FIX: For telegram providers NextAuth creates synthetic account with providerAccountId = user.id
+              // But we need original Telegram ID. Get it from DB.
+              let actualProviderAccountId = account.providerAccountId;
+              if (isTelegramProvider && account.providerAccountId === user.id) {
+                debug('🔧 JWT Callback: Detected NextAuth synthetic account for telegram provider, looking up real Telegram ID...');
+                try {
+                  // Find existing telegram account for this user
+                  const existingTelegramAccount = await client.select({
+                    table: 'accounts',
+                    where: {
+                      user_id: { _eq: user.id },
+                      provider: { _in: ['telegram', 'telegram-miniapp'] }
+                    },
+                    returning: ['provider_account_id'],
+                    limit: 1
+                  });
+                  
+                  if (existingTelegramAccount?.length > 0) {
+                    actualProviderAccountId = existingTelegramAccount[0].provider_account_id;
+                    debug('✅ JWT Callback: Found existing Telegram ID:', actualProviderAccountId);
+                  } else if ((user as any).telegramId) {
+                    // Fallback: use telegramId from authorize function
+                    actualProviderAccountId = (user as any).telegramId;
+                    debug('🔄 JWT Callback: Using telegramId from authorize as fallback:', actualProviderAccountId);
+                  } else {
+                    debug('⚠️ JWT Callback: No Telegram ID found - neither in DB nor in user object');
+                  }
+                } catch (error) {
+                  debug('⚠️ JWT Callback: Error looking up Telegram ID:', error);
+                }
+              }
+              
+              // 🔍 DIAGNOSTIC LOG - BEFORE getOrCreateUserAndAccount CALL
               debug('🚨 JWT Callback: About to call getOrCreateUserAndAccount with:', {
                 provider: provider,
-                providerAccountId: account.providerAccountId,
+                originalProviderAccountId: account.providerAccountId,
+                actualProviderAccountId: actualProviderAccountId,
                 userImageFromNextAuth: user.image,
                 profileFromNextAuth: profile
               });
@@ -271,16 +348,17 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
                 const dbUser: HasuraUser | null = await getOrCreateUserAndAccount(
                   client,                 
                   provider!,              
-                  account.providerAccountId!, 
+                  actualProviderAccountId!, 
                   profile!,
-                  user.image // Pass user.image as the fifth argument
+                  user.image, // Pass user.image as the fifth argument
+                  linkToUserId // Pass the existing user ID to link to if in linking mode
                 );
 
                 if (!dbUser || !dbUser.id) {
                     throw new Error('Failed to retrieve or create user from DB.');
                 }
                 
-                // 🔍 ДИАГНОСТИЧЕСКИЙ ЛОГ - ПОСЛЕ ВЫЗОВА getOrCreateUserAndAccount
+                // 🔍 DIAGNOSTIC LOG - AFTER getOrCreateUserAndAccount CALL
                 debug('🔍 JWT Callback: getOrCreateUserAndAccount COMPLETED:', {
                   originalProviderUserId: userId,
                   dbUserId: dbUser.id,
@@ -290,7 +368,32 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
                 // Update userId ONLY if it changed (e.g., mapping to existing)
                 userId = dbUser.id; 
                 emailVerified = dbUser.email_verified ? new Date(dbUser.email_verified).toISOString() : null; // Convert unix timestamp to ISO string for NextAuth
-                // Cannot determine isNewUser directly from this return type assumption
+                
+                // 🔧 Save GitHub access token for issues management
+                if (provider === 'github' && account?.access_token) {
+                  debug('🔧 Saving GitHub access token for user:', userId);
+                  try {
+                    // Update the account record with the access token
+                    await client.update({
+                      table: 'accounts',
+                      pk_columns: { 
+                        provider: 'github',
+                        provider_account_id: actualProviderAccountId!
+                      },
+                      _set: {
+                        access_token: account.access_token,
+                        token_type: account.token_type || 'Bearer',
+                        scope: account.scope || 'read:user user:email repo public_repo',
+                        expires_at: account.expires_at ? Math.floor(account.expires_at / 1000) : null
+                      }
+                    });
+                    debug('✅ GitHub access token saved successfully');
+                  } catch (tokenError) {
+                    debug('⚠️ Error saving GitHub access token:', tokenError);
+                    // Don't fail the auth process if token saving fails
+                  }
+                }
+                
                 debug(`JWT Callback: OAuth DB sync completed for ${userId}`); 
               } catch (error) {
                 console.error('JWT Callback: Critical OAuth user sync error:', error);
@@ -339,6 +442,9 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
         // Update the token with necessary info for session & Hasura claims
         token.sub = userId; // Ensure NextAuth uses the correct user ID from database
         token.userId = userId;
+        
+        // Ensure token.sub contains the database user ID for future account linking
+        // This is crucial for the smart linking logic above
         token.provider = provider ?? token.provider; // Keep existing if not sign-in
         token.emailVerified = emailVerified;
         // Generating Hasura claims

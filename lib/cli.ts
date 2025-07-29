@@ -32,12 +32,14 @@ import {
   logsCommandDescribe, logsCommand,
   logsDiffsCommandDescribe, logsDiffsCommand,
   logsStatesCommandDescribe, logsStatesCommand,
+  envCommandDescribe, envCommand,
   assetsCommand,
   eventsCommand,
   unbuildCommand,
   assist,
   localCommand,
   vercelCommand,
+  configureStorage,
 } from 'hasyx/lib/cli-hasyx';
 
 // Ask command is handled separately with its own imports
@@ -73,6 +75,7 @@ devCommandDescribe(program.command('dev')).action(devCommand);
 buildCommandDescribe(program.command('build')).action(buildCommand);
 startCommandDescribe(program.command('start')).action(startCommand);
 buildClientCommandDescribe(program.command('build:client')).action(buildClientCommand);
+buildClientCommandDescribe(program.command('client')).action(buildClientCommand);
 migrateCommandDescribe(program.command('migrate')).action(async (filter) => {
   await migrateCommand(filter);
 });
@@ -132,6 +135,27 @@ logsDiffsCommandDescribe(program.command('logs-diffs')).action(async () => {
 logsStatesCommandDescribe(program.command('logs-states')).action(async () => {
   await logsStatesCommand();
 });
+
+envCommandDescribe(program.command('env')).action(async () => {
+  await envCommand();
+});
+
+// Storage command
+program.command('storage')
+  .description('Configure hasura-storage with S3-compatible cloud or local storage')
+  .option('--skip-local', 'Skip local storage option')
+  .option('--skip-cloud', 'Skip cloud storage option')
+  .option('--skip-antivirus', 'Skip antivirus configuration')
+  .option('--skip-image-manipulation', 'Skip image manipulation configuration')
+  .action(async (options) => {
+    const rl = require('readline').createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+    const envPath = path.join(process.cwd(), '.env');
+    await configureStorage(rl, envPath, options);
+    rl.close();
+  });
 
 subdomainCommandDescribe(program.command('subdomain'));
 

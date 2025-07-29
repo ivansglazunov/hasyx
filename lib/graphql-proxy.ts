@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import http from 'http';
 import ws, { WebSocket, WebSocketServer } from 'ws';
 import { getToken } from 'next-auth/jwt';
+import { getTokenFromIncomingMessage } from 'hasyx/lib/auth-next';
 import Debug from './debug';
 import { generateJWT } from 'hasyx/lib/jwt';
 
@@ -326,16 +327,16 @@ export async function proxySOCKET(
       debug(`📝 [${clientId}] JWT header added: Authorization: Bearer ${jwtToken.substring(0, 50)}...`);
     } else {
       // Fall back to NextAuth cookie authentication
-    const token = await getToken({
-      req: request as any,
-      secret: NEXTAUTH_SECRET
-    }) as NextAuthToken | null;
+    // Use getTokenFromIncomingMessage for better WebSocket cookie parsing
+    const token = await getTokenFromIncomingMessage(request) as NextAuthToken | null;
 
-    debug(`🎫 [${clientId}] getToken result:`, {
+    debug(`🎫 [${clientId}] getTokenFromIncomingMessage result:`, {
       hasToken: !!token,
       hasSub: !!token?.sub,
       tokenType: typeof token,
-      sub: token?.sub
+      sub: token?.sub,
+      provider: token?.provider,
+      hasHasuraClaims: !!(token as any)?.['https://hasura.io/jwt/claims']
     });
 
     if (token?.sub) {

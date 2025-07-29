@@ -217,6 +217,8 @@ export function TelegramProvider({ hasyx }: { hasyx: Hasyx }) {
             name: dbUser.name,
             email: dbUser.email, // This will be null if no existing account was linked
             image: dbUser.image,
+            // Add telegramId as fallback for JWT callback
+            telegramId: providerAccountId,
           };
         } else {
           debug("❌ Failed to get or create user for Telegram login.");

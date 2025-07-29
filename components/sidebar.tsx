@@ -16,6 +16,7 @@ import {
 } from "hasyx/components/ui/sidebar";
 import { ProjectAndVersion } from "hasyx/components/version-switcher";
 import { ThemeSwitcher } from "./theme-switcher";
+import { LocaleSwitcher } from "./locale-switcher";
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
@@ -96,25 +97,14 @@ export function Sidebar({ data }: { data: SidebarData }) {
           const isManuallyExpanded = manuallyCollapsed.has(`expand-${item.title}`);
           const isManuallyCollapsed = manuallyCollapsed.has(item.title);
           
-          // Debug logging
-          console.log(`Processing item: ${item.title}`, {
-            isCurrentSection,
-            isManuallyExpanded,
-            isManuallyCollapsed,
-            pathname,
-            itemUrl: item.url
-          });
-          
           // Default behavior: collapse all documents except current one
           // But respect manual user preferences
           if (isManuallyCollapsed) {
             // User manually collapsed this - keep it collapsed
             newCollapsedSections.add(item.title);
-            console.log(`Collapsing ${item.title} - manually collapsed`);
           } else if (isManuallyExpanded) {
             // User manually expanded this - keep it expanded
             // Don't add to collapsed sections
-            console.log(`Keeping ${item.title} expanded - manually expanded`);
           } else {
             // Default behavior: collapse all documents unless we're specifically on that document page
             // For documents, only expand if we're on the exact document page (not just in /hasyx/doc)
@@ -123,16 +113,13 @@ export function Sidebar({ data }: { data: SidebarData }) {
               const currentDoc = pathname.split("/hasyx/doc/")[1]?.split("#")[0];
               const itemDoc = item.url.split("/hasyx/doc/")[1]?.split("#")[0];
               if (currentDoc === itemDoc) {
-                console.log(`Keeping ${item.title} expanded - is current document`);
                 // Don't add to collapsed sections
               } else {
                 newCollapsedSections.add(item.title);
-                console.log(`Collapsing ${item.title} - not current document`);
               }
             } else {
               // We're not on a specific document page, collapse all documents
               newCollapsedSections.add(item.title);
-              console.log(`Collapsing ${item.title} - not on document page`);
             }
           }
         }
@@ -334,6 +321,7 @@ export function Sidebar({ data }: { data: SidebarData }) {
       </SidebarHeader>
       <SidebarContent>
         <ThemeSwitcher style={{ margin: 16 }} />
+        <LocaleSwitcher style={{ margin: 16 }} />
         {/* Render all navigation items */}
         {renderSidebarItems(data.navMain)}
       </SidebarContent>

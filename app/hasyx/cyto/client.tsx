@@ -9,7 +9,7 @@ import projectSchema from '../../../public/hasura-schema.json';
 
 const debug = Debug('cyto');
 
-// Стили для Cytoscape
+// Styles for Cytoscape
 const stylesheet = [
   {
     selector: 'node',
@@ -97,7 +97,7 @@ export default function Client() {
         onLoaded={onGraphLoaded}
         buttons={true}
         layout={layoutConfig}
-        // leftTop={<QueriesManager queries={queries} setQueries={setQueries} schema={projectSchema} />}
+        leftTop={<QueriesManager queries={queries} setQueries={setQueries} schema={projectSchema} />}
       >
         <CytoStyle stylesheet={stylesheet} />
         <QueriesRenderer

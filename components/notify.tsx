@@ -14,8 +14,12 @@ import { Textarea } from 'hasyx/components/ui/textarea';
 import { Badge } from 'hasyx/components/ui/badge';
 import { Skeleton } from 'hasyx/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from 'hasyx/components/ui/alert';
-import { Ban, Bell, BellRing, Info, RefreshCw, X, CheckCircle, AlertCircle, AlertTriangle } from 'lucide-react';
+import { Ban, Bell, BellRing, Info, RefreshCw, X, CheckCircle, AlertCircle, AlertTriangle, MessageSquare, History } from 'lucide-react';
 import { cn } from 'hasyx/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'hasyx/components/ui/tabs';
+import { Checkbox } from 'hasyx/components/ui/checkbox';
+import { Label } from 'hasyx/components/ui/label';
+import { toast } from 'sonner';
 
 const debug = Debug('notify:component');
 
@@ -57,10 +61,9 @@ export const useNotify = () => useContext(NotificationContext);
 
 // Notification context provider
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
-  const { data: session } = useSession();
+  const hasyx = useHasyx();
   // Safer retrieval of userId, assuming id is added to the session
-  const userId = (session?.user as { id?: string; })?.id;
-  const client = useHasyx();
+  const userId = hasyx?.userId;
 
   const [isSupported, setIsSupported] = useState<boolean>(false); // Browser support + Firebase config
   const [isFcmInitialized, setIsFcmInitialized] = useState<boolean>(false);
@@ -238,7 +241,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
       // Check if permission already exists for this token and user
       // This uses the client directly, which might cause a re-render if its context changes, but it's a one-off check.
-      const existingPermissions = await client.select<NotificationPermission[]>({
+      const existingPermissions = await hasyx.select<NotificationPermission[]>({
         table: 'notification_permissions',
         where: { user_id: { _eq: userId }, device_token: { _eq: token } },
         returning: ['id']
@@ -263,7 +266,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         updated_at: new Date().toISOString(),
       };
 
-      await client.insert({
+      await hasyx.insert({
         table: 'notification_permissions',
         object: newPermissionRecord,
       });
@@ -278,11 +281,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       setLoading(false);
       return false;
     }
-  }, [isSupported, isFcmInitialized, userId, client, firebaseMessaging, firebaseConfig]);
+  }, [isSupported, isFcmInitialized, userId, hasyx, firebaseMessaging, firebaseConfig]);
 
   // Function to remove notification permission
   const removePermission = useCallback(async (): Promise<boolean> => {
-    if (!userId || !deviceToken || !client || !firebaseMessaging) {
+    if (!userId || !deviceToken || !hasyx || !firebaseMessaging) {
       setError("Cannot remove permission: missing user, token, client or Firebase messaging instance.");
       return false;
     }
@@ -302,7 +305,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
       // Delete permission from DB
       if (currentDbPermission) {
-        await client.delete({
+        await hasyx.delete({
           table: 'notification_permissions',
           where: { id: { _eq: currentDbPermission.id } }
         });
@@ -319,7 +322,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       setLoading(false);
       return false;
     }
-  }, [userId, deviceToken, client, currentDbPermission, firebaseMessaging]);
+  }, [userId, deviceToken, hasyx, currentDbPermission, firebaseMessaging]);
 
   // Function to send a test notification (creates records in DB, actual sending is by backend worker)
   const sendTestNotification = useCallback(async (
@@ -327,9 +330,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     body: string,
     data?: Record<string, any>
   ): Promise<boolean> => {
-    if (!currentDbPermission || !userId || !client) {
+    if (!currentDbPermission || !userId || !hasyx) {
       setError('No permission to send notifications or user not authenticated.');
-      debug('Send test notification prerequisites not met:', { currentDbPermission: !!currentDbPermission, userId: !!userId, client: !!client });
+      debug('Send test notification prerequisites not met:', { currentDbPermission: !!currentDbPermission, userId: !!userId, client: !!hasyx });
       return false;
     }
     setLoading(true);
@@ -345,14 +348,14 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         data: data || { test: true },
         created_at: new Date().toISOString(),
       };
-      await client.insert({
+      await hasyx.insert({
         table: 'notification_messages',
         object: messageRecord,
       });
       debug('Test notification message created in DB.');
 
       // Create notification, linked to the message and permission
-      await client.insert({
+      await hasyx.insert({
         table: 'notifications',
         object: {
           id: uuidv4(),
@@ -373,7 +376,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       setLoading(false);
       return false;
     }
-  }, [userId, client, currentDbPermission]);
+  }, [userId, hasyx, currentDbPermission]);
 
   const isEnabled = permissionStatus === 'granted' && !!currentDbPermission;
 
@@ -396,29 +399,177 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   );
 }
 
-// Notification card component for display on the page
+// Enhanced notification card component with multi-provider support
 export function NotificationCard() {
-  const {
-    isSupported,
-    isFcmInitialized,
-    isEnabled,
-    permissionStatus,
-    dbPermission,
-    deviceToken,
-    requestPermission,
-    removePermission,
-    sendTestNotification,
-    loading,
-    error
-  } = useNotify();
-  const { data: session } = useSession();
-
-  const [notificationTitle, setNotificationTitle] = useState('Test Title');
-  const [notificationBody, setNotificationBody] = useState('This is a test notification body!');
-
-  if (!session) {
+  const hasyx = useHasyx();
+  const userId = hasyx?.userId;
+  
+  const [notificationTitle, setNotificationTitle] = useState('Test Notification');
+  const [notificationBody, setNotificationBody] = useState('This is a test notification!');
+  const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
+  const [isSending, setIsSending] = useState(false);
+  
+  // Fetch all notification permissions for the user
+  const { data: permissionsData, loading: permissionsLoading, error: permissionsError } = useSubscription<{ notification_permissions: NotificationPermission[] }>(
+    {
+      table: 'notification_permissions',
+      where: { user_id: { _eq: userId } },
+      returning: ['id', 'user_id', 'provider', 'device_token', 'device_info', 'created_at', 'updated_at']
+    },
+    { skip: !userId }
+  );
+  
+  // Fetch recent notifications for the user
+  const { data: notificationsData, loading: notificationsLoading } = useSubscription<{ 
+    notifications: Array<{
+      id: string;
+      status: string;
+      error?: string;
+      created_at: string;
+      updated_at: string;
+      notification_message: {
+        title: string;
+        body: string;
+      };
+      notification_permission: {
+        provider: string;
+      };
+    }>
+  }>(
+    {
+      table: 'notifications',
+      where: { 
+        notification_permission: { 
+          user_id: { _eq: userId } 
+        } 
+      },
+      order_by: [{ created_at: 'desc' }],
+      limit: 30,
+      returning: [
+        'id', 'status', 'error', 'created_at', 'updated_at',
+        { notification_message: ['title', 'body'] },
+        { notification_permission: ['provider'] }
+      ]
+    },
+    { skip: !userId }
+  );
+  
+  const permissions = permissionsData?.notification_permissions || [];
+  const notifications = notificationsData?.notifications || [];
+  
+  // Handle provider selection
+  const handleProviderToggle = (providerId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedProviders(prev => [...prev, providerId]);
+    } else {
+      setSelectedProviders(prev => prev.filter(id => id !== providerId));
+    }
+  };
+  
+  // Handle "Select All" toggle
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedProviders(permissions.map(p => p.id));
+    } else {
+      setSelectedProviders([]);
+    }
+  };
+  
+  // Send notification
+  const handleSendNotification = async () => {
+    if (!selectedProviders.length || !notificationTitle.trim() || !notificationBody.trim()) {
+      toast.error('Please select providers and enter notification content');
+      return;
+    }
+    
+    setIsSending(true);
+    try {
+      // Create notification message
+      const messageResult = await hasyx.insert({
+        table: 'notification_messages',
+        object: {
+          title: notificationTitle.trim(),
+          body: notificationBody.trim(),
+          user_id: userId,
+          created_at: new Date().toISOString()
+        },
+        returning: ['id']
+      });
+      
+      if (!messageResult?.id) {
+        throw new Error('Failed to create notification message');
+      }
+      
+      // Create notification records for each selected provider
+      const notificationPromises = selectedProviders.map(permissionId => 
+        hasyx.insert({
+          table: 'notifications',
+          object: {
+            message_id: messageResult.id,
+            permission_id: permissionId,
+            status: 'pending',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          returning: ['id']
+        })
+      );
+      
+      await Promise.all(notificationPromises);
+      
+      toast.success(`Notification created and sent to ${selectedProviders.length} provider(s)`);
+      
+      // Reset form
+      setNotificationTitle('Test Notification');
+      setNotificationBody('This is a test notification!');
+      setSelectedProviders([]);
+      
+    } catch (error) {
+      console.error('Error sending notification:', error);
+      toast.error('Failed to send notification: ' + (error as Error).message);
+    } finally {
+      setIsSending(false);
+    }
+  };
+  
+  const getProviderIcon = (provider: string) => {
+    switch (provider) {
+      case 'firebase':
+        return <Bell className="h-4 w-4" />;
+      case 'telegram_bot':
+        return <MessageSquare className="h-4 w-4" />;
+      default:
+        return <Bell className="h-4 w-4" />;
+    }
+  };
+  
+  const getProviderName = (provider: string) => {
+    switch (provider) {
+      case 'firebase':
+        return 'Web Push (Firebase)';
+      case 'telegram_bot':
+        return 'Telegram Bot';
+      default:
+        return provider;
+    }
+  };
+  
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'sent':
+        return <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">Sent</Badge>;
+      case 'failed':
+        return <Badge variant="destructive">Failed</Badge>;
+      case 'pending':
+        return <Badge variant="secondary">Pending</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+  
+  if (!userId) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-2xl">
         <CardHeader>
           <CardTitle>Notifications</CardTitle>
           <CardDescription>Login is required to work with notifications</CardDescription>
@@ -429,139 +580,186 @@ export function NotificationCard() {
       </Card>
     );
   }
-
+  
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-2xl">
       <CardHeader>
         <CardTitle className="flex items-center">
+          <Bell className="mr-2 h-5 w-5" />
           Notifications
-          {isSupported && isFcmInitialized ? (
+          {permissions.length > 0 && (
             <Badge variant="outline" className="ml-2 bg-green-100 text-green-700 border-green-300">
-              Supported
-            </Badge>
-          ) : (
-            <Badge variant="destructive" className="ml-2">
-              Not Supported
+              {permissions.length} provider{permissions.length !== 1 ? 's' : ''}
             </Badge>
           )}
         </CardTitle>
         <CardDescription>
-          Setup browser push notifications for your application.
+          Manage your notification preferences and send test notifications.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {error && (
-          <Alert variant="destructive">
-            <Ban className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        {!isSupported && !loading && (
-          <Alert variant="default">
-            <Info className="h-4 w-4" />
-            <AlertTitle>Notifications Not Supported</AlertTitle>
-            <AlertDescription>
-              Your browser does not support push notifications or Firebase is not configured correctly.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {isSupported && isFcmInitialized && (
-          <>
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Permission Status</h4>
-                <p className="text-sm text-muted-foreground">
-                  {permissionStatus === 'granted' ? 'Granted' :
-                    permissionStatus === 'denied' ? 'Denied' : 'Not Requested'}
-                </p>
-              </div>
-              <Button
-                onClick={requestPermission}
-                disabled={loading || permissionStatus === 'granted' || permissionStatus === 'denied'}
-                size="sm"
-              >
-                {loading && permissionStatus !== 'granted' ? (
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Bell className="mr-2 h-4 w-4" />
-                )}
-                {permissionStatus === 'granted' ? 'Enabled' :
-                  permissionStatus === 'denied' ? 'Blocked in Browser' : 'Enable Notifications'}
-              </Button>
+      
+      <Tabs defaultValue="send" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mx-6">
+          <TabsTrigger value="send">Send Notification</TabsTrigger>
+          <TabsTrigger value="history">History ({notifications.length})</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="send" className="space-y-4 p-6 pt-4">
+          {permissionsError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>Failed to load notification permissions: {permissionsError.message}</AlertDescription>
+            </Alert>
+          )}
+          
+          {permissionsLoading ? (
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-48" />
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8 w-full" />
             </div>
-
-            {isEnabled && dbPermission && (
-              <>
-                <div>
-                  <h4 className="font-medium">Device Information</h4>
-                  <p className="text-sm truncate text-muted-foreground">
-                    Token: {deviceToken ? `${deviceToken.substring(0, 20)}...` : "N/A"}
-                  </p>
-                  {(dbPermission.device_info as any) && (
-                    <p className="text-sm text-muted-foreground">
-                      Platform: {(dbPermission.device_info as any).platform} / {(dbPermission.device_info as any).browser}
-                    </p>
+          ) : permissions.length === 0 ? (
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertTitle>No Notification Providers</AlertTitle>
+              <AlertDescription>
+                You don't have any notification providers set up. Try logging in with Telegram or enabling web push notifications.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Available Notification Methods</h4>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="select-all"
+                      checked={selectedProviders.length === permissions.length && permissions.length > 0}
+                      onCheckedChange={handleSelectAll}
+                    />
+                    <Label htmlFor="select-all" className="text-sm">Select All</Label>
+                  </div>
+                </div>
+                
+                <div className="grid gap-2">
+                  {permissions.map((permission) => (
+                    <div key={permission.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+                      <Checkbox 
+                        id={permission.id}
+                        checked={selectedProviders.includes(permission.id)}
+                        onCheckedChange={(checked) => handleProviderToggle(permission.id, checked as boolean)}
+                      />
+                      <div className="flex items-center space-x-2 flex-1">
+                        {getProviderIcon(permission.provider)}
+                        <div className="flex-1">
+                          <Label htmlFor={permission.id} className="font-medium cursor-pointer">
+                            {getProviderName(permission.provider)}
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            {permission.provider === 'telegram_bot' ? 
+                              `Chat ID: ${permission.device_token}` :
+                              `Token: ${permission.device_token.substring(0, 20)}...`
+                            }
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          {new Date(permission.created_at).toLocaleDateString()}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <h4 className="font-medium">Notification Content</h4>
+                <Input
+                  placeholder="Notification Title"
+                  value={notificationTitle}
+                  onChange={(e) => setNotificationTitle(e.target.value)}
+                  disabled={isSending}
+                />
+                <Textarea
+                  placeholder="Notification Body"
+                  value={notificationBody}
+                  onChange={(e) => setNotificationBody(e.target.value)}
+                  disabled={isSending}
+                  rows={3}
+                />
+                <Button
+                  onClick={handleSendNotification}
+                  disabled={isSending || selectedProviders.length === 0 || !notificationTitle.trim() || !notificationBody.trim()}
+                  className="w-full"
+                >
+                  {isSending ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> Sending...
+                    </>
+                  ) : (
+                    <>
+                      <BellRing className="mr-2 h-4 w-4" /> 
+                      Send to {selectedProviders.length} provider{selectedProviders.length !== 1 ? 's' : ''}
+                    </>
                   )}
-                  <p className="text-sm text-muted-foreground">
-                    Registered: {new Date(dbPermission.created_at).toLocaleString()}
-                  </p>
+                </Button>
+              </div>
+            </>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="history" className="space-y-4 p-6 pt-4">
+          <div className="flex items-center space-x-2">
+            <History className="h-4 w-4" />
+            <h4 className="font-medium">Recent Notifications</h4>
+          </div>
+          
+          {notificationsLoading ? (
+            <div className="space-y-2">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-16 w-full" />
+              ))}
+            </div>
+          ) : notifications.length === 0 ? (
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertTitle>No Notifications</AlertTitle>
+              <AlertDescription>
+                You haven't sent any notifications yet. Use the "Send Notification" tab to create your first one.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {notifications.map((notification) => (
+                <div key={notification.id} className="p-3 border rounded-lg space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h5 className="font-medium text-sm">{notification.notification_message.title}</h5>
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        {notification.notification_message.body}
+                      </p>
+                    </div>
+                    {getStatusBadge(notification.status)}
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <div className="flex items-center space-x-2">
+                      {getProviderIcon(notification.notification_permission.provider)}
+                      <span>{getProviderName(notification.notification_permission.provider)}</span>
+                    </div>
+                    <span>{new Date(notification.created_at).toLocaleString()}</span>
+                  </div>
+                  {notification.error && (
+                    <Alert variant="destructive" className="mt-2">
+                      <AlertTriangle className="h-3 w-3" />
+                      <AlertDescription className="text-xs">{notification.error}</AlertDescription>
+                    </Alert>
+                  )}
                 </div>
-
-                <div className="space-y-2">
-                  <h4 className="font-medium">Send Test Notification</h4>
-                  <Input
-                    placeholder="Notification Title"
-                    value={notificationTitle}
-                    onChange={(e) => setNotificationTitle(e.target.value)}
-                    disabled={loading}
-                  />
-                  <Input
-                    placeholder="Notification Body"
-                    value={notificationBody}
-                    onChange={(e) => setNotificationBody(e.target.value)}
-                    disabled={loading}
-                  />
-                  <Button
-                    onClick={() => sendTestNotification(notificationTitle, notificationBody)}
-                    disabled={loading || !notificationTitle || !notificationBody}
-                    className="w-full"
-                  >
-                    {loading && sendTestNotification.name === 'sendTestNotification' ? (
-                      <>
-                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> Sending...
-                      </>
-                    ) : (
-                      <>
-                        <BellRing className="mr-2 h-4 w-4" /> Send Test
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </>
-            )}
-          </>
-        )}
-      </CardContent>
-      {isEnabled && dbPermission && (
-        <CardFooter>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={removePermission}
-            disabled={loading}
-            className="w-full text-red-600 hover:text-red-700 border-red-300 hover:bg-red-50"
-          >
-            {loading && removePermission.name === 'removePermission' ? (
-              <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <X className="mr-2 h-4 w-4" />
-            )}
-            Disable Notifications & Forget Device
-          </Button>
-        </CardFooter>
-      )}
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </Card>
   );
 } 

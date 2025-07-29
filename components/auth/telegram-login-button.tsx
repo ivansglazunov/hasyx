@@ -79,21 +79,21 @@ const TelegramLoginButton: React.FC<TelegramLoginButtonProps> = ({
               debug('❌ NextAuth signIn error:', result.error);
               console.error('❌ NextAuth signIn error:', result.error);
               // Handle error (e.g., show a notification)
-              alert(`Ошибка авторизации через Telegram: ${result.error}`);
+              alert(`Telegram authorization error: ${result.error}`);
             } else {
               debug('⚠️ NextAuth signIn unexpected result:', result);
               console.warn('⚠️ NextAuth signIn unexpected result:', result);
-              alert('Неожиданный результат авторизации. Попробуйте еще раз.');
+              alert('Unexpected authorization result. Please try again.');
             }
           }).catch(err => {
             debug('❌ Error during signIn process:', err);
             console.error('❌ Error during signIn process:', err);
-            alert('Произошла ошибка при входе через Telegram. Попробуйте еще раз.');
+            alert('An error occurred during Telegram login. Please try again.');
           });
         } catch (error) {
           debug('❌ Error in onTelegramAuth callback:', error);
           console.error('❌ Error in onTelegramAuth callback:', error);
-          alert('Ошибка обработки данных авторизации Telegram.');
+          alert('Error processing Telegram authorization data.');
         }
       };
 
@@ -101,7 +101,7 @@ const TelegramLoginButton: React.FC<TelegramLoginButtonProps> = ({
       (window as any).onTelegramError = (error: any) => {
         debug('❌ Telegram widget error:', error);
         console.error('❌ Telegram widget error:', error);
-        alert('Ошибка Telegram виджета. Проверьте настройки бота.');
+        alert('Telegram widget error. Please check bot settings.');
       };
 
       // Dynamically create the script element for Telegram widget
@@ -121,7 +121,7 @@ const TelegramLoginButton: React.FC<TelegramLoginButtonProps> = ({
       script.onerror = () => {
         debug('❌ Failed to load Telegram widget script');
         console.error('❌ Failed to load Telegram widget script');
-        alert('Не удалось загрузить Telegram виджет. Проверьте подключение к интернету.');
+        alert('Failed to load Telegram widget. Please check your internet connection.');
       };
 
       script.onload = () => {

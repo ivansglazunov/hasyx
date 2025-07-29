@@ -3431,6 +3431,232 @@ debug('✅ Real Hasura client initialized for testing');
       expect(Array.isArray(inconsistentMetadata.inconsistent_objects)).toBe(true);
       expect(inconsistentMetadata.inconsistent_objects.length).toBe(0);
     }, 30000);
+    
+    it('should automatically handle inconsistent metadata during operations', async () => {
+      const testSchema = `test_inconsistent_${uuidv4().replace(/-/g, '_')}`;
+      let originalMetadata: any;
+      
+      try {
+        // Setup: Save original metadata for restoration
+        originalMetadata = await hasura.exportMetadata();
+        
+        // Step 1: Create test schema and tables with relationships
+        await hasura.defineSchema({ schema: testSchema });
+        await hasura.defineTable({ schema: testSchema, table: 'users', id: 'id', type: ColumnType.UUID });
+        await hasura.defineTable({ schema: testSchema, table: 'posts', id: 'id', type: ColumnType.UUID });
+        await hasura.defineTable({ schema: testSchema, table: 'comments', id: 'id', type: ColumnType.UUID });
+        
+        // Add foreign key columns
+        await hasura.defineColumn({ schema: testSchema, table: 'posts', name: 'user_id', type: ColumnType.UUID });
+        await hasura.defineColumn({ schema: testSchema, table: 'comments', name: 'post_id', type: ColumnType.UUID });
+        await hasura.defineColumn({ schema: testSchema, table: 'comments', name: 'user_id', type: ColumnType.UUID });
+        
+        // Track tables
+        await hasura.trackTable({ schema: testSchema, table: 'users' });
+        await hasura.trackTable({ schema: testSchema, table: 'posts' });
+        await hasura.trackTable({ schema: testSchema, table: 'comments' });
+        
+        // Create foreign key constraints
+        await hasura.defineForeignKey({
+          from: { schema: testSchema, table: 'posts', column: 'user_id' },
+          to: { schema: testSchema, table: 'users', column: 'id' },
+          name: 'posts_user_id_fkey'
+        });
+        
+        await hasura.defineForeignKey({
+          from: { schema: testSchema, table: 'comments', column: 'post_id' },
+          to: { schema: testSchema, table: 'posts', column: 'id' },
+          name: 'comments_post_id_fkey'
+        });
+        
+        await hasura.defineForeignKey({
+          from: { schema: testSchema, table: 'comments', column: 'user_id' },
+          to: { schema: testSchema, table: 'users', column: 'id' },
+          name: 'comments_user_id_fkey'
+        });
+        
+        // Create relationships
+        await hasura.defineRelationship({
+          schema: testSchema,
+          table: 'users',
+          name: 'posts',
+          type: 'array',
+          using: {
+            foreign_key_constraint_on: {
+              table: { schema: testSchema, name: 'posts' },
+              column: 'user_id'
+            }
+          }
+        });
+        
+        await hasura.defineRelationship({
+          schema: testSchema,
+          table: 'posts',
+          name: 'user',
+          type: 'object',
+          using: {
+            foreign_key_constraint_on: 'user_id'
+          }
+        });
+        
+        await hasura.defineRelationship({
+          schema: testSchema,
+          table: 'posts',
+          name: 'comments',
+          type: 'array',
+          using: {
+            foreign_key_constraint_on: {
+              table: { schema: testSchema, name: 'comments' },
+              column: 'post_id'
+            }
+          }
+        });
+        
+        // Create permissions
+        await hasura.definePermission({
+          schema: testSchema,
+          table: 'users',
+          operation: 'select',
+          role: 'user',
+          filter: { id: { '_eq': 'X-Hasura-User-Id' } },
+          columns: true
+        });
+        
+        // Step 2: Manually create inconsistent metadata by dropping tables directly via SQL
+        // This simulates the scenario from the original error log
+        debug('🔧 Creating inconsistent metadata by dropping tables directly...');
+        
+        // Use direct SQL API without our wrapper to avoid auto-cleanup
+        // We need to bypass our withInconsistentMetadataHandling wrapper
+        const directSqlResult1 = await hasura.client.post('/v2/query', {
+          type: 'run_sql',
+          args: {
+            source: 'default',
+            sql: `DROP TABLE IF EXISTS "${testSchema}"."comments" CASCADE;`,
+            cascade: true
+          }
+        });
+        
+        const directSqlResult2 = await hasura.client.post('/v2/query', {
+          type: 'run_sql',
+          args: {
+            source: 'default',
+            sql: `DROP TABLE IF EXISTS "${testSchema}"."posts" CASCADE;`,
+            cascade: true
+          }
+        });
+        
+        debug('📋 Direct SQL results:', { 
+          result1: directSqlResult1.data, 
+          result2: directSqlResult2.data 
+        });
+        
+        // Step 3: Verify inconsistent metadata exists
+        const inconsistentBefore = await hasura.getInconsistentMetadata();
+        debug(`📋 Inconsistent metadata check:`, {
+          is_consistent: inconsistentBefore.is_consistent,
+          inconsistent_objects_count: inconsistentBefore.inconsistent_objects?.length || 0,
+          inconsistent_objects: inconsistentBefore.inconsistent_objects?.slice(0, 3) // Show first 3 for debugging
+        });
+        
+        // If no inconsistent metadata was created, let's create it differently
+        if (!inconsistentBefore.inconsistent_objects || inconsistentBefore.inconsistent_objects.length === 0) {
+          debug('🔄 No inconsistent metadata found, trying alternative approach...');
+          
+          // Try creating inconsistent metadata by creating a relationship to non-existent table
+          await hasura.defineTable({ schema: testSchema, table: 'temp_target' });
+          await hasura.trackTable({ schema: testSchema, table: 'temp_target' });
+          
+          // Create relationship from users to non-existent table
+          await hasura.defineRelationship({
+            schema: testSchema,
+            table: 'users',
+            name: 'temp_relation',
+            type: 'array',
+            using: {
+              foreign_key_constraint_on: {
+                table: { schema: testSchema, name: 'temp_target' },
+                column: 'user_id'
+              }
+            }
+          });
+          
+          // Now drop the target table directly to create inconsistent metadata
+          await hasura.client.post('/v2/query', {
+            type: 'run_sql',
+            args: {
+              source: 'default',
+              sql: `DROP TABLE IF EXISTS "${testSchema}"."temp_target" CASCADE;`,
+              cascade: true
+            }
+          });
+          
+          // Check again
+          const inconsistentAfterAlternative = await hasura.getInconsistentMetadata();
+          debug(`📋 After alternative approach:`, {
+            inconsistent_objects_count: inconsistentAfterAlternative.inconsistent_objects?.length || 0
+          });
+          
+          if (inconsistentAfterAlternative.inconsistent_objects && inconsistentAfterAlternative.inconsistent_objects.length > 0) {
+            debug('✅ Successfully created inconsistent metadata with alternative approach');
+          } else {
+            debug('⚠️ Could not create inconsistent metadata, skipping this part of the test');
+            // Still test the wrapper functionality even without inconsistent metadata
+          }
+        } else {
+          debug(`✅ Found ${inconsistentBefore.inconsistent_objects.length} inconsistent objects`);
+        }
+        
+        // Step 4: Test that operations work even with potential inconsistent metadata
+        // This should trigger our withInconsistentMetadataHandling wrapper if needed
+        debug('🧪 Testing automatic inconsistent metadata handling...');
+        
+        // Try to untrack a table - this should work regardless of inconsistent metadata
+        const untrackResult = await hasura.untrackTable({ schema: testSchema, table: 'users' });
+        expect(untrackResult).toBeDefined();
+        debug('✅ untrackTable operation completed successfully');
+        
+        // Step 5: Verify metadata is consistent after operations
+        const inconsistentAfter = await hasura.getInconsistentMetadata();
+        expect(inconsistentAfter.inconsistent_objects.length).toBe(0);
+        debug('✅ Metadata is consistent after operations');
+        
+        // Step 6: Test that SQL operations work reliably
+        // Test SQL operation - should work regardless of metadata state
+        const sqlResult = await hasura.sql(`SELECT 1 as test;`);
+        expect(sqlResult).toBeDefined();
+        expect(sqlResult.result_type).toBe('TuplesOk');
+        debug('✅ SQL operations work reliably');
+        
+        // Step 7: Test wrapper functionality by creating a scenario that might cause issues
+        // Create and immediately delete a table to test robustness
+        await hasura.defineTable({ schema: testSchema, table: 'test_robustness' });
+        await hasura.trackTable({ schema: testSchema, table: 'test_robustness' });
+        await hasura.deleteTable({ schema: testSchema, table: 'test_robustness', cascade: true });
+        
+        // Verify final state is clean
+        const finalInconsistent = await hasura.getInconsistentMetadata();
+        expect(finalInconsistent.inconsistent_objects.length).toBe(0);
+        debug('✅ All operations completed with clean metadata state');
+        
+      } finally {
+        // Cleanup: Restore original metadata to ensure clean state
+        try {
+          if (originalMetadata) {
+            await hasura.replaceMetadata(originalMetadata);
+            debug('✅ Original metadata restored');
+          }
+        } catch (restoreError) {
+          debug('⚠️ Error restoring metadata:', restoreError);
+          // Try manual cleanup as fallback
+          try {
+            await hasura.deleteSchema({ schema: testSchema, cascade: true });
+          } catch (cleanupError) {
+            debug('⚠️ Error in manual cleanup:', cleanupError);
+          }
+        }
+      }
+    }, 120000); // 2 minute timeout for complex test
   });
 
   describe('Error Handling', () => {

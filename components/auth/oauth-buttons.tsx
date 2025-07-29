@@ -6,9 +6,12 @@ import { useTelegramWebApp } from 'hasyx/hooks/use-telegram-webapp';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'hasyx/components/ui/card';
 import { Loader2, AlertCircle } from 'lucide-react';
 
+const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+
 /**
  * Component with buttons for OAuth authorization through various providers
  * Automatically handles Telegram MiniApp authentication when running inside Telegram
+ * If user is already logged in, new accounts will be automatically linked to the existing user
  */
 export function OAuthButtons() {
   const { isInTelegram, isLoading } = useTelegramWebApp();
@@ -115,7 +118,7 @@ export function OAuthButtons() {
         className="w-full bg-[#4680C2] hover:bg-[#4680C2]/90 text-white"
       />
 
-      {process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME && (
+      {process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME && !isLocalhost && (
         <TelegramLoginButton
           botUsername={process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME}
           buttonSize="large"

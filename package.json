@@ -1,10 +1,10 @@
 {
   "name": "hasyx",
-  "version": "0.1.351",
+  "version": "0.1.377",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.deep.foundation/",
   "engines": {
-    "node": "22.14"
+    "node": "^22.14"
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,9 @@
     "build:next": "next build --turbopack",
     "client": "tsx lib/build-client.ts",
     "build:android": "npm run client && npm run cli -- assets && npx cap sync android",
-    "ios": "npm run client && npm run cli -- assets && npx cap sync ios",
+    "open:android": "npx cap open android",
+    "build:ios": "npm run client && npm run cli -- assets && npx cap sync ios",
+    "open:ios": "npx cap open ios",
     "start": "NODE_ENV=production NODE_OPTIONS=\"--experimental-vm-modules\" npx -y hasyx start",
     "lint": "next lint --turbopack",
     "test": "npm run unbuild; NODE_OPTIONS=\"--experimental-vm-modules\" jest --verbose --runInBand",
@@ -42,7 +44,8 @@
     "ollama": "ollama",
     "logs": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs",
     "logs-diffs": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs-diffs",
-    "logs-states": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs-states"
+    "logs-states": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs-states",
+    "env": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli.ts env"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -166,8 +169,10 @@
     "mock-local-storage": "^1.1.24",
     "next": "15.3.1",
     "next-auth": "4.24.11",
+    "next-intl": "^4.3.4",
     "next-themes": "0.4.6",
     "next-ws": "2.0.7",
+    "octokit": "^5.0.3",
     "ollama-node": "0.1.28",
     "png-to-ico": "2.1.8",
     "prettier": "3.5.3",
@@ -205,7 +210,9 @@
     "vercel": "41.7.3",
     "vm-browserify": "1.1.2",
     "ws": "8.18.2",
-    "zod": "3.25.4"
+    "yaml": "^2.8.0",
+    "zod": "3.25.4",
+    "zustand": "^5.0.6"
   },
   "bin": {
     "hasyx": "./lib/cli.js"

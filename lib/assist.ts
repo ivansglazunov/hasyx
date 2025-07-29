@@ -13,6 +13,7 @@ import { askForInput, createRlInterface, parseEnvFile } from './assist-common';
 import { setupEnvironment, setupPackageJson } from './assist-env';
 import { configureFirebaseNotifications } from './assist-firebase';
 import { checkGitHubAuth, setupRepository } from './assist-github-auth';
+import { configureGitHubToken } from './assist-github';
 import { configureHasura } from './assist-hasura';
 import { initializeHasyx } from './assist-hasyx';
 import { runMigrations } from './assist-migrations';
@@ -29,6 +30,8 @@ import { Generator } from './generator';
 import { Hasyx } from './hasyx';
 import { configureDns } from './assist-dns';
 import { configureDocker } from './assist-docker';
+import { configureStorage } from './assist-storage';
+import { configureGitHubWebhooks } from './assist-github-webhooks';
 
 // Ensure dotenv is configured only once
 if (require.main === module) {
@@ -75,6 +78,9 @@ interface AssistOptions {
   skipPg?: boolean;
   skipDns?: boolean;
   skipDocker?: boolean;
+  skipGitHub?: boolean;
+  skipStorage?: boolean;
+  skipGitHubWebhooks?: boolean;
 }
 
 // NEW FUNCTION to determine OAuth callback base URL
@@ -161,6 +167,8 @@ async function assist(options: AssistOptions = {}) {
     else debug('Skipping DNS configuration');
     if (!options.skipDocker) envVars = await configureDocker(rl, envPath);
     else debug('Skipping Docker configuration');
+    if (!options.skipStorage) await configureStorage(rl, envPath, { skipStorage: options.skipStorage });
+    else debug('Skipping Storage configuration');
     if (!options.skipVercel) await setupVercel(rl, envPath, envVars);
     else debug('Skipping Vercel setup');
     if (!options.skipSync) await syncEnvironmentVariables(rl, envPath, {});
@@ -171,6 +179,10 @@ async function assist(options: AssistOptions = {}) {
     else debug('Skipping Project User setup');
     if (!options.skipTelegram) envVars = await configureTelegramBot(rl, envPath);
     else debug('Skipping Telegram Bot setup');
+    if (!options.skipGitHub) envVars = await configureGitHubToken(rl, envPath);
+    else debug('Skipping GitHub Token setup');
+    if (!options.skipGitHubWebhooks) await configureGitHubWebhooks(rl, envPath, { skipWebhooks: options.skipGitHubWebhooks });
+    else debug('Skipping GitHub Webhooks setup');
     
     if (!options.skipCommit) await commitChanges(rl, { skipCommit: options.skipCommit, commitMessage: 'feat: project configured by hasyx-assist' });
     else debug('Skipping commit');
@@ -274,6 +286,7 @@ if (require.main === module) {
     .option('--skip-pg', 'Skip PostgreSQL configuration')
     .option('--skip-dns', 'Skip DNS configuration')
     .option('--skip-docker', 'Skip Docker configuration')
+    .option('--skip-github-webhooks', 'Skip GitHub webhooks configuration')
     .action((cmdOptions) => {
       assist(cmdOptions);
     });
