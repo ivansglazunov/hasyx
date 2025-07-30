@@ -20,27 +20,68 @@ export async function POST(request: NextRequest) {
   if (!GITHUB_OWNER || !GITHUB_REPO) throw new Error('GITHUB_OWNER or GITHUB_REPO not configured');
 
   try {
-    debug('🚀 Starting GitHub issues sync...');
+    // Check if this is a GitHub webhook request
+    const isWebhook = request.headers.get('x-github-event') && request.headers.get('x-hub-signature');
     
-    // Check for GitHub token
-    const githubToken = process.env.GITHUB_TOKEN;
-    if (!githubToken) {
-      debug('❌ GitHub token not found');
+    if (isWebhook) {
+      debug('📥 Processing GitHub webhook...');
+      return await handleGitHubWebhook(request);
+    } else {
+      debug('🚀 Starting GitHub issues sync...');
+      return await handleUserSync(request);
+    }
+  } catch (error) {
+    debug('❌ Error in POST handler:', error);
+    return NextResponse.json(
+      { error: 'Failed to process request', details: (error as Error).message },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleUserSync(request: NextRequest) {
+  try {
+    // Get user session
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'GitHub token not configured' },
-        { status: 500 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
-    
-    // Initialize Octokit
-    const octokit = new Octokit({
-      auth: githubToken,
-    });
-    
+
+    const userId = session.user.id;
+    debug(`🔍 User ${userId} requesting GitHub issues sync`);
+
     // Initialize Hasyx client
     const apolloClient = createApolloClient();
     const generator = Generator(schema);
     const hasyx = new Hasyx(apolloClient, generator);
+
+    // Check if user has GitHub access token with required scope
+    const hasRepoScope = await hasGitHubScope(hasyx, userId, 'repo');
+    const hasPublicRepoScope = await hasGitHubScope(hasyx, userId, 'public_repo');
+    
+    if (!hasRepoScope && !hasPublicRepoScope) {
+      return NextResponse.json(
+        { error: 'GitHub authorization required. Please sign in with GitHub and grant repository access.' },
+        { status: 403 }
+      );
+    }
+
+    // Get user's GitHub access token
+    const accessToken = await getGitHubAccessToken(hasyx, userId);
+    if (!accessToken) {
+      return NextResponse.json(
+        { error: 'GitHub access token not found. Please re-authenticate with GitHub.' },
+        { status: 403 }
+      );
+    }
+    
+    // Initialize Octokit with user's token
+    const octokit = new Octokit({
+      auth: accessToken,
+    });
     
     debug('📊 Getting last updated issue from database...');
     
@@ -62,8 +103,8 @@ export async function POST(request: NextRequest) {
     
     // Fetch issues from GitHub
     const issuesResponse = await octokit.rest.issues.listForRepo({
-      owner: GITHUB_OWNER,
-      repo: GITHUB_REPO,
+      owner: GITHUB_OWNER!,
+      repo: GITHUB_REPO!,
       state: 'all',
       per_page: 100,
       since: since,
@@ -75,41 +116,30 @@ export async function POST(request: NextRequest) {
     // Process and save issues
     for (const issue of issues) {
       const issueData = {
-        id: issue.id,
+        github_id: issue.id,
         number: issue.number,
         title: issue.title,
         body: issue.body,
         state: issue.state,
-        user: issue.user?.login,
-        assignees: issue.assignees?.map(a => a.login) || [],
-        labels: issue.labels?.map(l => typeof l === 'string' ? l : l.name).filter(Boolean) || [],
+        user_data: issue.user,
+        assignee_data: issue.assignee,
+        assignees_data: issue.assignees,
+        labels_data: issue.labels,
+        milestone_data: issue.milestone,
+        pull_request_data: issue.pull_request,
+        closed_by_data: issue.closed_by,
         created_at: new Date(issue.created_at).getTime(),
         updated_at: new Date(issue.updated_at).getTime(),
         closed_at: issue.closed_at ? new Date(issue.closed_at).getTime() : null,
         html_url: issue.html_url,
-        comments_url: issue.comments_url,
-        events_url: issue.events_url,
         node_id: issue.node_id,
         url: issue.url,
-        repository_url: issue.repository_url,
-        labels_url: issue.labels_url,
-        comments: issue.comments,
-        assignee: issue.assignee?.login,
-        milestone: issue.milestone?.title,
+        repository_owner: GITHUB_OWNER!,
+        repository_name: GITHUB_REPO!,
         locked: issue.locked,
         active_lock_reason: issue.active_lock_reason,
-        draft: issue.draft,
-        pull_request: issue.pull_request ? {
-          url: issue.pull_request.url,
-          html_url: issue.pull_request.html_url,
-          diff_url: issue.pull_request.diff_url,
-          patch_url: issue.pull_request.patch_url,
-        } : null,
-        body_html: issue.body_html,
-        body_text: issue.body_text,
-        timeline_url: issue.timeline_url,
-        performed_via_github_app: issue.performed_via_github_app,
-        reactions: issue.reactions,
+        comments_count: issue.comments,
+        author_association: issue.author_association,
       };
       
       try {
@@ -118,12 +148,11 @@ export async function POST(request: NextRequest) {
           table: 'github_issues',
           object: issueData,
           on_conflict: {
-            constraint: 'github_issues_id_key',
+            constraint: 'github_issues_github_id_key',
             update_columns: [
-              'title', 'body', 'state', 'user', 'assignees', 'labels',
+              'title', 'body', 'state', 'user_data', 'assignee_data', 'assignees_data', 'labels_data',
               'updated_at', 'closed_at', 'locked', 'active_lock_reason',
-              'draft', 'pull_request', 'body_html', 'body_text',
-              'performed_via_github_app', 'reactions'
+              'pull_request_data', 'closed_by_data'
             ]
           }
         });
@@ -213,8 +242,8 @@ export async function PUT(request: NextRequest) {
 
     // Create issue
     const issueResponse = await octokit.rest.issues.create({
-      owner: GITHUB_OWNER,
-      repo: GITHUB_REPO,
+      owner: GITHUB_OWNER!,
+      repo: GITHUB_REPO!,
       title: title,
       body: issueBody,
       labels: labels,
@@ -225,53 +254,41 @@ export async function PUT(request: NextRequest) {
 
     // Save the new issue to our database
     const issueData = {
-      id: issue.id,
+      github_id: issue.id,
       number: issue.number,
       title: issue.title,
       body: issue.body,
       state: issue.state,
-      user: issue.user?.login,
-      assignees: issue.assignees?.map(a => a.login) || [],
-      labels: issue.labels?.map(l => typeof l === 'string' ? l : l.name).filter(Boolean) || [],
+      user_data: issue.user,
+      assignee_data: issue.assignee,
+      assignees_data: issue.assignees,
+      labels_data: issue.labels,
+      milestone_data: issue.milestone,
+      pull_request_data: issue.pull_request,
+      closed_by_data: issue.closed_by,
       created_at: new Date(issue.created_at).getTime(),
       updated_at: new Date(issue.updated_at).getTime(),
       closed_at: issue.closed_at ? new Date(issue.closed_at).getTime() : null,
       html_url: issue.html_url,
-      comments_url: issue.comments_url,
-      events_url: issue.events_url,
       node_id: issue.node_id,
       url: issue.url,
-      repository_url: issue.repository_url,
-      labels_url: issue.labels_url,
-      comments: issue.comments,
-      assignee: issue.assignee?.login,
-      milestone: issue.milestone?.title,
+      repository_owner: GITHUB_OWNER!,
+      repository_name: GITHUB_REPO!,
       locked: issue.locked,
       active_lock_reason: issue.active_lock_reason,
-      draft: issue.draft,
-      pull_request: issue.pull_request ? {
-        url: issue.pull_request.url,
-        html_url: issue.pull_request.html_url,
-        diff_url: issue.pull_request.diff_url,
-        patch_url: issue.pull_request.patch_url,
-      } : null,
-      body_html: issue.body_html,
-      body_text: issue.body_text,
-      timeline_url: issue.timeline_url,
-      performed_via_github_app: issue.performed_via_github_app,
-      reactions: issue.reactions,
+      comments_count: issue.comments,
+      author_association: issue.author_association,
     };
 
     await hasyx.upsert({
       table: 'github_issues',
       object: issueData,
       on_conflict: {
-        constraint: 'github_issues_id_key',
+        constraint: 'github_issues_github_id_key',
         update_columns: [
-          'title', 'body', 'state', 'user', 'assignees', 'labels',
+          'title', 'body', 'state', 'user_data', 'assignee_data', 'assignees_data', 'labels_data',
           'updated_at', 'closed_at', 'locked', 'active_lock_reason',
-          'draft', 'pull_request', 'body_html', 'body_text',
-          'performed_via_github_app', 'reactions'
+          'pull_request_data', 'closed_by_data'
         ]
       }
     });
@@ -343,18 +360,7 @@ export async function GET() {
   }
 }
 
-/**
- * GitHub Webhook handler
- * Processes webhook events from GitHub and updates the database
- */
-export async function PATCH(request: NextRequest) {
-  if (!GITHUB_OWNER || !GITHUB_REPO) {
-    return NextResponse.json(
-      { error: 'GITHUB_OWNER or GITHUB_REPO not configured' },
-      { status: 500 }
-    );
-  }
-
+async function handleGitHubWebhook(request: NextRequest) {
   try {
     // Get raw body for signature verification
     const body = await request.text();
@@ -408,41 +414,30 @@ export async function PATCH(request: NextRequest) {
 
     // Convert GitHub issue to our database format
     const issueData = {
-      id: issue.id,
+      github_id: issue.id,
       number: issue.number,
       title: issue.title,
       body: issue.body,
       state: issue.state,
-      user: issue.user?.login,
-      assignees: issue.assignees?.map((a: any) => a.login) || [],
-      labels: issue.labels?.map((l: any) => typeof l === 'string' ? l : l.name).filter(Boolean) || [],
+      user_data: issue.user,
+      assignee_data: issue.assignee,
+      assignees_data: issue.assignees,
+      labels_data: issue.labels,
+      milestone_data: issue.milestone,
+      pull_request_data: issue.pull_request,
+      closed_by_data: issue.closed_by,
       created_at: new Date(issue.created_at).getTime(),
       updated_at: new Date(issue.updated_at).getTime(),
       closed_at: issue.closed_at ? new Date(issue.closed_at).getTime() : null,
       html_url: issue.html_url,
-      comments_url: issue.comments_url,
-      events_url: issue.events_url,
       node_id: issue.node_id,
       url: issue.url,
-      repository_url: issue.repository_url,
-      labels_url: issue.labels_url,
-      comments: issue.comments,
-      assignee: issue.assignee?.login,
-      milestone: issue.milestone?.title,
+      repository_owner: GITHUB_OWNER!,
+      repository_name: GITHUB_REPO!,
       locked: issue.locked,
       active_lock_reason: issue.active_lock_reason,
-      draft: issue.draft,
-      pull_request: issue.pull_request ? {
-        url: issue.pull_request.url,
-        html_url: issue.pull_request.html_url,
-        diff_url: issue.pull_request.diff_url,
-        patch_url: issue.pull_request.patch_url,
-      } : null,
-      body_html: issue.body_html,
-      body_text: issue.body_text,
-      timeline_url: issue.timeline_url,
-      performed_via_github_app: issue.performed_via_github_app,
-      reactions: issue.reactions,
+      comments_count: issue.comments,
+      author_association: issue.author_association,
     };
 
     // Handle different webhook actions
@@ -454,12 +449,11 @@ export async function PATCH(request: NextRequest) {
           table: 'github_issues',
           object: issueData,
           on_conflict: {
-            constraint: 'github_issues_id_key',
+            constraint: 'github_issues_github_id_key',
             update_columns: [
-              'title', 'body', 'state', 'user', 'assignees', 'labels',
+              'title', 'body', 'state', 'user_data', 'assignee_data', 'assignees_data', 'labels_data',
               'updated_at', 'closed_at', 'locked', 'active_lock_reason',
-              'draft', 'pull_request', 'body_html', 'body_text',
-              'performed_via_github_app', 'reactions'
+              'pull_request_data', 'closed_by_data'
             ]
           }
         });
@@ -468,17 +462,18 @@ export async function PATCH(request: NextRequest) {
       case 'edited':
       case 'reopened':
       case 'closed':
-        debug(`✅ Updating issue #${issue.number}`);
+      case 'labeled':
+      case 'unlabeled':
+        debug(`✅ Updating issue #${issue.number} (action: ${payload.action})`);
         await hasyx.upsert({
           table: 'github_issues',
           object: issueData,
           on_conflict: {
-            constraint: 'github_issues_id_key',
+            constraint: 'github_issues_github_id_key',
             update_columns: [
-              'title', 'body', 'state', 'user', 'assignees', 'labels',
+              'title', 'body', 'state', 'user_data', 'assignee_data', 'assignees_data', 'labels_data',
               'updated_at', 'closed_at', 'locked', 'active_lock_reason',
-              'draft', 'pull_request', 'body_html', 'body_text',
-              'performed_via_github_app', 'reactions'
+              'pull_request_data', 'closed_by_data'
             ]
           }
         });
@@ -488,7 +483,7 @@ export async function PATCH(request: NextRequest) {
         debug(`🗑️ Deleting issue #${issue.number}`);
         await hasyx.delete({
           table: 'github_issues',
-          pk_columns: { id: issue.id }
+          pk_columns: { github_id: issue.id }
         });
         break;
 

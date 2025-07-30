@@ -15,11 +15,10 @@ export function ThemeSwitcher(props: any) {
     setMounted(true);
   }, []);
 
-  // if (!mounted) {
-  //   // You can return a placeholder or null here
-  //   // For a button, it's often fine to return null or a skeleton
-  //   return <div {...props} style={{ width: '58px', height: '40px' }} />; // Placeholder with similar size
-  // }
+  if (!mounted) {
+    // Return placeholder during SSR to avoid hydration issues
+    return <div {...props} style={{ width: '58px', height: '40px' }} />;
+  }
 
   return (
     <Button {...props} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>

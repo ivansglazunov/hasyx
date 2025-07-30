@@ -68,12 +68,14 @@ export const QueriesRenderer = ({
   renderer,
   onClick,
   EntityButtonComponent = EntityButton,
+  availableIssues,
 }: {
   queries: any[],
   schema: any,
   renderer?: (object: any) => React.ReactNode,
   onClick?: (object: any) => void,
   EntityButtonComponent?: any,
+  availableIssues?: any[],
 }) => {
   const _renderer = useCallback((item) => (<CytoNodeRenderer
     key={`${item.__typename}-${item.id}`}
@@ -81,11 +83,12 @@ export const QueriesRenderer = ({
     onClick={onClick}
     schema={schema}
     EntityButtonComponent={EntityButtonComponent}
-  />), [renderer]);
+    availableIssues={availableIssues}
+  />), [renderer, availableIssues]);
   const __renderer = renderer || _renderer;
   const rendered = useMemo(() => {
     return queries.map((query, index) => <QueryRenderer key={index} query={query} renderer={__renderer} />);
-  }, [queries, renderer]);
+  }, [queries, renderer, availableIssues]);
   return <>{rendered}</>;
 };
 
@@ -119,12 +122,14 @@ export const CytoNodeRenderer = ({
   schema,
   parseRow,
   EntityButtonComponent = EntityButton,
+  availableIssues,
 }: {
   object: any,
   onClick?: (object: any) => void,
   schema: any,
   parseRow?: (object: any) => { objectRelations: any, arrayRelations: any, idFields: any },
   EntityButtonComponent?: any,
+  availableIssues?: any[],
 }) => {
   const _parseRow = useMemo(() => parseRow || RowParser(schema), [schema]);
 
@@ -147,7 +152,7 @@ export const CytoNodeRenderer = ({
         const relatedNodeId = `${relatedWithTypename.__typename}-${relatedWithTypename.id}`;
 
         if (!children.has(relatedNodeId)) {
-          children.set(relatedNodeId, <CytoNodeRenderer key={relatedNodeId} object={relatedWithTypename} onClick={onClick} schema={schema} parseRow={_parseRow} EntityButtonComponent={EntityButtonComponent} />);
+          children.set(relatedNodeId, <CytoNodeRenderer key={relatedNodeId} object={relatedWithTypename} onClick={onClick} schema={schema} parseRow={_parseRow} EntityButtonComponent={EntityButtonComponent} availableIssues={availableIssues} />);
         }
 
         const edgeId = `edge-${nodeId}-${relatedNodeId}`;
@@ -168,7 +173,7 @@ export const CytoNodeRenderer = ({
             const relatedNodeId = `${relatedWithTypename.__typename}-${relatedWithTypename.id}`;
 
             if (!children.has(relatedNodeId)) {
-              children.set(relatedNodeId, <CytoNodeRenderer key={relatedNodeId} object={relatedWithTypename} onClick={onClick} schema={schema} parseRow={_parseRow} EntityButtonComponent={EntityButtonComponent} />);
+              children.set(relatedNodeId, <CytoNodeRenderer key={relatedNodeId} object={relatedWithTypename} onClick={onClick} schema={schema} parseRow={_parseRow} EntityButtonComponent={EntityButtonComponent} availableIssues={availableIssues} />);
             }
 
             const edgeId = `edge-${nodeId}-${relatedNodeId}`;
@@ -189,6 +194,7 @@ export const CytoNodeRenderer = ({
     <>
       <EntityCytoNode
         data={object}
+        availableIssues={availableIssues}
         // onClick={() => setOpened(true)}
         // children={opened ? <EntityButtonComponent
         //   data={object}

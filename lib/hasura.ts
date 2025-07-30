@@ -823,10 +823,12 @@ export class Hasura {
       permissionArgs.permission.allow_aggregations = true;
     }
     
-    return await this.v1({
-      type: `pg_create_${operation}_permission`,
-      args: permissionArgs
-    });
+    return await this.withInconsistentMetadataHandling(async () => {
+      return await this.v1({
+        type: `pg_create_${operation}_permission`,
+        args: permissionArgs
+      });
+    }, `create ${operation} permission for role ${role} in ${schema}.${table}`);
   }
 
   async deletePermission(options: DeletePermissionOptions): Promise<any> {
@@ -844,14 +846,16 @@ export class Hasura {
 
     debug(`🗑️ Deleting ${operation} permission for role ${role} in ${schema}.${table}`);
     
-    return await this.v1({
-      type: `pg_drop_${operation}_permission`,
-      args: {
-        source: 'default',
-        table: { schema, name: table },
-        role
-      }
-    });
+    return await this.withInconsistentMetadataHandling(async () => {
+      return await this.v1({
+        type: `pg_drop_${operation}_permission`,
+        args: {
+          source: 'default',
+          table: { schema, name: table },
+          role
+        }
+      });
+    }, `delete ${operation} permission for role ${role} in ${schema}.${table}`);
   }
 
   async schemas(): Promise<string[]> {
@@ -1030,22 +1034,24 @@ export class Hasura {
     
     debug(`🔗 Defining foreign key ${constraintName}`);
     
-    // Drop existing constraint if exists
-    await this.sql(`
-      ALTER TABLE "${from.schema}"."${from.table}" 
-      DROP CONSTRAINT IF EXISTS "${constraintName}";
-    `);
-    
-    // Create new constraint
-    await this.sql(`
-      ALTER TABLE "${from.schema}"."${from.table}" 
-      ADD CONSTRAINT "${constraintName}" 
-      FOREIGN KEY ("${from.column}") 
-      REFERENCES "${to.schema}"."${to.table}"("${to.column}")
-      ON DELETE ${on_delete} ON UPDATE ${on_update};
-    `);
-    
-    return { success: true };
+    return await this.withInconsistentMetadataHandling(async () => {
+      // Drop existing constraint if exists
+      await this.sql(`
+        ALTER TABLE "${from.schema}"."${from.table}" 
+        DROP CONSTRAINT IF EXISTS "${constraintName}";
+      `);
+      
+      // Create new constraint
+      await this.sql(`
+        ALTER TABLE "${from.schema}"."${from.table}" 
+        ADD CONSTRAINT "${constraintName}" 
+        FOREIGN KEY ("${from.column}") 
+        REFERENCES "${to.schema}"."${to.table}"("${to.column}")
+        ON DELETE ${on_delete} ON UPDATE ${on_update};
+      `);
+      
+      return { success: true };
+    }, `define foreign key ${constraintName}`);
   }
 
   async createForeignKey(options: ForeignKeyOptions): Promise<any> {
@@ -1361,10 +1367,12 @@ export class Hasura {
       triggerDefinition[key] === undefined && delete triggerDefinition[key]
     );
     
-    return await this.v1({
-      type: 'pg_create_event_trigger',
-      args: triggerDefinition
-    });
+    return await this.withInconsistentMetadataHandling(async () => {
+      return await this.v1({
+        type: 'pg_create_event_trigger',
+        args: triggerDefinition
+      });
+    }, `create event trigger ${name}`);
   }
 
   async createEventTrigger(options: EventTriggerOptions): Promise<any> {
@@ -1398,10 +1406,40 @@ export class Hasura {
     
     debug(`🗑️ Deleting event trigger ${name}`);
     
-    return await this.v1({
-      type: 'pg_delete_event_trigger',
-      args: { name }
-    });
+    try {
+      // First, delete the event trigger from metadata
+      await this.v1({
+        type: 'pg_delete_event_trigger',
+        args: { name }
+      });
+      debug(`✅ Event trigger ${name} deleted from metadata`);
+    } catch (error: any) {
+      debug(`⚠️ Could not delete event trigger ${name} from metadata:`, error.message);
+    }
+    
+    // Then, clean up any orphaned SQL functions and triggers
+    try {
+      await this.withInconsistentMetadataHandling(async () => {
+        // Drop the event trigger functions if they exist
+        await this.sql(`DROP FUNCTION IF EXISTS hdb_catalog."notify_hasura_${name}_INSERT"() CASCADE;`);
+        await this.sql(`DROP FUNCTION IF EXISTS hdb_catalog."notify_hasura_${name}_UPDATE"() CASCADE;`);
+        await this.sql(`DROP FUNCTION IF EXISTS hdb_catalog."notify_hasura_${name}_DELETE"() CASCADE;`);
+        
+        // Drop the event trigger if it exists in the database
+        await this.sql(`DROP EVENT TRIGGER IF EXISTS "${name}";`);
+        
+        // Also try to drop any orphaned functions with different naming patterns
+        await this.sql(`DROP FUNCTION IF EXISTS hdb_catalog."notify_hasura_${name.replace(/-/g, '_')}_INSERT"() CASCADE;`);
+        await this.sql(`DROP FUNCTION IF EXISTS hdb_catalog."notify_hasura_${name.replace(/-/g, '_')}_UPDATE"() CASCADE;`);
+        await this.sql(`DROP FUNCTION IF EXISTS hdb_catalog."notify_hasura_${name.replace(/-/g, '_')}_DELETE"() CASCADE;`);
+        
+        debug(`✅ SQL cleanup completed for event trigger ${name}`);
+      }, `SQL cleanup for event trigger ${name}`);
+    } catch (error: any) {
+      debug(`⚠️ Could not clean up SQL for event trigger ${name}:`, error.message);
+    }
+    
+    return { success: true };
   }
 
   // Cron Triggers

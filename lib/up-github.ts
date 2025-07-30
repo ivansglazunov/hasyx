@@ -281,8 +281,38 @@ export async function applyPermissions(hasura: Hasura) {
     });
   }
   
-  // No write permissions for any role - data is managed by sync API only
-  debug('✅ GitHub issues permissions applied successfully (read-only for all roles)');
+  // Add INSERT permission for users with GitHub accounts
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'github_issues',
+    operation: 'insert',
+    role: 'user',
+    filter: {
+      // User must have a GitHub account
+      _exists: {
+        _table: { schema: 'public', name: 'accounts' },
+        _where: {
+          _and: [
+            { user_id: { _eq: 'X-Hasura-User-Id' } },
+            { provider: { _eq: 'github' } }
+          ]
+        }
+      }
+    },
+    columns: true,
+  });
+  
+  // Add INSERT permission for admin role
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'github_issues',
+    operation: 'insert',
+    role: 'admin',
+    filter: {},
+    columns: true
+  });
+  
+  debug('✅ GitHub issues permissions applied successfully (read for all, insert for users with GitHub accounts)');
 }
 
 export async function up(customHasura?: Hasura) {

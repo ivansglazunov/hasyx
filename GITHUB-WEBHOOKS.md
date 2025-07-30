@@ -4,30 +4,14 @@
 
 This document explains how to set up GitHub webhooks to automatically sync issues between GitHub and your local database.
 
-## Quick Setup with Hasyx Assistant
+## Current Configuration
 
-The easiest way to configure GitHub webhooks is using the Hasyx assistant:
+- **Repository**: ivansglazunov/hasyx
+- **Webhook URL**: https://hasyx-dev.deep.foundation/api/github/issues
+- **Events**: issues, pull_request, push, release
+- **Base URL**: https://hasyx-dev.deep.foundation
 
-```bash
-# Run the assistant and follow the prompts
-npx hasyx-assist
-
-# Or skip other steps and only configure webhooks
-npx hasyx-assist --skip-auth --skip-repo --skip-env --skip-package --skip-init --skip-hasura --skip-secrets --skip-oauth --skip-resend --skip-vercel --skip-sync --skip-commit --skip-migrations --skip-firebase --skip-telegram --skip-project-user --skip-openrouter --skip-pg --skip-dns --skip-docker --skip-github --skip-storage
-```
-
-The assistant will:
-1. Ask for your GitHub repository details
-2. Generate a secure webhook secret
-3. Configure environment variables
-4. Create detailed documentation
-5. Provide step-by-step instructions
-
-## Manual Setup
-
-If you prefer to configure webhooks manually, follow these steps:
-
-### Prerequisites
+## Prerequisites
 
 1. **GitHub Repository**: You need access to the repository where you want to track issues
 2. **Public URL**: Your API must be accessible from the internet (for GitHub to send webhooks)
@@ -36,29 +20,24 @@ If you prefer to configure webhooks manually, follow these steps:
    - `NEXT_PUBLIC_GITHUB_OWNER`: Repository owner
    - `NEXT_PUBLIC_GITHUB_REPO`: Repository name
 
-### Setup Steps
+## Setup Steps
 
-#### 1. Generate Webhook Secret
+### 1. Verify Webhook Secret
 
-Create a secure webhook secret:
+Your webhook secret is: `ff6564c83f88612849a02b15f5161dea4e3ebcdb4a6d4d5c8f71bcc277c97db0`
 
-```bash
-# Generate a random 32-byte hex string
-openssl rand -hex 32
-```
+This secret is used to verify that webhook requests come from GitHub.
 
-Or use the assistant which will generate this automatically.
+### 2. Configure GitHub Webhook
 
-#### 2. Configure GitHub Webhook
-
-1. Go to your GitHub repository: `https://github.com/OWNER/REPO-NAME`
+1. Go to your GitHub repository: https://github.com/ivansglazunov/hasyx
 2. Navigate to **Settings** → **Webhooks**
 3. Click **Add webhook**
 4. Configure the webhook:
 
    **Payload URL:**
    ```
-   https://your-domain.com/api/github/issues
+   https://hasyx-dev.deep.foundation/api/github/issues
    ```
 
    **Content type:**
@@ -68,7 +47,7 @@ Or use the assistant which will generate this automatically.
 
    **Secret:**
    ```
-   your-generated-webhook-secret
+   ff6564c83f88612849a02b15f5161dea4e3ebcdb4a6d4d5c8f71bcc277c97db0
    ```
 
    **Events:**
@@ -78,25 +57,7 @@ Or use the assistant which will generate this automatically.
 
 5. Click **Add webhook**
 
-#### 3. Environment Variables
-
-Add these to your `.env` file:
-
-```bash
-# GitHub Repository Configuration
-NEXT_PUBLIC_GITHUB_OWNER=your-github-username
-NEXT_PUBLIC_GITHUB_REPO=your-repo-name
-
-# Webhook Security
-GITHUB_WEBHOOK_SECRET=your-generated-webhook-secret
-
-# GitHub API Access (for user operations)
-GITHUB_ID=your-github-oauth-app-id
-GITHUB_SECRET=your-github-oauth-app-secret
-GITHUB_TOKEN=your-github-personal-access-token
-```
-
-### Webhook Events Handled
+### 3. Webhook Events Handled
 
 The webhook handler processes the following GitHub issue events:
 
@@ -107,7 +68,7 @@ The webhook handler processes the following GitHub issue events:
 - **`closed`**: Issue closed
 - **`deleted`**: Issue deleted
 
-### Testing Webhooks
+### 4. Testing Webhooks
 
 #### Using GitHub's Webhook Testing
 
@@ -136,7 +97,7 @@ Use the ngrok URL as your webhook payload URL:
 https://abc123.ngrok.io/api/github/issues
 ```
 
-### Security Considerations
+### 5. Security Considerations
 
 #### Webhook Signature Verification
 
@@ -155,7 +116,7 @@ GitHub webhooks have rate limits:
 - **Authenticated requests**: 5,000 requests per hour
 - **Unauthenticated requests**: 60 requests per hour
 
-### Troubleshooting
+### 6. Troubleshooting
 
 #### Common Issues
 
@@ -181,14 +142,32 @@ Enable debug logging by setting the debug environment variable:
 DEBUG=api:github:issues
 ```
 
-### Monitoring
+### 7. Monitoring
 
 Monitor webhook delivery in GitHub:
 - **Settings** → **Webhooks** → **Recent Deliveries**
 - Check response codes and payloads
 - Review failed deliveries for errors
 
-### API Endpoints
+### 8. Environment Variables
+
+Required environment variables:
+
+```bash
+# GitHub Repository Configuration
+NEXT_PUBLIC_GITHUB_OWNER=ivansglazunov
+NEXT_PUBLIC_GITHUB_REPO=hasyx
+
+# Webhook Security
+GITHUB_WEBHOOK_SECRET=ff6564c83f88612849a02b15f5161dea4e3ebcdb4a6d4d5c8f71bcc277c97db0
+
+# GitHub API Access (for user operations)
+GITHUB_ID=your-github-oauth-app-id
+GITHUB_SECRET=your-github-oauth-app-secret
+GITHUB_TOKEN=your-github-personal-access-token
+```
+
+### 9. API Endpoints
 
 The webhook handler is available at:
 - **URL**: `/api/github/issues`
@@ -207,17 +186,3 @@ The webhook handler integrates with the existing events system:
 3. **Bidirectional Sync**: Changes flow both ways between GitHub and your database
 
 This creates a complete bidirectional synchronization system for GitHub issues.
-
-## Assistant Features
-
-The Hasyx assistant provides:
-
-- **Interactive Configuration**: Step-by-step setup with prompts
-- **Automatic Secret Generation**: Secure webhook secrets
-- **Environment Variable Management**: Automatic `.env` updates
-- **Documentation Generation**: Creates detailed setup instructions
-- **Base URL Detection**: Automatically determines webhook URLs
-- **Repository Validation**: Ensures correct repository format
-- **Event Selection**: Choose which GitHub events to handle
-
-Run `npx hasyx-assist` to get started with the interactive setup! 

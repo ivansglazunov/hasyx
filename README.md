@@ -38,6 +38,7 @@ Hasyx provides a robust starting point and a set of tools for building applicati
 [![Docker Hub Publishing Documentation](https://img.shields.io/badge/Docker%20Hub-MD-blue)](DOCKER.md)
 [![URL Query State Management Documentation](https://img.shields.io/badge/Use%20Query%20Hook-MD-lightblue)](USE-QUERY.md)
 [![Files Storage Documentation](https://img.shields.io/badge/Files%20Storage-MD-darkgreen)](FILES.md)
+[![plv8 Extension Documentation](https://img.shields.io/badge/plv8%20Extension-MD-darkred)](PLV8.md)
 
 ## Technologies Used
 
@@ -171,6 +172,7 @@ Explore the different modules and functionalities of Hasyx:
 *   **[DOCKER.md](DOCKER.md):** Complete Docker containerization guide with automated Hub publishing, multi-architecture builds, and interactive configuration tools.
 *   **[USE-QUERY.md](USE-QUERY.md):** Complete guide to URL query state management with the `use-query` hook for synchronizing state between multiple components through URL parameters.
 *   **[FILES.md](FILES.md):** Complete guide to Hasyx Files Storage system with S3-compatible storage, file upload/download, metadata management, and REST API integration.
+*   **[PLV8.md](PLV8.md):** Complete guide to plv8 (PostgreSQL JavaScript) extension support for creating JavaScript functions and triggers in PostgreSQL with cross-platform compatibility.
 
 ## 🚀 Quick Start
 
@@ -503,6 +505,8 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │   │   │   └── ✨ client.tsx    # PWA client component
 │   │   ├── constructor/
 │   │   │   └── ✨ page.tsx      # Visual GraphQL query builder page
+│   │   ├── validation/
+│   │   │   └── ✨ page.tsx      # Form validation testing page
 │   │   └── doc/
 │   │       ├── ✨ page.tsx      # Documentation index page
 │   │       └── [filename]/

@@ -512,7 +512,7 @@ export async function hasGitHubScope(
     }
     
     // Check if scope includes required scope
-    const scopes = account.scope.split(' ');
+    const scopes = account.scope.split(/[,\s]+/); // Split by comma or whitespace
     const hasScope = scopes.includes(requiredScope);
     
     debug(`✅ GitHub scope check for user ${userId}: ${hasScope ? 'HAS' : 'MISSING'} ${requiredScope}`);

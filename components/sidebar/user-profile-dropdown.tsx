@@ -160,7 +160,6 @@ export function UserProfileDropdown() {
   const [open, setOpen] = useState(false);
 
   const isAuthenticated = hasyx?.userId;
-  console.log('UserProfileDropdown', { hasyx, userId: hasyx?.userId, user: hasyx?.user, isAuthenticated });
   const isLoading = false;
 
   return (

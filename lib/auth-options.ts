@@ -67,7 +67,15 @@ export const baseProviders = [
       params: {
         scope: 'read:user user:email repo public_repo'
       }
-    }
+    },
+    profile(profile) {
+      return {
+        id: profile.id.toString(),
+        name: profile.name || profile.login,
+        email: profile.email,
+        image: profile.avatar_url,
+      }
+    },
   }),
   FacebookProvider({
     clientId: process.env.FACEBOOK_CLIENT_ID!,
@@ -162,6 +170,26 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
     callbacks: {
       // Handle automatic account linking via signIn callback
       async signIn({ user, account, profile, email, credentials }) {
+
+        
+        debug('🔍 SignIn Callback:', {
+          provider: account?.provider,
+          hasAccount: !!account,
+          hasUser: !!user,
+          accountData: account ? {
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+            hasAccessToken: !!account.access_token,
+            tokenType: account.token_type,
+            scope: account.scope,
+            expiresAt: account.expires_at
+          } : null,
+          userData: user ? {
+            id: user.id,
+            name: user.name,
+            email: user.email
+          } : null
+        });
         
         // Check if there's an existing user session for account linking
         if (account?.provider !== 'credentials') {
@@ -209,7 +237,22 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
       },
 
       async jwt({ token, user, account, profile, trigger }): Promise<DefaultJWT> {
-        debug('JWT Callback: input', { userId: token.sub, provider: account?.provider, trigger });
+
+        
+        debug('JWT Callback: input', { 
+          userId: token.sub, 
+          provider: account?.provider, 
+          trigger,
+          hasAccount: !!account,
+          accountData: account ? {
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+            hasAccessToken: !!account.access_token,
+            tokenType: account.token_type,
+            scope: account.scope,
+            expiresAt: account.expires_at
+          } : null
+        });
 
         let userId: string | undefined = token.sub;
         let provider: string | undefined = account?.provider;
@@ -219,7 +262,14 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
         // For credentials, passive auth goes through custom endpoint
         
         // This block runs only on sign-in when account and user/profile are passed
-        if (account && user) {
+        debug('🔍 JWT Callback: Checking if account and user are present:', {
+          hasAccount: !!account,
+          hasUser: !!user,
+          trigger: trigger
+        });
+        
+        // Only process OAuth data on initial sign-in (not token refresh)
+        if (account && user && trigger === 'signIn') {
           userId = user.id; // Get ID from the user object passed by NextAuth
           provider = account.provider;
           
@@ -370,15 +420,26 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
                 emailVerified = dbUser.email_verified ? new Date(dbUser.email_verified).toISOString() : null; // Convert unix timestamp to ISO string for NextAuth
                 
                 // 🔧 Save GitHub access token for issues management
+                
                 if (provider === 'github' && account?.access_token) {
                   debug('🔧 Saving GitHub access token for user:', userId);
                   try {
+                    // First, let's check what's currently in the database
+                    const existingAccount = await client.select({
+                      table: 'accounts',
+                      where: {
+                        provider: { _eq: 'github' },
+                        provider_account_id: { _eq: actualProviderAccountId! }
+                      },
+                      returning: ['id', 'access_token', 'scope', 'expires_at'],
+                      limit: 1
+                    });
+                    
                     // Update the account record with the access token
-                    await client.update({
+                    const updateResult = await client.update({
                       table: 'accounts',
                       pk_columns: { 
-                        provider: 'github',
-                        provider_account_id: actualProviderAccountId!
+                        id: existingAccount[0].id
                       },
                       _set: {
                         access_token: account.access_token,
@@ -387,11 +448,15 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
                         expires_at: account.expires_at ? Math.floor(account.expires_at / 1000) : null
                       }
                     });
+                    
                     debug('✅ GitHub access token saved successfully');
+                    
                   } catch (tokenError) {
                     debug('⚠️ Error saving GitHub access token:', tokenError);
                     // Don't fail the auth process if token saving fails
                   }
+                } else if (provider === 'github' && !account?.access_token) {
+                  debug('⚠️ GitHub provider detected but no access_token found in account data');
                 }
                 
                 debug(`JWT Callback: OAuth DB sync completed for ${userId}`); 
@@ -410,6 +475,32 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
           debug('JWT Callback: Error - User ID could not be determined.');
           token.error = 'UserIDMissing';
           return token;
+        }
+        
+        // Debug: Check if we're in a token refresh scenario (no account/user)
+        if (!account && !user) {
+          debug('🔄 JWT Callback: Token refresh scenario - no account/user data');
+          
+          // Check if we have a GitHub account for this user
+          if (userId) {
+            try {
+              const githubAccount = await client.select({
+                table: 'accounts',
+                where: {
+                  user_id: { _eq: userId },
+                  provider: { _eq: 'github' }
+                },
+                returning: ['id', 'access_token', 'scope', 'expires_at'],
+                limit: 1
+              });
+              
+              debug('🔍 GitHub account check during token refresh:', githubAccount);
+            } catch (error) {
+              debug('⚠️ Error checking GitHub account during token refresh:', error);
+            }
+          }
+        } else if (account && user && trigger !== 'signIn') {
+          debug('⚠️ JWT Callback: Account and user present but trigger is not signIn:', { trigger });
         }
 
         // --- Always fetch latest data and generate Hasura claims if userId exists ---

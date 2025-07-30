@@ -1,5 +1,5 @@
 import { getRequestConfig } from 'next-intl/server';
- 
+
 export default getRequestConfig(async () => {
   // Provide a static locale, fetch a user setting,
   // read from `cookies()`, `headers()`, etc.
@@ -10,4 +10,4 @@ export default getRequestConfig(async () => {
     timeZone: 'UTC',
     messages: (await import(`../../i18n/${locale}.json`)).default
   };
-});
+}); 

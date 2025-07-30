@@ -556,8 +556,26 @@ export async function getExistingEventTriggers(hasura: Hasura): Promise<Record<s
 export async function syncEventTriggers(hasura: Hasura, localTriggers: EventTriggerDefinition[], baseUrl?: string): Promise<void> {
   try {
     debug('Starting event trigger synchronization');
+
+    // First, clear any inconsistent metadata that might block operations
+    debug('Clearing inconsistent metadata before synchronization');
+    try {
+      await hasura.dropInconsistentMetadata();
+      debug('✅ Inconsistent metadata cleared successfully');
+    } catch (clearError) {
+      debug('⚠️ Could not clear inconsistent metadata (may not exist):', clearError);
+    }
+
+    // Clean up any orphaned SQL functions that might interfere
+    debug('Cleaning up orphaned SQL functions');
+    try {
+      await cleanupAllOrphanedHasuraSQL(hasura);
+      debug('✅ Orphaned SQL functions cleaned up');
+    } catch (cleanupError) {
+      debug('⚠️ Could not clean up orphaned SQL functions:', cleanupError);
+    }
     
-    // First, reload metadata with recreate_event_triggers to fix any ghost triggers
+    // Then, reload metadata with recreate_event_triggers to fix any ghost triggers
     debug('Reloading metadata with event trigger recreation to fix ghost triggers');
     try {
       await hasura.v1({

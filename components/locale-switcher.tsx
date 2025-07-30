@@ -29,10 +29,27 @@ export function LocaleSwitcher(props: any) {
   </div>)
 }
 
-export function useLocale(defaultLocale: string = 'en') {
+export function useLocaleServer(defaultLocale: string = 'en') {
+  return { 
+    locale: defaultLocale, 
+    setLocale: () => {} // No-op for server
+  };
+}
+
+export function useLocaleClient(defaultLocale: string = 'en') {
   const { locale, setLocale } = useLocaleStore();
   useEffect(() => {
     if (!locale) setLocale(defaultLocale);
   }, [defaultLocale]);
   return { locale, setLocale };
 }
+
+// Export the appropriate hook based on environment
+// For Next.js, we need to be more explicit about server vs client
+export const useLocale = (defaultLocale: string = 'en') => {
+  // Check if we're in a browser environment
+  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    return useLocaleClient(defaultLocale);
+  }
+  return useLocaleServer(defaultLocale);
+};

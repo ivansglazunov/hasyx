@@ -1,70 +1,165 @@
-'use client';
-
 "use client";
 
-import React from 'react';
-import { Button as UIButton } from '@/components/ui/button';
-import { Card as UICard, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CytoNode as CytoNodeComponent } from '@/lib/cyto';
-import { X, Github, ExternalLink } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useMemo } from 'react';
+import { useQuery } from 'hasyx';
+import { Button as UIButton } from 'hasyx/components/ui/button';
+import { Card as UICard, CardContent, CardHeader, CardTitle } from 'hasyx/components/ui/card';
+import { Badge } from 'hasyx/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from 'hasyx/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'hasyx/components/ui/tooltip';
+import { X, GitBranch, MessageCircle, Calendar, User, Tag, ExternalLink } from 'lucide-react';
+import { CytoNode as CytoNodeComponent, CytoEdge } from 'hasyx/lib/cyto';
+import { cn } from 'hasyx/lib/utils';
+import { parseIssue } from 'hasyx/lib/issues';
 
 interface GitHubIssueData {
-  id: number;
-  number: number;
-  title: string;
-  body: string | null;
-  state: string;
-  user: string | null;
-  assignees: string[];
-  labels: string[];
-  created_at: number;
-  updated_at: number;
-  closed_at: number | null;
-  html_url: string;
-  comments: number;
-  locked: boolean;
-  draft: boolean;
+  id?: string;
+  github_id?: number;
+  number?: number;
+  title?: string;
+  body?: string;
+  state?: string;
+  state_reason?: string;
+  locked?: boolean;
+  comments_count?: number;
+  author_association?: string;
+  user_data?: {
+    id: number;
+    login: string;
+    avatar_url: string;
+    html_url: string;
+    type?: string;
+    user_view_type?: string;
+    node_id?: string;
+    gists_url?: string;
+    repos_url?: string;
+    events_url?: string;
+    site_admin?: boolean;
+    gravatar_id?: string;
+    starred_url?: string;
+    followers_url?: string;
+    following_url?: string;
+    organizations_url?: string;
+    subscriptions_url?: string;
+    received_events_url?: string;
+  };
+  assignee_data?: {
+    id: number;
+    login: string;
+    avatar_url: string;
+    html_url: string;
+    type?: string;
+    user_view_type?: string;
+    node_id?: string;
+    gists_url?: string;
+    repos_url?: string;
+    events_url?: string;
+    site_admin?: boolean;
+    gravatar_id?: string;
+    starred_url?: string;
+    followers_url?: string;
+    following_url?: string;
+    organizations_url?: string;
+    subscriptions_url?: string;
+    received_events_url?: string;
+  } | null;
+  assignees_data?: Array<{
+    id: number;
+    login: string;
+    avatar_url: string;
+    html_url: string;
+    type?: string;
+    user_view_type?: string;
+    node_id?: string;
+    gists_url?: string;
+    repos_url?: string;
+    events_url?: string;
+    site_admin?: boolean;
+    gravatar_id?: string;
+    starred_url?: string;
+    followers_url?: string;
+    following_url?: string;
+    organizations_url?: string;
+    subscriptions_url?: string;
+    received_events_url?: string;
+  }>;
+  labels_data?: Array<{
+    id: number;
+    name: string;
+    color: string;
+    description?: string;
+    default?: boolean;
+    node_id?: string;
+    url?: string;
+  }>;
+  milestone_data?: {
+    id: number;
+    title: string;
+    description?: string;
+    state: string;
+  } | null;
+  pull_request_data?: any | null;
+  repository_owner?: string;
+  repository_name?: string;
+  url?: string;
+  html_url?: string;
+  created_at?: number;
+  updated_at?: number;
+  closed_at?: number | null;
   __typename?: string;
   [key: string]: any;
 }
 
-function getStateColor(state: string) {
-  return state === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
-}
+// Function to extract issue references from body text and relations
+function extractIssueReferences(body: string | null, relations: any = {}): { issueNumbers: number[], relationTypes: { [issueNumber: number]: string[] } } {
+  const issueNumbers: number[] = [];
+  const relationTypes: { [issueNumber: number]: string[] } = {};
+  
+  if (!body) return { issueNumbers, relationTypes };
 
-function formatDate(timestamp: number) {
-  return new Date(timestamp).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+  // Match patterns like #123, #456 in body text
+  const issuePattern = /#(\d+)/g;
+  let match;
+
+  while ((match = issuePattern.exec(body)) !== null) {
+    const issueNumber = parseInt(match[1], 10);
+    issueNumbers.push(issueNumber);
+    if (!relationTypes[issueNumber]) relationTypes[issueNumber] = [];
+    relationTypes[issueNumber].push('mentioned');
+  }
+
+  // Extract issue references from all relation types
+  Object.entries(relations).forEach(([relationType, relationIds]: [string, any]) => {
+    if (Array.isArray(relationIds)) {
+      relationIds.forEach((id: string) => {
+        if (typeof id === 'string' && id.startsWith('issue:')) {
+          const issueNumber = parseInt(id.split(':')[1], 10);
+          if (!isNaN(issueNumber)) {
+            if (!issueNumbers.includes(issueNumber)) {
+              issueNumbers.push(issueNumber);
+            }
+            if (!relationTypes[issueNumber]) relationTypes[issueNumber] = [];
+            relationTypes[issueNumber].push(relationType);
+          }
+        }
+      });
+    }
   });
+
+  return { 
+    issueNumbers: [...new Set(issueNumbers)], // Remove duplicates
+    relationTypes 
+  };
 }
 
 export function Button({ data, ...props }: {
   data: GitHubIssueData;
   [key: string]: any;
 }) {
-  const issueData = typeof data === 'object' ? data : null;
-  const issueId = typeof data === 'string' ? data : data?.id;
-  
-  if (!issueData) {
-    return (
-      <UIButton
-        variant="outline"
-        className="h-auto p-2 justify-start gap-2 min-w-0"
-        {...props}
-      >
-        <Github className="w-4 h-4 flex-shrink-0" />
-        <span className="truncate text-xs">Issue {issueId}</span>
-      </UIButton>
-    );
-  }
+  const issueData = data;
 
-  const displayName = `#${issueData.number} ${issueData.title}`;
+  const displayTitle = issueData?.title || `Issue #${issueData?.number}`;
+  const stateColor = issueData?.state === 'open' ? 'bg-green-500' : 'bg-red-500';
 
   return (
     <UIButton
@@ -72,20 +167,8 @@ export function Button({ data, ...props }: {
       className="h-auto p-2 justify-start gap-2 min-w-0"
       {...props}
     >
-      <Github className="w-4 h-4 flex-shrink-0" />
-      <div className="flex flex-col items-start min-w-0 flex-1">
-        <span className="truncate text-xs font-medium">{displayName}</span>
-        <div className="flex items-center gap-1">
-          <Badge className={cn("text-xs", getStateColor(issueData.state))}>
-            {issueData.state}
-          </Badge>
-          {issueData.comments > 0 && (
-            <span className="text-xs text-muted-foreground">
-              {issueData.comments} comments
-            </span>
-          )}
-        </div>
-      </div>
+      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${stateColor}`} />
+      <span className="truncate text-xs">#{issueData?.number} {displayTitle}</span>
     </UIButton>
   );
 }
@@ -95,150 +178,221 @@ export function Card({ data, onClose, ...props }: {
   onClose?: () => void;
   [key: string]: any;
 }) {
-  const issueData = typeof data === 'object' ? data : null;
-  
-  if (!issueData && typeof data === 'string') {
-    return (
-      <UICard className="w-80" {...props}>
-        <CardContent className="p-4">
-          <div className="text-sm text-muted-foreground">
-            Issue ID: {data}
-            <br />
-            <span className="text-xs">No additional data available</span>
-          </div>
-        </CardContent>
-      </UICard>
-    );
-  }
+  const issueData = data;
+
+  const isPR = !!issueData.pull_request_data;
 
   return (
-    <UICard className="w-80" {...props}>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-full">
-              <Github className="w-5 h-5" />
-            </div>
-            <div>
-              <CardTitle className="text-base">Issue #{issueData?.number}</CardTitle>
-              <p className="text-sm text-muted-foreground">GitHub Issue</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {issueData?.html_url && (
-              <UIButton
-                variant="ghost"
-                size="sm"
-                onClick={() => window.open(issueData.html_url, '_blank')}
-                className="h-6 w-6 p-0"
-              >
-                <ExternalLink className="h-4 w-4" />
-              </UIButton>
-            )}
-            {onClose && (
-              <UIButton
-                variant="ghost"
-                size="sm"
-                onClick={onClose}
-                className="h-6 w-6 p-0"
-              >
-                <X className="h-4 w-4" />
-              </UIButton>
-            )}
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          {/* Title */}
-          <div>
-            <h3 className="font-medium text-sm mb-1">{issueData?.title}</h3>
-          </div>
-          
-          {/* Status badges */}
-          <div className="flex flex-wrap items-center gap-1">
-            <Badge className={getStateColor(issueData?.state || 'unknown')}>
-              {issueData?.state}
+    <div className="relative group pointer-events-none">
+      {/* Labels above card */}
+      {issueData.labels_data && issueData.labels_data.length > 0 && (
+        <div className="flex items-center gap-1 flex-wrap pb-3">
+          {issueData.labels_data.map((label) => (
+            <Badge
+              key={label.id}
+              variant="outline"
+              className="text-xs pointer-events-auto"
+              style={{
+                backgroundColor: `#${label.color}20`,
+                borderColor: `#${label.color}`,
+                color: `#${label.color}`
+              }}
+            >
+              {label.name}
             </Badge>
-            {issueData?.locked && (
-              <Badge variant="secondary" className="text-xs">Locked</Badge>
-            )}
-            {issueData?.draft && (
-              <Badge variant="outline" className="text-xs">Draft</Badge>
-            )}
-          </div>
-          
-          {/* Description */}
-          {issueData?.body && (
-            <div className="text-xs text-muted-foreground line-clamp-3">
-              {issueData.body}
-            </div>
-          )}
-          
-          {/* Metadata */}
-          <div className="space-y-1 text-xs text-muted-foreground">
-            {issueData?.user && (
-              <div>Opened by {issueData.user}</div>
-            )}
-            <div>Created: {formatDate(issueData?.created_at || 0)}</div>
-            {issueData?.updated_at && issueData.updated_at !== issueData.created_at && (
-              <div>Updated: {formatDate(issueData.updated_at)}</div>
-            )}
-            {issueData?.closed_at && (
-              <div>Closed: {formatDate(issueData.closed_at)}</div>
-            )}
-            {issueData?.comments && issueData.comments > 0 && (
-              <div>{issueData.comments} comments</div>
-            )}
-          </div>
-          
-          {/* Labels */}
-          {issueData?.labels && issueData.labels.length > 0 && (
-            <div>
-              <div className="text-xs font-medium mb-1">Labels:</div>
-              <div className="flex flex-wrap gap-1">
-                {issueData.labels.map((label) => (
-                  <Badge key={label} variant="outline" className="text-xs">
-                    {label}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Assignees */}
-          {issueData?.assignees && issueData.assignees.length > 0 && (
-            <div>
-              <div className="text-xs font-medium mb-1">Assignees:</div>
-              <div className="flex flex-wrap gap-1">
-                {issueData.assignees.map((assignee) => (
-                  <Badge key={assignee} variant="secondary" className="text-xs">
-                    {assignee}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
+          ))}
         </div>
-      </CardContent>
-    </UICard>
+      )}
+
+      <UICard className="w-80 relative gap-1 z-1 pointer-events-auto" {...props}>
+        <CardHeader className="pb-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-start gap-2 min-w-0">
+              <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-2 ${issueData.state === 'open' ? 'bg-green-500' : 'bg-red-500'}`}>
+                {issueData.assignees_data && issueData.assignees_data.length > 0 && (
+                  <div className="absolute left-0 top-5 flex flex-col gap-1 z-10 -ml-4">
+                    {issueData.assignees_data.map((assignee, index) => (
+                      <Tooltip key={assignee.id}>
+                        <TooltipTrigger asChild>
+                          <Avatar className="w-8 h-8 border-2 border-white shadow-sm cursor-pointer">
+                            <AvatarImage src={assignee.avatar_url} />
+                            <AvatarFallback className="text-xs">
+                              {assignee.login.substring(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="text-xs">
+                          <p>{assignee.login}</p>
+                          {issueData.author_association && <p className="text-muted-foreground">{issueData.author_association}</p>}
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {issueData.html_url ? (
+                <a
+                  href={issueData.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium hover:underline hover:text-white transition-colors"
+                >
+                  {issueData.title}
+                </a>
+              ) : (
+                <CardTitle className="text-sm">
+                  {issueData.title}
+                </CardTitle>
+              )}
+            </div>
+            {onClose && (
+              <UIButton variant="ghost" size="sm" onClick={onClose} className="flex-shrink-0">
+                <X className="w-4 h-4" />
+              </UIButton>
+            )}
+          </div>
+        </CardHeader>
+
+        <CardContent className="pt-0">
+          {/* Body preview - limited to 3 lines */}
+          {issueData.body && (
+            <div className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+              {parseIssue(issueData.body).content}
+            </div>
+          )}
+        </CardContent>
+      </UICard>
+      <div className="absolute group-hover:top-[100%] top-[50%] z-0 transition-all delay-500 left-0 w-full px-2 pt-1 flex justify-end">
+        {/* Comments button in bottom right corner */}
+        {issueData.comments_count !== undefined && (
+          <UIButton
+            variant="ghost"
+            className="text-xs pointer-events-auto"
+          >
+            <MessageCircle className="w-3 h-3 mr-1" />
+            {issueData.comments_count}
+          </UIButton>
+        )}
+      </div>
+    </div>
   );
 }
 
-export function CytoNode({ data, ...props }: {
+export function CytoNode({ data, availableIssues, ...props }: {
   data: GitHubIssueData;
+  availableIssues?: GitHubIssueData[]; // Optional list of available issues for edge creation
   [key: string]: any;
 }) {
-  const issueData = typeof data === 'object' ? data : null;
-  const label = issueData ? `#${issueData.number} ${issueData.title}` : data?.id || 'Issue';
-  
-  return <CytoNodeComponent {...props} element={{
-    id: data.id,
-    data: {
-      id: data.id,
-      label: label,
-    },
-    ...props?.element,
-    classes: cn('github-issue', props.classes)
-  }} />;
+  const title = data?.title || `Issue #${data?.number}`;
+  const stateColor = data?.state === 'open' ? '#22c55e' : '#ef4444';
+  const isPR = !!data?.pull_request_data;
+
+  // Parse issue body and extract relations
+  const { content, relations } = useMemo(() => {
+    return parseIssue(data?.body || '');
+  }, [data?.body]);
+
+  // Extract issue references from body and relations for creating edges
+  const { issueNumbers, relationTypes } = useMemo(() => {
+    return extractIssueReferences(content, relations);
+  }, [content, relations]);
+
+  // Generate edges to referenced issues (only to those that exist in availableIssues)
+  const edges = useMemo(() => {
+    console.log('🔍 CytoNode edges calculation:', {
+      issueNumbers,
+      relationTypes,
+      availableIssuesCount: availableIssues?.length,
+      dataGithubId: data.github_id,
+      dataNumber: data.number
+    });
+
+    if (!issueNumbers.length || !availableIssues) {
+      console.log('❌ No edges - no issue numbers or no available issues');
+      return [];
+    }
+
+    // Create a map of issue numbers to github_ids for quick lookup
+    const issueNumberToGithubId = new Map();
+    availableIssues.forEach(issue => {
+      if (issue.number && issue.github_id) {
+        issueNumberToGithubId.set(issue.number, issue.github_id);
+      }
+    });
+
+    console.log('📋 Issue number to GitHub ID mapping:', Object.fromEntries(issueNumberToGithubId));
+
+    const filteredIssues = issueNumbers.filter(issueNumber => issueNumberToGithubId.has(issueNumber));
+    console.log('✅ Filtered issues that exist:', filteredIssues);
+
+    return filteredIssues
+      .map((issueNumber) => {
+        const targetGithubId = issueNumberToGithubId.get(issueNumber);
+        const relationTypesForIssue = relationTypes[issueNumber] || [];
+        
+        console.log(`🔗 Creating edge for issue #${issueNumber} (GitHub ID: ${targetGithubId}) with relations:`, relationTypesForIssue);
+        
+        // Create only one edge per issue
+        const edgeId = `edge-github_issue${data.github_id}-github_issue${targetGithubId}`;
+        console.log(`🎯 Creating single edge: ${edgeId}`);
+        
+        // Use the first relation type as primary, or 'related' if none
+        const primaryRelationType = relationTypesForIssue.length > 0 ? relationTypesForIssue[0] : 'related';
+        
+        return {
+          id: edgeId,
+          source: `github_issue${data.github_id}`,
+          target: `github_issue${targetGithubId}`,
+          relationType: primaryRelationType,
+          classes: [primaryRelationType]
+        };
+      });
+  }, [issueNumbers, relationTypes, data.github_id, availableIssues]);
+
+  return (
+    <>
+      {/* Single node with GitHub ID as main ID */}
+      <CytoNodeComponent {...props}
+        element={{
+          id: `github_issue${data.github_id}`, // Use GitHub ID as main node ID
+          data: {
+            id: `github_issue${data.github_id}`,
+            label: `#${data.number}`,
+            title: title,
+            state: data.state,
+            isPR: isPR,
+            github_id: data.github_id,
+            database_id: data.id, // Keep database ID for reference
+          },
+          ...props?.element,
+          classes: cn(
+            'entity',
+            'github-issue',
+            // data.state,
+            { 'pull-request': isPR },
+            props.classes,
+          )
+        }}
+        // Always visible children (not optionally opened like users)
+        children={<Card data={data} />}
+      />
+      
+      {/* Render edges to referenced issues */}
+      {edges.map((edge) => (
+        <CytoEdge
+          key={edge.id}
+          element={{
+            id: edge.id,
+            data: {
+              id: edge.id,
+              source: edge.source,
+              target: edge.target,
+              relationType: edge.relationType,
+            },
+            classes: edge.classes,
+          }}
+        />
+      ))}
+    </>
+  );
 }

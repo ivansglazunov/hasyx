@@ -265,6 +265,7 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'app/hasyx/pwa/page.tsx': 'app/hasyx/pwa/page.tsx',
     'app/hasyx/pwa/client.tsx': 'app/hasyx/pwa/client.tsx',
     'app/hasyx/constructor/page.tsx': 'app/hasyx/constructor/page.tsx',
+    'app/hasyx/validation/page.tsx': 'app/hasyx/validation/page.tsx',
     'app/hasyx/doc/page.tsx': 'app/hasyx/doc/page.tsx',
     'app/hasyx/doc/[filename]/page.tsx': 'app/hasyx/doc/[filename]/page.tsx',
     'app/hasyx/doc/[filename]/client.tsx': 'app/hasyx/doc/[filename]/client.tsx',
@@ -272,6 +273,7 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'components/entities/default.tsx': 'components/entities/default.tsx',
     'lib/entities.tsx': 'lib/entities.template',
     'lib/ask.ts': 'lib/ask.template',
+    'schema.tsx': 'schema.tsx',
     'public/favicon.ico': 'public/favicon.ico',
     'public/logo.svg': 'public/logo.svg',
     '.gitignore': '.gitignore.template',
@@ -313,6 +315,7 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'app/api/events/subscription-billing/route.ts': 'app/api/events/subscription-billing/route.ts',
     'app/api/events/notify/route.ts': 'app/api/events/notify/route.ts',
     'app/api/events/logs-diffs/route.ts': 'app/api/events/logs-diffs/route.ts',
+
   };
 
   // Ensure directories exist

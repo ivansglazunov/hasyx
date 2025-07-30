@@ -59,7 +59,7 @@ export async function configureGitHubWebhooks(
     const setupWebhooks = await askYesNo(
       rl,
       'Would you like to configure GitHub webhooks for issues synchronization?',
-      true
+      false
     );
 
     if (!setupWebhooks) {
@@ -76,13 +76,16 @@ export async function configureGitHubWebhooks(
     await createWebhookDocumentation(config);
 
     console.log('\n✅ GitHub webhooks configuration completed successfully!');
-    console.log('\n📋 Next steps:');
-    console.log('   1. Go to your GitHub repository settings');
-    console.log('   2. Navigate to Webhooks section');
-    console.log('   3. Add the webhook URL and secret');
-    console.log('   4. Select "Issues" events only');
-    console.log('   5. Test the webhook delivery');
-    console.log('\n📖 See GITHUB-WEBHOOKS.md for detailed instructions');
+    console.log('\n📋 Setup Instructions:');
+    console.log(`   1. Go to: https://github.com/${config.repository}/settings/hooks`);
+    console.log('   2. Click "Add webhook" button');
+    console.log(`   3. Payload URL: ${config.webhookUrl}`);
+    console.log('   4. Content type: application/json');
+    console.log(`   5. Secret: ${config.webhookSecret}`);
+    console.log('   6. Events: Select "Let me select individual events"');
+    console.log('   7. Check only: Issues');
+    console.log('   8. Click "Add webhook"');
+    console.log('   9. Test by creating an issue in your repository');
 
     return true;
   } catch (error) {
@@ -131,61 +134,17 @@ async function determineBaseUrl(rl: any): Promise<string> {
   console.log('\n🌐 Base URL Configuration');
   console.log('-'.repeat(30));
 
-  const options = [
-    'Use Vercel URL (production)',
-    'Use custom domain URL',
-    'Use local development URL (http://localhost:3000)',
-    'Enter custom URL manually'
-  ];
-
-  console.log('Available base URL options:');
-  options.forEach((option, index) => {
-    console.log(`  ${index + 1}. ${option}`);
-  });
-
-  const choice = await askQuestion(
-    rl,
-    'Select base URL option (1-4):',
-    '3'
-  );
-
-  let baseUrl = '';
-  switch (choice) {
-    case '1':
-      baseUrl = await askQuestion(
-        rl,
-        'Enter your Vercel URL (e.g., https://your-app.vercel.app):',
-        ''
-      );
-      break;
-    case '2':
-      baseUrl = await askQuestion(
-        rl,
-        'Enter your custom domain URL (e.g., https://yourdomain.com):',
-        ''
-      );
-      break;
-    case '3':
-      baseUrl = 'http://localhost:3000';
-      break;
-    case '4':
-      baseUrl = await askQuestion(
-        rl,
-        'Enter custom base URL:',
-        ''
-      );
-      break;
-    default:
-      baseUrl = 'http://localhost:3000';
+  // Use NEXT_PUBLIC_MAIN_URL from environment variables
+  const baseUrl = process.env.NEXT_PUBLIC_MAIN_URL;
+  
+  if (baseUrl) {
+    console.log(`✅ Using base URL from environment: ${baseUrl}`);
+    return baseUrl;
   }
 
-  if (!baseUrl) {
-    console.log('⚠️ No URL provided, using localhost:3000');
-    baseUrl = 'http://localhost:3000';
-  }
-
-  console.log(`✅ Using base URL: ${baseUrl}`);
-  return baseUrl;
+  // Fallback to localhost if not set
+  console.log('⚠️ NEXT_PUBLIC_MAIN_URL not found in environment, using localhost:3000');
+  return 'http://localhost:3000';
 }
 
 /**

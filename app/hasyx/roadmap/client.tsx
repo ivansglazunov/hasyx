@@ -8,6 +8,9 @@ import { useCallback, useMemo, useState } from "react";
 import projectSchema from '../hasura-schema.json';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from 'hasyx/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from 'hasyx/components/ui/dialog';
+import { Input } from 'hasyx/components/ui/input';
+import { Textarea } from 'hasyx/components/ui/textarea';
 import { useQuery } from 'hasyx';
 import { toast } from 'sonner';
 import { useToastHandleLoadingError } from 'hasyx/hooks/toasts';
@@ -121,6 +124,62 @@ const stylesheet = [
       'line-style': 'dashed !important',
       'line-dash-pattern': [10, 5],
       'line-dash-offset': 0
+    }
+  },
+  // Relation type styles
+  {
+    selector: 'edge.mentioned',
+    style: {
+      'width': 1,
+      'line-color': '#6b7280',
+      'target-arrow-color': '#6b7280',
+      'target-arrow-shape': 'triangle',
+      'curve-style': 'bezier',
+      'line-style': 'solid'
+    }
+  },
+  {
+    selector: 'edge.depends_on',
+    style: {
+      'width': 2,
+      'line-color': '#dc2626',
+      'target-arrow-color': '#dc2626',
+      'target-arrow-shape': 'triangle',
+      'curve-style': 'bezier',
+      'line-style': 'solid'
+    }
+  },
+  {
+    selector: 'edge.blocks',
+    style: {
+      'width': 2,
+      'line-color': '#ea580c',
+      'target-arrow-color': '#ea580c',
+      'target-arrow-shape': 'triangle',
+      'curve-style': 'bezier',
+      'line-style': 'solid'
+    }
+  },
+  {
+    selector: 'edge.related_to',
+    style: {
+      'width': 1.5,
+      'line-color': '#059669',
+      'target-arrow-color': '#059669',
+      'target-arrow-shape': 'triangle',
+      'curve-style': 'bezier',
+      'line-style': 'solid'
+    }
+  },
+  {
+    selector: 'edge.duplicates',
+    style: {
+      'width': 1.5,
+      'line-color': '#7c3aed',
+      'target-arrow-color': '#7c3aed',
+      'target-arrow-shape': 'triangle',
+      'curve-style': 'bezier',
+      'line-style': 'solid'
     }
   }
 ];
@@ -300,6 +359,158 @@ export const roadmap: Roadstep[] = [
   },
 ];
 
+// Create Issue Dialog Component
+function CreateIssueDialog({ 
+  open, 
+  onOpenChange, 
+  onIssueCreated 
+}: { 
+  open: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  onIssueCreated?: (issue: any) => void; 
+}) {
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleCreateIssue = async () => {
+    if (!title.trim()) {
+      toast.error('Issue title is required');
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      debug('🔄 Creating GitHub issue via hasyx.insert...', { title, body });
+      
+      // Use hasyx.insert to create issue in database
+      // This will trigger the event handler which will create the issue in GitHub
+      const issueData = {
+        title: title.trim(),
+        body: body.trim() || undefined,
+        state: 'open',
+        created_at: Date.now(),
+        updated_at: Date.now(),
+        // These will be filled by the event handler
+        github_id: 0, // Temporary, will be set by event handler
+        number: 0, // Temporary, will be set by event handler
+        node_id: '', // Will be set by event handler
+        html_url: '', // Will be set by event handler
+        url: '', // Will be set by event handler
+        repository_owner: process.env.NEXT_PUBLIC_GITHUB_OWNER || '',
+        repository_name: process.env.NEXT_PUBLIC_GITHUB_REPO || '',
+        locked: false,
+        active_lock_reason: null,
+        comments_count: 0,
+        author_association: 'NONE',
+        user_data: null, // Will be set by event handler
+        assignee_data: null,
+        assignees_data: [],
+        labels_data: [], // Empty array - no labels
+        milestone_data: null,
+        pull_request_data: null,
+        closed_by_data: null,
+        closed_at: null,
+      };
+
+      // Import hasyx client
+      const { createApolloClient } = await import('hasyx/lib/apollo');
+      const { Generator } = await import('hasyx/lib/generator');
+      const { Hasyx } = await import('hasyx/lib/hasyx');
+      const apolloClient = createApolloClient();
+      const generator = Generator(projectSchema);
+      const hasyx = new Hasyx(apolloClient, generator);
+
+      // Insert into database - this will trigger the event handler
+      const result = await hasyx.insert({
+        table: 'github_issues',
+        object: issueData
+      });
+
+      debug('✅ Issue inserted into database:', result);
+      toast.success('Issue created successfully! Event handler will sync with GitHub.');
+      
+      // Reset form
+      setTitle('');
+      setBody('');
+      onOpenChange(false);
+      
+      // Notify parent component
+      if (onIssueCreated) {
+        onIssueCreated(result);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      debug('❌ Failed to create GitHub issue:', error);
+      console.error('Create issue error:', error);
+      toast.error(`Failed to create issue: ${errorMessage}`);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setTitle('');
+    setBody('');
+    onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Create GitHub Issue</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="issue-title" className="text-sm font-medium">
+              Title *
+            </label>
+            <Input
+              id="issue-title"
+              placeholder="Enter issue title..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              disabled={isCreating}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label htmlFor="issue-body" className="text-sm font-medium">
+              Description
+            </label>
+            <Textarea
+              id="issue-body"
+              placeholder="Enter issue description..."
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              disabled={isCreating}
+              rows={6}
+            />
+          </div>
+        </div>
+        
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={handleCancel}
+            disabled={isCreating}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreateIssue}
+            disabled={isCreating || !title.trim()}
+          >
+            {isCreating ? 'Creating...' : 'Create Issue'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function Renderer({ roadmap }: { roadmap: Roadstep[] }) {
   return <>
     {roadmap.map((step) => (
@@ -352,6 +563,7 @@ ${step.name}`,
 export default function Client() {
   const [selectedEntity, setSelectedEntity] = useState<any>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [createIssueDialogOpen, setCreateIssueDialogOpen] = useState(false);
 
   // Queries for QueriesRenderer
   const [queries] = useState<any[]>([
@@ -367,6 +579,29 @@ export default function Client() {
       order_by: [{ updated_at: 'desc' }],
     }
   ]);
+
+  // Get all issues for availableIssues
+  const { data: availableIssues = [] } = useQuery({
+    table: 'github_issues',
+    where: {},
+    returning: [
+      'id', 'github_id', 'number', 'title', 'body', 'state', 'state_reason',
+      'locked', 'comments_count', 'author_association', 'user_data', 'assignee_data',
+      'assignees_data', 'labels_data', 'milestone_data', 'repository_owner',
+      'repository_name', 'url', 'html_url', 'created_at', 'updated_at', 'closed_at'
+    ],
+    order_by: [{ updated_at: 'desc' }],
+  });
+
+  console.log('📊 Client availableIssues:', {
+    count: availableIssues.length,
+    sample: availableIssues.slice(0, 3).map(issue => ({
+      id: issue.id,
+      github_id: issue.github_id,
+      number: issue.number,
+      title: issue.title
+    }))
+  });
 
   const handleSyncGitHubIssues = async () => {
     setIsSyncing(true);
@@ -398,6 +633,11 @@ export default function Client() {
     }
   };
 
+  const handleIssueCreated = useCallback((issue: any) => {
+    debug('🎉 Issue created:', issue);
+    // Можно добавить дополнительную логику, например, обновить список issues
+  }, []);
+
   const onGraphLoaded = useCallback((cy) => {
     if (global) (global as any).cy = cy;
     cy.zoom(1);
@@ -413,29 +653,6 @@ export default function Client() {
       direction: 'LEFT'
     }
   }), []);
-
-  const closeModal = useCallback(() => setSelectedEntity(null), []);
-
-  // Example usage of parseIssue and generateIssue
-  const exampleIssueBody = `## Problem
-Currently, our project's environment variables are managed through npx hasyx assist.
-
-## Solution
-Introduce a centralized environment configuration file.
-
-<details>
-<summary>Relations</summary>
-\`\`\`json
-{
-  "depends_on": ["issue:123", "commit:abc123"],
-  "blocks": ["issue:456"],
-  "related_to": ["issue:789"]
-}
-\`\`\`
-</details>`;
-
-  const { content, relations } = parseIssue(exampleIssueBody);
-  const regeneratedBody = generateIssue(content, relations);
 
   return (
     <div className="w-full h-full relative">
@@ -455,6 +672,18 @@ Introduce a centralized environment configuration file.
             </Button>
           </div>
         </>}
+        rightTop={<>
+          <div className="space-y-4">
+            {/* Create Issue Button */}
+            <Button 
+              onClick={() => setCreateIssueDialogOpen(true)}
+              className="w-full"
+              variant="default"
+            >
+              ➕ Create Issue
+            </Button>
+          </div>
+        </>}
       >
         <CytoStyle stylesheet={stylesheet} />
         
@@ -462,6 +691,7 @@ Introduce a centralized environment configuration file.
         <QueriesRenderer
           queries={queries}
           schema={projectSchema}
+          availableIssues={availableIssues}
           // renderer={customRenderer}
           // onClick={setSelectedEntity}
           // EntityButtonComponent={EntityButton}
@@ -470,6 +700,13 @@ Introduce a centralized environment configuration file.
         {/* Commented out roadmap renderer */}
         {/* <Renderer roadmap={roadmap} /> */}
       </Cyto>
+
+      {/* Create Issue Dialog */}
+      <CreateIssueDialog
+        open={createIssueDialogOpen}
+        onOpenChange={setCreateIssueDialogOpen}
+        onIssueCreated={handleIssueCreated}
+      />
 
       {/* Modal for entity details */}
       {/* {selectedEntity && (

@@ -50,6 +50,10 @@ export const sidebar: SidebarData = {
           title: "🟠 Roadmap",
           url: "/hasyx/roadmap",
         },
+        {
+          title: "🔍 Validation",
+          url: "/hasyx/validation",
+        },
       ],
     },
     // Add documentation section with collapse functionality

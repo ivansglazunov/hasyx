@@ -187,23 +187,81 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
     
     switch (op) {
       case 'INSERT':
-        debug('Creating GitHub issue');
-        result = await createGitHubIssue(accessToken, data.new);
+        debug('Creating GitHub issue from database insert');
+        
+        // Extract issue data from the inserted record
+        const issueData = {
+          title: data.new.title,
+          body: data.new.body || '',
+          labels: [] // No labels
+        };
+        
+        result = await createGitHubIssue(accessToken, issueData);
         debug(`Created GitHub issue #${result.number}`);
+        
+        // Update the database record with the GitHub data
+        const apolloClient = createApolloClient();
+        const generator = Generator(schema);
+        const hasyx = new Hasyx(apolloClient, generator);
+        
+        await hasyx.update({
+          table: 'github_issues',
+          pk_columns: { id: data.new.id },
+          _set: {
+            github_id: result.id,
+            number: result.number,
+            node_id: result.node_id,
+            html_url: result.html_url,
+            url: result.url,
+            user_data: result.user,
+            assignee_data: result.assignee,
+            assignees_data: result.assignees,
+            labels_data: result.labels,
+            milestone_data: result.milestone,
+            pull_request_data: result.pull_request,
+            closed_by_data: result.closed_by,
+            created_at: new Date(result.created_at).getTime(),
+            updated_at: new Date(result.updated_at).getTime(),
+            closed_at: result.closed_at ? new Date(result.closed_at).getTime() : null,
+            locked: result.locked,
+            active_lock_reason: result.active_lock_reason,
+            comments_count: result.comments,
+            author_association: result.author_association,
+          }
+        });
+        
         break;
         
       case 'UPDATE':
         debug('Updating GitHub issue');
         const issueNumber = data.new.number;
-        result = await updateGitHubIssue(accessToken, issueNumber, data.new);
-        debug(`Updated GitHub issue #${issueNumber}`);
+        if (issueNumber && issueNumber > 0) {
+          result = await updateGitHubIssue(accessToken, issueNumber, data.new);
+          debug(`Updated GitHub issue #${issueNumber}`);
+        } else {
+          debug('Skipping update - no valid issue number');
+          return {
+            success: true,
+            message: 'Skipped - no valid issue number',
+            reason: 'no_issue_number'
+          };
+        }
         break;
         
       case 'DELETE':
         debug('Deleting GitHub issue');
         const deletedIssueNumber = data.old.number;
-        result = await deleteGitHubIssue(accessToken, deletedIssueNumber);
-        debug(`Deleted GitHub issue #${deletedIssueNumber}`);
+        if (deletedIssueNumber && deletedIssueNumber > 0) {
+          result = await deleteGitHubIssue(accessToken, deletedIssueNumber);
+          debug(`Deleted GitHub issue #${deletedIssueNumber}`);
+        } else {
+          debug('Skipping delete - no valid issue number');
+          return {
+            success: true,
+            message: 'Skipped - no valid issue number',
+            reason: 'no_issue_number'
+          };
+        }
         break;
         
       default:
