@@ -4,17 +4,19 @@ import Debug from '@/lib/debug';
 import { Cyto, CytoStyle, CytoNode, CytoEdge } from "hasyx/lib/cyto";
 import { Card as EntityCard, Button as EntityButton, CytoNode as EntityCytoNode } from '../../../lib/entities';
 import { QueriesManager, QueriesRenderer } from 'hasyx/lib/renderer';
-import { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useRef } from "react";
 import projectSchema from '../hasura-schema.json';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from 'hasyx/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from 'hasyx/components/ui/dialog';
 import { Input } from 'hasyx/components/ui/input';
 import { Textarea } from 'hasyx/components/ui/textarea';
-import { useQuery } from 'hasyx';
+import { useQuery, useHasyx } from 'hasyx';
 import { toast } from 'sonner';
 import { useToastHandleLoadingError } from 'hasyx/hooks/toasts';
 import { parseIssue, generateIssue } from 'hasyx/lib/issues';
+import { Tag } from 'lucide-react';
+import { MultiSelect } from '@/components/ui/multi-select';
 
 const debug = Debug('cyto');
 
@@ -371,7 +373,41 @@ function CreateIssueDialog({
 }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [isCreating, setIsCreating] = useState(false);
+  const hasyx = useHasyx();
+
+  // Get all issues to extract unique labels
+  const { data: allIssues = [] } = useQuery({
+    table: 'github_issues',
+    where: {},
+    returning: ['labels_data'],
+  });
+
+  // Extract unique labels from all issues
+  const uniqueLabels = useMemo(() => {
+    const labelMap = new Map<string, { name: string; color: string }>();
+    
+    allIssues.forEach(issue => {
+      if (issue.labels_data && Array.isArray(issue.labels_data)) {
+        issue.labels_data.forEach((label: any) => {
+          if (label.name && label.color) {
+            labelMap.set(label.name, {
+              name: label.name,
+              color: label.color
+            });
+          }
+        });
+      }
+    });
+
+    return Array.from(labelMap.values()).map(label => ({
+      value: label.name,
+      label: label.name,
+      color: label.color,
+      icon: Tag
+    }));
+  }, [allIssues]);
 
   const handleCreateIssue = async () => {
     if (!title.trim()) {
@@ -383,6 +419,20 @@ function CreateIssueDialog({
     try {
       debug('🔄 Creating GitHub issue via hasyx.insert...', { title, body });
       
+      // Convert selected labels to GitHub label format
+      const selectedLabelObjects = selectedLabels.map(labelName => {
+        const labelInfo = uniqueLabels.find(l => l.value === labelName);
+        return {
+          id: 0, // Will be set by GitHub
+          name: labelName,
+          color: labelInfo?.color || '0366d6', // Default GitHub blue
+          description: null,
+          default: false,
+          node_id: '',
+          url: ''
+        };
+      });
+
       // Use hasyx.insert to create issue in database
       // This will trigger the event handler which will create the issue in GitHub
       const issueData = {
@@ -392,8 +442,8 @@ function CreateIssueDialog({
         created_at: Date.now(),
         updated_at: Date.now(),
         // These will be filled by the event handler
-        github_id: 0, // Temporary, will be set by event handler
-        number: 0, // Temporary, will be set by event handler
+        github_id: null, // Will be set by event handler
+        number: null, // Will be set by event handler
         node_id: '', // Will be set by event handler
         html_url: '', // Will be set by event handler
         url: '', // Will be set by event handler
@@ -406,20 +456,12 @@ function CreateIssueDialog({
         user_data: null, // Will be set by event handler
         assignee_data: null,
         assignees_data: [],
-        labels_data: [], // Empty array - no labels
+        labels_data: selectedLabelObjects, // Include selected labels
         milestone_data: null,
         pull_request_data: null,
         closed_by_data: null,
         closed_at: null,
       };
-
-      // Import hasyx client
-      const { createApolloClient } = await import('hasyx/lib/apollo');
-      const { Generator } = await import('hasyx/lib/generator');
-      const { Hasyx } = await import('hasyx/lib/hasyx');
-      const apolloClient = createApolloClient();
-      const generator = Generator(projectSchema);
-      const hasyx = new Hasyx(apolloClient, generator);
 
       // Insert into database - this will trigger the event handler
       const result = await hasyx.insert({
@@ -452,6 +494,7 @@ function CreateIssueDialog({
   const handleCancel = () => {
     setTitle('');
     setBody('');
+    setSelectedLabels([]);
     onOpenChange(false);
   };
 
@@ -473,6 +516,22 @@ function CreateIssueDialog({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={isCreating}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label htmlFor="issue-labels" className="text-sm font-medium">
+              Labels
+            </label>
+            <MultiSelect
+              options={uniqueLabels}
+              onValueChange={setSelectedLabels}
+              defaultValue={selectedLabels}
+              placeholder="Select labels..."
+              variant="default"
+              animation={0.5}
+              maxCount={5}
+              className="w-full"
             />
           </div>
           
@@ -591,16 +650,6 @@ export default function Client() {
       'repository_name', 'url', 'html_url', 'created_at', 'updated_at', 'closed_at'
     ],
     order_by: [{ updated_at: 'desc' }],
-  });
-
-  console.log('📊 Client availableIssues:', {
-    count: availableIssues.length,
-    sample: availableIssues.slice(0, 3).map(issue => ({
-      id: issue.id,
-      github_id: issue.github_id,
-      number: issue.number,
-      title: issue.title
-    }))
   });
 
   const handleSyncGitHubIssues = async () => {

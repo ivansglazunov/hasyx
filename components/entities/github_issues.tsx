@@ -184,25 +184,42 @@ export function Card({ data, onClose, ...props }: {
 
   return (
     <div className="relative group pointer-events-none">
-      {/* Labels above card */}
-      {issueData.labels_data && issueData.labels_data.length > 0 && (
-        <div className="flex items-center gap-1 flex-wrap pb-3">
-          {issueData.labels_data.map((label) => (
-            <Badge
-              key={label.id}
-              variant="outline"
-              className="text-xs pointer-events-auto"
-              style={{
-                backgroundColor: `#${label.color}20`,
-                borderColor: `#${label.color}`,
-                color: `#${label.color}`
-              }}
-            >
-              {label.name}
-            </Badge>
-          ))}
-        </div>
-      )}
+      {/* Labels zone above card - always present with minimum height */}
+      <div className="min-h-[2em] p-3 relative">
+        {/* Dotted texture background for grab hint */}
+        <div 
+          className="absolute inset-0 opacity-20 pointer-events-none rounded-xl"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 1px 1px, currentColor 1px, transparent 1px),
+              radial-gradient(circle at 5px 5px, currentColor 1px, transparent 1px)
+            `,
+            backgroundSize: '6px 6px',
+            backgroundPosition: '0 0, 2px 2px',
+            height: '150%',
+          }}
+        />
+        
+        {/* Labels container */}
+        {issueData.labels_data && issueData.labels_data.length > 0 && (
+          <div className="flex items-center gap-1 flex-wrap relative z-10">
+            {issueData.labels_data.map((label) => (
+              <Badge
+                key={label.id}
+                variant="outline"
+                className="text-xs pointer-events-auto"
+                style={{
+                  backgroundColor: `#${label.color}20`,
+                  borderColor: `#${label.color}`,
+                  color: `#${label.color}`
+                }}
+              >
+                {label.name}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
 
       <UICard className="w-80 relative gap-1 z-1 pointer-events-auto" {...props}>
         <CardHeader className="pb-0">
@@ -299,16 +316,7 @@ export function CytoNode({ data, availableIssues, ...props }: {
 
   // Generate edges to referenced issues (only to those that exist in availableIssues)
   const edges = useMemo(() => {
-    console.log('🔍 CytoNode edges calculation:', {
-      issueNumbers,
-      relationTypes,
-      availableIssuesCount: availableIssues?.length,
-      dataGithubId: data.github_id,
-      dataNumber: data.number
-    });
-
     if (!issueNumbers.length || !availableIssues) {
-      console.log('❌ No edges - no issue numbers or no available issues');
       return [];
     }
 
@@ -320,21 +328,15 @@ export function CytoNode({ data, availableIssues, ...props }: {
       }
     });
 
-    console.log('📋 Issue number to GitHub ID mapping:', Object.fromEntries(issueNumberToGithubId));
-
     const filteredIssues = issueNumbers.filter(issueNumber => issueNumberToGithubId.has(issueNumber));
-    console.log('✅ Filtered issues that exist:', filteredIssues);
 
     return filteredIssues
       .map((issueNumber) => {
         const targetGithubId = issueNumberToGithubId.get(issueNumber);
         const relationTypesForIssue = relationTypes[issueNumber] || [];
         
-        console.log(`🔗 Creating edge for issue #${issueNumber} (GitHub ID: ${targetGithubId}) with relations:`, relationTypesForIssue);
-        
         // Create only one edge per issue
         const edgeId = `edge-github_issue${data.github_id}-github_issue${targetGithubId}`;
-        console.log(`🎯 Creating single edge: ${edgeId}`);
         
         // Use the first relation type as primary, or 'related' if none
         const primaryRelationType = relationTypesForIssue.length > 0 ? relationTypesForIssue[0] : 'related';

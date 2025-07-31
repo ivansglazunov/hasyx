@@ -39,11 +39,68 @@ export async function dropMetadata(hasura: Hasura) {
 export async function dropTables(hasura: Hasura) {
   debug('🗑️ Dropping GitHub issues tables using high-level methods...');
   
-  // Drop github_issues table
-  await hasura.deleteTable({
-    schema: 'public',
-    table: 'github_issues'
-  });
+  // First try high-level method
+  try {
+    await hasura.deleteTable({
+      schema: 'public',
+      table: 'github_issues'
+    });
+    debug('✅ GitHub issues table dropped using high-level method');
+  } catch (error) {
+    debug(`⚠️ High-level delete failed: ${error}, trying direct SQL...`);
+    
+    // Fallback to direct SQL for guaranteed removal
+    try {
+      // Drop trigger first
+      await hasura.sql(`DROP TRIGGER IF EXISTS set_user_id_on_github_issues ON public.github_issues;`);
+      await hasura.sql(`DROP FUNCTION IF EXISTS public.set_user_id_trigger();`);
+      
+      // Drop all constraints first
+      await hasura.sql(`
+        DO $$ 
+        DECLARE 
+          r RECORD;
+        BEGIN
+          -- Drop ALL foreign key constraints on github_issues
+          FOR r IN (
+            SELECT tc.constraint_name, tc.table_name
+            FROM information_schema.table_constraints tc
+            WHERE tc.constraint_type = 'FOREIGN KEY' 
+            AND tc.table_schema = 'public' 
+            AND tc.table_name = 'github_issues'
+          ) LOOP
+            BEGIN
+              EXECUTE 'ALTER TABLE public.github_issues DROP CONSTRAINT IF EXISTS "' || r.constraint_name || '" CASCADE';
+            EXCEPTION WHEN OTHERS THEN
+              -- Ignore errors
+            END;
+          END LOOP;
+          
+          -- Drop ALL triggers on github_issues
+          FOR r IN (
+            SELECT trigger_name
+            FROM information_schema.triggers
+            WHERE event_object_schema = 'public' 
+            AND event_object_table = 'github_issues'
+          ) LOOP
+            BEGIN
+              EXECUTE 'DROP TRIGGER IF EXISTS "' || r.trigger_name || '" ON public.github_issues CASCADE';
+            EXCEPTION WHEN OTHERS THEN
+              -- Ignore errors
+            END;
+          END LOOP;
+        END $$;
+      `);
+      
+      // Now drop the table with maximum force
+      await hasura.sql(`DROP TABLE IF EXISTS public.github_issues CASCADE;`);
+      
+      debug('✅ GitHub issues table dropped using direct SQL');
+    } catch (sqlError) {
+      debug(`❌ Direct SQL drop also failed: ${sqlError}`);
+      throw sqlError;
+    }
+  }
   
   debug('✅ GitHub issues tables dropped successfully');
 }

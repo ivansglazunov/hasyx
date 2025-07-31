@@ -15,9 +15,10 @@ interface ClientLayoutProps {
   children: React.ReactNode;
 }
 
+const generate = Generator(schema);
+
 export function ClientLayout({ defaultLocale, children }: ClientLayoutProps) {
   const { locale, setLocale } = useLocaleClient(defaultLocale);
-  const generate = Generator(schema);
   
   return (
     <HasyxProvider generate={generate}>

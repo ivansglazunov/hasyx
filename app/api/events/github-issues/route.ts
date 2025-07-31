@@ -15,24 +15,52 @@ const GITHUB_OWNER = process.env.NEXT_PUBLIC_GITHUB_OWNER;
 const GITHUB_REPO = process.env.NEXT_PUBLIC_GITHUB_REPO;
 
 /**
- * Extract user ID from session variables
- */
-function extractUserId(sessionVariables?: Record<string, string>): string | null {
-  if (!sessionVariables) return null;
-  
-  // Try different possible keys for user ID
-  return sessionVariables['x-hasura-user-id'] || 
-         sessionVariables['user-id'] || 
-         sessionVariables['user_id'] || 
-         null;
-}
-
-/**
  * Check if the change was made by a user (not by system sync)
  */
 function isUserChange(sessionVariables?: Record<string, string>): boolean {
-  const userId = extractUserId(sessionVariables);
-  return userId !== null;
+  if (!sessionVariables) return false;
+  
+  // Check if this is an authenticated user (not system sync)
+  const hasRole = sessionVariables['x-hasura-role'];
+  
+  // If there's a role, it's likely a user change
+  if (hasRole === 'admin' || hasRole === 'user') {
+    debug('Treating role as user change');
+    return true;
+  }
+  
+  return false;
+}
+
+/**
+ * Extract user ID from session variables or data
+ */
+function extractUserId(sessionVariables?: Record<string, string>, data?: any): string | null {
+  // First try to get from session variables
+  if (sessionVariables) {
+    const userId = sessionVariables['x-hasura-user-id'] || 
+           sessionVariables['user-id'] || 
+           sessionVariables['user_id'] || 
+           null;
+    
+    if (userId) return userId;
+  }
+  
+  // If no session user ID, try to get from data
+  if (data?.new?._user_id) {
+    debug('Using _user_id from data:', data.new._user_id);
+    return data.new._user_id;
+  }
+  
+  // If still no user ID but this is a user change (has role), 
+  // we need to find the user ID from the database
+  if (sessionVariables && (sessionVariables['x-hasura-role'] === 'admin' || sessionVariables['x-hasura-role'] === 'user')) {
+    debug('User change detected but no user ID found, will need to find user from database');
+    // For now, return null and let the calling function handle this
+    return null;
+  }
+  
+  return null;
 }
 
 /**
@@ -71,17 +99,37 @@ async function userHasGitHubScope(userId: string, scope: string): Promise<boolea
  * Create GitHub issue
  */
 async function createGitHubIssue(accessToken: string, issueData: any): Promise<any> {
-  const octokit = new Octokit({ auth: accessToken });
-  
-  const response = await octokit.rest.issues.create({
-    owner: GITHUB_OWNER!,
-    repo: GITHUB_REPO!,
+  debug('Creating GitHub issue with data:', {
     title: issueData.title,
     body: issueData.body,
-    labels: issueData.labels || [],
+    labels: issueData.labels,
+    owner: GITHUB_OWNER,
+    repo: GITHUB_REPO
   });
   
-  return response.data;
+  const octokit = new Octokit({ auth: accessToken });
+  
+  try {
+    const response = await octokit.rest.issues.create({
+      owner: GITHUB_OWNER!,
+      repo: GITHUB_REPO!,
+      title: issueData.title,
+      body: issueData.body,
+      labels: issueData.labels || [],
+    });
+    
+    debug('GitHub API response:', {
+      status: response.status,
+      issue_number: response.data.number,
+      issue_id: response.data.id,
+      html_url: response.data.html_url
+    });
+    
+    return response.data;
+  } catch (error) {
+    debug('Error creating GitHub issue:', error);
+    throw error;
+  }
 }
 
 /**
@@ -133,7 +181,15 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
     operation: op,
     table: `${table.schema}.${table.name}`,
     hasSessionVars: !!session_variables,
-    sessionVars: session_variables
+    sessionVars: session_variables,
+    dataKeys: data ? Object.keys(data) : [],
+    newData: data?.new ? {
+      id: data.new.id,
+      title: data.new.title,
+      hasLabels: !!data.new.labels_data,
+      labelsCount: data.new.labels_data?.length || 0,
+      userId: data.new._user_id
+    } : null
   });
   
   // Check if this is a user-initiated change
@@ -146,9 +202,9 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
     };
   }
   
-  const userId = extractUserId(session_variables);
+  const userId = extractUserId(session_variables, data);
   if (!userId) {
-    debug('No user ID found in session variables');
+    debug('No user ID found in session variables or data');
     return {
       success: false,
       message: 'No user ID found',
@@ -187,13 +243,20 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
     
     switch (op) {
       case 'INSERT':
-        debug('Creating GitHub issue from database insert');
+        debug('Creating GitHub issue');
+        debug('Received data:', data.new);
         
-        // Extract issue data from the inserted record
+        // Extract labels from labels_data
+        const labels = data.new.labels_data && Array.isArray(data.new.labels_data) 
+          ? data.new.labels_data.map((label: any) => label.name).filter(Boolean)
+          : [];
+        
+        debug('Extracted labels:', labels);
+        
         const issueData = {
           title: data.new.title,
           body: data.new.body || '',
-          labels: [] // No labels
+          labels: labels
         };
         
         result = await createGitHubIssue(accessToken, issueData);
@@ -235,33 +298,15 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
       case 'UPDATE':
         debug('Updating GitHub issue');
         const issueNumber = data.new.number;
-        if (issueNumber && issueNumber > 0) {
-          result = await updateGitHubIssue(accessToken, issueNumber, data.new);
-          debug(`Updated GitHub issue #${issueNumber}`);
-        } else {
-          debug('Skipping update - no valid issue number');
-          return {
-            success: true,
-            message: 'Skipped - no valid issue number',
-            reason: 'no_issue_number'
-          };
-        }
+        result = await updateGitHubIssue(accessToken, issueNumber, data.new);
+        debug(`Updated GitHub issue #${issueNumber}`);
         break;
         
       case 'DELETE':
         debug('Deleting GitHub issue');
         const deletedIssueNumber = data.old.number;
-        if (deletedIssueNumber && deletedIssueNumber > 0) {
-          result = await deleteGitHubIssue(accessToken, deletedIssueNumber);
-          debug(`Deleted GitHub issue #${deletedIssueNumber}`);
-        } else {
-          debug('Skipping delete - no valid issue number');
-          return {
-            success: true,
-            message: 'Skipped - no valid issue number',
-            reason: 'no_issue_number'
-          };
-        }
+        result = await deleteGitHubIssue(accessToken, deletedIssueNumber);
+        debug(`Deleted GitHub issue #${deletedIssueNumber}`);
         break;
         
       default:

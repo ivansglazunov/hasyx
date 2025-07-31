@@ -125,6 +125,8 @@ export type Accounts = {
   /** Account type */
   type: Scalars["String"]["output"];
   updated_at: Scalars["bigint"]["output"];
+  /** An object relationship */
+  user: Users;
   /** Reference to users table */
   user_id: Scalars["uuid"]["output"];
 };
@@ -139,6 +141,17 @@ export type Accounts_Aggregate = {
   __typename?: "accounts_aggregate";
   aggregate?: Maybe<Accounts_Aggregate_Fields>;
   nodes: Array<Accounts>;
+};
+
+export type Accounts_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Accounts_Aggregate_Bool_Exp_Count>;
+};
+
+export type Accounts_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Accounts_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+  filter?: InputMaybe<Accounts_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "accounts" */
@@ -163,10 +176,32 @@ export type Accounts_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+/** order by aggregate values of table "accounts" */
+export type Accounts_Aggregate_Order_By = {
+  avg?: InputMaybe<Accounts_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Accounts_Max_Order_By>;
+  min?: InputMaybe<Accounts_Min_Order_By>;
+  stddev?: InputMaybe<Accounts_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Accounts_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Accounts_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Accounts_Sum_Order_By>;
+  var_pop?: InputMaybe<Accounts_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Accounts_Var_Samp_Order_By>;
+  variance?: InputMaybe<Accounts_Variance_Order_By>;
+};
+
 /** append existing jsonb value of filtered columns with new jsonb value */
 export type Accounts_Append_Input = {
   /** Additional provider-specific data (e.g., Telegram username, photo_url) */
   provider_data?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** input type for inserting array relation for remote table "accounts" */
+export type Accounts_Arr_Rel_Insert_Input = {
+  data: Array<Accounts_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Accounts_On_Conflict>;
 };
 
 /** aggregate avg on columns */
@@ -176,6 +211,14 @@ export type Accounts_Avg_Fields = {
   /** Token expiration timestamp */
   expires_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by avg() on columns of table "accounts" */
+export type Accounts_Avg_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Token expiration timestamp */
+  expires_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "accounts". All fields are combined with a logical 'AND'. */
@@ -201,6 +244,7 @@ export type Accounts_Bool_Exp = {
   token_type?: InputMaybe<String_Comparison_Exp>;
   type?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+  user?: InputMaybe<Users_Bool_Exp>;
   user_id?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
@@ -269,6 +313,7 @@ export type Accounts_Insert_Input = {
   /** Account type */
   type?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   /** Reference to users table */
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
 };
@@ -309,6 +354,41 @@ export type Accounts_Max_Fields = {
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
+/** order by max() on columns of table "accounts" */
+export type Accounts_Max_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
+  /** OAuth access token */
+  access_token?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  /** Token expiration timestamp */
+  expires_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** OAuth ID token */
+  id_token?: InputMaybe<Order_By>;
+  /** OAuth token */
+  oauth_token?: InputMaybe<Order_By>;
+  /** OAuth token secret */
+  oauth_token_secret?: InputMaybe<Order_By>;
+  /** OAuth provider */
+  provider?: InputMaybe<Order_By>;
+  /** Provider account ID */
+  provider_account_id?: InputMaybe<Order_By>;
+  /** OAuth refresh token */
+  refresh_token?: InputMaybe<Order_By>;
+  /** OAuth scope */
+  scope?: InputMaybe<Order_By>;
+  /** OAuth session state */
+  session_state?: InputMaybe<Order_By>;
+  /** Token type */
+  token_type?: InputMaybe<Order_By>;
+  /** Account type */
+  type?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** Reference to users table */
+  user_id?: InputMaybe<Order_By>;
+};
+
 /** aggregate min on columns */
 export type Accounts_Min_Fields = {
   __typename?: "accounts_min_fields";
@@ -343,6 +423,41 @@ export type Accounts_Min_Fields = {
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Reference to users table */
   user_id?: Maybe<Scalars["uuid"]["output"]>;
+};
+
+/** order by min() on columns of table "accounts" */
+export type Accounts_Min_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
+  /** OAuth access token */
+  access_token?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  /** Token expiration timestamp */
+  expires_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** OAuth ID token */
+  id_token?: InputMaybe<Order_By>;
+  /** OAuth token */
+  oauth_token?: InputMaybe<Order_By>;
+  /** OAuth token secret */
+  oauth_token_secret?: InputMaybe<Order_By>;
+  /** OAuth provider */
+  provider?: InputMaybe<Order_By>;
+  /** Provider account ID */
+  provider_account_id?: InputMaybe<Order_By>;
+  /** OAuth refresh token */
+  refresh_token?: InputMaybe<Order_By>;
+  /** OAuth scope */
+  scope?: InputMaybe<Order_By>;
+  /** OAuth session state */
+  session_state?: InputMaybe<Order_By>;
+  /** Token type */
+  token_type?: InputMaybe<Order_By>;
+  /** Account type */
+  type?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** Reference to users table */
+  user_id?: InputMaybe<Order_By>;
 };
 
 /** response of any mutation on the table "accounts" */
@@ -381,6 +496,7 @@ export type Accounts_Order_By = {
   token_type?: InputMaybe<Order_By>;
   type?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
+  user?: InputMaybe<Users_Order_By>;
   user_id?: InputMaybe<Order_By>;
 };
 
@@ -481,6 +597,14 @@ export type Accounts_Stddev_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev() on columns of table "accounts" */
+export type Accounts_Stddev_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Token expiration timestamp */
+  expires_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_pop on columns */
 export type Accounts_Stddev_Pop_Fields = {
   __typename?: "accounts_stddev_pop_fields";
@@ -490,6 +614,14 @@ export type Accounts_Stddev_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev_pop() on columns of table "accounts" */
+export type Accounts_Stddev_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Token expiration timestamp */
+  expires_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_samp on columns */
 export type Accounts_Stddev_Samp_Fields = {
   __typename?: "accounts_stddev_samp_fields";
@@ -497,6 +629,14 @@ export type Accounts_Stddev_Samp_Fields = {
   /** Token expiration timestamp */
   expires_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev_samp() on columns of table "accounts" */
+export type Accounts_Stddev_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Token expiration timestamp */
+  expires_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "accounts" */
@@ -551,6 +691,14 @@ export type Accounts_Sum_Fields = {
   /** Token expiration timestamp */
   expires_at?: Maybe<Scalars["bigint"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** order by sum() on columns of table "accounts" */
+export type Accounts_Sum_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Token expiration timestamp */
+  expires_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "accounts" */
@@ -619,6 +767,14 @@ export type Accounts_Var_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by var_pop() on columns of table "accounts" */
+export type Accounts_Var_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Token expiration timestamp */
+  expires_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate var_samp on columns */
 export type Accounts_Var_Samp_Fields = {
   __typename?: "accounts_var_samp_fields";
@@ -628,12 +784,285 @@ export type Accounts_Var_Samp_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by var_samp() on columns of table "accounts" */
+export type Accounts_Var_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Token expiration timestamp */
+  expires_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate variance on columns */
 export type Accounts_Variance_Fields = {
   __typename?: "accounts_variance_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   /** Token expiration timestamp */
   expires_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by variance() on columns of table "accounts" */
+export type Accounts_Variance_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Token expiration timestamp */
+  expires_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** columns and relationships of "auth_jwt" */
+export type Auth_Jwt = {
+  __typename?: "auth_jwt";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
+  created_at: Scalars["bigint"]["output"];
+  id: Scalars["uuid"]["output"];
+  jwt?: Maybe<Scalars["String"]["output"]>;
+  redirect?: Maybe<Scalars["String"]["output"]>;
+  updated_at: Scalars["bigint"]["output"];
+};
+
+/** aggregated selection of "auth_jwt" */
+export type Auth_Jwt_Aggregate = {
+  __typename?: "auth_jwt_aggregate";
+  aggregate?: Maybe<Auth_Jwt_Aggregate_Fields>;
+  nodes: Array<Auth_Jwt>;
+};
+
+/** aggregate fields of "auth_jwt" */
+export type Auth_Jwt_Aggregate_Fields = {
+  __typename?: "auth_jwt_aggregate_fields";
+  avg?: Maybe<Auth_Jwt_Avg_Fields>;
+  count: Scalars["Int"]["output"];
+  max?: Maybe<Auth_Jwt_Max_Fields>;
+  min?: Maybe<Auth_Jwt_Min_Fields>;
+  stddev?: Maybe<Auth_Jwt_Stddev_Fields>;
+  stddev_pop?: Maybe<Auth_Jwt_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Auth_Jwt_Stddev_Samp_Fields>;
+  sum?: Maybe<Auth_Jwt_Sum_Fields>;
+  var_pop?: Maybe<Auth_Jwt_Var_Pop_Fields>;
+  var_samp?: Maybe<Auth_Jwt_Var_Samp_Fields>;
+  variance?: Maybe<Auth_Jwt_Variance_Fields>;
+};
+
+/** aggregate fields of "auth_jwt" */
+export type Auth_Jwt_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Auth_Jwt_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+/** aggregate avg on columns */
+export type Auth_Jwt_Avg_Fields = {
+  __typename?: "auth_jwt_avg_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** Boolean expression to filter rows from the table "auth_jwt". All fields are combined with a logical 'AND'. */
+export type Auth_Jwt_Bool_Exp = {
+  _and?: InputMaybe<Array<Auth_Jwt_Bool_Exp>>;
+  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
+  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
+  _not?: InputMaybe<Auth_Jwt_Bool_Exp>;
+  _or?: InputMaybe<Array<Auth_Jwt_Bool_Exp>>;
+  created_at?: InputMaybe<Bigint_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  jwt?: InputMaybe<String_Comparison_Exp>;
+  redirect?: InputMaybe<String_Comparison_Exp>;
+  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "auth_jwt" */
+export enum Auth_Jwt_Constraint {
+  /** unique or primary key constraint on columns "id" */
+  AuthJwtPkey = "auth_jwt_pkey",
+}
+
+/** input type for incrementing numeric columns in table "auth_jwt" */
+export type Auth_Jwt_Inc_Input = {
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+};
+
+/** input type for inserting data into table "auth_jwt" */
+export type Auth_Jwt_Insert_Input = {
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  jwt?: InputMaybe<Scalars["String"]["input"]>;
+  redirect?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+};
+
+/** aggregate max on columns */
+export type Auth_Jwt_Max_Fields = {
+  __typename?: "auth_jwt_max_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  jwt?: Maybe<Scalars["String"]["output"]>;
+  redirect?: Maybe<Scalars["String"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** aggregate min on columns */
+export type Auth_Jwt_Min_Fields = {
+  __typename?: "auth_jwt_min_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  jwt?: Maybe<Scalars["String"]["output"]>;
+  redirect?: Maybe<Scalars["String"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** response of any mutation on the table "auth_jwt" */
+export type Auth_Jwt_Mutation_Response = {
+  __typename?: "auth_jwt_mutation_response";
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars["Int"]["output"];
+  /** data from the rows affected by the mutation */
+  returning: Array<Auth_Jwt>;
+};
+
+/** on_conflict condition type for table "auth_jwt" */
+export type Auth_Jwt_On_Conflict = {
+  constraint: Auth_Jwt_Constraint;
+  update_columns?: Array<Auth_Jwt_Update_Column>;
+  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "auth_jwt". */
+export type Auth_Jwt_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  jwt?: InputMaybe<Order_By>;
+  redirect?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: auth_jwt */
+export type Auth_Jwt_Pk_Columns_Input = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** select columns of table "auth_jwt" */
+export enum Auth_Jwt_Select_Column {
+  /** column name */
+  HasyxSchemaName = "_hasyx_schema_name",
+  /** column name */
+  HasyxTableName = "_hasyx_table_name",
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Id = "id",
+  /** column name */
+  Jwt = "jwt",
+  /** column name */
+  Redirect = "redirect",
+  /** column name */
+  UpdatedAt = "updated_at",
+}
+
+/** input type for updating data in table "auth_jwt" */
+export type Auth_Jwt_Set_Input = {
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  jwt?: InputMaybe<Scalars["String"]["input"]>;
+  redirect?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+};
+
+/** aggregate stddev on columns */
+export type Auth_Jwt_Stddev_Fields = {
+  __typename?: "auth_jwt_stddev_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Auth_Jwt_Stddev_Pop_Fields = {
+  __typename?: "auth_jwt_stddev_pop_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Auth_Jwt_Stddev_Samp_Fields = {
+  __typename?: "auth_jwt_stddev_samp_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** Streaming cursor of the table "auth_jwt" */
+export type Auth_Jwt_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Auth_Jwt_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Auth_Jwt_Stream_Cursor_Value_Input = {
+  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
+  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  jwt?: InputMaybe<Scalars["String"]["input"]>;
+  redirect?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+};
+
+/** aggregate sum on columns */
+export type Auth_Jwt_Sum_Fields = {
+  __typename?: "auth_jwt_sum_fields";
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** update columns of table "auth_jwt" */
+export enum Auth_Jwt_Update_Column {
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Id = "id",
+  /** column name */
+  Jwt = "jwt",
+  /** column name */
+  Redirect = "redirect",
+  /** column name */
+  UpdatedAt = "updated_at",
+}
+
+export type Auth_Jwt_Updates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<Auth_Jwt_Inc_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Auth_Jwt_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Auth_Jwt_Bool_Exp;
+};
+
+/** aggregate var_pop on columns */
+export type Auth_Jwt_Var_Pop_Fields = {
+  __typename?: "auth_jwt_var_pop_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate var_samp on columns */
+export type Auth_Jwt_Var_Samp_Fields = {
+  __typename?: "auth_jwt_var_samp_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate variance on columns */
+export type Auth_Jwt_Variance_Fields = {
+  __typename?: "auth_jwt_variance_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -953,6 +1382,8 @@ export type Debug_Variance_Fields = {
 /** columns and relationships of "file_versions" */
 export type File_Versions = {
   __typename?: "file_versions";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at: Scalars["bigint"]["output"];
   /** An object relationship */
   file?: Maybe<Files>;
@@ -1042,6 +1473,8 @@ export type File_Versions_Avg_Order_By = {
 /** Boolean expression to filter rows from the table "file_versions". All fields are combined with a logical 'AND'. */
 export type File_Versions_Bool_Exp = {
   _and?: InputMaybe<Array<File_Versions_Bool_Exp>>;
+  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
+  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<File_Versions_Bool_Exp>;
   _or?: InputMaybe<Array<File_Versions_Bool_Exp>>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
@@ -1079,6 +1512,8 @@ export type File_Versions_Insert_Input = {
 /** aggregate max on columns */
 export type File_Versions_Max_Fields = {
   __typename?: "file_versions_max_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Reference to files table */
   file_id?: Maybe<Scalars["uuid"]["output"]>;
@@ -1090,6 +1525,8 @@ export type File_Versions_Max_Fields = {
 
 /** order by max() on columns of table "file_versions" */
 export type File_Versions_Max_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   /** Reference to files table */
   file_id?: InputMaybe<Order_By>;
@@ -1102,6 +1539,8 @@ export type File_Versions_Max_Order_By = {
 /** aggregate min on columns */
 export type File_Versions_Min_Fields = {
   __typename?: "file_versions_min_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Reference to files table */
   file_id?: Maybe<Scalars["uuid"]["output"]>;
@@ -1113,6 +1552,8 @@ export type File_Versions_Min_Fields = {
 
 /** order by min() on columns of table "file_versions" */
 export type File_Versions_Min_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   /** Reference to files table */
   file_id?: InputMaybe<Order_By>;
@@ -1140,6 +1581,8 @@ export type File_Versions_On_Conflict = {
 
 /** Ordering options when selecting data from "file_versions". */
 export type File_Versions_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   file?: InputMaybe<Files_Order_By>;
   file_id?: InputMaybe<Order_By>;
@@ -1155,6 +1598,10 @@ export type File_Versions_Pk_Columns_Input = {
 
 /** select columns of table "file_versions" */
 export enum File_Versions_Select_Column {
+  /** column name */
+  HasyxSchemaName = "_hasyx_schema_name",
+  /** column name */
+  HasyxTableName = "_hasyx_table_name",
   /** column name */
   CreatedAt = "created_at",
   /** column name */
@@ -1227,6 +1674,8 @@ export type File_Versions_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type File_Versions_Stream_Cursor_Value_Input = {
+  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
+  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   /** Reference to files table */
   file_id?: InputMaybe<Scalars["uuid"]["input"]>;
@@ -1314,6 +1763,8 @@ export type File_Versions_Variance_Order_By = {
 /** columns and relationships of "files" */
 export type Files = {
   __typename?: "files";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Storage bucket ID */
   bucket_id?: Maybe<Scalars["String"]["output"]>;
   created_at: Scalars["bigint"]["output"];
@@ -1477,6 +1928,8 @@ export type Files_Avg_Order_By = {
 /** Boolean expression to filter rows from the table "files". All fields are combined with a logical 'AND'. */
 export type Files_Bool_Exp = {
   _and?: InputMaybe<Array<Files_Bool_Exp>>;
+  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
+  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Files_Bool_Exp>;
   _or?: InputMaybe<Array<Files_Bool_Exp>>;
   bucket_id?: InputMaybe<String_Comparison_Exp>;
@@ -1537,6 +1990,8 @@ export type Files_Insert_Input = {
 /** aggregate max on columns */
 export type Files_Max_Fields = {
   __typename?: "files_max_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Storage bucket ID */
   bucket_id?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -1556,6 +2011,8 @@ export type Files_Max_Fields = {
 
 /** order by max() on columns of table "files" */
 export type Files_Max_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   /** Storage bucket ID */
   bucket_id?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
@@ -1576,6 +2033,8 @@ export type Files_Max_Order_By = {
 /** aggregate min on columns */
 export type Files_Min_Fields = {
   __typename?: "files_min_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Storage bucket ID */
   bucket_id?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -1595,6 +2054,8 @@ export type Files_Min_Fields = {
 
 /** order by min() on columns of table "files" */
 export type Files_Min_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   /** Storage bucket ID */
   bucket_id?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
@@ -1637,6 +2098,8 @@ export type Files_On_Conflict = {
 
 /** Ordering options when selecting data from "files". */
 export type Files_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   bucket_id?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   etag?: InputMaybe<Order_By>;
@@ -1659,6 +2122,10 @@ export type Files_Pk_Columns_Input = {
 
 /** select columns of table "files" */
 export enum Files_Select_Column {
+  /** column name */
+  HasyxSchemaName = "_hasyx_schema_name",
+  /** column name */
+  HasyxTableName = "_hasyx_table_name",
   /** column name */
   BucketId = "bucket_id",
   /** column name */
@@ -1775,6 +2242,8 @@ export type Files_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Files_Stream_Cursor_Value_Input = {
+  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
+  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   /** Storage bucket ID */
   bucket_id?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -1898,6 +2367,8 @@ export type Files_Variance_Order_By = {
 /** columns and relationships of "github_issues" */
 export type Github_Issues = {
   __typename?: "github_issues";
+  /** User ID who created/modified the issue (set by trigger) */
+  _user_id?: Maybe<Scalars["uuid"]["output"]>;
   /** Reason for locking the issue */
   active_lock_reason?: Maybe<Scalars["String"]["output"]>;
   /** GitHub user assigned to the issue */
@@ -1915,8 +2386,8 @@ export type Github_Issues = {
   /** Number of comments on the issue */
   comments_count: Scalars["Int"]["output"];
   created_at: Scalars["bigint"]["output"];
-  /** GitHub issue ID from API */
-  github_id: Scalars["bigint"]["output"];
+  /** GitHub issue ID from API (nullable for user-created issues) */
+  github_id?: Maybe<Scalars["bigint"]["output"]>;
   /** GitHub web URL for the issue */
   html_url: Scalars["String"]["output"];
   id: Scalars["uuid"]["output"];
@@ -1928,8 +2399,8 @@ export type Github_Issues = {
   milestone_data?: Maybe<Scalars["jsonb"]["output"]>;
   /** GitHub GraphQL node ID */
   node_id: Scalars["String"]["output"];
-  /** Issue number in repository */
-  number: Scalars["Int"]["output"];
+  /** Issue number in repository (nullable for user-created issues) */
+  number?: Maybe<Scalars["Int"]["output"]>;
   /** Pull request data if issue is a PR */
   pull_request_data?: Maybe<Scalars["jsonb"]["output"]>;
   /** Repository name */
@@ -2039,9 +2510,9 @@ export type Github_Issues_Avg_Fields = {
   /** Number of comments on the issue */
   comments_count?: Maybe<Scalars["Float"]["output"]>;
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: Maybe<Scalars["Float"]["output"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
@@ -2051,6 +2522,7 @@ export type Github_Issues_Bool_Exp = {
   _and?: InputMaybe<Array<Github_Issues_Bool_Exp>>;
   _not?: InputMaybe<Github_Issues_Bool_Exp>;
   _or?: InputMaybe<Array<Github_Issues_Bool_Exp>>;
+  _user_id?: InputMaybe<Uuid_Comparison_Exp>;
   active_lock_reason?: InputMaybe<String_Comparison_Exp>;
   assignee_data?: InputMaybe<Jsonb_Comparison_Exp>;
   assignees_data?: InputMaybe<Jsonb_Comparison_Exp>;
@@ -2148,15 +2620,17 @@ export type Github_Issues_Inc_Input = {
   /** Number of comments on the issue */
   comments_count?: InputMaybe<Scalars["Int"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: InputMaybe<Scalars["Int"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
 };
 
 /** input type for inserting data into table "github_issues" */
 export type Github_Issues_Insert_Input = {
+  /** User ID who created/modified the issue (set by trigger) */
+  _user_id?: InputMaybe<Scalars["uuid"]["input"]>;
   /** Reason for locking the issue */
   active_lock_reason?: InputMaybe<Scalars["String"]["input"]>;
   /** GitHub user assigned to the issue */
@@ -2174,7 +2648,7 @@ export type Github_Issues_Insert_Input = {
   /** Number of comments on the issue */
   comments_count?: InputMaybe<Scalars["Int"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: InputMaybe<Scalars["bigint"]["input"]>;
   /** GitHub web URL for the issue */
   html_url?: InputMaybe<Scalars["String"]["input"]>;
@@ -2187,7 +2661,7 @@ export type Github_Issues_Insert_Input = {
   milestone_data?: InputMaybe<Scalars["jsonb"]["input"]>;
   /** GitHub GraphQL node ID */
   node_id?: InputMaybe<Scalars["String"]["input"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: InputMaybe<Scalars["Int"]["input"]>;
   /** Pull request data if issue is a PR */
   pull_request_data?: InputMaybe<Scalars["jsonb"]["input"]>;
@@ -2211,6 +2685,8 @@ export type Github_Issues_Insert_Input = {
 /** aggregate max on columns */
 export type Github_Issues_Max_Fields = {
   __typename?: "github_issues_max_fields";
+  /** User ID who created/modified the issue (set by trigger) */
+  _user_id?: Maybe<Scalars["uuid"]["output"]>;
   /** Reason for locking the issue */
   active_lock_reason?: Maybe<Scalars["String"]["output"]>;
   /** Author association with repository */
@@ -2222,14 +2698,14 @@ export type Github_Issues_Max_Fields = {
   /** Number of comments on the issue */
   comments_count?: Maybe<Scalars["Int"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: Maybe<Scalars["bigint"]["output"]>;
   /** GitHub web URL for the issue */
   html_url?: Maybe<Scalars["String"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   /** GitHub GraphQL node ID */
   node_id?: Maybe<Scalars["String"]["output"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: Maybe<Scalars["Int"]["output"]>;
   /** Repository name */
   repository_name?: Maybe<Scalars["String"]["output"]>;
@@ -2249,6 +2725,8 @@ export type Github_Issues_Max_Fields = {
 /** aggregate min on columns */
 export type Github_Issues_Min_Fields = {
   __typename?: "github_issues_min_fields";
+  /** User ID who created/modified the issue (set by trigger) */
+  _user_id?: Maybe<Scalars["uuid"]["output"]>;
   /** Reason for locking the issue */
   active_lock_reason?: Maybe<Scalars["String"]["output"]>;
   /** Author association with repository */
@@ -2260,14 +2738,14 @@ export type Github_Issues_Min_Fields = {
   /** Number of comments on the issue */
   comments_count?: Maybe<Scalars["Int"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: Maybe<Scalars["bigint"]["output"]>;
   /** GitHub web URL for the issue */
   html_url?: Maybe<Scalars["String"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   /** GitHub GraphQL node ID */
   node_id?: Maybe<Scalars["String"]["output"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: Maybe<Scalars["Int"]["output"]>;
   /** Repository name */
   repository_name?: Maybe<Scalars["String"]["output"]>;
@@ -2302,6 +2780,7 @@ export type Github_Issues_On_Conflict = {
 
 /** Ordering options when selecting data from "github_issues". */
 export type Github_Issues_Order_By = {
+  _user_id?: InputMaybe<Order_By>;
   active_lock_reason?: InputMaybe<Order_By>;
   assignee_data?: InputMaybe<Order_By>;
   assignees_data?: InputMaybe<Order_By>;
@@ -2355,6 +2834,8 @@ export type Github_Issues_Prepend_Input = {
 
 /** select columns of table "github_issues" */
 export enum Github_Issues_Select_Column {
+  /** column name */
+  UserId = "_user_id",
   /** column name */
   ActiveLockReason = "active_lock_reason",
   /** column name */
@@ -2411,6 +2892,8 @@ export enum Github_Issues_Select_Column {
 
 /** input type for updating data in table "github_issues" */
 export type Github_Issues_Set_Input = {
+  /** User ID who created/modified the issue (set by trigger) */
+  _user_id?: InputMaybe<Scalars["uuid"]["input"]>;
   /** Reason for locking the issue */
   active_lock_reason?: InputMaybe<Scalars["String"]["input"]>;
   /** GitHub user assigned to the issue */
@@ -2428,7 +2911,7 @@ export type Github_Issues_Set_Input = {
   /** Number of comments on the issue */
   comments_count?: InputMaybe<Scalars["Int"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: InputMaybe<Scalars["bigint"]["input"]>;
   /** GitHub web URL for the issue */
   html_url?: InputMaybe<Scalars["String"]["input"]>;
@@ -2441,7 +2924,7 @@ export type Github_Issues_Set_Input = {
   milestone_data?: InputMaybe<Scalars["jsonb"]["input"]>;
   /** GitHub GraphQL node ID */
   node_id?: InputMaybe<Scalars["String"]["input"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: InputMaybe<Scalars["Int"]["input"]>;
   /** Pull request data if issue is a PR */
   pull_request_data?: InputMaybe<Scalars["jsonb"]["input"]>;
@@ -2470,9 +2953,9 @@ export type Github_Issues_Stddev_Fields = {
   /** Number of comments on the issue */
   comments_count?: Maybe<Scalars["Float"]["output"]>;
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: Maybe<Scalars["Float"]["output"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
@@ -2485,9 +2968,9 @@ export type Github_Issues_Stddev_Pop_Fields = {
   /** Number of comments on the issue */
   comments_count?: Maybe<Scalars["Float"]["output"]>;
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: Maybe<Scalars["Float"]["output"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
@@ -2500,9 +2983,9 @@ export type Github_Issues_Stddev_Samp_Fields = {
   /** Number of comments on the issue */
   comments_count?: Maybe<Scalars["Float"]["output"]>;
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: Maybe<Scalars["Float"]["output"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
@@ -2517,6 +3000,8 @@ export type Github_Issues_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Github_Issues_Stream_Cursor_Value_Input = {
+  /** User ID who created/modified the issue (set by trigger) */
+  _user_id?: InputMaybe<Scalars["uuid"]["input"]>;
   /** Reason for locking the issue */
   active_lock_reason?: InputMaybe<Scalars["String"]["input"]>;
   /** GitHub user assigned to the issue */
@@ -2534,7 +3019,7 @@ export type Github_Issues_Stream_Cursor_Value_Input = {
   /** Number of comments on the issue */
   comments_count?: InputMaybe<Scalars["Int"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: InputMaybe<Scalars["bigint"]["input"]>;
   /** GitHub web URL for the issue */
   html_url?: InputMaybe<Scalars["String"]["input"]>;
@@ -2547,7 +3032,7 @@ export type Github_Issues_Stream_Cursor_Value_Input = {
   milestone_data?: InputMaybe<Scalars["jsonb"]["input"]>;
   /** GitHub GraphQL node ID */
   node_id?: InputMaybe<Scalars["String"]["input"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: InputMaybe<Scalars["Int"]["input"]>;
   /** Pull request data if issue is a PR */
   pull_request_data?: InputMaybe<Scalars["jsonb"]["input"]>;
@@ -2576,15 +3061,17 @@ export type Github_Issues_Sum_Fields = {
   /** Number of comments on the issue */
   comments_count?: Maybe<Scalars["Int"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: Maybe<Scalars["bigint"]["output"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: Maybe<Scalars["Int"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
 };
 
 /** update columns of table "github_issues" */
 export enum Github_Issues_Update_Column {
+  /** column name */
+  UserId = "_user_id",
   /** column name */
   ActiveLockReason = "active_lock_reason",
   /** column name */
@@ -2666,9 +3153,9 @@ export type Github_Issues_Var_Pop_Fields = {
   /** Number of comments on the issue */
   comments_count?: Maybe<Scalars["Float"]["output"]>;
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: Maybe<Scalars["Float"]["output"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
@@ -2681,9 +3168,9 @@ export type Github_Issues_Var_Samp_Fields = {
   /** Number of comments on the issue */
   comments_count?: Maybe<Scalars["Float"]["output"]>;
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: Maybe<Scalars["Float"]["output"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
@@ -2696,9 +3183,9 @@ export type Github_Issues_Variance_Fields = {
   /** Number of comments on the issue */
   comments_count?: Maybe<Scalars["Float"]["output"]>;
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** GitHub issue ID from API */
+  /** GitHub issue ID from API (nullable for user-created issues) */
   github_id?: Maybe<Scalars["Float"]["output"]>;
-  /** Issue number in repository */
+  /** Issue number in repository (nullable for user-created issues) */
   number?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
@@ -3493,6 +3980,10 @@ export type Mutation_Root = {
   delete_accounts?: Maybe<Accounts_Mutation_Response>;
   /** delete single row from the table: "accounts" */
   delete_accounts_by_pk?: Maybe<Accounts>;
+  /** delete data from the table: "auth_jwt" */
+  delete_auth_jwt?: Maybe<Auth_Jwt_Mutation_Response>;
+  /** delete single row from the table: "auth_jwt" */
+  delete_auth_jwt_by_pk?: Maybe<Auth_Jwt>;
   /** delete data from the table: "debug" */
   delete_debug?: Maybe<Debug_Mutation_Response>;
   /** delete single row from the table: "debug" */
@@ -3565,6 +4056,10 @@ export type Mutation_Root = {
   insert_accounts?: Maybe<Accounts_Mutation_Response>;
   /** insert a single row into the table: "accounts" */
   insert_accounts_one?: Maybe<Accounts>;
+  /** insert data into the table: "auth_jwt" */
+  insert_auth_jwt?: Maybe<Auth_Jwt_Mutation_Response>;
+  /** insert a single row into the table: "auth_jwt" */
+  insert_auth_jwt_one?: Maybe<Auth_Jwt>;
   /** insert data into the table: "debug" */
   insert_debug?: Maybe<Debug_Mutation_Response>;
   /** insert a single row into the table: "debug" */
@@ -3639,6 +4134,12 @@ export type Mutation_Root = {
   update_accounts_by_pk?: Maybe<Accounts>;
   /** update multiples rows of table: "accounts" */
   update_accounts_many?: Maybe<Array<Maybe<Accounts_Mutation_Response>>>;
+  /** update data of the table: "auth_jwt" */
+  update_auth_jwt?: Maybe<Auth_Jwt_Mutation_Response>;
+  /** update single row of the table: "auth_jwt" */
+  update_auth_jwt_by_pk?: Maybe<Auth_Jwt>;
+  /** update multiples rows of table: "auth_jwt" */
+  update_auth_jwt_many?: Maybe<Array<Maybe<Auth_Jwt_Mutation_Response>>>;
   /** update data of the table: "debug" */
   update_debug?: Maybe<Debug_Mutation_Response>;
   /** update single row of the table: "debug" */
@@ -3772,6 +4273,16 @@ export type Mutation_RootDelete_AccountsArgs = {
 
 /** mutation root */
 export type Mutation_RootDelete_Accounts_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** mutation root */
+export type Mutation_RootDelete_Auth_JwtArgs = {
+  where: Auth_Jwt_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootDelete_Auth_Jwt_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -3956,6 +4467,18 @@ export type Mutation_RootInsert_AccountsArgs = {
 export type Mutation_RootInsert_Accounts_OneArgs = {
   object: Accounts_Insert_Input;
   on_conflict?: InputMaybe<Accounts_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsert_Auth_JwtArgs = {
+  objects: Array<Auth_Jwt_Insert_Input>;
+  on_conflict?: InputMaybe<Auth_Jwt_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsert_Auth_Jwt_OneArgs = {
+  object: Auth_Jwt_Insert_Input;
+  on_conflict?: InputMaybe<Auth_Jwt_On_Conflict>;
 };
 
 /** mutation root */
@@ -4190,6 +4713,25 @@ export type Mutation_RootUpdate_Accounts_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Accounts_ManyArgs = {
   updates: Array<Accounts_Updates>;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Auth_JwtArgs = {
+  _inc?: InputMaybe<Auth_Jwt_Inc_Input>;
+  _set?: InputMaybe<Auth_Jwt_Set_Input>;
+  where: Auth_Jwt_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Auth_Jwt_By_PkArgs = {
+  _inc?: InputMaybe<Auth_Jwt_Inc_Input>;
+  _set?: InputMaybe<Auth_Jwt_Set_Input>;
+  pk_columns: Auth_Jwt_Pk_Columns_Input;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Auth_Jwt_ManyArgs = {
+  updates: Array<Auth_Jwt_Updates>;
 };
 
 /** mutation root */
@@ -4646,15 +5188,9 @@ export type Notification_Messages = {
   /** Additional notification data */
   data?: Maybe<Scalars["jsonb"]["output"]>;
   id: Scalars["uuid"]["output"];
-  /** An array relationship */
-  notifications: Array<Notifications>;
-  /** An aggregate relationship */
-  notifications_aggregate: Notifications_Aggregate;
   /** Notification title */
   title: Scalars["String"]["output"];
   updated_at: Scalars["bigint"]["output"];
-  /** An object relationship */
-  user: Users;
   /** Target user for notification */
   user_id: Scalars["uuid"]["output"];
 };
@@ -4664,40 +5200,11 @@ export type Notification_MessagesDataArgs = {
   path?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-/** columns and relationships of "notification_messages" */
-export type Notification_MessagesNotificationsArgs = {
-  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Notifications_Order_By>>;
-  where?: InputMaybe<Notifications_Bool_Exp>;
-};
-
-/** columns and relationships of "notification_messages" */
-export type Notification_MessagesNotifications_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Notifications_Order_By>>;
-  where?: InputMaybe<Notifications_Bool_Exp>;
-};
-
 /** aggregated selection of "notification_messages" */
 export type Notification_Messages_Aggregate = {
   __typename?: "notification_messages_aggregate";
   aggregate?: Maybe<Notification_Messages_Aggregate_Fields>;
   nodes: Array<Notification_Messages>;
-};
-
-export type Notification_Messages_Aggregate_Bool_Exp = {
-  count?: InputMaybe<Notification_Messages_Aggregate_Bool_Exp_Count>;
-};
-
-export type Notification_Messages_Aggregate_Bool_Exp_Count = {
-  arguments?: InputMaybe<Array<Notification_Messages_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-  filter?: InputMaybe<Notification_Messages_Bool_Exp>;
-  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "notification_messages" */
@@ -4722,32 +5229,10 @@ export type Notification_Messages_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
-/** order by aggregate values of table "notification_messages" */
-export type Notification_Messages_Aggregate_Order_By = {
-  avg?: InputMaybe<Notification_Messages_Avg_Order_By>;
-  count?: InputMaybe<Order_By>;
-  max?: InputMaybe<Notification_Messages_Max_Order_By>;
-  min?: InputMaybe<Notification_Messages_Min_Order_By>;
-  stddev?: InputMaybe<Notification_Messages_Stddev_Order_By>;
-  stddev_pop?: InputMaybe<Notification_Messages_Stddev_Pop_Order_By>;
-  stddev_samp?: InputMaybe<Notification_Messages_Stddev_Samp_Order_By>;
-  sum?: InputMaybe<Notification_Messages_Sum_Order_By>;
-  var_pop?: InputMaybe<Notification_Messages_Var_Pop_Order_By>;
-  var_samp?: InputMaybe<Notification_Messages_Var_Samp_Order_By>;
-  variance?: InputMaybe<Notification_Messages_Variance_Order_By>;
-};
-
 /** append existing jsonb value of filtered columns with new jsonb value */
 export type Notification_Messages_Append_Input = {
   /** Additional notification data */
   data?: InputMaybe<Scalars["jsonb"]["input"]>;
-};
-
-/** input type for inserting array relation for remote table "notification_messages" */
-export type Notification_Messages_Arr_Rel_Insert_Input = {
-  data: Array<Notification_Messages_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Notification_Messages_On_Conflict>;
 };
 
 /** aggregate avg on columns */
@@ -4755,12 +5240,6 @@ export type Notification_Messages_Avg_Fields = {
   __typename?: "notification_messages_avg_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by avg() on columns of table "notification_messages" */
-export type Notification_Messages_Avg_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "notification_messages". All fields are combined with a logical 'AND'. */
@@ -4772,11 +5251,8 @@ export type Notification_Messages_Bool_Exp = {
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
   data?: InputMaybe<Jsonb_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
-  notifications?: InputMaybe<Notifications_Bool_Exp>;
-  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Bool_Exp>;
   title?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  user?: InputMaybe<Users_Bool_Exp>;
   user_id?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
@@ -4818,11 +5294,9 @@ export type Notification_Messages_Insert_Input = {
   /** Additional notification data */
   data?: InputMaybe<Scalars["jsonb"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  notifications?: InputMaybe<Notifications_Arr_Rel_Insert_Input>;
   /** Notification title */
   title?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   /** Target user for notification */
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
 };
@@ -4841,19 +5315,6 @@ export type Notification_Messages_Max_Fields = {
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
-/** order by max() on columns of table "notification_messages" */
-export type Notification_Messages_Max_Order_By = {
-  /** Notification body */
-  body?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  /** Notification title */
-  title?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** Target user for notification */
-  user_id?: InputMaybe<Order_By>;
-};
-
 /** aggregate min on columns */
 export type Notification_Messages_Min_Fields = {
   __typename?: "notification_messages_min_fields";
@@ -4868,19 +5329,6 @@ export type Notification_Messages_Min_Fields = {
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
-/** order by min() on columns of table "notification_messages" */
-export type Notification_Messages_Min_Order_By = {
-  /** Notification body */
-  body?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  /** Notification title */
-  title?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** Target user for notification */
-  user_id?: InputMaybe<Order_By>;
-};
-
 /** response of any mutation on the table "notification_messages" */
 export type Notification_Messages_Mutation_Response = {
   __typename?: "notification_messages_mutation_response";
@@ -4888,13 +5336,6 @@ export type Notification_Messages_Mutation_Response = {
   affected_rows: Scalars["Int"]["output"];
   /** data from the rows affected by the mutation */
   returning: Array<Notification_Messages>;
-};
-
-/** input type for inserting object relation for remote table "notification_messages" */
-export type Notification_Messages_Obj_Rel_Insert_Input = {
-  data: Notification_Messages_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Notification_Messages_On_Conflict>;
 };
 
 /** on_conflict condition type for table "notification_messages" */
@@ -4910,10 +5351,8 @@ export type Notification_Messages_Order_By = {
   created_at?: InputMaybe<Order_By>;
   data?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
-  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Order_By>;
   title?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
-  user?: InputMaybe<Users_Order_By>;
   user_id?: InputMaybe<Order_By>;
 };
 
@@ -4968,12 +5407,6 @@ export type Notification_Messages_Stddev_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by stddev() on columns of table "notification_messages" */
-export type Notification_Messages_Stddev_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate stddev_pop on columns */
 export type Notification_Messages_Stddev_Pop_Fields = {
   __typename?: "notification_messages_stddev_pop_fields";
@@ -4981,23 +5414,11 @@ export type Notification_Messages_Stddev_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by stddev_pop() on columns of table "notification_messages" */
-export type Notification_Messages_Stddev_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate stddev_samp on columns */
 export type Notification_Messages_Stddev_Samp_Fields = {
   __typename?: "notification_messages_stddev_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev_samp() on columns of table "notification_messages" */
-export type Notification_Messages_Stddev_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "notification_messages" */
@@ -5028,12 +5449,6 @@ export type Notification_Messages_Sum_Fields = {
   __typename?: "notification_messages_sum_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** order by sum() on columns of table "notification_messages" */
-export type Notification_Messages_Sum_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "notification_messages" */
@@ -5080,12 +5495,6 @@ export type Notification_Messages_Var_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by var_pop() on columns of table "notification_messages" */
-export type Notification_Messages_Var_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate var_samp on columns */
 export type Notification_Messages_Var_Samp_Fields = {
   __typename?: "notification_messages_var_samp_fields";
@@ -5093,23 +5502,11 @@ export type Notification_Messages_Var_Samp_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by var_samp() on columns of table "notification_messages" */
-export type Notification_Messages_Var_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate variance on columns */
 export type Notification_Messages_Variance_Fields = {
   __typename?: "notification_messages_variance_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by variance() on columns of table "notification_messages" */
-export type Notification_Messages_Variance_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** columns and relationships of "notification_permissions" */
@@ -5121,15 +5518,9 @@ export type Notification_Permissions = {
   /** Device token for push notifications */
   device_token: Scalars["String"]["output"];
   id: Scalars["uuid"]["output"];
-  /** An array relationship */
-  notifications: Array<Notifications>;
-  /** An aggregate relationship */
-  notifications_aggregate: Notifications_Aggregate;
   /** Notification provider (e.g., fcm, apns) */
   provider: Scalars["String"]["output"];
   updated_at: Scalars["bigint"]["output"];
-  /** An object relationship */
-  user: Users;
   /** Reference to users table */
   user_id: Scalars["uuid"]["output"];
 };
@@ -5139,40 +5530,11 @@ export type Notification_PermissionsDevice_InfoArgs = {
   path?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-/** columns and relationships of "notification_permissions" */
-export type Notification_PermissionsNotificationsArgs = {
-  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Notifications_Order_By>>;
-  where?: InputMaybe<Notifications_Bool_Exp>;
-};
-
-/** columns and relationships of "notification_permissions" */
-export type Notification_PermissionsNotifications_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Notifications_Order_By>>;
-  where?: InputMaybe<Notifications_Bool_Exp>;
-};
-
 /** aggregated selection of "notification_permissions" */
 export type Notification_Permissions_Aggregate = {
   __typename?: "notification_permissions_aggregate";
   aggregate?: Maybe<Notification_Permissions_Aggregate_Fields>;
   nodes: Array<Notification_Permissions>;
-};
-
-export type Notification_Permissions_Aggregate_Bool_Exp = {
-  count?: InputMaybe<Notification_Permissions_Aggregate_Bool_Exp_Count>;
-};
-
-export type Notification_Permissions_Aggregate_Bool_Exp_Count = {
-  arguments?: InputMaybe<Array<Notification_Permissions_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-  filter?: InputMaybe<Notification_Permissions_Bool_Exp>;
-  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "notification_permissions" */
@@ -5197,32 +5559,10 @@ export type Notification_Permissions_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
-/** order by aggregate values of table "notification_permissions" */
-export type Notification_Permissions_Aggregate_Order_By = {
-  avg?: InputMaybe<Notification_Permissions_Avg_Order_By>;
-  count?: InputMaybe<Order_By>;
-  max?: InputMaybe<Notification_Permissions_Max_Order_By>;
-  min?: InputMaybe<Notification_Permissions_Min_Order_By>;
-  stddev?: InputMaybe<Notification_Permissions_Stddev_Order_By>;
-  stddev_pop?: InputMaybe<Notification_Permissions_Stddev_Pop_Order_By>;
-  stddev_samp?: InputMaybe<Notification_Permissions_Stddev_Samp_Order_By>;
-  sum?: InputMaybe<Notification_Permissions_Sum_Order_By>;
-  var_pop?: InputMaybe<Notification_Permissions_Var_Pop_Order_By>;
-  var_samp?: InputMaybe<Notification_Permissions_Var_Samp_Order_By>;
-  variance?: InputMaybe<Notification_Permissions_Variance_Order_By>;
-};
-
 /** append existing jsonb value of filtered columns with new jsonb value */
 export type Notification_Permissions_Append_Input = {
   /** Device information */
   device_info?: InputMaybe<Scalars["jsonb"]["input"]>;
-};
-
-/** input type for inserting array relation for remote table "notification_permissions" */
-export type Notification_Permissions_Arr_Rel_Insert_Input = {
-  data: Array<Notification_Permissions_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Notification_Permissions_On_Conflict>;
 };
 
 /** aggregate avg on columns */
@@ -5230,12 +5570,6 @@ export type Notification_Permissions_Avg_Fields = {
   __typename?: "notification_permissions_avg_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by avg() on columns of table "notification_permissions" */
-export type Notification_Permissions_Avg_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "notification_permissions". All fields are combined with a logical 'AND'. */
@@ -5247,11 +5581,8 @@ export type Notification_Permissions_Bool_Exp = {
   device_info?: InputMaybe<Jsonb_Comparison_Exp>;
   device_token?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
-  notifications?: InputMaybe<Notifications_Bool_Exp>;
-  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Bool_Exp>;
   provider?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  user?: InputMaybe<Users_Bool_Exp>;
   user_id?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
@@ -5293,11 +5624,9 @@ export type Notification_Permissions_Insert_Input = {
   /** Device token for push notifications */
   device_token?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  notifications?: InputMaybe<Notifications_Arr_Rel_Insert_Input>;
   /** Notification provider (e.g., fcm, apns) */
   provider?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   /** Reference to users table */
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
 };
@@ -5316,19 +5645,6 @@ export type Notification_Permissions_Max_Fields = {
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
-/** order by max() on columns of table "notification_permissions" */
-export type Notification_Permissions_Max_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** Device token for push notifications */
-  device_token?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  /** Notification provider (e.g., fcm, apns) */
-  provider?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** Reference to users table */
-  user_id?: InputMaybe<Order_By>;
-};
-
 /** aggregate min on columns */
 export type Notification_Permissions_Min_Fields = {
   __typename?: "notification_permissions_min_fields";
@@ -5343,19 +5659,6 @@ export type Notification_Permissions_Min_Fields = {
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
-/** order by min() on columns of table "notification_permissions" */
-export type Notification_Permissions_Min_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** Device token for push notifications */
-  device_token?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  /** Notification provider (e.g., fcm, apns) */
-  provider?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** Reference to users table */
-  user_id?: InputMaybe<Order_By>;
-};
-
 /** response of any mutation on the table "notification_permissions" */
 export type Notification_Permissions_Mutation_Response = {
   __typename?: "notification_permissions_mutation_response";
@@ -5363,13 +5666,6 @@ export type Notification_Permissions_Mutation_Response = {
   affected_rows: Scalars["Int"]["output"];
   /** data from the rows affected by the mutation */
   returning: Array<Notification_Permissions>;
-};
-
-/** input type for inserting object relation for remote table "notification_permissions" */
-export type Notification_Permissions_Obj_Rel_Insert_Input = {
-  data: Notification_Permissions_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Notification_Permissions_On_Conflict>;
 };
 
 /** on_conflict condition type for table "notification_permissions" */
@@ -5385,10 +5681,8 @@ export type Notification_Permissions_Order_By = {
   device_info?: InputMaybe<Order_By>;
   device_token?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
-  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Order_By>;
   provider?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
-  user?: InputMaybe<Users_Order_By>;
   user_id?: InputMaybe<Order_By>;
 };
 
@@ -5443,12 +5737,6 @@ export type Notification_Permissions_Stddev_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by stddev() on columns of table "notification_permissions" */
-export type Notification_Permissions_Stddev_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate stddev_pop on columns */
 export type Notification_Permissions_Stddev_Pop_Fields = {
   __typename?: "notification_permissions_stddev_pop_fields";
@@ -5456,23 +5744,11 @@ export type Notification_Permissions_Stddev_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by stddev_pop() on columns of table "notification_permissions" */
-export type Notification_Permissions_Stddev_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate stddev_samp on columns */
 export type Notification_Permissions_Stddev_Samp_Fields = {
   __typename?: "notification_permissions_stddev_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev_samp() on columns of table "notification_permissions" */
-export type Notification_Permissions_Stddev_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "notification_permissions" */
@@ -5503,12 +5779,6 @@ export type Notification_Permissions_Sum_Fields = {
   __typename?: "notification_permissions_sum_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** order by sum() on columns of table "notification_permissions" */
-export type Notification_Permissions_Sum_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "notification_permissions" */
@@ -5555,12 +5825,6 @@ export type Notification_Permissions_Var_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by var_pop() on columns of table "notification_permissions" */
-export type Notification_Permissions_Var_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate var_samp on columns */
 export type Notification_Permissions_Var_Samp_Fields = {
   __typename?: "notification_permissions_var_samp_fields";
@@ -5568,23 +5832,11 @@ export type Notification_Permissions_Var_Samp_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by var_samp() on columns of table "notification_permissions" */
-export type Notification_Permissions_Var_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate variance on columns */
 export type Notification_Permissions_Variance_Fields = {
   __typename?: "notification_permissions_variance_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by variance() on columns of table "notification_permissions" */
-export type Notification_Permissions_Variance_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** columns and relationships of "notifications" */
@@ -5598,12 +5850,8 @@ export type Notifications = {
   /** Error message if notification failed */
   error?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["uuid"]["output"];
-  /** An object relationship */
-  message: Notification_Messages;
   /** Reference to notification message */
   message_id: Scalars["uuid"]["output"];
-  /** An object relationship */
-  permission: Notification_Permissions;
   /** Reference to notification permission */
   permission_id: Scalars["uuid"]["output"];
   /** Notification status */
@@ -5621,17 +5869,6 @@ export type Notifications_Aggregate = {
   __typename?: "notifications_aggregate";
   aggregate?: Maybe<Notifications_Aggregate_Fields>;
   nodes: Array<Notifications>;
-};
-
-export type Notifications_Aggregate_Bool_Exp = {
-  count?: InputMaybe<Notifications_Aggregate_Bool_Exp_Count>;
-};
-
-export type Notifications_Aggregate_Bool_Exp_Count = {
-  arguments?: InputMaybe<Array<Notifications_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-  filter?: InputMaybe<Notifications_Bool_Exp>;
-  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "notifications" */
@@ -5656,32 +5893,10 @@ export type Notifications_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
-/** order by aggregate values of table "notifications" */
-export type Notifications_Aggregate_Order_By = {
-  avg?: InputMaybe<Notifications_Avg_Order_By>;
-  count?: InputMaybe<Order_By>;
-  max?: InputMaybe<Notifications_Max_Order_By>;
-  min?: InputMaybe<Notifications_Min_Order_By>;
-  stddev?: InputMaybe<Notifications_Stddev_Order_By>;
-  stddev_pop?: InputMaybe<Notifications_Stddev_Pop_Order_By>;
-  stddev_samp?: InputMaybe<Notifications_Stddev_Samp_Order_By>;
-  sum?: InputMaybe<Notifications_Sum_Order_By>;
-  var_pop?: InputMaybe<Notifications_Var_Pop_Order_By>;
-  var_samp?: InputMaybe<Notifications_Var_Samp_Order_By>;
-  variance?: InputMaybe<Notifications_Variance_Order_By>;
-};
-
 /** append existing jsonb value of filtered columns with new jsonb value */
 export type Notifications_Append_Input = {
   /** Notification configuration */
   config?: InputMaybe<Scalars["jsonb"]["input"]>;
-};
-
-/** input type for inserting array relation for remote table "notifications" */
-export type Notifications_Arr_Rel_Insert_Input = {
-  data: Array<Notifications_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Notifications_On_Conflict>;
 };
 
 /** aggregate avg on columns */
@@ -5689,12 +5904,6 @@ export type Notifications_Avg_Fields = {
   __typename?: "notifications_avg_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by avg() on columns of table "notifications" */
-export type Notifications_Avg_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "notifications". All fields are combined with a logical 'AND'. */
@@ -5708,9 +5917,7 @@ export type Notifications_Bool_Exp = {
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
   error?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
-  message?: InputMaybe<Notification_Messages_Bool_Exp>;
   message_id?: InputMaybe<Uuid_Comparison_Exp>;
-  permission?: InputMaybe<Notification_Permissions_Bool_Exp>;
   permission_id?: InputMaybe<Uuid_Comparison_Exp>;
   status?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
@@ -5754,10 +5961,8 @@ export type Notifications_Insert_Input = {
   /** Error message if notification failed */
   error?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  message?: InputMaybe<Notification_Messages_Obj_Rel_Insert_Input>;
   /** Reference to notification message */
   message_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  permission?: InputMaybe<Notification_Permissions_Obj_Rel_Insert_Input>;
   /** Reference to notification permission */
   permission_id?: InputMaybe<Scalars["uuid"]["input"]>;
   /** Notification status */
@@ -5783,23 +5988,6 @@ export type Notifications_Max_Fields = {
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
 };
 
-/** order by max() on columns of table "notifications" */
-export type Notifications_Max_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  /** Error message if notification failed */
-  error?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  /** Reference to notification message */
-  message_id?: InputMaybe<Order_By>;
-  /** Reference to notification permission */
-  permission_id?: InputMaybe<Order_By>;
-  /** Notification status */
-  status?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate min on columns */
 export type Notifications_Min_Fields = {
   __typename?: "notifications_min_fields";
@@ -5816,23 +6004,6 @@ export type Notifications_Min_Fields = {
   /** Notification status */
   status?: Maybe<Scalars["String"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** order by min() on columns of table "notifications" */
-export type Notifications_Min_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  /** Error message if notification failed */
-  error?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  /** Reference to notification message */
-  message_id?: InputMaybe<Order_By>;
-  /** Reference to notification permission */
-  permission_id?: InputMaybe<Order_By>;
-  /** Notification status */
-  status?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** response of any mutation on the table "notifications" */
@@ -5859,9 +6030,7 @@ export type Notifications_Order_By = {
   created_at?: InputMaybe<Order_By>;
   error?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
-  message?: InputMaybe<Notification_Messages_Order_By>;
   message_id?: InputMaybe<Order_By>;
-  permission?: InputMaybe<Notification_Permissions_Order_By>;
   permission_id?: InputMaybe<Order_By>;
   status?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
@@ -5926,12 +6095,6 @@ export type Notifications_Stddev_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by stddev() on columns of table "notifications" */
-export type Notifications_Stddev_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate stddev_pop on columns */
 export type Notifications_Stddev_Pop_Fields = {
   __typename?: "notifications_stddev_pop_fields";
@@ -5939,23 +6102,11 @@ export type Notifications_Stddev_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by stddev_pop() on columns of table "notifications" */
-export type Notifications_Stddev_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate stddev_samp on columns */
 export type Notifications_Stddev_Samp_Fields = {
   __typename?: "notifications_stddev_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev_samp() on columns of table "notifications" */
-export type Notifications_Stddev_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "notifications" */
@@ -5990,12 +6141,6 @@ export type Notifications_Sum_Fields = {
   __typename?: "notifications_sum_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** order by sum() on columns of table "notifications" */
-export type Notifications_Sum_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "notifications" */
@@ -6044,12 +6189,6 @@ export type Notifications_Var_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by var_pop() on columns of table "notifications" */
-export type Notifications_Var_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate var_samp on columns */
 export type Notifications_Var_Samp_Fields = {
   __typename?: "notifications_var_samp_fields";
@@ -6057,23 +6196,11 @@ export type Notifications_Var_Samp_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by var_samp() on columns of table "notifications" */
-export type Notifications_Var_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
 /** aggregate variance on columns */
 export type Notifications_Variance_Fields = {
   __typename?: "notifications_variance_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by variance() on columns of table "notifications" */
-export type Notifications_Variance_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to compare columns of type "numeric". All fields are combined with logical 'AND'. */
@@ -8286,8 +8413,6 @@ export type Payments_Providers = {
   /** Provider type */
   type?: Maybe<Scalars["String"]["output"]>;
   updated_at: Scalars["bigint"]["output"];
-  /** An object relationship */
-  user?: Maybe<Users>;
   /** Owner user ID */
   user_id?: Maybe<Scalars["uuid"]["output"]>;
   /** An array relationship */
@@ -8447,7 +8572,6 @@ export type Payments_Providers_Bool_Exp = {
   subscriptions_aggregate?: InputMaybe<Payments_Subscriptions_Aggregate_Bool_Exp>;
   type?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  user?: InputMaybe<Users_Bool_Exp>;
   user_id?: InputMaybe<Uuid_Comparison_Exp>;
   user_mappings?: InputMaybe<Payments_User_Payment_Provider_Mappings_Bool_Exp>;
   user_mappings_aggregate?: InputMaybe<Payments_User_Payment_Provider_Mappings_Aggregate_Bool_Exp>;
@@ -8509,7 +8633,6 @@ export type Payments_Providers_Insert_Input = {
   /** Provider type */
   type?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   /** Owner user ID */
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
   user_mappings?: InputMaybe<Payments_User_Payment_Provider_Mappings_Arr_Rel_Insert_Input>;
@@ -8600,7 +8723,6 @@ export type Payments_Providers_Order_By = {
   subscriptions_aggregate?: InputMaybe<Payments_Subscriptions_Aggregate_Order_By>;
   type?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
-  user?: InputMaybe<Users_Order_By>;
   user_id?: InputMaybe<Order_By>;
   user_mappings_aggregate?: InputMaybe<Payments_User_Payment_Provider_Mappings_Aggregate_Order_By>;
 };
@@ -10479,12 +10601,18 @@ export type Payments_User_Payment_Provider_Mappings_Variance_Order_By = {
 
 export type Query_Root = {
   __typename?: "query_root";
-  /** fetch data from the table: "accounts" */
+  /** An array relationship */
   accounts: Array<Accounts>;
-  /** fetch aggregated fields from the table: "accounts" */
+  /** An aggregate relationship */
   accounts_aggregate: Accounts_Aggregate;
   /** fetch data from the table: "accounts" using primary key columns */
   accounts_by_pk?: Maybe<Accounts>;
+  /** fetch data from the table: "auth_jwt" */
+  auth_jwt: Array<Auth_Jwt>;
+  /** fetch aggregated fields from the table: "auth_jwt" */
+  auth_jwt_aggregate: Auth_Jwt_Aggregate;
+  /** fetch data from the table: "auth_jwt" using primary key columns */
+  auth_jwt_by_pk?: Maybe<Auth_Jwt>;
   /** fetch data from the table: "debug" */
   debug: Array<Debug>;
   /** fetch aggregated fields from the table: "debug" */
@@ -10521,21 +10649,21 @@ export type Query_Root = {
   logs_states_aggregate: Logs_States_Aggregate;
   /** fetch data from the table: "logs.states" using primary key columns */
   logs_states_by_pk?: Maybe<Logs_States>;
-  /** An array relationship */
+  /** fetch data from the table: "notification_messages" */
   notification_messages: Array<Notification_Messages>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "notification_messages" */
   notification_messages_aggregate: Notification_Messages_Aggregate;
   /** fetch data from the table: "notification_messages" using primary key columns */
   notification_messages_by_pk?: Maybe<Notification_Messages>;
-  /** An array relationship */
+  /** fetch data from the table: "notification_permissions" */
   notification_permissions: Array<Notification_Permissions>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "notification_permissions" */
   notification_permissions_aggregate: Notification_Permissions_Aggregate;
   /** fetch data from the table: "notification_permissions" using primary key columns */
   notification_permissions_by_pk?: Maybe<Notification_Permissions>;
-  /** An array relationship */
+  /** fetch data from the table: "notifications" */
   notifications: Array<Notifications>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "notifications" */
   notifications_aggregate: Notifications_Aggregate;
   /** fetch data from the table: "notifications" using primary key columns */
   notifications_by_pk?: Maybe<Notifications>;
@@ -10606,6 +10734,26 @@ export type Query_RootAccounts_AggregateArgs = {
 };
 
 export type Query_RootAccounts_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+export type Query_RootAuth_JwtArgs = {
+  distinct_on?: InputMaybe<Array<Auth_Jwt_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Auth_Jwt_Order_By>>;
+  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
+};
+
+export type Query_RootAuth_Jwt_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Auth_Jwt_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Auth_Jwt_Order_By>>;
+  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
+};
+
+export type Query_RootAuth_Jwt_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -10959,14 +11107,22 @@ export type Query_RootViruses_By_PkArgs = {
 
 export type Subscription_Root = {
   __typename?: "subscription_root";
-  /** fetch data from the table: "accounts" */
+  /** An array relationship */
   accounts: Array<Accounts>;
-  /** fetch aggregated fields from the table: "accounts" */
+  /** An aggregate relationship */
   accounts_aggregate: Accounts_Aggregate;
   /** fetch data from the table: "accounts" using primary key columns */
   accounts_by_pk?: Maybe<Accounts>;
   /** fetch data from the table in a streaming manner: "accounts" */
   accounts_stream: Array<Accounts>;
+  /** fetch data from the table: "auth_jwt" */
+  auth_jwt: Array<Auth_Jwt>;
+  /** fetch aggregated fields from the table: "auth_jwt" */
+  auth_jwt_aggregate: Auth_Jwt_Aggregate;
+  /** fetch data from the table: "auth_jwt" using primary key columns */
+  auth_jwt_by_pk?: Maybe<Auth_Jwt>;
+  /** fetch data from the table in a streaming manner: "auth_jwt" */
+  auth_jwt_stream: Array<Auth_Jwt>;
   /** fetch data from the table: "debug" */
   debug: Array<Debug>;
   /** fetch aggregated fields from the table: "debug" */
@@ -11015,25 +11171,25 @@ export type Subscription_Root = {
   logs_states_by_pk?: Maybe<Logs_States>;
   /** fetch data from the table in a streaming manner: "logs.states" */
   logs_states_stream: Array<Logs_States>;
-  /** An array relationship */
+  /** fetch data from the table: "notification_messages" */
   notification_messages: Array<Notification_Messages>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "notification_messages" */
   notification_messages_aggregate: Notification_Messages_Aggregate;
   /** fetch data from the table: "notification_messages" using primary key columns */
   notification_messages_by_pk?: Maybe<Notification_Messages>;
   /** fetch data from the table in a streaming manner: "notification_messages" */
   notification_messages_stream: Array<Notification_Messages>;
-  /** An array relationship */
+  /** fetch data from the table: "notification_permissions" */
   notification_permissions: Array<Notification_Permissions>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "notification_permissions" */
   notification_permissions_aggregate: Notification_Permissions_Aggregate;
   /** fetch data from the table: "notification_permissions" using primary key columns */
   notification_permissions_by_pk?: Maybe<Notification_Permissions>;
   /** fetch data from the table in a streaming manner: "notification_permissions" */
   notification_permissions_stream: Array<Notification_Permissions>;
-  /** An array relationship */
+  /** fetch data from the table: "notifications" */
   notifications: Array<Notifications>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "notifications" */
   notifications_aggregate: Notifications_Aggregate;
   /** fetch data from the table: "notifications" using primary key columns */
   notifications_by_pk?: Maybe<Notifications>;
@@ -11129,6 +11285,32 @@ export type Subscription_RootAccounts_StreamArgs = {
   batch_size: Scalars["Int"]["input"];
   cursor: Array<InputMaybe<Accounts_Stream_Cursor_Input>>;
   where?: InputMaybe<Accounts_Bool_Exp>;
+};
+
+export type Subscription_RootAuth_JwtArgs = {
+  distinct_on?: InputMaybe<Array<Auth_Jwt_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Auth_Jwt_Order_By>>;
+  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
+};
+
+export type Subscription_RootAuth_Jwt_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Auth_Jwt_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Auth_Jwt_Order_By>>;
+  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
+};
+
+export type Subscription_RootAuth_Jwt_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+export type Subscription_RootAuth_Jwt_StreamArgs = {
+  batch_size: Scalars["Int"]["input"];
+  cursor: Array<InputMaybe<Auth_Jwt_Stream_Cursor_Input>>;
+  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
 };
 
 export type Subscription_RootDebugArgs = {
@@ -11604,6 +11786,10 @@ export type Users = {
   __typename?: "users";
   _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
   _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
+  /** An array relationship */
+  accounts: Array<Accounts>;
+  /** An aggregate relationship */
+  accounts_aggregate: Accounts_Aggregate;
   created_at: Scalars["bigint"]["output"];
   /** User email address */
   email?: Maybe<Scalars["String"]["output"]>;
@@ -11622,17 +11808,27 @@ export type Users = {
   is_admin?: Maybe<Scalars["Boolean"]["output"]>;
   /** User display name */
   name?: Maybe<Scalars["String"]["output"]>;
-  /** An array relationship */
-  notification_messages: Array<Notification_Messages>;
-  /** An aggregate relationship */
-  notification_messages_aggregate: Notification_Messages_Aggregate;
-  /** An array relationship */
-  notification_permissions: Array<Notification_Permissions>;
-  /** An aggregate relationship */
-  notification_permissions_aggregate: Notification_Permissions_Aggregate;
   /** User password hash */
   password?: Maybe<Scalars["String"]["output"]>;
   updated_at: Scalars["bigint"]["output"];
+};
+
+/** columns and relationships of "users" */
+export type UsersAccountsArgs = {
+  distinct_on?: InputMaybe<Array<Accounts_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Accounts_Order_By>>;
+  where?: InputMaybe<Accounts_Bool_Exp>;
+};
+
+/** columns and relationships of "users" */
+export type UsersAccounts_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Accounts_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Accounts_Order_By>>;
+  where?: InputMaybe<Accounts_Bool_Exp>;
 };
 
 /** columns and relationships of "users" */
@@ -11651,42 +11847,6 @@ export type UsersFiles_AggregateArgs = {
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   order_by?: InputMaybe<Array<Files_Order_By>>;
   where?: InputMaybe<Files_Bool_Exp>;
-};
-
-/** columns and relationships of "users" */
-export type UsersNotification_MessagesArgs = {
-  distinct_on?: InputMaybe<Array<Notification_Messages_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Notification_Messages_Order_By>>;
-  where?: InputMaybe<Notification_Messages_Bool_Exp>;
-};
-
-/** columns and relationships of "users" */
-export type UsersNotification_Messages_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Notification_Messages_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Notification_Messages_Order_By>>;
-  where?: InputMaybe<Notification_Messages_Bool_Exp>;
-};
-
-/** columns and relationships of "users" */
-export type UsersNotification_PermissionsArgs = {
-  distinct_on?: InputMaybe<Array<Notification_Permissions_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Notification_Permissions_Order_By>>;
-  where?: InputMaybe<Notification_Permissions_Bool_Exp>;
-};
-
-/** columns and relationships of "users" */
-export type UsersNotification_Permissions_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Notification_Permissions_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Notification_Permissions_Order_By>>;
-  where?: InputMaybe<Notification_Permissions_Bool_Exp>;
 };
 
 /** aggregated selection of "users" */
@@ -11734,6 +11894,8 @@ export type Users_Bool_Exp = {
   _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Users_Bool_Exp>;
   _or?: InputMaybe<Array<Users_Bool_Exp>>;
+  accounts?: InputMaybe<Accounts_Bool_Exp>;
+  accounts_aggregate?: InputMaybe<Accounts_Aggregate_Bool_Exp>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
   email?: InputMaybe<String_Comparison_Exp>;
   email_verified?: InputMaybe<Bigint_Comparison_Exp>;
@@ -11744,10 +11906,6 @@ export type Users_Bool_Exp = {
   image?: InputMaybe<String_Comparison_Exp>;
   is_admin?: InputMaybe<Boolean_Comparison_Exp>;
   name?: InputMaybe<String_Comparison_Exp>;
-  notification_messages?: InputMaybe<Notification_Messages_Bool_Exp>;
-  notification_messages_aggregate?: InputMaybe<Notification_Messages_Aggregate_Bool_Exp>;
-  notification_permissions?: InputMaybe<Notification_Permissions_Bool_Exp>;
-  notification_permissions_aggregate?: InputMaybe<Notification_Permissions_Aggregate_Bool_Exp>;
   password?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
 };
@@ -11770,6 +11928,7 @@ export type Users_Inc_Input = {
 
 /** input type for inserting data into table "users" */
 export type Users_Insert_Input = {
+  accounts?: InputMaybe<Accounts_Arr_Rel_Insert_Input>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   /** User email address */
   email?: InputMaybe<Scalars["String"]["input"]>;
@@ -11785,8 +11944,6 @@ export type Users_Insert_Input = {
   is_admin?: InputMaybe<Scalars["Boolean"]["input"]>;
   /** User display name */
   name?: InputMaybe<Scalars["String"]["input"]>;
-  notification_messages?: InputMaybe<Notification_Messages_Arr_Rel_Insert_Input>;
-  notification_permissions?: InputMaybe<Notification_Permissions_Arr_Rel_Insert_Input>;
   /** User password hash */
   password?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -11863,6 +12020,7 @@ export type Users_On_Conflict = {
 export type Users_Order_By = {
   _hasyx_schema_name?: InputMaybe<Order_By>;
   _hasyx_table_name?: InputMaybe<Order_By>;
+  accounts_aggregate?: InputMaybe<Accounts_Aggregate_Order_By>;
   created_at?: InputMaybe<Order_By>;
   email?: InputMaybe<Order_By>;
   email_verified?: InputMaybe<Order_By>;
@@ -11872,8 +12030,6 @@ export type Users_Order_By = {
   image?: InputMaybe<Order_By>;
   is_admin?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
-  notification_messages_aggregate?: InputMaybe<Notification_Messages_Aggregate_Order_By>;
-  notification_permissions_aggregate?: InputMaybe<Notification_Permissions_Aggregate_Order_By>;
   password?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
 };
@@ -12075,6 +12231,8 @@ export type Uuid_Comparison_Exp = {
 /** columns and relationships of "viruses" */
 export type Viruses = {
   __typename?: "viruses";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at: Scalars["bigint"]["output"];
   /** Virus detection timestamp */
   detected_at?: Maybe<Scalars["timestamptz"]["output"]>;
@@ -12166,6 +12324,8 @@ export type Viruses_Avg_Order_By = {
 /** Boolean expression to filter rows from the table "viruses". All fields are combined with a logical 'AND'. */
 export type Viruses_Bool_Exp = {
   _and?: InputMaybe<Array<Viruses_Bool_Exp>>;
+  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
+  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Viruses_Bool_Exp>;
   _or?: InputMaybe<Array<Viruses_Bool_Exp>>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
@@ -12206,6 +12366,8 @@ export type Viruses_Insert_Input = {
 /** aggregate max on columns */
 export type Viruses_Max_Fields = {
   __typename?: "viruses_max_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Virus detection timestamp */
   detected_at?: Maybe<Scalars["timestamptz"]["output"]>;
@@ -12219,6 +12381,8 @@ export type Viruses_Max_Fields = {
 
 /** order by max() on columns of table "viruses" */
 export type Viruses_Max_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   /** Virus detection timestamp */
   detected_at?: InputMaybe<Order_By>;
@@ -12233,6 +12397,8 @@ export type Viruses_Max_Order_By = {
 /** aggregate min on columns */
 export type Viruses_Min_Fields = {
   __typename?: "viruses_min_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Virus detection timestamp */
   detected_at?: Maybe<Scalars["timestamptz"]["output"]>;
@@ -12246,6 +12412,8 @@ export type Viruses_Min_Fields = {
 
 /** order by min() on columns of table "viruses" */
 export type Viruses_Min_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   /** Virus detection timestamp */
   detected_at?: InputMaybe<Order_By>;
@@ -12275,6 +12443,8 @@ export type Viruses_On_Conflict = {
 
 /** Ordering options when selecting data from "viruses". */
 export type Viruses_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   detected_at?: InputMaybe<Order_By>;
   file?: InputMaybe<Files_Order_By>;
@@ -12291,6 +12461,10 @@ export type Viruses_Pk_Columns_Input = {
 
 /** select columns of table "viruses" */
 export enum Viruses_Select_Column {
+  /** column name */
+  HasyxSchemaName = "_hasyx_schema_name",
+  /** column name */
+  HasyxTableName = "_hasyx_table_name",
   /** column name */
   CreatedAt = "created_at",
   /** column name */
@@ -12367,6 +12541,8 @@ export type Viruses_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Viruses_Stream_Cursor_Value_Input = {
+  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
+  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   /** Virus detection timestamp */
   detected_at?: InputMaybe<Scalars["timestamptz"]["input"]>;

@@ -92,6 +92,7 @@ interface DefinePermissionOptions {
   operation: 'select' | 'insert' | 'update' | 'delete';
   role: string | string[];
   filter: any;
+  check?: any; // For insert operations
   aggregate?: boolean;
   columns?: boolean | string[];
 }
@@ -275,6 +276,14 @@ export class Hasura {
             // If still inconsistent metadata, try one more cleanup and direct approach
             debug(`🔄 Still inconsistent metadata after cleanup, attempting final cleanup for ${operationName}...`);
             await this.dropInconsistentMetadata();
+            
+            // Try one more time with reload metadata
+            try {
+              await this.reloadMetadata();
+            } catch (reloadError) {
+              debug('⚠️ Could not reload metadata:', reloadError);
+            }
+            
             return await operation();
           } else {
             // Different error after cleanup, throw it
@@ -319,6 +328,10 @@ export class Hasura {
       'pg_create_object_relationship',
       'pg_create_array_relationship',
       'pg_delete_permission',
+      'pg_drop_select_permission',
+      'pg_drop_insert_permission',
+      'pg_drop_update_permission',
+      'pg_drop_delete_permission',
       'pg_create_select_permission',
       'pg_create_insert_permission',
       'pg_create_update_permission',
@@ -691,7 +704,7 @@ export class Hasura {
     
     // Drop table if exists with CASCADE or without based on option
     const cascadeClause = cascade ? ' CASCADE' : '';
-    await this.sql(`DROP TABLE IF EXISTS "${schema}"."${table}"${cascadeClause};`, 'default', false);
+    await this.sql(`DROP TABLE IF EXISTS "${schema}"."${table}"${cascadeClause};`, 'default', true);
     debug(`✅ Deleted table ${schema}.${table} with cascade: ${cascade}`);
     
     return { success: true };
@@ -783,7 +796,7 @@ export class Hasura {
   }
 
   async definePermission(options: DefinePermissionOptions): Promise<any> {
-    const { schema, table, operation, role, filter, aggregate = false, columns = true } = options;
+    const { schema, table, operation, role, filter, check, aggregate = false, columns = true } = options;
     
     if (Array.isArray(role)) {
       debug(`🔐 Defining ${operation} permission for multiple roles in ${schema}.${table}: ${role.join(', ')}`);
@@ -814,10 +827,16 @@ export class Hasura {
       table: { schema, name: table },
       role,
       permission: {
-        columns: columnList,
-        filter
+        columns: columnList
       }
     };
+    
+    // For insert operations, use 'check' instead of 'filter'
+    if (operation === 'insert') {
+      permissionArgs.permission.check = filter;
+    } else {
+      permissionArgs.permission.filter = filter;
+    }
     
     if (operation === 'select' && aggregate) {
       permissionArgs.permission.allow_aggregations = true;

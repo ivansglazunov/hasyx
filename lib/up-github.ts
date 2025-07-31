@@ -23,8 +23,8 @@ export async function applySQLSchema(hasura: Hasura) {
     table: 'github_issues',
     name: 'github_id',
     type: ColumnType.BIGINT,
-    postfix: 'NOT NULL UNIQUE',
-    comment: 'GitHub issue ID from API'
+    postfix: 'UNIQUE',
+    comment: 'GitHub issue ID from API (nullable for user-created issues)'
   });
   
   await hasura.defineColumn({
@@ -41,8 +41,8 @@ export async function applySQLSchema(hasura: Hasura) {
     table: 'github_issues',
     name: 'number',
     type: ColumnType.INTEGER,
-    postfix: 'NOT NULL',
-    comment: 'Issue number in repository'
+    postfix: '',
+    comment: 'Issue number in repository (nullable for user-created issues)'
   });
   
   await hasura.defineColumn({
@@ -111,6 +111,14 @@ export async function applySQLSchema(hasura: Hasura) {
     name: 'author_association',
     type: ColumnType.TEXT,
     comment: 'Author association with repository'
+  });
+  
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'github_issues',
+    name: '_user_id',
+    type: ColumnType.UUID,
+    comment: 'User ID who created/modified the issue (set by trigger)'
   });
   
   await hasura.defineColumn({
@@ -252,6 +260,50 @@ export async function applySQLSchema(hasura: Hasura) {
   debug('✅ GitHub issues SQL schema applied successfully');
 }
 
+/**
+ * Create trigger to automatically set _user_id
+ */
+export async function createUserTrigger(hasura: Hasura) {
+  debug('🔧 Creating user trigger for github_issues...');
+  
+  // Create function to set user ID
+  await hasura.sql(`
+    CREATE OR REPLACE FUNCTION public.set_user_id_trigger()
+    RETURNS TRIGGER AS $$
+    DECLARE
+      session_vars json;
+      user_id text;
+    BEGIN
+      -- Get session variables from hasura.user
+      session_vars := current_setting('hasura.user', true)::json;
+      
+      -- Extract user_id from session variables
+      user_id := session_vars ->> 'x-hasura-user-id';
+      
+      -- If operation is performed by a user (has session variables), set _user_id
+      IF user_id IS NOT NULL AND user_id != '' THEN
+        NEW._user_id = user_id::uuid;
+      ELSE
+        -- If operation is performed by system (no user context), clear _user_id
+        NEW._user_id = NULL;
+      END IF;
+      
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+  `);
+  
+  // Create trigger
+  await hasura.sql(`
+    CREATE TRIGGER set_user_id_on_github_issues
+      BEFORE INSERT OR UPDATE ON public.github_issues
+      FOR EACH ROW
+      EXECUTE FUNCTION public.set_user_id_trigger();
+  `);
+  
+  debug('✅ User trigger created successfully');
+}
+
 export async function trackTables(hasura: Hasura) {
   debug('📊 Tracking GitHub issues tables...');
   
@@ -299,17 +351,13 @@ export async function applyPermissions(hasura: Hasura) {
         }
       }
     },
-    columns: true,
-  });
-  
-  // Add INSERT permission for admin role
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'github_issues',
-    operation: 'insert',
-    role: 'admin',
-    filter: {},
-    columns: true
+    columns: [
+      'github_id', 'node_id', 'number', 'title', 'body', 'state', 'state_reason',
+      'locked', 'active_lock_reason', 'comments_count', 'author_association',
+      'user_data', 'assignee_data', 'assignees_data', 'labels_data', 'milestone_data',
+      'pull_request_data', 'closed_by_data', 'repository_owner', 'repository_name',
+      'url', 'html_url', 'created_at', 'updated_at', 'closed_at'
+    ],
   });
   
   debug('✅ GitHub issues permissions applied successfully (read for all, insert for users with GitHub accounts)');
@@ -319,18 +367,14 @@ export async function up(customHasura?: Hasura) {
   debug('🚀 Starting GitHub issues migration...');
   
   const hasura = customHasura || new Hasura({
-    url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!,
-    secret: process.env.HASURA_ADMIN_SECRET!,
+    url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL || 'http://localhost:8080/v1/graphql',
+    secret: process.env.HASURA_ADMIN_SECRET || 'myadminsecretkey'
   });
   
-  try {
-    await applySQLSchema(hasura);
-    await trackTables(hasura);
-    await applyPermissions(hasura);
-    
-    console.log('✅ GitHub issues migration completed successfully!');
-  } catch (error) {
-    console.error('❌ GitHub issues migration failed:', error);
-    throw error;
-  }
+  await applySQLSchema(hasura);
+  await createUserTrigger(hasura);
+  await trackTables(hasura);
+  await applyPermissions(hasura);
+  
+  debug('✅ GitHub issues migration completed successfully!');
 }

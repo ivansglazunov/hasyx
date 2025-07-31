@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import http from 'http';
 import ws, { WebSocket, WebSocketServer } from 'ws';
 import { getToken } from 'next-auth/jwt';
-import { getTokenFromIncomingMessage } from 'hasyx/lib/auth-next';
+import { getTokenFromIncomingMessage, getTokenFromRequest } from 'hasyx/lib/auth-next';
 import Debug from './debug';
 import { generateJWT } from 'hasyx/lib/jwt';
 
@@ -147,19 +147,84 @@ export async function proxyPOST(request: NextRequest): Promise<NextResponse> {
     }
     
     if (!useJwt) {
-      // Fall back to admin secret if no valid JWT
-    if (!HASURA_ADMIN_SECRET) {
-      const errorMsg = 'HASURA_ADMIN_SECRET is not configured on the server for HTTP proxy.';
-      console.error(`❌ ${errorMsg}`);
-      debug(`❌ ${errorMsg}`);
-      return NextResponse.json({ errors: [{ message: errorMsg }] }, {
-        status: 500,
-        headers: corsHeaders
-      });
-      // Important: Do not proceed if admin secret is missing for POST
+      // Fall back to NextAuth cookie authentication (same logic as WebSocket)
+      debug('🔍 No JWT in Authorization header, checking NextAuth session...');
+      try {
+        const token = await getTokenFromRequest(request) as NextAuthToken | null;
+        
+        debug('🎫 getTokenFromRequest result:', {
+          hasToken: !!token,
+          hasSub: !!token?.sub,
+          tokenType: typeof token,
+          sub: token?.sub,
+          provider: token?.provider,
+          hasHasuraClaims: !!(token as any)?.['https://hasura.io/jwt/claims']
+        });
+
+        if (token?.sub) {
+          debug(`👤 User authenticated (ID: ${token.sub}). Generating Hasura JWT.`);
+          debug('🔑 === JWT GENERATION FOR AUTHENTICATED USER ===');
+          try {
+            const hasuraClaims = {
+              'x-hasura-allowed-roles': ['user', 'anonymous', 'me'], // Keep fixed roles for simplicity in proxy
+              'x-hasura-default-role': 'user',
+              'x-hasura-user-id': token.sub,
+            };
+            debug('🏷️ Hasura claims for user:', hasuraClaims);
+            
+            const jwt = await generateJWT(token.sub, hasuraClaims);
+            headers['Authorization'] = `Bearer ${jwt}`;
+            useJwt = true;
+            debug('🔑 Using generated JWT (user role) for downstream HTTP request.');
+            debug(`📝 JWT header added: Authorization: Bearer ${jwt.substring(0, 50)}...`);
+          } catch (jwtError: any) {
+            console.error('❌ Failed to generate Hasura JWT for user:', jwtError);
+            debug('❌ Failed to generate Hasura JWT for user:', jwtError.message);
+            debug('❌ JWT Error stack:', jwtError.stack);
+          }
+        } else {
+          // Generate Anonymous JWT instead of using Admin Secret
+          debug('👤 User not authenticated. Generating Anonymous JWT.');
+          debug('🔑 === JWT GENERATION FOR ANONYMOUS USER ===');
+          try {
+            const anonymousUserId = `anon-${Date.now()}`; // Create a unique ID for anonymous user
+            const hasuraClaims = {
+              'x-hasura-allowed-roles': ['anonymous'], // Only allow anonymous role
+              'x-hasura-default-role': 'anonymous',
+              'x-hasura-user-id': anonymousUserId, // Provide an ID
+            };
+            debug('🏷️ Hasura claims for anonymous:', hasuraClaims);
+            
+            const jwt = await generateJWT(anonymousUserId, hasuraClaims);
+            headers['Authorization'] = `Bearer ${jwt}`;
+            useJwt = true;
+            debug('🔑 Using generated JWT (anonymous role) for downstream HTTP request.');
+            debug(`📝 JWT header added: Authorization: Bearer ${jwt.substring(0, 50)}...`);
+          } catch (jwtError: any) {
+            console.error('❌ Failed to generate Hasura JWT for anonymous:', jwtError);
+            debug('❌ Failed to generate Hasura JWT for anonymous:', jwtError.message);
+            debug('❌ JWT Error stack:', jwtError.stack);
+          }
+        }
+      } catch (sessionError: any) {
+        debug('❌ Error checking user session:', sessionError.message);
+      }
     }
-    headers['x-hasura-admin-secret'] = HASURA_ADMIN_SECRET;
-    debug('🔑 Using Hasura Admin Secret for downstream HTTP request.');
+    
+    if (!useJwt) {
+      // Fall back to admin secret if no valid JWT or session
+      if (!HASURA_ADMIN_SECRET) {
+        const errorMsg = 'HASURA_ADMIN_SECRET is not configured on the server for HTTP proxy.';
+        console.error(`❌ ${errorMsg}`);
+        debug(`❌ ${errorMsg}`);
+        return NextResponse.json({ errors: [{ message: errorMsg }] }, {
+          status: 500,
+          headers: corsHeaders
+        });
+        // Important: Do not proceed if admin secret is missing for POST
+      }
+      headers['x-hasura-admin-secret'] = HASURA_ADMIN_SECRET;
+      debug('🔑 Using Hasura Admin Secret for downstream HTTP request.');
     }
 
     debug(`🔗 Sending request to Hasura HTTP: ${HASURA_ENDPOINT}`);
