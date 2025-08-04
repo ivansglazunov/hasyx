@@ -4,6 +4,9 @@ import path from 'path';
 import dotenv from 'dotenv';
 import Debug from './debug';
 
+// Load environment variables
+dotenv.config();
+
 const debug = Debug('assist:storage');
 
 export interface StorageConfig {
@@ -141,14 +144,14 @@ async function configureLocalStorage(rl: any): Promise<StorageConfig> {
   const bucket = await askQuestion(
     rl,
     'Enter bucket name for local storage:',
-    'hasyx-storage'
+    'default'
   );
 
   return {
     provider: 'minio',
     bucket,
     useLocal: true,
-    endpoint: 'http://minio:9000',
+    endpoint: 'http://hasyx-minio:9000',
     forcePathStyle: true,
     accessKeyId: 'minioadmin',
     secretAccessKey: 'minioadmin'
@@ -219,7 +222,7 @@ async function configureCloudStorage(rl: any, options: StorageSetupOptions): Pro
   const bucket = await askQuestion(
     rl,
     'Enter bucket name:',
-    'hasyx-storage'
+    'default'
   );
 
   const region = await askQuestion(
@@ -300,42 +303,42 @@ async function updateEnvironmentVariables(envPath: string, config: StorageConfig
     // S3 configuration
     'STORAGE_S3_BUCKET': config.bucket,
     'STORAGE_S3_REGION': config.region || 'us-east-1',
-    'STORAGE_S3_ACCESS_KEY_ID': config.accessKeyId || '',
-    'STORAGE_S3_SECRET_ACCESS_KEY': config.secretAccessKey || '',
-    'STORAGE_S3_ENDPOINT': config.endpoint || 'https://s3.amazonaws.com',
+    'STORAGE_S3_ACCESS_KEY_ID': config.accessKeyId || 'minioadmin',
+    'STORAGE_S3_SECRET_ACCESS_KEY': config.secretAccessKey || 'minioadmin',
+    'STORAGE_S3_ENDPOINT': config.endpoint || 'http://hasyx-minio:9000',
     'STORAGE_S3_FORCE_PATH_STYLE': config.forcePathStyle ? 'true' : 'false',
     
     // Security
-    'STORAGE_JWT_SECRET': process.env.HASURA_GRAPHQL_JWT_SECRET || 'your-jwt-secret-key',
-    'STORAGE_JWT_EXPIRES_IN': '15m',
-    'STORAGE_JWT_REFRESH_EXPIRES_IN': '7d',
+    'STORAGE_JWT_SECRET': process.env.STORAGE_JWT_SECRET || '{"type":"HS256","key":"your-jwt-secret-key"}',
+    'STORAGE_JWT_EXPIRES_IN': process.env.STORAGE_JWT_EXPIRES_IN || '15m',
+    'STORAGE_JWT_REFRESH_EXPIRES_IN': process.env.STORAGE_JWT_REFRESH_EXPIRES_IN || '7d',
     
     // File settings
-    'STORAGE_MAX_FILE_SIZE': '100MB',
-    'STORAGE_ALLOWED_MIME_TYPES': 'image/*,application/pdf,text/*',
-    'STORAGE_ALLOWED_FILE_EXTENSIONS': 'jpg,jpeg,png,gif,pdf,txt,doc,docx',
+    'STORAGE_MAX_FILE_SIZE': process.env.STORAGE_MAX_FILE_SIZE || '100MB',
+    'STORAGE_ALLOWED_MIME_TYPES': process.env.STORAGE_ALLOWED_MIME_TYPES || 'image/*,application/pdf,text/*',
+    'STORAGE_ALLOWED_FILE_EXTENSIONS': process.env.STORAGE_ALLOWED_FILE_EXTENSIONS || 'jpg,jpeg,png,gif,pdf,txt,doc,docx',
     
     // Cache settings
-    'STORAGE_CACHE_CONTROL': 'public, max-age=31536000',
+    'STORAGE_CACHE_CONTROL': process.env.STORAGE_CACHE_CONTROL || 'public, max-age=31536000',
     'STORAGE_ETAG': 'true',
     
     // Image manipulation
     'STORAGE_IMAGE_MANIPULATION': 'true',
-    'STORAGE_IMAGE_MAX_WIDTH': '1920',
-    'STORAGE_IMAGE_MAX_HEIGHT': '1080',
-    'STORAGE_IMAGE_QUALITY': '80',
+    'STORAGE_IMAGE_MAX_WIDTH': process.env.STORAGE_IMAGE_MAX_WIDTH || '1920',
+    'STORAGE_IMAGE_MAX_HEIGHT': process.env.STORAGE_IMAGE_MAX_HEIGHT || '1080',
+    'STORAGE_IMAGE_QUALITY': process.env.STORAGE_IMAGE_QUALITY || '80',
     
     // Rate limiting
-    'STORAGE_RATE_LIMIT_WINDOW': '15m',
-    'STORAGE_RATE_LIMIT_MAX_REQUESTS': '100',
+    'STORAGE_RATE_LIMIT_WINDOW': process.env.STORAGE_RATE_LIMIT_WINDOW || '15m',
+    'STORAGE_RATE_LIMIT_MAX_REQUESTS': process.env.STORAGE_RATE_LIMIT_MAX_REQUESTS || '100',
     
     // Logging
-    'STORAGE_LOG_LEVEL': 'info',
+    'STORAGE_LOG_LEVEL': process.env.STORAGE_LOG_LEVEL || 'info',
     'STORAGE_LOG_FORMAT': 'json',
     
     // Hasura storage endpoint
-    'HASURA_STORAGE_URL': 'http://localhost:3001',
-    'NEXT_PUBLIC_HASURA_STORAGE_URL': 'http://localhost:3001'
+    'HASURA_STORAGE_URL': process.env.HASURA_STORAGE_URL || 'http://hasura-storage:8000',
+    'NEXT_PUBLIC_HASURA_STORAGE_URL': process.env.NEXT_PUBLIC_HASURA_STORAGE_URL || 'http://localhost:3001'
   };
 
   // Add or update environment variables
@@ -376,132 +379,233 @@ async function createDockerCompose(): Promise<void> {
     return;
   }
 
-  const dockerComposeContent = `version: '3.8'
-
+  const dockerComposeContent = `version: "3.8"
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:15
-    container_name: hasyx-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: hasyx
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
-      POSTGRES_HOST_AUTH_METHOD: trust
+    container_name: hasura-postgres-1
+    restart: always
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./migrations:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: hasyx
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test:
+        - CMD-SHELL
+        - pg_isready -U postgres
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - hasyx-network
-
-  # Hasura GraphQL Engine
-  hasura:
-    image: hasura/graphql-engine:v2.35.4
-    container_name: hasyx-hasura
-    restart: unless-stopped
+  graphql-engine:
+    image: hasura/graphql-engine:v2.46.0
+    container_name: hasura-graphql-engine-1
+    ports:
+      - 8080:8080
+    restart: always
     environment:
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/hasyx
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/hasyx
+      PG_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/hasyx
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
-      HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
-      HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256", "key":"your-jwt-secret-key"}'
+      HASURA_GRAPHQL_JWT_SECRET: '${process.env.HASURA_JWT_SECRET || '{"type":"HS256","key":"your-jwt-secret-key"}'}'
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
-      HASURA_GRAPHQL_ENABLE_TELEMETRY: "false"
-      HASURA_GRAPHQL_ENABLE_ALLOWLIST: "false"
-      HASURA_GRAPHQL_ENABLE_REMOTE_SCHEMA_PERMISSIONS: "true"
-      HASURA_GRAPHQL_ENABLE_METADATA_CONSISTENCY_CHECK: "true"
-      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/hasyx
-    ports:
-      - "8080:8080"
+      HASURA_EVENT_SECRET: ${process.env.HASURA_EVENT_SECRET || 'your-event-secret'}
+      HASURA_GRAPHQL_ADMIN_SECRET: ${process.env.HASURA_ADMIN_SECRET || 'myadminsecretkey'}
+      HASURA_GRAPHQL_METADATA_DEFAULTS: '{"backend_configs":{"dataconnector":{"athena":{"uri":"http://data-connector-agent:8081/api/v1/athena"},"mariadb":{"uri":"http://data-connector-agent:8081/api/v1/mariadb"},"mysql8":{"uri":"http://data-connector-agent:8081/api/v1/mysql"},"oracle":{"uri":"http://data-connector-agent:8081/api/v1/oracle"},"snowflake":{"uri":"http://data-connector-agent:8081/api/v1/snowflake"}}}}'
     depends_on:
       postgres:
         condition: service_healthy
+      data-connector-agent:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8080/healthz
       interval: 30s
       timeout: 10s
       retries: 3
-    networks:
-      - hasyx-network
-
-  # Hasura Storage Service
+  data-connector-agent:
+    image: hasura/graphql-data-connector:v2.46.0
+    container_name: hasura-data-connector-agent-1
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      QUARKUS_LOG_LEVEL: ERROR
+      QUARKUS_OPENTELEMETRY_ENABLED: "false"
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8081/api/v1/athena/health
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
   hasura-storage:
-    image: nhost/hasura-storage:0.1.5
+    image: nhost/hasura-storage:0.6.1
     container_name: hasyx-storage
     restart: unless-stopped
+    command: serve
     environment:
-      # Database configuration
-      DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/hasyx
-      
-      # Hasura configuration
-      HASURA_GRAPHQL_ENDPOINT: http://hasura:8080/v1/graphql
-      HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
-      
-      # Storage configuration (S3-compatible)
-      STORAGE_BACKEND: s3
-      STORAGE_S3_BUCKET: \${STORAGE_S3_BUCKET}
-      STORAGE_S3_REGION: \${STORAGE_S3_REGION}
-      STORAGE_S3_ACCESS_KEY_ID: \${STORAGE_S3_ACCESS_KEY_ID}
-      STORAGE_S3_SECRET_ACCESS_KEY: \${STORAGE_S3_SECRET_ACCESS_KEY}
-      STORAGE_S3_ENDPOINT: \${STORAGE_S3_ENDPOINT}
-      STORAGE_S3_FORCE_PATH_STYLE: \${STORAGE_S3_FORCE_PATH_STYLE}
-      
-      # Security settings
-      STORAGE_JWT_SECRET: \${STORAGE_JWT_SECRET}
-      STORAGE_JWT_EXPIRES_IN: \${STORAGE_JWT_EXPIRES_IN}
-      STORAGE_JWT_REFRESH_EXPIRES_IN: \${STORAGE_JWT_REFRESH_EXPIRES_IN}
-      
-      # File settings
-      STORAGE_MAX_FILE_SIZE: \${STORAGE_MAX_FILE_SIZE}
-      STORAGE_ALLOWED_MIME_TYPES: \${STORAGE_ALLOWED_MIME_TYPES}
-      STORAGE_ALLOWED_FILE_EXTENSIONS: \${STORAGE_ALLOWED_FILE_EXTENSIONS}
-      
-      # Cache settings
-      STORAGE_CACHE_CONTROL: \${STORAGE_CACHE_CONTROL}
-      STORAGE_ETAG: \${STORAGE_ETAG}
-      
-      # Image manipulation
-      STORAGE_IMAGE_MANIPULATION: \${STORAGE_IMAGE_MANIPULATION}
-      STORAGE_IMAGE_MAX_WIDTH: \${STORAGE_IMAGE_MAX_WIDTH}
-      STORAGE_IMAGE_MAX_HEIGHT: \${STORAGE_IMAGE_MAX_HEIGHT}
-      STORAGE_IMAGE_QUALITY: \${STORAGE_IMAGE_QUALITY}
-      
-      # Antivirus (optional)
-      STORAGE_CLAMAV_SERVER: \${STORAGE_CLAMAV_SERVER:-}
-      
-      # Rate limiting
-      STORAGE_RATE_LIMIT_WINDOW: \${STORAGE_RATE_LIMIT_WINDOW}
-      STORAGE_RATE_LIMIT_MAX_REQUESTS: \${STORAGE_RATE_LIMIT_MAX_REQUESTS}
-      
-      # Logging
-      STORAGE_LOG_LEVEL: \${STORAGE_LOG_LEVEL}
-      STORAGE_LOG_FORMAT: \${STORAGE_LOG_FORMAT}
-      
+      PORT: "8000"
+      DEBUG: "*"
+      LOG_LEVEL: "debug"
+      GIN_MODE: "debug"
+      AWS_SDK_LOAD_CONFIG: "1"
+      AWS_LOG_LEVEL: "debug"
+      HASURA_ENDPOINT: "http://graphql-engine:8080/v1"
+      HASURA_GRAPHQL_ADMIN_SECRET: "${process.env.HASURA_ADMIN_SECRET || 'myadminsecretkey'}"
+      S3_ENDPOINT: "${process.env.STORAGE_S3_ENDPOINT || 'http://hasyx-minio:9000'}"
+      S3_ACCESS_KEY: "${process.env.STORAGE_S3_ACCESS_KEY_ID || 'minioadmin'}"
+      S3_SECRET_KEY: "${process.env.STORAGE_S3_SECRET_ACCESS_KEY || 'minioadmin'}"
+      S3_BUCKET: "${process.env.STORAGE_S3_BUCKET || 'default'}"
+      S3_ROOT_FOLDER: "f215cf48-7458-4596-9aa5-2159fc6a3caf"
+      POSTGRES_MIGRATIONS: "0"
+      HASURA_METADATA: "1"
+      POSTGRES_MIGRATIONS_SOURCE: "postgres://postgres:postgrespassword@postgres:5432/hasyx?sslmode=disable"
+      DATABASE_URL: "postgres://postgres:postgrespassword@postgres:5432/hasyx?sslmode=disable"
+      GRAPHQL_ENGINE_BASE_URL: "http://graphql-engine:8080/v1"
+      GRAPHQL_ENDPOINT: "http://graphql-engine:8080/v1"
+      JWT_SECRET: '${process.env.STORAGE_JWT_SECRET || '{"type":"HS256","key":"your-jwt-secret-key"}'}'
     ports:
-      - "3001:3000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      hasura:
-        condition: service_healthy
+      - 3001:8000
+    volumes:
+      - ./storage:/storage
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8000/healthz
       interval: 30s
       timeout: 10s
       retries: 3
-    networks:
-      - hasyx-network
-
-  # Optional: MinIO for local S3-compatible storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      graphql-engine:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+  hasyx:
+    image: node:18-alpine
+    container_name: hasyx-app
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run dev
+    environment:
+      TEST_TOKEN: ${process.env.TEST_TOKEN || 'your-test-token'}
+      NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL || 'http://localhost:8080/v1/graphql'}
+      HASURA_ADMIN_SECRET: ${process.env.HASURA_ADMIN_SECRET || 'myadminsecretkey'}
+      HASURA_JWT_SECRET: '${process.env.HASURA_JWT_SECRET || '{"type":"HS256","key":"your-jwt-secret-key"}'}'
+      HASURA_EVENT_SECRET: ${process.env.HASURA_EVENT_SECRET || 'your-event-secret'}
+      NEXT_PUBLIC_MAIN_URL: ${process.env.NEXT_PUBLIC_MAIN_URL || 'http://localhost:3000'}
+      NEXT_PUBLIC_BASE_URL: ${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}
+      NEXTAUTH_URL: ${process.env.NEXTAUTH_URL || 'http://localhost:3000'}
+      NEXT_PUBLIC_API_URL: ${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}
+      NEXTAUTH_SECRET: ${process.env.NEXTAUTH_SECRET || 'your-nextauth-secret'}
+      GOOGLE_CLIENT_ID: ${process.env.GOOGLE_CLIENT_ID || ''}
+      GOOGLE_CLIENT_SECRET: ${process.env.GOOGLE_CLIENT_SECRET || ''}
+      YANDEX_CLIENT_ID: ${process.env.YANDEX_CLIENT_ID || ''}
+      YANDEX_CLIENT_SECRET: ${process.env.YANDEX_CLIENT_SECRET || ''}
+      RESEND_API_KEY: ${process.env.RESEND_API_KEY || ''}
+      NODE_ENV: ${process.env.NODE_ENV || 'development'}
+      NEXT_PUBLIC_BUILD_TARGET: ${process.env.NEXT_PUBLIC_BUILD_TARGET || 'server'}
+      NEXT_PUBLIC_WS: ${process.env.NEXT_PUBLIC_WS || '1'}
+      NEXTAUTH_DEBUG: ${process.env.NEXTAUTH_DEBUG || 'true'}
+      GOOGLE_APPLICATION_CREDENTIALS: ${process.env.GOOGLE_APPLICATION_CREDENTIALS || ''}
+      NEXT_PUBLIC_FIREBASE_API_KEY: ${process.env.NEXT_PUBLIC_FIREBASE_API_KEY || ''}
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || ''}
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || ''}
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || ''}
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || ''}
+      NEXT_PUBLIC_FIREBASE_APP_ID: ${process.env.NEXT_PUBLIC_FIREBASE_APP_ID || ''}
+      NEXT_PUBLIC_FIREBASE_VAPID_KEY: ${process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY || ''}
+      VERCEL_URL: ${process.env.VERCEL_URL || ''}
+      TELEGRAM_BOT_TOKEN: ${process.env.TELEGRAM_BOT_TOKEN || ''}
+      TELEGRAM_ADMIN_CHAT_ID: ${process.env.TELEGRAM_ADMIN_CHAT_ID || ''}
+      NEXT_PUBLIC_PROJECT_USER_ID: ${process.env.NEXT_PUBLIC_PROJECT_USER_ID || ''}
+      NEXT_PUBLIC_APP_NAME: ${process.env.NEXT_PUBLIC_APP_NAME || 'hasyx'}
+      GITHUB_ID: ${process.env.GITHUB_ID || ''}
+      GITHUB_SECRET: ${process.env.GITHUB_SECRET || ''}
+      FACEBOOK_CLIENT_ID: ${process.env.FACEBOOK_CLIENT_ID || ''}
+      FACEBOOK_CLIENT_SECRET: ${process.env.FACEBOOK_CLIENT_SECRET || ''}
+      VK_CLIENT_ID: ${process.env.VK_CLIENT_ID || ''}
+      VK_CLIENT_SECRET: ${process.env.VK_CLIENT_SECRET || ''}
+      VERCEL_TOKEN: ${process.env.VERCEL_TOKEN || ''}
+      TELEGRAM_BOT_NAME: ${process.env.TELEGRAM_BOT_NAME || ''}
+      TELEGRAM_CHANNEL_ID: "${process.env.TELEGRAM_CHANNEL_ID || ''}"
+      TBANK_PROD_TERMINAL_KEY: ${process.env.TBANK_PROD_TERMINAL_KEY || ''}
+      TBANK_PROD_SECRET_KEY: ${process.env.TBANK_PROD_SECRET_KEY || ''}
+      TBANK_TEST_TERMINAL_KEY: ${process.env.TBANK_TEST_TERMINAL_KEY || ''}
+      TBANK_TEST_SECRET_KEY: ${process.env.TBANK_TEST_SECRET_KEY || ''}
+      TBANK_USE_TEST_MODE: ${process.env.TBANK_USE_TEST_MODE || '1'}
+      TBANK_DEFAULT_RETURN_URL: ${process.env.TBANK_DEFAULT_RETURN_URL || ''}
+      TBANK_DEFAULT_WEBHOOK_URL: ${process.env.TBANK_DEFAULT_WEBHOOK_URL || ''}
+      TBANK_DEFAULT_CARD_WEBHOOK_URL: ${process.env.TBANK_DEFAULT_CARD_WEBHOOK_URL || ''}
+      PROJECT_USER_EMAIL: ${process.env.PROJECT_USER_EMAIL || 'admin@example.com'}
+      PROJECT_USER_PASSWORD: ${process.env.PROJECT_USER_PASSWORD || 'password'}
+      POSTGRES_URL: ${process.env.POSTGRES_URL || 'postgres://postgres:postgrespassword@hasura-postgres-1:5432/hasyx'}
+      TELEGRAM_LOGIN_BOT_USERNAME: ${process.env.TELEGRAM_LOGIN_BOT_USERNAME || ''}
+      TELEGRAM_LOGIN_BOT_TOKEN: ${process.env.TELEGRAM_LOGIN_BOT_TOKEN || ''}
+      NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: ${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || ''}
+      JEST_LOCAL: ${process.env.JEST_LOCAL || '0'}
+      OPENROUTER_API_KEY: ${process.env.OPENROUTER_API_KEY || ''}
+      PORT: ${process.env.PORT || '3004'}
+      HOST: ${process.env.HOST || '127.0.0.1'}
+      HASYX_DNS_DOMAIN: ${process.env.HASYX_DNS_DOMAIN || ''}
+      CLOUDFLARE_API_TOKEN: ${process.env.CLOUDFLARE_API_TOKEN || ''}
+      CLOUDFLARE_ZONE_ID: ${process.env.CLOUDFLARE_ZONE_ID || ''}
+      LETSENCRYPT_EMAIL: ${process.env.LETSENCRYPT_EMAIL || ''}
+      GITHUB_TELEGRAM_BOT: ${process.env.GITHUB_TELEGRAM_BOT || '1'}
+      DOCKER_USERNAME: ${process.env.DOCKER_USERNAME || ''}
+      DOCKER_PASSWORD: ${process.env.DOCKER_PASSWORD || ''}
+      NEXT_PUBLIC_GITHUB_OWNER: ${process.env.NEXT_PUBLIC_GITHUB_OWNER || ''}
+      NEXT_PUBLIC_GITHUB_REPO: ${process.env.NEXT_PUBLIC_GITHUB_REPO || ''}
+      GITHUB_WEBHOOK_SECRET: ${process.env.GITHUB_WEBHOOK_SECRET || ''}
+      GITHUB_WEBHOOK_URL: ${process.env.GITHUB_WEBHOOK_URL || ''}
+      GITHUB_WEBHOOK_EVENTS: ${process.env.GITHUB_WEBHOOK_EVENTS || ''}
+      GITHUB_TOKEN: ${process.env.GITHUB_TOKEN || ''}
+      STORAGE_BACKEND: ${process.env.STORAGE_BACKEND || 's3'}
+      STORAGE_S3_BUCKET: ${process.env.STORAGE_S3_BUCKET || 'default'}
+      STORAGE_S3_REGION: ${process.env.STORAGE_S3_REGION || 'us-east-1'}
+      STORAGE_S3_ACCESS_KEY_ID: ${process.env.STORAGE_S3_ACCESS_KEY_ID || 'minioadmin'}
+      STORAGE_S3_SECRET_ACCESS_KEY: ${process.env.STORAGE_S3_SECRET_ACCESS_KEY || 'minioadmin'}
+      STORAGE_S3_ENDPOINT: ${process.env.STORAGE_S3_ENDPOINT || 'http://hasyx-minio:9000'}
+      STORAGE_S3_FORCE_PATH_STYLE: ${process.env.STORAGE_S3_FORCE_PATH_STYLE || 'true'}
+      STORAGE_JWT_SECRET: '${process.env.STORAGE_JWT_SECRET || '{"type":"HS256","key":"your-jwt-secret-key"}'}'
+      STORAGE_JWT_EXPIRES_IN: ${process.env.STORAGE_JWT_EXPIRES_IN || '15m'}
+      STORAGE_JWT_REFRESH_EXPIRES_IN: ${process.env.STORAGE_JWT_REFRESH_EXPIRES_IN || '7d'}
+      STORAGE_MAX_FILE_SIZE: ${process.env.STORAGE_MAX_FILE_SIZE || '100MB'}
+      STORAGE_ALLOWED_MIME_TYPES: ${process.env.STORAGE_ALLOWED_MIME_TYPES || 'image/*,application/pdf,text/*'}
+      STORAGE_ALLOWED_FILE_EXTENSIONS: ${process.env.STORAGE_ALLOWED_FILE_EXTENSIONS || 'jpg,jpeg,png,gif,pdf,txt,doc,docx'}
+      STORAGE_CACHE_CONTROL: ${process.env.STORAGE_CACHE_CONTROL || 'public, max-age=31536000'}
+      STORAGE_ETAG: ${process.env.STORAGE_ETAG || 'true'}
+      STORAGE_IMAGE_MANIPULATION: ${process.env.STORAGE_IMAGE_MANIPULATION || 'true'}
+      STORAGE_IMAGE_MAX_WIDTH: ${process.env.STORAGE_IMAGE_MAX_WIDTH || '1920'}
+      STORAGE_IMAGE_MAX_HEIGHT: ${process.env.STORAGE_IMAGE_MAX_HEIGHT || '1080'}
+      STORAGE_IMAGE_QUALITY: ${process.env.STORAGE_IMAGE_QUALITY || '80'}
+      STORAGE_RATE_LIMIT_WINDOW: ${process.env.STORAGE_RATE_LIMIT_WINDOW || '15m'}
+      STORAGE_RATE_LIMIT_MAX_REQUESTS: ${process.env.STORAGE_RATE_LIMIT_MAX_REQUESTS || '100'}
+      STORAGE_LOG_LEVEL: ${process.env.STORAGE_LOG_LEVEL || 'info'}
+      STORAGE_LOG_FORMAT: ${process.env.STORAGE_LOG_FORMAT || 'json'}
+      HASURA_STORAGE_URL: ${process.env.HASURA_STORAGE_URL || 'http://hasura-storage:8000'}
+      NEXT_PUBLIC_HASURA_STORAGE_URL: ${process.env.NEXT_PUBLIC_HASURA_STORAGE_URL || 'http://localhost:3001'}
+      HASURA_GRAPHQL_ENDPOINT: ${process.env.HASURA_GRAPHQL_ENDPOINT || 'http://graphql-engine:8080/v1/graphql'}
+    env_file:
+      - .env
   minio:
     image: minio/minio:latest
     container_name: hasyx-minio
@@ -520,37 +624,9 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
-    networks:
-      - hasyx-network
-
-  # Optional: ClamAV for virus scanning
-  clamav:
-    image: clamav/clamav:latest
-    container_name: hasyx-clamav
-    restart: unless-stopped
-    volumes:
-      - clamav_data:/var/lib/clamav
-    ports:
-      - "3310:3310"
-    healthcheck:
-      test: ["CMD", "clamdscan", "--version"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - hasyx-network
-
 volumes:
-  postgres_data:
-    driver: local
-  minio_data:
-    driver: local
-  clamav_data:
-    driver: local
-
-networks:
-  hasyx-network:
-    driver: bridge
+  db_data: null
+  minio_data: null
 `;
 
   await fs.writeFile(dockerComposePath, dockerComposeContent);

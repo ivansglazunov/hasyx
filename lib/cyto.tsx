@@ -15,6 +15,7 @@ import Debug from './debug';
 import { v4 as uuidv4 } from 'uuid';
 import { useTheme } from '../components/theme-switcher';
 import { formatRgb, parse } from 'culori';
+import { useDependencyDrawingStore } from '../stores/dependency-drawing-store';
 
 import klay from 'cytoscape-klay';
 import cytoscape from 'cytoscape';
@@ -226,6 +227,20 @@ export const Cyto = memo(function Cyto({
       const t = target.data();
       added.remove();
       debug('ehcomplete', s, t);
+      
+      // Добавляем вызов Zustand store для обработки зависимостей
+      try {
+        const { completeDrawing, currentRelationType } = useDependencyDrawingStore.getState();
+        if (completeDrawing && currentRelationType) {
+          // Получаем данные issues из source и target
+          const sourceIssueData = s; // Уже есть в data
+          const targetIssueData = t; // Уже есть в data
+          
+          completeDrawing(sourceIssueData, targetIssueData, currentRelationType);
+        }
+      } catch (error) {
+        debug('Error in ehcomplete dependency handling:', error);
+      }
     };
 
     const bgtap = (event) => {
@@ -280,6 +295,8 @@ export const Cyto = memo(function Cyto({
       return updatedStyles;
     });
   }, []);
+
+  const classesRef = useRef<Map<string, Set<Function>>>(new Map());
 
   const [finalStylesheet, setFinalStylesheet] = useState<any[]>([]);
   useEffect(() => {
@@ -378,9 +395,8 @@ export const Cyto = memo(function Cyto({
         canLink: (source, target) => {
           const s = source.data();
           const t = target.data();
-          const sCan = typeof (s.canLink) === 'function' ? s.canLink(source, target) : !!s.canLink;
-          const tCan = typeof (t.canLink) === 'function' ? t.canLink(source, target) : !!t.canLink;
-          return (sCan && tCan);
+          // Проверяем, что это GitHub issues
+          return s.github_id && t.github_id;
         },
         edgeParams: (source, target) => {
           const s = source.data();
@@ -393,6 +409,19 @@ export const Cyto = memo(function Cyto({
       setEh(eh);
     }
   }, [_cy, eh]);
+
+  // Экспортируем toggleDrawMode через useGraph
+  const contextValue = useMemo(() => ({ 
+    cyRef, 
+    layout, 
+    layoutRef, 
+    relayout, 
+    style, 
+    cy: _cy, 
+    classesRef, 
+    overlayRef,
+    toggleDrawMode 
+  }), [cyRef, layout, layoutRef, relayout, style, _cy, classesRef, overlayRef, toggleDrawMode]);
 
   const buttonsPosition = buttons === true ? 'rightTop' : (buttons === false ? null : buttons);
 
@@ -485,8 +514,6 @@ export const Cyto = memo(function Cyto({
     </div>
   </>);
 
-  const classesRef = useRef<Map<string, Set<Function>>>(new Map());
-
   const instancesRef = useRef<Map<string, Set<() => void>>>(new Map());
   const mount = useCallback((id: string, activeItFunction: () => void): boolean => {
     const map = instancesRef.current;
@@ -509,7 +536,7 @@ export const Cyto = memo(function Cyto({
   
   const reactNodesProviderValue = useMemo(() => ({ mount, unmount }), [mount, unmount]);
 
-  return <CytoContext.Provider value={{ cyRef, layout, layoutRef, relayout, style, cy: _cy, classesRef, overlayRef }}>
+  return <CytoContext.Provider value={contextValue}>
     <CytoReactNodesContext.Provider value={reactNodesProviderValue}>
       {returning}
       {!!_cy && <div

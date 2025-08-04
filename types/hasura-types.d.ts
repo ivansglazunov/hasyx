@@ -94,8 +94,6 @@ export type String_Comparison_Exp = {
 /** columns and relationships of "accounts" */
 export type Accounts = {
   __typename?: "accounts";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** OAuth access token */
   access_token?: Maybe<Scalars["String"]["output"]>;
   created_at: Scalars["bigint"]["output"];
@@ -224,8 +222,6 @@ export type Accounts_Avg_Order_By = {
 /** Boolean expression to filter rows from the table "accounts". All fields are combined with a logical 'AND'. */
 export type Accounts_Bool_Exp = {
   _and?: InputMaybe<Array<Accounts_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Accounts_Bool_Exp>;
   _or?: InputMaybe<Array<Accounts_Bool_Exp>>;
   access_token?: InputMaybe<String_Comparison_Exp>;
@@ -321,8 +317,6 @@ export type Accounts_Insert_Input = {
 /** aggregate max on columns */
 export type Accounts_Max_Fields = {
   __typename?: "accounts_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** OAuth access token */
   access_token?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -356,8 +350,6 @@ export type Accounts_Max_Fields = {
 
 /** order by max() on columns of table "accounts" */
 export type Accounts_Max_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   /** OAuth access token */
   access_token?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
@@ -392,8 +384,6 @@ export type Accounts_Max_Order_By = {
 /** aggregate min on columns */
 export type Accounts_Min_Fields = {
   __typename?: "accounts_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** OAuth access token */
   access_token?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -427,8 +417,6 @@ export type Accounts_Min_Fields = {
 
 /** order by min() on columns of table "accounts" */
 export type Accounts_Min_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   /** OAuth access token */
   access_token?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
@@ -478,8 +466,6 @@ export type Accounts_On_Conflict = {
 
 /** Ordering options when selecting data from "accounts". */
 export type Accounts_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   access_token?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   expires_at?: InputMaybe<Order_By>;
@@ -513,10 +499,6 @@ export type Accounts_Prepend_Input = {
 
 /** select columns of table "accounts" */
 export enum Accounts_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   AccessToken = "access_token",
   /** column name */
@@ -649,8 +631,6 @@ export type Accounts_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Accounts_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   /** OAuth access token */
   access_token?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -812,8 +792,6 @@ export type Accounts_Variance_Order_By = {
 /** columns and relationships of "auth_jwt" */
 export type Auth_Jwt = {
   __typename?: "auth_jwt";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at: Scalars["bigint"]["output"];
   id: Scalars["uuid"]["output"];
   jwt?: Maybe<Scalars["String"]["output"]>;
@@ -860,8 +838,6 @@ export type Auth_Jwt_Avg_Fields = {
 /** Boolean expression to filter rows from the table "auth_jwt". All fields are combined with a logical 'AND'. */
 export type Auth_Jwt_Bool_Exp = {
   _and?: InputMaybe<Array<Auth_Jwt_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Auth_Jwt_Bool_Exp>;
   _or?: InputMaybe<Array<Auth_Jwt_Bool_Exp>>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
@@ -895,8 +871,6 @@ export type Auth_Jwt_Insert_Input = {
 /** aggregate max on columns */
 export type Auth_Jwt_Max_Fields = {
   __typename?: "auth_jwt_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   jwt?: Maybe<Scalars["String"]["output"]>;
@@ -907,8 +881,6 @@ export type Auth_Jwt_Max_Fields = {
 /** aggregate min on columns */
 export type Auth_Jwt_Min_Fields = {
   __typename?: "auth_jwt_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   jwt?: Maybe<Scalars["String"]["output"]>;
@@ -934,8 +906,6 @@ export type Auth_Jwt_On_Conflict = {
 
 /** Ordering options when selecting data from "auth_jwt". */
 export type Auth_Jwt_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   jwt?: InputMaybe<Order_By>;
@@ -950,10 +920,6 @@ export type Auth_Jwt_Pk_Columns_Input = {
 
 /** select columns of table "auth_jwt" */
 export enum Auth_Jwt_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   CreatedAt = "created_at",
   /** column name */
@@ -1006,8 +972,6 @@ export type Auth_Jwt_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Auth_Jwt_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   jwt?: InputMaybe<Scalars["String"]["input"]>;
@@ -1079,6 +1043,323 @@ export type Bigint_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars["bigint"]["input"]>>;
 };
 
+/** columns and relationships of "storage.buckets" */
+export type Buckets = {
+  __typename?: "buckets";
+  cacheControl?: Maybe<Scalars["String"]["output"]>;
+  createdAt: Scalars["timestamptz"]["output"];
+  downloadExpiration: Scalars["Int"]["output"];
+  /** An array relationship */
+  files: Array<Files>;
+  /** An aggregate relationship */
+  files_aggregate: Files_Aggregate;
+  id: Scalars["String"]["output"];
+  maxUploadFileSize: Scalars["Int"]["output"];
+  minUploadFileSize: Scalars["Int"]["output"];
+  presignedUrlsEnabled: Scalars["Boolean"]["output"];
+  updatedAt: Scalars["timestamptz"]["output"];
+};
+
+/** columns and relationships of "storage.buckets" */
+export type BucketsFilesArgs = {
+  distinct_on?: InputMaybe<Array<Files_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Files_Order_By>>;
+  where?: InputMaybe<Files_Bool_Exp>;
+};
+
+/** columns and relationships of "storage.buckets" */
+export type BucketsFiles_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Files_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Files_Order_By>>;
+  where?: InputMaybe<Files_Bool_Exp>;
+};
+
+/** aggregated selection of "storage.buckets" */
+export type Buckets_Aggregate = {
+  __typename?: "buckets_aggregate";
+  aggregate?: Maybe<Buckets_Aggregate_Fields>;
+  nodes: Array<Buckets>;
+};
+
+/** aggregate fields of "storage.buckets" */
+export type Buckets_Aggregate_Fields = {
+  __typename?: "buckets_aggregate_fields";
+  avg?: Maybe<Buckets_Avg_Fields>;
+  count: Scalars["Int"]["output"];
+  max?: Maybe<Buckets_Max_Fields>;
+  min?: Maybe<Buckets_Min_Fields>;
+  stddev?: Maybe<Buckets_Stddev_Fields>;
+  stddev_pop?: Maybe<Buckets_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Buckets_Stddev_Samp_Fields>;
+  sum?: Maybe<Buckets_Sum_Fields>;
+  var_pop?: Maybe<Buckets_Var_Pop_Fields>;
+  var_samp?: Maybe<Buckets_Var_Samp_Fields>;
+  variance?: Maybe<Buckets_Variance_Fields>;
+};
+
+/** aggregate fields of "storage.buckets" */
+export type Buckets_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Buckets_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+/** aggregate avg on columns */
+export type Buckets_Avg_Fields = {
+  __typename?: "buckets_avg_fields";
+  downloadExpiration?: Maybe<Scalars["Float"]["output"]>;
+  maxUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+  minUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** Boolean expression to filter rows from the table "storage.buckets". All fields are combined with a logical 'AND'. */
+export type Buckets_Bool_Exp = {
+  _and?: InputMaybe<Array<Buckets_Bool_Exp>>;
+  _not?: InputMaybe<Buckets_Bool_Exp>;
+  _or?: InputMaybe<Array<Buckets_Bool_Exp>>;
+  cacheControl?: InputMaybe<String_Comparison_Exp>;
+  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  downloadExpiration?: InputMaybe<Int_Comparison_Exp>;
+  files?: InputMaybe<Files_Bool_Exp>;
+  files_aggregate?: InputMaybe<Files_Aggregate_Bool_Exp>;
+  id?: InputMaybe<String_Comparison_Exp>;
+  maxUploadFileSize?: InputMaybe<Int_Comparison_Exp>;
+  minUploadFileSize?: InputMaybe<Int_Comparison_Exp>;
+  presignedUrlsEnabled?: InputMaybe<Boolean_Comparison_Exp>;
+  updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "storage.buckets" */
+export enum Buckets_Constraint {
+  /** unique or primary key constraint on columns "id" */
+  BucketsPkey = "buckets_pkey",
+}
+
+/** input type for incrementing numeric columns in table "storage.buckets" */
+export type Buckets_Inc_Input = {
+  downloadExpiration?: InputMaybe<Scalars["Int"]["input"]>;
+  maxUploadFileSize?: InputMaybe<Scalars["Int"]["input"]>;
+  minUploadFileSize?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+/** input type for inserting data into table "storage.buckets" */
+export type Buckets_Insert_Input = {
+  cacheControl?: InputMaybe<Scalars["String"]["input"]>;
+  createdAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  downloadExpiration?: InputMaybe<Scalars["Int"]["input"]>;
+  files?: InputMaybe<Files_Arr_Rel_Insert_Input>;
+  id?: InputMaybe<Scalars["String"]["input"]>;
+  maxUploadFileSize?: InputMaybe<Scalars["Int"]["input"]>;
+  minUploadFileSize?: InputMaybe<Scalars["Int"]["input"]>;
+  presignedUrlsEnabled?: InputMaybe<Scalars["Boolean"]["input"]>;
+  updatedAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+};
+
+/** aggregate max on columns */
+export type Buckets_Max_Fields = {
+  __typename?: "buckets_max_fields";
+  cacheControl?: Maybe<Scalars["String"]["output"]>;
+  createdAt?: Maybe<Scalars["timestamptz"]["output"]>;
+  downloadExpiration?: Maybe<Scalars["Int"]["output"]>;
+  id?: Maybe<Scalars["String"]["output"]>;
+  maxUploadFileSize?: Maybe<Scalars["Int"]["output"]>;
+  minUploadFileSize?: Maybe<Scalars["Int"]["output"]>;
+  updatedAt?: Maybe<Scalars["timestamptz"]["output"]>;
+};
+
+/** aggregate min on columns */
+export type Buckets_Min_Fields = {
+  __typename?: "buckets_min_fields";
+  cacheControl?: Maybe<Scalars["String"]["output"]>;
+  createdAt?: Maybe<Scalars["timestamptz"]["output"]>;
+  downloadExpiration?: Maybe<Scalars["Int"]["output"]>;
+  id?: Maybe<Scalars["String"]["output"]>;
+  maxUploadFileSize?: Maybe<Scalars["Int"]["output"]>;
+  minUploadFileSize?: Maybe<Scalars["Int"]["output"]>;
+  updatedAt?: Maybe<Scalars["timestamptz"]["output"]>;
+};
+
+/** response of any mutation on the table "storage.buckets" */
+export type Buckets_Mutation_Response = {
+  __typename?: "buckets_mutation_response";
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars["Int"]["output"];
+  /** data from the rows affected by the mutation */
+  returning: Array<Buckets>;
+};
+
+/** input type for inserting object relation for remote table "storage.buckets" */
+export type Buckets_Obj_Rel_Insert_Input = {
+  data: Buckets_Insert_Input;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Buckets_On_Conflict>;
+};
+
+/** on_conflict condition type for table "storage.buckets" */
+export type Buckets_On_Conflict = {
+  constraint: Buckets_Constraint;
+  update_columns?: Array<Buckets_Update_Column>;
+  where?: InputMaybe<Buckets_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "storage.buckets". */
+export type Buckets_Order_By = {
+  cacheControl?: InputMaybe<Order_By>;
+  createdAt?: InputMaybe<Order_By>;
+  downloadExpiration?: InputMaybe<Order_By>;
+  files_aggregate?: InputMaybe<Files_Aggregate_Order_By>;
+  id?: InputMaybe<Order_By>;
+  maxUploadFileSize?: InputMaybe<Order_By>;
+  minUploadFileSize?: InputMaybe<Order_By>;
+  presignedUrlsEnabled?: InputMaybe<Order_By>;
+  updatedAt?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: storage.buckets */
+export type Buckets_Pk_Columns_Input = {
+  id: Scalars["String"]["input"];
+};
+
+/** select columns of table "storage.buckets" */
+export enum Buckets_Select_Column {
+  /** column name */
+  CacheControl = "cacheControl",
+  /** column name */
+  CreatedAt = "createdAt",
+  /** column name */
+  DownloadExpiration = "downloadExpiration",
+  /** column name */
+  Id = "id",
+  /** column name */
+  MaxUploadFileSize = "maxUploadFileSize",
+  /** column name */
+  MinUploadFileSize = "minUploadFileSize",
+  /** column name */
+  PresignedUrlsEnabled = "presignedUrlsEnabled",
+  /** column name */
+  UpdatedAt = "updatedAt",
+}
+
+/** input type for updating data in table "storage.buckets" */
+export type Buckets_Set_Input = {
+  cacheControl?: InputMaybe<Scalars["String"]["input"]>;
+  createdAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  downloadExpiration?: InputMaybe<Scalars["Int"]["input"]>;
+  id?: InputMaybe<Scalars["String"]["input"]>;
+  maxUploadFileSize?: InputMaybe<Scalars["Int"]["input"]>;
+  minUploadFileSize?: InputMaybe<Scalars["Int"]["input"]>;
+  presignedUrlsEnabled?: InputMaybe<Scalars["Boolean"]["input"]>;
+  updatedAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+};
+
+/** aggregate stddev on columns */
+export type Buckets_Stddev_Fields = {
+  __typename?: "buckets_stddev_fields";
+  downloadExpiration?: Maybe<Scalars["Float"]["output"]>;
+  maxUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+  minUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Buckets_Stddev_Pop_Fields = {
+  __typename?: "buckets_stddev_pop_fields";
+  downloadExpiration?: Maybe<Scalars["Float"]["output"]>;
+  maxUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+  minUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Buckets_Stddev_Samp_Fields = {
+  __typename?: "buckets_stddev_samp_fields";
+  downloadExpiration?: Maybe<Scalars["Float"]["output"]>;
+  maxUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+  minUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** Streaming cursor of the table "buckets" */
+export type Buckets_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Buckets_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Buckets_Stream_Cursor_Value_Input = {
+  cacheControl?: InputMaybe<Scalars["String"]["input"]>;
+  createdAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  downloadExpiration?: InputMaybe<Scalars["Int"]["input"]>;
+  id?: InputMaybe<Scalars["String"]["input"]>;
+  maxUploadFileSize?: InputMaybe<Scalars["Int"]["input"]>;
+  minUploadFileSize?: InputMaybe<Scalars["Int"]["input"]>;
+  presignedUrlsEnabled?: InputMaybe<Scalars["Boolean"]["input"]>;
+  updatedAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+};
+
+/** aggregate sum on columns */
+export type Buckets_Sum_Fields = {
+  __typename?: "buckets_sum_fields";
+  downloadExpiration?: Maybe<Scalars["Int"]["output"]>;
+  maxUploadFileSize?: Maybe<Scalars["Int"]["output"]>;
+  minUploadFileSize?: Maybe<Scalars["Int"]["output"]>;
+};
+
+/** update columns of table "storage.buckets" */
+export enum Buckets_Update_Column {
+  /** column name */
+  CacheControl = "cacheControl",
+  /** column name */
+  CreatedAt = "createdAt",
+  /** column name */
+  DownloadExpiration = "downloadExpiration",
+  /** column name */
+  Id = "id",
+  /** column name */
+  MaxUploadFileSize = "maxUploadFileSize",
+  /** column name */
+  MinUploadFileSize = "minUploadFileSize",
+  /** column name */
+  PresignedUrlsEnabled = "presignedUrlsEnabled",
+  /** column name */
+  UpdatedAt = "updatedAt",
+}
+
+export type Buckets_Updates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<Buckets_Inc_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Buckets_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Buckets_Bool_Exp;
+};
+
+/** aggregate var_pop on columns */
+export type Buckets_Var_Pop_Fields = {
+  __typename?: "buckets_var_pop_fields";
+  downloadExpiration?: Maybe<Scalars["Float"]["output"]>;
+  maxUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+  minUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate var_samp on columns */
+export type Buckets_Var_Samp_Fields = {
+  __typename?: "buckets_var_samp_fields";
+  downloadExpiration?: Maybe<Scalars["Float"]["output"]>;
+  maxUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+  minUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate variance on columns */
+export type Buckets_Variance_Fields = {
+  __typename?: "buckets_variance_fields";
+  downloadExpiration?: Maybe<Scalars["Float"]["output"]>;
+  maxUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+  minUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
+};
+
 /** ordering argument of a cursor */
 export enum Cursor_Ordering {
   /** ascending ordering of the cursor */
@@ -1090,8 +1371,6 @@ export enum Cursor_Ordering {
 /** columns and relationships of "debug" */
 export type Debug = {
   __typename?: "debug";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at: Scalars["bigint"]["output"];
   id: Scalars["uuid"]["output"];
   updated_at: Scalars["bigint"]["output"];
@@ -1149,8 +1428,6 @@ export type Debug_Avg_Fields = {
 /** Boolean expression to filter rows from the table "debug". All fields are combined with a logical 'AND'. */
 export type Debug_Bool_Exp = {
   _and?: InputMaybe<Array<Debug_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Debug_Bool_Exp>;
   _or?: InputMaybe<Array<Debug_Bool_Exp>>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
@@ -1201,8 +1478,6 @@ export type Debug_Insert_Input = {
 /** aggregate max on columns */
 export type Debug_Max_Fields = {
   __typename?: "debug_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -1211,8 +1486,6 @@ export type Debug_Max_Fields = {
 /** aggregate min on columns */
 export type Debug_Min_Fields = {
   __typename?: "debug_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -1236,8 +1509,6 @@ export type Debug_On_Conflict = {
 
 /** Ordering options when selecting data from "debug". */
 export type Debug_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
@@ -1257,10 +1528,6 @@ export type Debug_Prepend_Input = {
 
 /** select columns of table "debug" */
 export enum Debug_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   CreatedAt = "created_at",
   /** column name */
@@ -1311,8 +1578,6 @@ export type Debug_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Debug_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -1379,458 +1644,30 @@ export type Debug_Variance_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** columns and relationships of "file_versions" */
-export type File_Versions = {
-  __typename?: "file_versions";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  created_at: Scalars["bigint"]["output"];
-  /** An object relationship */
-  file?: Maybe<Files>;
-  /** Reference to files table */
-  file_id?: Maybe<Scalars["uuid"]["output"]>;
-  id: Scalars["uuid"]["output"];
-  updated_at: Scalars["bigint"]["output"];
-  /** File version */
-  version?: Maybe<Scalars["String"]["output"]>;
-};
-
-/** aggregated selection of "file_versions" */
-export type File_Versions_Aggregate = {
-  __typename?: "file_versions_aggregate";
-  aggregate?: Maybe<File_Versions_Aggregate_Fields>;
-  nodes: Array<File_Versions>;
-};
-
-export type File_Versions_Aggregate_Bool_Exp = {
-  count?: InputMaybe<File_Versions_Aggregate_Bool_Exp_Count>;
-};
-
-export type File_Versions_Aggregate_Bool_Exp_Count = {
-  arguments?: InputMaybe<Array<File_Versions_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-  filter?: InputMaybe<File_Versions_Bool_Exp>;
-  predicate: Int_Comparison_Exp;
-};
-
-/** aggregate fields of "file_versions" */
-export type File_Versions_Aggregate_Fields = {
-  __typename?: "file_versions_aggregate_fields";
-  avg?: Maybe<File_Versions_Avg_Fields>;
-  count: Scalars["Int"]["output"];
-  max?: Maybe<File_Versions_Max_Fields>;
-  min?: Maybe<File_Versions_Min_Fields>;
-  stddev?: Maybe<File_Versions_Stddev_Fields>;
-  stddev_pop?: Maybe<File_Versions_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<File_Versions_Stddev_Samp_Fields>;
-  sum?: Maybe<File_Versions_Sum_Fields>;
-  var_pop?: Maybe<File_Versions_Var_Pop_Fields>;
-  var_samp?: Maybe<File_Versions_Var_Samp_Fields>;
-  variance?: Maybe<File_Versions_Variance_Fields>;
-};
-
-/** aggregate fields of "file_versions" */
-export type File_Versions_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<File_Versions_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** order by aggregate values of table "file_versions" */
-export type File_Versions_Aggregate_Order_By = {
-  avg?: InputMaybe<File_Versions_Avg_Order_By>;
-  count?: InputMaybe<Order_By>;
-  max?: InputMaybe<File_Versions_Max_Order_By>;
-  min?: InputMaybe<File_Versions_Min_Order_By>;
-  stddev?: InputMaybe<File_Versions_Stddev_Order_By>;
-  stddev_pop?: InputMaybe<File_Versions_Stddev_Pop_Order_By>;
-  stddev_samp?: InputMaybe<File_Versions_Stddev_Samp_Order_By>;
-  sum?: InputMaybe<File_Versions_Sum_Order_By>;
-  var_pop?: InputMaybe<File_Versions_Var_Pop_Order_By>;
-  var_samp?: InputMaybe<File_Versions_Var_Samp_Order_By>;
-  variance?: InputMaybe<File_Versions_Variance_Order_By>;
-};
-
-/** input type for inserting array relation for remote table "file_versions" */
-export type File_Versions_Arr_Rel_Insert_Input = {
-  data: Array<File_Versions_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<File_Versions_On_Conflict>;
-};
-
-/** aggregate avg on columns */
-export type File_Versions_Avg_Fields = {
-  __typename?: "file_versions_avg_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by avg() on columns of table "file_versions" */
-export type File_Versions_Avg_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** Boolean expression to filter rows from the table "file_versions". All fields are combined with a logical 'AND'. */
-export type File_Versions_Bool_Exp = {
-  _and?: InputMaybe<Array<File_Versions_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
-  _not?: InputMaybe<File_Versions_Bool_Exp>;
-  _or?: InputMaybe<Array<File_Versions_Bool_Exp>>;
-  created_at?: InputMaybe<Bigint_Comparison_Exp>;
-  file?: InputMaybe<Files_Bool_Exp>;
-  file_id?: InputMaybe<Uuid_Comparison_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  version?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "file_versions" */
-export enum File_Versions_Constraint {
-  /** unique or primary key constraint on columns "id" */
-  FileVersionsPkey = "file_versions_pkey",
-}
-
-/** input type for incrementing numeric columns in table "file_versions" */
-export type File_Versions_Inc_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-};
-
-/** input type for inserting data into table "file_versions" */
-export type File_Versions_Insert_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  file?: InputMaybe<Files_Obj_Rel_Insert_Input>;
-  /** Reference to files table */
-  file_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** File version */
-  version?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-/** aggregate max on columns */
-export type File_Versions_Max_Fields = {
-  __typename?: "file_versions_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Reference to files table */
-  file_id?: Maybe<Scalars["uuid"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** File version */
-  version?: Maybe<Scalars["String"]["output"]>;
-};
-
-/** order by max() on columns of table "file_versions" */
-export type File_Versions_Max_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  /** Reference to files table */
-  file_id?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** File version */
-  version?: InputMaybe<Order_By>;
-};
-
-/** aggregate min on columns */
-export type File_Versions_Min_Fields = {
-  __typename?: "file_versions_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Reference to files table */
-  file_id?: Maybe<Scalars["uuid"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** File version */
-  version?: Maybe<Scalars["String"]["output"]>;
-};
-
-/** order by min() on columns of table "file_versions" */
-export type File_Versions_Min_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  /** Reference to files table */
-  file_id?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** File version */
-  version?: InputMaybe<Order_By>;
-};
-
-/** response of any mutation on the table "file_versions" */
-export type File_Versions_Mutation_Response = {
-  __typename?: "file_versions_mutation_response";
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars["Int"]["output"];
-  /** data from the rows affected by the mutation */
-  returning: Array<File_Versions>;
-};
-
-/** on_conflict condition type for table "file_versions" */
-export type File_Versions_On_Conflict = {
-  constraint: File_Versions_Constraint;
-  update_columns?: Array<File_Versions_Update_Column>;
-  where?: InputMaybe<File_Versions_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "file_versions". */
-export type File_Versions_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  file?: InputMaybe<Files_Order_By>;
-  file_id?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  version?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: file_versions */
-export type File_Versions_Pk_Columns_Input = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** select columns of table "file_versions" */
-export enum File_Versions_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  FileId = "file_id",
-  /** column name */
-  Id = "id",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  Version = "version",
-}
-
-/** input type for updating data in table "file_versions" */
-export type File_Versions_Set_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Reference to files table */
-  file_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** File version */
-  version?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-/** aggregate stddev on columns */
-export type File_Versions_Stddev_Fields = {
-  __typename?: "file_versions_stddev_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev() on columns of table "file_versions" */
-export type File_Versions_Stddev_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** aggregate stddev_pop on columns */
-export type File_Versions_Stddev_Pop_Fields = {
-  __typename?: "file_versions_stddev_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev_pop() on columns of table "file_versions" */
-export type File_Versions_Stddev_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** aggregate stddev_samp on columns */
-export type File_Versions_Stddev_Samp_Fields = {
-  __typename?: "file_versions_stddev_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev_samp() on columns of table "file_versions" */
-export type File_Versions_Stddev_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** Streaming cursor of the table "file_versions" */
-export type File_Versions_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: File_Versions_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type File_Versions_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Reference to files table */
-  file_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** File version */
-  version?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-/** aggregate sum on columns */
-export type File_Versions_Sum_Fields = {
-  __typename?: "file_versions_sum_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** order by sum() on columns of table "file_versions" */
-export type File_Versions_Sum_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** update columns of table "file_versions" */
-export enum File_Versions_Update_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  FileId = "file_id",
-  /** column name */
-  Id = "id",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  Version = "version",
-}
-
-export type File_Versions_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<File_Versions_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<File_Versions_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: File_Versions_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type File_Versions_Var_Pop_Fields = {
-  __typename?: "file_versions_var_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by var_pop() on columns of table "file_versions" */
-export type File_Versions_Var_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** aggregate var_samp on columns */
-export type File_Versions_Var_Samp_Fields = {
-  __typename?: "file_versions_var_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by var_samp() on columns of table "file_versions" */
-export type File_Versions_Var_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** aggregate variance on columns */
-export type File_Versions_Variance_Fields = {
-  __typename?: "file_versions_variance_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by variance() on columns of table "file_versions" */
-export type File_Versions_Variance_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** columns and relationships of "files" */
+/** columns and relationships of "storage.files" */
 export type Files = {
   __typename?: "files";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  /** Storage bucket ID */
-  bucket_id?: Maybe<Scalars["String"]["output"]>;
-  created_at: Scalars["bigint"]["output"];
-  /** File ETag */
+  /** An object relationship */
+  bucket: Buckets;
+  bucketId: Scalars["String"]["output"];
+  createdAt: Scalars["timestamptz"]["output"];
   etag?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["uuid"]["output"];
-  /** Public file flag */
-  is_public?: Maybe<Scalars["Boolean"]["output"]>;
-  /** File MIME type */
-  mime_type?: Maybe<Scalars["String"]["output"]>;
-  /** File name */
+  isUploaded?: Maybe<Scalars["Boolean"]["output"]>;
+  metadata?: Maybe<Scalars["jsonb"]["output"]>;
+  mimeType?: Maybe<Scalars["String"]["output"]>;
   name?: Maybe<Scalars["String"]["output"]>;
-  /** File size in bytes */
-  size?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at: Scalars["bigint"]["output"];
-  /** An object relationship */
-  user?: Maybe<Users>;
-  /** File owner user ID */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** An array relationship */
-  versions: Array<File_Versions>;
-  /** An aggregate relationship */
-  versions_aggregate: File_Versions_Aggregate;
-  /** An array relationship */
-  viruses: Array<Viruses>;
-  /** An aggregate relationship */
-  viruses_aggregate: Viruses_Aggregate;
+  size?: Maybe<Scalars["Int"]["output"]>;
+  updatedAt: Scalars["timestamptz"]["output"];
+  uploadedByUserId?: Maybe<Scalars["uuid"]["output"]>;
 };
 
-/** columns and relationships of "files" */
-export type FilesVersionsArgs = {
-  distinct_on?: InputMaybe<Array<File_Versions_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<File_Versions_Order_By>>;
-  where?: InputMaybe<File_Versions_Bool_Exp>;
+/** columns and relationships of "storage.files" */
+export type FilesMetadataArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-/** columns and relationships of "files" */
-export type FilesVersions_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<File_Versions_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<File_Versions_Order_By>>;
-  where?: InputMaybe<File_Versions_Bool_Exp>;
-};
-
-/** columns and relationships of "files" */
-export type FilesVirusesArgs = {
-  distinct_on?: InputMaybe<Array<Viruses_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Viruses_Order_By>>;
-  where?: InputMaybe<Viruses_Bool_Exp>;
-};
-
-/** columns and relationships of "files" */
-export type FilesViruses_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Viruses_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Viruses_Order_By>>;
-  where?: InputMaybe<Viruses_Bool_Exp>;
-};
-
-/** aggregated selection of "files" */
+/** aggregated selection of "storage.files" */
 export type Files_Aggregate = {
   __typename?: "files_aggregate";
   aggregate?: Maybe<Files_Aggregate_Fields>;
@@ -1864,7 +1701,7 @@ export type Files_Aggregate_Bool_Exp_Count = {
   predicate: Int_Comparison_Exp;
 };
 
-/** aggregate fields of "files" */
+/** aggregate fields of "storage.files" */
 export type Files_Aggregate_Fields = {
   __typename?: "files_aggregate_fields";
   avg?: Maybe<Files_Avg_Fields>;
@@ -1880,13 +1717,13 @@ export type Files_Aggregate_Fields = {
   variance?: Maybe<Files_Variance_Fields>;
 };
 
-/** aggregate fields of "files" */
+/** aggregate fields of "storage.files" */
 export type Files_Aggregate_FieldsCountArgs = {
   columns?: InputMaybe<Array<Files_Select_Column>>;
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
-/** order by aggregate values of table "files" */
+/** order by aggregate values of table "storage.files" */
 export type Files_Aggregate_Order_By = {
   avg?: InputMaybe<Files_Avg_Order_By>;
   count?: InputMaybe<Order_By>;
@@ -1901,7 +1738,12 @@ export type Files_Aggregate_Order_By = {
   variance?: InputMaybe<Files_Variance_Order_By>;
 };
 
-/** input type for inserting array relation for remote table "files" */
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Files_Append_Input = {
+  metadata?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** input type for inserting array relation for remote table "storage.files" */
 export type Files_Arr_Rel_Insert_Input = {
   data: Array<Files_Insert_Input>;
   /** upsert condition */
@@ -1911,169 +1753,130 @@ export type Files_Arr_Rel_Insert_Input = {
 /** aggregate avg on columns */
 export type Files_Avg_Fields = {
   __typename?: "files_avg_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** File size in bytes */
   size?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by avg() on columns of table "files" */
+/** order by avg() on columns of table "storage.files" */
 export type Files_Avg_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** File size in bytes */
   size?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
-/** Boolean expression to filter rows from the table "files". All fields are combined with a logical 'AND'. */
+/** Boolean expression to filter rows from the table "storage.files". All fields are combined with a logical 'AND'. */
 export type Files_Bool_Exp = {
   _and?: InputMaybe<Array<Files_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Files_Bool_Exp>;
   _or?: InputMaybe<Array<Files_Bool_Exp>>;
-  bucket_id?: InputMaybe<String_Comparison_Exp>;
-  created_at?: InputMaybe<Bigint_Comparison_Exp>;
+  bucket?: InputMaybe<Buckets_Bool_Exp>;
+  bucketId?: InputMaybe<String_Comparison_Exp>;
+  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   etag?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
-  is_public?: InputMaybe<Boolean_Comparison_Exp>;
-  mime_type?: InputMaybe<String_Comparison_Exp>;
+  isUploaded?: InputMaybe<Boolean_Comparison_Exp>;
+  metadata?: InputMaybe<Jsonb_Comparison_Exp>;
+  mimeType?: InputMaybe<String_Comparison_Exp>;
   name?: InputMaybe<String_Comparison_Exp>;
-  size?: InputMaybe<Bigint_Comparison_Exp>;
-  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  user?: InputMaybe<Users_Bool_Exp>;
-  user_id?: InputMaybe<Uuid_Comparison_Exp>;
-  versions?: InputMaybe<File_Versions_Bool_Exp>;
-  versions_aggregate?: InputMaybe<File_Versions_Aggregate_Bool_Exp>;
-  viruses?: InputMaybe<Viruses_Bool_Exp>;
-  viruses_aggregate?: InputMaybe<Viruses_Aggregate_Bool_Exp>;
+  size?: InputMaybe<Int_Comparison_Exp>;
+  updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  uploadedByUserId?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "files" */
+/** unique or primary key constraints on table "storage.files" */
 export enum Files_Constraint {
   /** unique or primary key constraint on columns "id" */
   FilesPkey = "files_pkey",
 }
 
-/** input type for incrementing numeric columns in table "files" */
-export type Files_Inc_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** File size in bytes */
-  size?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Files_Delete_At_Path_Input = {
+  metadata?: InputMaybe<Array<Scalars["String"]["input"]>>;
 };
 
-/** input type for inserting data into table "files" */
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Files_Delete_Elem_Input = {
+  metadata?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Files_Delete_Key_Input = {
+  metadata?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** input type for incrementing numeric columns in table "storage.files" */
+export type Files_Inc_Input = {
+  size?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+/** input type for inserting data into table "storage.files" */
 export type Files_Insert_Input = {
-  /** Storage bucket ID */
-  bucket_id?: InputMaybe<Scalars["String"]["input"]>;
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** File ETag */
+  bucket?: InputMaybe<Buckets_Obj_Rel_Insert_Input>;
+  bucketId?: InputMaybe<Scalars["String"]["input"]>;
+  createdAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
   etag?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Public file flag */
-  is_public?: InputMaybe<Scalars["Boolean"]["input"]>;
-  /** File MIME type */
-  mime_type?: InputMaybe<Scalars["String"]["input"]>;
-  /** File name */
+  isUploaded?: InputMaybe<Scalars["Boolean"]["input"]>;
+  metadata?: InputMaybe<Scalars["jsonb"]["input"]>;
+  mimeType?: InputMaybe<Scalars["String"]["input"]>;
   name?: InputMaybe<Scalars["String"]["input"]>;
-  /** File size in bytes */
-  size?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
-  /** File owner user ID */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  versions?: InputMaybe<File_Versions_Arr_Rel_Insert_Input>;
-  viruses?: InputMaybe<Viruses_Arr_Rel_Insert_Input>;
+  size?: InputMaybe<Scalars["Int"]["input"]>;
+  updatedAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  uploadedByUserId?: InputMaybe<Scalars["uuid"]["input"]>;
 };
 
 /** aggregate max on columns */
 export type Files_Max_Fields = {
   __typename?: "files_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  /** Storage bucket ID */
-  bucket_id?: Maybe<Scalars["String"]["output"]>;
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** File ETag */
+  bucketId?: Maybe<Scalars["String"]["output"]>;
+  createdAt?: Maybe<Scalars["timestamptz"]["output"]>;
   etag?: Maybe<Scalars["String"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
-  /** File MIME type */
-  mime_type?: Maybe<Scalars["String"]["output"]>;
-  /** File name */
+  mimeType?: Maybe<Scalars["String"]["output"]>;
   name?: Maybe<Scalars["String"]["output"]>;
-  /** File size in bytes */
-  size?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** File owner user ID */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
+  size?: Maybe<Scalars["Int"]["output"]>;
+  updatedAt?: Maybe<Scalars["timestamptz"]["output"]>;
+  uploadedByUserId?: Maybe<Scalars["uuid"]["output"]>;
 };
 
-/** order by max() on columns of table "files" */
+/** order by max() on columns of table "storage.files" */
 export type Files_Max_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  /** Storage bucket ID */
-  bucket_id?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  /** File ETag */
+  bucketId?: InputMaybe<Order_By>;
+  createdAt?: InputMaybe<Order_By>;
   etag?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
-  /** File MIME type */
-  mime_type?: InputMaybe<Order_By>;
-  /** File name */
+  mimeType?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
-  /** File size in bytes */
   size?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** File owner user ID */
-  user_id?: InputMaybe<Order_By>;
+  updatedAt?: InputMaybe<Order_By>;
+  uploadedByUserId?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
 export type Files_Min_Fields = {
   __typename?: "files_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  /** Storage bucket ID */
-  bucket_id?: Maybe<Scalars["String"]["output"]>;
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** File ETag */
+  bucketId?: Maybe<Scalars["String"]["output"]>;
+  createdAt?: Maybe<Scalars["timestamptz"]["output"]>;
   etag?: Maybe<Scalars["String"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
-  /** File MIME type */
-  mime_type?: Maybe<Scalars["String"]["output"]>;
-  /** File name */
+  mimeType?: Maybe<Scalars["String"]["output"]>;
   name?: Maybe<Scalars["String"]["output"]>;
-  /** File size in bytes */
-  size?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** File owner user ID */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
+  size?: Maybe<Scalars["Int"]["output"]>;
+  updatedAt?: Maybe<Scalars["timestamptz"]["output"]>;
+  uploadedByUserId?: Maybe<Scalars["uuid"]["output"]>;
 };
 
-/** order by min() on columns of table "files" */
+/** order by min() on columns of table "storage.files" */
 export type Files_Min_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  /** Storage bucket ID */
-  bucket_id?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  /** File ETag */
+  bucketId?: InputMaybe<Order_By>;
+  createdAt?: InputMaybe<Order_By>;
   etag?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
-  /** File MIME type */
-  mime_type?: InputMaybe<Order_By>;
-  /** File name */
+  mimeType?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
-  /** File size in bytes */
   size?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** File owner user ID */
-  user_id?: InputMaybe<Order_By>;
+  updatedAt?: InputMaybe<Order_By>;
+  uploadedByUserId?: InputMaybe<Order_By>;
 };
 
-/** response of any mutation on the table "files" */
+/** response of any mutation on the table "storage.files" */
 export type Files_Mutation_Response = {
   __typename?: "files_mutation_response";
   /** number of rows affected by the mutation */
@@ -2082,154 +1885,130 @@ export type Files_Mutation_Response = {
   returning: Array<Files>;
 };
 
-/** input type for inserting object relation for remote table "files" */
+/** input type for inserting object relation for remote table "storage.files" */
 export type Files_Obj_Rel_Insert_Input = {
   data: Files_Insert_Input;
   /** upsert condition */
   on_conflict?: InputMaybe<Files_On_Conflict>;
 };
 
-/** on_conflict condition type for table "files" */
+/** on_conflict condition type for table "storage.files" */
 export type Files_On_Conflict = {
   constraint: Files_Constraint;
   update_columns?: Array<Files_Update_Column>;
   where?: InputMaybe<Files_Bool_Exp>;
 };
 
-/** Ordering options when selecting data from "files". */
+/** Ordering options when selecting data from "storage.files". */
 export type Files_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  bucket_id?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
+  bucket?: InputMaybe<Buckets_Order_By>;
+  bucketId?: InputMaybe<Order_By>;
+  createdAt?: InputMaybe<Order_By>;
   etag?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
-  is_public?: InputMaybe<Order_By>;
-  mime_type?: InputMaybe<Order_By>;
+  isUploaded?: InputMaybe<Order_By>;
+  metadata?: InputMaybe<Order_By>;
+  mimeType?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
   size?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  user?: InputMaybe<Users_Order_By>;
-  user_id?: InputMaybe<Order_By>;
-  versions_aggregate?: InputMaybe<File_Versions_Aggregate_Order_By>;
-  viruses_aggregate?: InputMaybe<Viruses_Aggregate_Order_By>;
+  updatedAt?: InputMaybe<Order_By>;
+  uploadedByUserId?: InputMaybe<Order_By>;
 };
 
-/** primary key columns input for table: files */
+/** primary key columns input for table: storage.files */
 export type Files_Pk_Columns_Input = {
   id: Scalars["uuid"]["input"];
 };
 
-/** select columns of table "files" */
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Files_Prepend_Input = {
+  metadata?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** select columns of table "storage.files" */
 export enum Files_Select_Column {
   /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
+  BucketId = "bucketId",
   /** column name */
-  HasyxTableName = "_hasyx_table_name",
-  /** column name */
-  BucketId = "bucket_id",
-  /** column name */
-  CreatedAt = "created_at",
+  CreatedAt = "createdAt",
   /** column name */
   Etag = "etag",
   /** column name */
   Id = "id",
   /** column name */
-  IsPublic = "is_public",
+  IsUploaded = "isUploaded",
   /** column name */
-  MimeType = "mime_type",
+  Metadata = "metadata",
+  /** column name */
+  MimeType = "mimeType",
   /** column name */
   Name = "name",
   /** column name */
   Size = "size",
   /** column name */
-  UpdatedAt = "updated_at",
+  UpdatedAt = "updatedAt",
   /** column name */
-  UserId = "user_id",
+  UploadedByUserId = "uploadedByUserId",
 }
 
-/** select "files_aggregate_bool_exp_bool_and_arguments_columns" columns of table "files" */
+/** select "files_aggregate_bool_exp_bool_and_arguments_columns" columns of table "storage.files" */
 export enum Files_Select_Column_Files_Aggregate_Bool_Exp_Bool_And_Arguments_Columns {
   /** column name */
-  IsPublic = "is_public",
+  IsUploaded = "isUploaded",
 }
 
-/** select "files_aggregate_bool_exp_bool_or_arguments_columns" columns of table "files" */
+/** select "files_aggregate_bool_exp_bool_or_arguments_columns" columns of table "storage.files" */
 export enum Files_Select_Column_Files_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns {
   /** column name */
-  IsPublic = "is_public",
+  IsUploaded = "isUploaded",
 }
 
-/** input type for updating data in table "files" */
+/** input type for updating data in table "storage.files" */
 export type Files_Set_Input = {
-  /** Storage bucket ID */
-  bucket_id?: InputMaybe<Scalars["String"]["input"]>;
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** File ETag */
+  bucketId?: InputMaybe<Scalars["String"]["input"]>;
+  createdAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
   etag?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Public file flag */
-  is_public?: InputMaybe<Scalars["Boolean"]["input"]>;
-  /** File MIME type */
-  mime_type?: InputMaybe<Scalars["String"]["input"]>;
-  /** File name */
+  isUploaded?: InputMaybe<Scalars["Boolean"]["input"]>;
+  metadata?: InputMaybe<Scalars["jsonb"]["input"]>;
+  mimeType?: InputMaybe<Scalars["String"]["input"]>;
   name?: InputMaybe<Scalars["String"]["input"]>;
-  /** File size in bytes */
-  size?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** File owner user ID */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  size?: InputMaybe<Scalars["Int"]["input"]>;
+  updatedAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  uploadedByUserId?: InputMaybe<Scalars["uuid"]["input"]>;
 };
 
 /** aggregate stddev on columns */
 export type Files_Stddev_Fields = {
   __typename?: "files_stddev_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** File size in bytes */
   size?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by stddev() on columns of table "files" */
+/** order by stddev() on columns of table "storage.files" */
 export type Files_Stddev_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** File size in bytes */
   size?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Files_Stddev_Pop_Fields = {
   __typename?: "files_stddev_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** File size in bytes */
   size?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by stddev_pop() on columns of table "files" */
+/** order by stddev_pop() on columns of table "storage.files" */
 export type Files_Stddev_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** File size in bytes */
   size?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Files_Stddev_Samp_Fields = {
   __typename?: "files_stddev_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** File size in bytes */
   size?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by stddev_samp() on columns of table "files" */
+/** order by stddev_samp() on columns of table "storage.files" */
 export type Files_Stddev_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** File size in bytes */
   size?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "files" */
@@ -2242,71 +2021,69 @@ export type Files_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Files_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
-  /** Storage bucket ID */
-  bucket_id?: InputMaybe<Scalars["String"]["input"]>;
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** File ETag */
+  bucketId?: InputMaybe<Scalars["String"]["input"]>;
+  createdAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
   etag?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Public file flag */
-  is_public?: InputMaybe<Scalars["Boolean"]["input"]>;
-  /** File MIME type */
-  mime_type?: InputMaybe<Scalars["String"]["input"]>;
-  /** File name */
+  isUploaded?: InputMaybe<Scalars["Boolean"]["input"]>;
+  metadata?: InputMaybe<Scalars["jsonb"]["input"]>;
+  mimeType?: InputMaybe<Scalars["String"]["input"]>;
   name?: InputMaybe<Scalars["String"]["input"]>;
-  /** File size in bytes */
-  size?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** File owner user ID */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  size?: InputMaybe<Scalars["Int"]["input"]>;
+  updatedAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  uploadedByUserId?: InputMaybe<Scalars["uuid"]["input"]>;
 };
 
 /** aggregate sum on columns */
 export type Files_Sum_Fields = {
   __typename?: "files_sum_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** File size in bytes */
-  size?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  size?: Maybe<Scalars["Int"]["output"]>;
 };
 
-/** order by sum() on columns of table "files" */
+/** order by sum() on columns of table "storage.files" */
 export type Files_Sum_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** File size in bytes */
   size?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
-/** update columns of table "files" */
+/** update columns of table "storage.files" */
 export enum Files_Update_Column {
   /** column name */
-  BucketId = "bucket_id",
+  BucketId = "bucketId",
   /** column name */
-  CreatedAt = "created_at",
+  CreatedAt = "createdAt",
   /** column name */
   Etag = "etag",
   /** column name */
   Id = "id",
   /** column name */
-  IsPublic = "is_public",
+  IsUploaded = "isUploaded",
   /** column name */
-  MimeType = "mime_type",
+  Metadata = "metadata",
+  /** column name */
+  MimeType = "mimeType",
   /** column name */
   Name = "name",
   /** column name */
   Size = "size",
   /** column name */
-  UpdatedAt = "updated_at",
+  UpdatedAt = "updatedAt",
   /** column name */
-  UserId = "user_id",
+  UploadedByUserId = "uploadedByUserId",
 }
 
 export type Files_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Files_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Files_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Files_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Files_Delete_Key_Input>;
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<Files_Inc_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Files_Prepend_Input>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<Files_Set_Input>;
   /** filter the rows which have to be updated */
@@ -2316,52 +2093,34 @@ export type Files_Updates = {
 /** aggregate var_pop on columns */
 export type Files_Var_Pop_Fields = {
   __typename?: "files_var_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** File size in bytes */
   size?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by var_pop() on columns of table "files" */
+/** order by var_pop() on columns of table "storage.files" */
 export type Files_Var_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** File size in bytes */
   size?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_samp on columns */
 export type Files_Var_Samp_Fields = {
   __typename?: "files_var_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** File size in bytes */
   size?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by var_samp() on columns of table "files" */
+/** order by var_samp() on columns of table "storage.files" */
 export type Files_Var_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** File size in bytes */
   size?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** aggregate variance on columns */
 export type Files_Variance_Fields = {
   __typename?: "files_variance_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** File size in bytes */
   size?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
-/** order by variance() on columns of table "files" */
+/** order by variance() on columns of table "storage.files" */
 export type Files_Variance_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** File size in bytes */
   size?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** columns and relationships of "github_issues" */
@@ -3223,8 +2982,6 @@ export type Logs_Diffs = {
   __typename?: "logs_diffs";
   /** Source column name */
   _column: Scalars["String"]["output"];
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Source record identifier */
   _id: Scalars["String"]["output"];
   /** Source schema name */
@@ -3284,8 +3041,6 @@ export type Logs_Diffs_Avg_Fields = {
 export type Logs_Diffs_Bool_Exp = {
   _and?: InputMaybe<Array<Logs_Diffs_Bool_Exp>>;
   _column?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _id?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Logs_Diffs_Bool_Exp>;
   _or?: InputMaybe<Array<Logs_Diffs_Bool_Exp>>;
@@ -3340,8 +3095,6 @@ export type Logs_Diffs_Max_Fields = {
   __typename?: "logs_diffs_max_fields";
   /** Source column name */
   _column?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Source record identifier */
   _id?: Maybe<Scalars["String"]["output"]>;
   /** Source schema name */
@@ -3364,8 +3117,6 @@ export type Logs_Diffs_Min_Fields = {
   __typename?: "logs_diffs_min_fields";
   /** Source column name */
   _column?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Source record identifier */
   _id?: Maybe<Scalars["String"]["output"]>;
   /** Source schema name */
@@ -3402,8 +3153,6 @@ export type Logs_Diffs_On_Conflict = {
 /** Ordering options when selecting data from "logs.diffs". */
 export type Logs_Diffs_Order_By = {
   _column?: InputMaybe<Order_By>;
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   _id?: InputMaybe<Order_By>;
   _schema?: InputMaybe<Order_By>;
   _table?: InputMaybe<Order_By>;
@@ -3425,10 +3174,6 @@ export type Logs_Diffs_Pk_Columns_Input = {
 export enum Logs_Diffs_Select_Column {
   /** column name */
   Column = "_column",
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   Id = "_id",
   /** column name */
@@ -3507,8 +3252,6 @@ export type Logs_Diffs_Stream_Cursor_Input = {
 export type Logs_Diffs_Stream_Cursor_Value_Input = {
   /** Source column name */
   _column?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   /** Source record identifier */
   _id?: InputMaybe<Scalars["String"]["input"]>;
   /** Source schema name */
@@ -3596,8 +3339,6 @@ export type Logs_States = {
   __typename?: "logs_states";
   /** Source column name */
   _column: Scalars["String"]["output"];
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Source record identifier */
   _id: Scalars["String"]["output"];
   /** Source schema name */
@@ -3664,8 +3405,6 @@ export type Logs_States_Avg_Fields = {
 export type Logs_States_Bool_Exp = {
   _and?: InputMaybe<Array<Logs_States_Bool_Exp>>;
   _column?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _id?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Logs_States_Bool_Exp>;
   _or?: InputMaybe<Array<Logs_States_Bool_Exp>>;
@@ -3732,8 +3471,6 @@ export type Logs_States_Max_Fields = {
   __typename?: "logs_states_max_fields";
   /** Source column name */
   _column?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Source record identifier */
   _id?: Maybe<Scalars["String"]["output"]>;
   /** Source schema name */
@@ -3752,8 +3489,6 @@ export type Logs_States_Min_Fields = {
   __typename?: "logs_states_min_fields";
   /** Source column name */
   _column?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Source record identifier */
   _id?: Maybe<Scalars["String"]["output"]>;
   /** Source schema name */
@@ -3786,8 +3521,6 @@ export type Logs_States_On_Conflict = {
 /** Ordering options when selecting data from "logs.states". */
 export type Logs_States_Order_By = {
   _column?: InputMaybe<Order_By>;
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   _id?: InputMaybe<Order_By>;
   _schema?: InputMaybe<Order_By>;
   _table?: InputMaybe<Order_By>;
@@ -3813,10 +3546,6 @@ export type Logs_States_Prepend_Input = {
 export enum Logs_States_Select_Column {
   /** column name */
   Column = "_column",
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   Id = "_id",
   /** column name */
@@ -3887,8 +3616,6 @@ export type Logs_States_Stream_Cursor_Input = {
 export type Logs_States_Stream_Cursor_Value_Input = {
   /** Source column name */
   _column?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   /** Source record identifier */
   _id?: InputMaybe<Scalars["String"]["input"]>;
   /** Source schema name */
@@ -3976,6 +3703,18 @@ export type Logs_States_Variance_Fields = {
 /** mutation root */
 export type Mutation_Root = {
   __typename?: "mutation_root";
+  /** delete single row from the table: "storage.buckets" */
+  deleteBucket?: Maybe<Buckets>;
+  /** delete data from the table: "storage.buckets" */
+  deleteBuckets?: Maybe<Buckets_Mutation_Response>;
+  /** delete single row from the table: "storage.files" */
+  deleteFile?: Maybe<Files>;
+  /** delete data from the table: "storage.files" */
+  deleteFiles?: Maybe<Files_Mutation_Response>;
+  /** delete single row from the table: "storage.virus" */
+  deleteVirus?: Maybe<Virus>;
+  /** delete data from the table: "storage.virus" */
+  deleteViruses?: Maybe<Virus_Mutation_Response>;
   /** delete data from the table: "accounts" */
   delete_accounts?: Maybe<Accounts_Mutation_Response>;
   /** delete single row from the table: "accounts" */
@@ -3988,14 +3727,6 @@ export type Mutation_Root = {
   delete_debug?: Maybe<Debug_Mutation_Response>;
   /** delete single row from the table: "debug" */
   delete_debug_by_pk?: Maybe<Debug>;
-  /** delete data from the table: "file_versions" */
-  delete_file_versions?: Maybe<File_Versions_Mutation_Response>;
-  /** delete single row from the table: "file_versions" */
-  delete_file_versions_by_pk?: Maybe<File_Versions>;
-  /** delete data from the table: "files" */
-  delete_files?: Maybe<Files_Mutation_Response>;
-  /** delete single row from the table: "files" */
-  delete_files_by_pk?: Maybe<Files>;
   /** delete data from the table: "github_issues" */
   delete_github_issues?: Maybe<Github_Issues_Mutation_Response>;
   /** delete single row from the table: "github_issues" */
@@ -4048,10 +3779,18 @@ export type Mutation_Root = {
   delete_users?: Maybe<Users_Mutation_Response>;
   /** delete single row from the table: "users" */
   delete_users_by_pk?: Maybe<Users>;
-  /** delete data from the table: "viruses" */
-  delete_viruses?: Maybe<Viruses_Mutation_Response>;
-  /** delete single row from the table: "viruses" */
-  delete_viruses_by_pk?: Maybe<Viruses>;
+  /** insert a single row into the table: "storage.buckets" */
+  insertBucket?: Maybe<Buckets>;
+  /** insert data into the table: "storage.buckets" */
+  insertBuckets?: Maybe<Buckets_Mutation_Response>;
+  /** insert a single row into the table: "storage.files" */
+  insertFile?: Maybe<Files>;
+  /** insert data into the table: "storage.files" */
+  insertFiles?: Maybe<Files_Mutation_Response>;
+  /** insert a single row into the table: "storage.virus" */
+  insertVirus?: Maybe<Virus>;
+  /** insert data into the table: "storage.virus" */
+  insertViruses?: Maybe<Virus_Mutation_Response>;
   /** insert data into the table: "accounts" */
   insert_accounts?: Maybe<Accounts_Mutation_Response>;
   /** insert a single row into the table: "accounts" */
@@ -4064,14 +3803,6 @@ export type Mutation_Root = {
   insert_debug?: Maybe<Debug_Mutation_Response>;
   /** insert a single row into the table: "debug" */
   insert_debug_one?: Maybe<Debug>;
-  /** insert data into the table: "file_versions" */
-  insert_file_versions?: Maybe<File_Versions_Mutation_Response>;
-  /** insert a single row into the table: "file_versions" */
-  insert_file_versions_one?: Maybe<File_Versions>;
-  /** insert data into the table: "files" */
-  insert_files?: Maybe<Files_Mutation_Response>;
-  /** insert a single row into the table: "files" */
-  insert_files_one?: Maybe<Files>;
   /** insert data into the table: "github_issues" */
   insert_github_issues?: Maybe<Github_Issues_Mutation_Response>;
   /** insert a single row into the table: "github_issues" */
@@ -4124,10 +3855,18 @@ export type Mutation_Root = {
   insert_users?: Maybe<Users_Mutation_Response>;
   /** insert a single row into the table: "users" */
   insert_users_one?: Maybe<Users>;
-  /** insert data into the table: "viruses" */
-  insert_viruses?: Maybe<Viruses_Mutation_Response>;
-  /** insert a single row into the table: "viruses" */
-  insert_viruses_one?: Maybe<Viruses>;
+  /** update single row of the table: "storage.buckets" */
+  updateBucket?: Maybe<Buckets>;
+  /** update data of the table: "storage.buckets" */
+  updateBuckets?: Maybe<Buckets_Mutation_Response>;
+  /** update single row of the table: "storage.files" */
+  updateFile?: Maybe<Files>;
+  /** update data of the table: "storage.files" */
+  updateFiles?: Maybe<Files_Mutation_Response>;
+  /** update single row of the table: "storage.virus" */
+  updateVirus?: Maybe<Virus>;
+  /** update data of the table: "storage.virus" */
+  updateViruses?: Maybe<Virus_Mutation_Response>;
   /** update data of the table: "accounts" */
   update_accounts?: Maybe<Accounts_Mutation_Response>;
   /** update single row of the table: "accounts" */
@@ -4140,25 +3879,15 @@ export type Mutation_Root = {
   update_auth_jwt_by_pk?: Maybe<Auth_Jwt>;
   /** update multiples rows of table: "auth_jwt" */
   update_auth_jwt_many?: Maybe<Array<Maybe<Auth_Jwt_Mutation_Response>>>;
+  /** update multiples rows of table: "storage.buckets" */
+  update_buckets_many?: Maybe<Array<Maybe<Buckets_Mutation_Response>>>;
   /** update data of the table: "debug" */
   update_debug?: Maybe<Debug_Mutation_Response>;
   /** update single row of the table: "debug" */
   update_debug_by_pk?: Maybe<Debug>;
   /** update multiples rows of table: "debug" */
   update_debug_many?: Maybe<Array<Maybe<Debug_Mutation_Response>>>;
-  /** update data of the table: "file_versions" */
-  update_file_versions?: Maybe<File_Versions_Mutation_Response>;
-  /** update single row of the table: "file_versions" */
-  update_file_versions_by_pk?: Maybe<File_Versions>;
-  /** update multiples rows of table: "file_versions" */
-  update_file_versions_many?: Maybe<
-    Array<Maybe<File_Versions_Mutation_Response>>
-  >;
-  /** update data of the table: "files" */
-  update_files?: Maybe<Files_Mutation_Response>;
-  /** update single row of the table: "files" */
-  update_files_by_pk?: Maybe<Files>;
-  /** update multiples rows of table: "files" */
+  /** update multiples rows of table: "storage.files" */
   update_files_many?: Maybe<Array<Maybe<Files_Mutation_Response>>>;
   /** update data of the table: "github_issues" */
   update_github_issues?: Maybe<Github_Issues_Mutation_Response>;
@@ -4258,12 +3987,38 @@ export type Mutation_Root = {
   update_users_by_pk?: Maybe<Users>;
   /** update multiples rows of table: "users" */
   update_users_many?: Maybe<Array<Maybe<Users_Mutation_Response>>>;
-  /** update data of the table: "viruses" */
-  update_viruses?: Maybe<Viruses_Mutation_Response>;
-  /** update single row of the table: "viruses" */
-  update_viruses_by_pk?: Maybe<Viruses>;
-  /** update multiples rows of table: "viruses" */
-  update_viruses_many?: Maybe<Array<Maybe<Viruses_Mutation_Response>>>;
+  /** update multiples rows of table: "storage.virus" */
+  update_virus_many?: Maybe<Array<Maybe<Virus_Mutation_Response>>>;
+};
+
+/** mutation root */
+export type Mutation_RootDeleteBucketArgs = {
+  id: Scalars["String"]["input"];
+};
+
+/** mutation root */
+export type Mutation_RootDeleteBucketsArgs = {
+  where: Buckets_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootDeleteFileArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** mutation root */
+export type Mutation_RootDeleteFilesArgs = {
+  where: Files_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootDeleteVirusArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** mutation root */
+export type Mutation_RootDeleteVirusesArgs = {
+  where: Virus_Bool_Exp;
 };
 
 /** mutation root */
@@ -4293,26 +4048,6 @@ export type Mutation_RootDelete_DebugArgs = {
 
 /** mutation root */
 export type Mutation_RootDelete_Debug_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** mutation root */
-export type Mutation_RootDelete_File_VersionsArgs = {
-  where: File_Versions_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootDelete_File_Versions_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** mutation root */
-export type Mutation_RootDelete_FilesArgs = {
-  where: Files_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Files_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -4448,13 +4183,39 @@ export type Mutation_RootDelete_Users_By_PkArgs = {
 };
 
 /** mutation root */
-export type Mutation_RootDelete_VirusesArgs = {
-  where: Viruses_Bool_Exp;
+export type Mutation_RootInsertBucketArgs = {
+  object: Buckets_Insert_Input;
+  on_conflict?: InputMaybe<Buckets_On_Conflict>;
 };
 
 /** mutation root */
-export type Mutation_RootDelete_Viruses_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
+export type Mutation_RootInsertBucketsArgs = {
+  objects: Array<Buckets_Insert_Input>;
+  on_conflict?: InputMaybe<Buckets_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsertFileArgs = {
+  object: Files_Insert_Input;
+  on_conflict?: InputMaybe<Files_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsertFilesArgs = {
+  objects: Array<Files_Insert_Input>;
+  on_conflict?: InputMaybe<Files_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsertVirusArgs = {
+  object: Virus_Insert_Input;
+  on_conflict?: InputMaybe<Virus_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsertVirusesArgs = {
+  objects: Array<Virus_Insert_Input>;
+  on_conflict?: InputMaybe<Virus_On_Conflict>;
 };
 
 /** mutation root */
@@ -4491,30 +4252,6 @@ export type Mutation_RootInsert_DebugArgs = {
 export type Mutation_RootInsert_Debug_OneArgs = {
   object: Debug_Insert_Input;
   on_conflict?: InputMaybe<Debug_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_File_VersionsArgs = {
-  objects: Array<File_Versions_Insert_Input>;
-  on_conflict?: InputMaybe<File_Versions_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_File_Versions_OneArgs = {
-  object: File_Versions_Insert_Input;
-  on_conflict?: InputMaybe<File_Versions_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_FilesArgs = {
-  objects: Array<Files_Insert_Input>;
-  on_conflict?: InputMaybe<Files_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Files_OneArgs = {
-  object: Files_Insert_Input;
-  on_conflict?: InputMaybe<Files_On_Conflict>;
 };
 
 /** mutation root */
@@ -4675,15 +4412,63 @@ export type Mutation_RootInsert_Users_OneArgs = {
 };
 
 /** mutation root */
-export type Mutation_RootInsert_VirusesArgs = {
-  objects: Array<Viruses_Insert_Input>;
-  on_conflict?: InputMaybe<Viruses_On_Conflict>;
+export type Mutation_RootUpdateBucketArgs = {
+  _inc?: InputMaybe<Buckets_Inc_Input>;
+  _set?: InputMaybe<Buckets_Set_Input>;
+  pk_columns: Buckets_Pk_Columns_Input;
 };
 
 /** mutation root */
-export type Mutation_RootInsert_Viruses_OneArgs = {
-  object: Viruses_Insert_Input;
-  on_conflict?: InputMaybe<Viruses_On_Conflict>;
+export type Mutation_RootUpdateBucketsArgs = {
+  _inc?: InputMaybe<Buckets_Inc_Input>;
+  _set?: InputMaybe<Buckets_Set_Input>;
+  where: Buckets_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootUpdateFileArgs = {
+  _append?: InputMaybe<Files_Append_Input>;
+  _delete_at_path?: InputMaybe<Files_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Files_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Files_Delete_Key_Input>;
+  _inc?: InputMaybe<Files_Inc_Input>;
+  _prepend?: InputMaybe<Files_Prepend_Input>;
+  _set?: InputMaybe<Files_Set_Input>;
+  pk_columns: Files_Pk_Columns_Input;
+};
+
+/** mutation root */
+export type Mutation_RootUpdateFilesArgs = {
+  _append?: InputMaybe<Files_Append_Input>;
+  _delete_at_path?: InputMaybe<Files_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Files_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Files_Delete_Key_Input>;
+  _inc?: InputMaybe<Files_Inc_Input>;
+  _prepend?: InputMaybe<Files_Prepend_Input>;
+  _set?: InputMaybe<Files_Set_Input>;
+  where: Files_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootUpdateVirusArgs = {
+  _append?: InputMaybe<Virus_Append_Input>;
+  _delete_at_path?: InputMaybe<Virus_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Virus_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Virus_Delete_Key_Input>;
+  _prepend?: InputMaybe<Virus_Prepend_Input>;
+  _set?: InputMaybe<Virus_Set_Input>;
+  pk_columns: Virus_Pk_Columns_Input;
+};
+
+/** mutation root */
+export type Mutation_RootUpdateVirusesArgs = {
+  _append?: InputMaybe<Virus_Append_Input>;
+  _delete_at_path?: InputMaybe<Virus_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Virus_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Virus_Delete_Key_Input>;
+  _prepend?: InputMaybe<Virus_Prepend_Input>;
+  _set?: InputMaybe<Virus_Set_Input>;
+  where: Virus_Bool_Exp;
 };
 
 /** mutation root */
@@ -4735,6 +4520,11 @@ export type Mutation_RootUpdate_Auth_Jwt_ManyArgs = {
 };
 
 /** mutation root */
+export type Mutation_RootUpdate_Buckets_ManyArgs = {
+  updates: Array<Buckets_Updates>;
+};
+
+/** mutation root */
 export type Mutation_RootUpdate_DebugArgs = {
   _append?: InputMaybe<Debug_Append_Input>;
   _delete_at_path?: InputMaybe<Debug_Delete_At_Path_Input>;
@@ -4761,39 +4551,6 @@ export type Mutation_RootUpdate_Debug_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Debug_ManyArgs = {
   updates: Array<Debug_Updates>;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_File_VersionsArgs = {
-  _inc?: InputMaybe<File_Versions_Inc_Input>;
-  _set?: InputMaybe<File_Versions_Set_Input>;
-  where: File_Versions_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_File_Versions_By_PkArgs = {
-  _inc?: InputMaybe<File_Versions_Inc_Input>;
-  _set?: InputMaybe<File_Versions_Set_Input>;
-  pk_columns: File_Versions_Pk_Columns_Input;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_File_Versions_ManyArgs = {
-  updates: Array<File_Versions_Updates>;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_FilesArgs = {
-  _inc?: InputMaybe<Files_Inc_Input>;
-  _set?: InputMaybe<Files_Set_Input>;
-  where: Files_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Files_By_PkArgs = {
-  _inc?: InputMaybe<Files_Inc_Input>;
-  _set?: InputMaybe<Files_Set_Input>;
-  pk_columns: Files_Pk_Columns_Input;
 };
 
 /** mutation root */
@@ -5161,22 +4918,8 @@ export type Mutation_RootUpdate_Users_ManyArgs = {
 };
 
 /** mutation root */
-export type Mutation_RootUpdate_VirusesArgs = {
-  _inc?: InputMaybe<Viruses_Inc_Input>;
-  _set?: InputMaybe<Viruses_Set_Input>;
-  where: Viruses_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Viruses_By_PkArgs = {
-  _inc?: InputMaybe<Viruses_Inc_Input>;
-  _set?: InputMaybe<Viruses_Set_Input>;
-  pk_columns: Viruses_Pk_Columns_Input;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Viruses_ManyArgs = {
-  updates: Array<Viruses_Updates>;
+export type Mutation_RootUpdate_Virus_ManyArgs = {
+  updates: Array<Virus_Updates>;
 };
 
 /** columns and relationships of "notification_messages" */
@@ -5188,9 +4931,15 @@ export type Notification_Messages = {
   /** Additional notification data */
   data?: Maybe<Scalars["jsonb"]["output"]>;
   id: Scalars["uuid"]["output"];
+  /** An array relationship */
+  notifications: Array<Notifications>;
+  /** An aggregate relationship */
+  notifications_aggregate: Notifications_Aggregate;
   /** Notification title */
   title: Scalars["String"]["output"];
   updated_at: Scalars["bigint"]["output"];
+  /** An object relationship */
+  user: Users;
   /** Target user for notification */
   user_id: Scalars["uuid"]["output"];
 };
@@ -5200,11 +4949,40 @@ export type Notification_MessagesDataArgs = {
   path?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+/** columns and relationships of "notification_messages" */
+export type Notification_MessagesNotificationsArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
+/** columns and relationships of "notification_messages" */
+export type Notification_MessagesNotifications_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
 /** aggregated selection of "notification_messages" */
 export type Notification_Messages_Aggregate = {
   __typename?: "notification_messages_aggregate";
   aggregate?: Maybe<Notification_Messages_Aggregate_Fields>;
   nodes: Array<Notification_Messages>;
+};
+
+export type Notification_Messages_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Notification_Messages_Aggregate_Bool_Exp_Count>;
+};
+
+export type Notification_Messages_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Notification_Messages_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+  filter?: InputMaybe<Notification_Messages_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "notification_messages" */
@@ -5229,10 +5007,32 @@ export type Notification_Messages_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+/** order by aggregate values of table "notification_messages" */
+export type Notification_Messages_Aggregate_Order_By = {
+  avg?: InputMaybe<Notification_Messages_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Notification_Messages_Max_Order_By>;
+  min?: InputMaybe<Notification_Messages_Min_Order_By>;
+  stddev?: InputMaybe<Notification_Messages_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Notification_Messages_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Notification_Messages_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Notification_Messages_Sum_Order_By>;
+  var_pop?: InputMaybe<Notification_Messages_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Notification_Messages_Var_Samp_Order_By>;
+  variance?: InputMaybe<Notification_Messages_Variance_Order_By>;
+};
+
 /** append existing jsonb value of filtered columns with new jsonb value */
 export type Notification_Messages_Append_Input = {
   /** Additional notification data */
   data?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** input type for inserting array relation for remote table "notification_messages" */
+export type Notification_Messages_Arr_Rel_Insert_Input = {
+  data: Array<Notification_Messages_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Notification_Messages_On_Conflict>;
 };
 
 /** aggregate avg on columns */
@@ -5240,6 +5040,12 @@ export type Notification_Messages_Avg_Fields = {
   __typename?: "notification_messages_avg_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by avg() on columns of table "notification_messages" */
+export type Notification_Messages_Avg_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "notification_messages". All fields are combined with a logical 'AND'. */
@@ -5251,8 +5057,11 @@ export type Notification_Messages_Bool_Exp = {
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
   data?: InputMaybe<Jsonb_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
+  notifications?: InputMaybe<Notifications_Bool_Exp>;
+  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Bool_Exp>;
   title?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+  user?: InputMaybe<Users_Bool_Exp>;
   user_id?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
@@ -5294,9 +5103,11 @@ export type Notification_Messages_Insert_Input = {
   /** Additional notification data */
   data?: InputMaybe<Scalars["jsonb"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
+  notifications?: InputMaybe<Notifications_Arr_Rel_Insert_Input>;
   /** Notification title */
   title?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   /** Target user for notification */
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
 };
@@ -5315,6 +5126,19 @@ export type Notification_Messages_Max_Fields = {
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
+/** order by max() on columns of table "notification_messages" */
+export type Notification_Messages_Max_Order_By = {
+  /** Notification body */
+  body?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Notification title */
+  title?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** Target user for notification */
+  user_id?: InputMaybe<Order_By>;
+};
+
 /** aggregate min on columns */
 export type Notification_Messages_Min_Fields = {
   __typename?: "notification_messages_min_fields";
@@ -5329,6 +5153,19 @@ export type Notification_Messages_Min_Fields = {
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
+/** order by min() on columns of table "notification_messages" */
+export type Notification_Messages_Min_Order_By = {
+  /** Notification body */
+  body?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Notification title */
+  title?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** Target user for notification */
+  user_id?: InputMaybe<Order_By>;
+};
+
 /** response of any mutation on the table "notification_messages" */
 export type Notification_Messages_Mutation_Response = {
   __typename?: "notification_messages_mutation_response";
@@ -5336,6 +5173,13 @@ export type Notification_Messages_Mutation_Response = {
   affected_rows: Scalars["Int"]["output"];
   /** data from the rows affected by the mutation */
   returning: Array<Notification_Messages>;
+};
+
+/** input type for inserting object relation for remote table "notification_messages" */
+export type Notification_Messages_Obj_Rel_Insert_Input = {
+  data: Notification_Messages_Insert_Input;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Notification_Messages_On_Conflict>;
 };
 
 /** on_conflict condition type for table "notification_messages" */
@@ -5351,8 +5195,10 @@ export type Notification_Messages_Order_By = {
   created_at?: InputMaybe<Order_By>;
   data?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
+  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Order_By>;
   title?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
+  user?: InputMaybe<Users_Order_By>;
   user_id?: InputMaybe<Order_By>;
 };
 
@@ -5407,6 +5253,12 @@ export type Notification_Messages_Stddev_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev() on columns of table "notification_messages" */
+export type Notification_Messages_Stddev_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_pop on columns */
 export type Notification_Messages_Stddev_Pop_Fields = {
   __typename?: "notification_messages_stddev_pop_fields";
@@ -5414,11 +5266,23 @@ export type Notification_Messages_Stddev_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev_pop() on columns of table "notification_messages" */
+export type Notification_Messages_Stddev_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_samp on columns */
 export type Notification_Messages_Stddev_Samp_Fields = {
   __typename?: "notification_messages_stddev_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev_samp() on columns of table "notification_messages" */
+export type Notification_Messages_Stddev_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "notification_messages" */
@@ -5449,6 +5313,12 @@ export type Notification_Messages_Sum_Fields = {
   __typename?: "notification_messages_sum_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** order by sum() on columns of table "notification_messages" */
+export type Notification_Messages_Sum_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "notification_messages" */
@@ -5495,6 +5365,12 @@ export type Notification_Messages_Var_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by var_pop() on columns of table "notification_messages" */
+export type Notification_Messages_Var_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate var_samp on columns */
 export type Notification_Messages_Var_Samp_Fields = {
   __typename?: "notification_messages_var_samp_fields";
@@ -5502,11 +5378,23 @@ export type Notification_Messages_Var_Samp_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by var_samp() on columns of table "notification_messages" */
+export type Notification_Messages_Var_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate variance on columns */
 export type Notification_Messages_Variance_Fields = {
   __typename?: "notification_messages_variance_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by variance() on columns of table "notification_messages" */
+export type Notification_Messages_Variance_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** columns and relationships of "notification_permissions" */
@@ -5518,9 +5406,15 @@ export type Notification_Permissions = {
   /** Device token for push notifications */
   device_token: Scalars["String"]["output"];
   id: Scalars["uuid"]["output"];
+  /** An array relationship */
+  notifications: Array<Notifications>;
+  /** An aggregate relationship */
+  notifications_aggregate: Notifications_Aggregate;
   /** Notification provider (e.g., fcm, apns) */
   provider: Scalars["String"]["output"];
   updated_at: Scalars["bigint"]["output"];
+  /** An object relationship */
+  user: Users;
   /** Reference to users table */
   user_id: Scalars["uuid"]["output"];
 };
@@ -5530,11 +5424,40 @@ export type Notification_PermissionsDevice_InfoArgs = {
   path?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+/** columns and relationships of "notification_permissions" */
+export type Notification_PermissionsNotificationsArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
+/** columns and relationships of "notification_permissions" */
+export type Notification_PermissionsNotifications_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
 /** aggregated selection of "notification_permissions" */
 export type Notification_Permissions_Aggregate = {
   __typename?: "notification_permissions_aggregate";
   aggregate?: Maybe<Notification_Permissions_Aggregate_Fields>;
   nodes: Array<Notification_Permissions>;
+};
+
+export type Notification_Permissions_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Notification_Permissions_Aggregate_Bool_Exp_Count>;
+};
+
+export type Notification_Permissions_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Notification_Permissions_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+  filter?: InputMaybe<Notification_Permissions_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "notification_permissions" */
@@ -5559,10 +5482,32 @@ export type Notification_Permissions_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+/** order by aggregate values of table "notification_permissions" */
+export type Notification_Permissions_Aggregate_Order_By = {
+  avg?: InputMaybe<Notification_Permissions_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Notification_Permissions_Max_Order_By>;
+  min?: InputMaybe<Notification_Permissions_Min_Order_By>;
+  stddev?: InputMaybe<Notification_Permissions_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Notification_Permissions_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Notification_Permissions_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Notification_Permissions_Sum_Order_By>;
+  var_pop?: InputMaybe<Notification_Permissions_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Notification_Permissions_Var_Samp_Order_By>;
+  variance?: InputMaybe<Notification_Permissions_Variance_Order_By>;
+};
+
 /** append existing jsonb value of filtered columns with new jsonb value */
 export type Notification_Permissions_Append_Input = {
   /** Device information */
   device_info?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** input type for inserting array relation for remote table "notification_permissions" */
+export type Notification_Permissions_Arr_Rel_Insert_Input = {
+  data: Array<Notification_Permissions_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Notification_Permissions_On_Conflict>;
 };
 
 /** aggregate avg on columns */
@@ -5570,6 +5515,12 @@ export type Notification_Permissions_Avg_Fields = {
   __typename?: "notification_permissions_avg_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by avg() on columns of table "notification_permissions" */
+export type Notification_Permissions_Avg_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "notification_permissions". All fields are combined with a logical 'AND'. */
@@ -5581,8 +5532,11 @@ export type Notification_Permissions_Bool_Exp = {
   device_info?: InputMaybe<Jsonb_Comparison_Exp>;
   device_token?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
+  notifications?: InputMaybe<Notifications_Bool_Exp>;
+  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Bool_Exp>;
   provider?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+  user?: InputMaybe<Users_Bool_Exp>;
   user_id?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
@@ -5624,9 +5578,11 @@ export type Notification_Permissions_Insert_Input = {
   /** Device token for push notifications */
   device_token?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
+  notifications?: InputMaybe<Notifications_Arr_Rel_Insert_Input>;
   /** Notification provider (e.g., fcm, apns) */
   provider?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   /** Reference to users table */
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
 };
@@ -5645,6 +5601,19 @@ export type Notification_Permissions_Max_Fields = {
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
+/** order by max() on columns of table "notification_permissions" */
+export type Notification_Permissions_Max_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Device token for push notifications */
+  device_token?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Notification provider (e.g., fcm, apns) */
+  provider?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** Reference to users table */
+  user_id?: InputMaybe<Order_By>;
+};
+
 /** aggregate min on columns */
 export type Notification_Permissions_Min_Fields = {
   __typename?: "notification_permissions_min_fields";
@@ -5659,6 +5628,19 @@ export type Notification_Permissions_Min_Fields = {
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
+/** order by min() on columns of table "notification_permissions" */
+export type Notification_Permissions_Min_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Device token for push notifications */
+  device_token?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Notification provider (e.g., fcm, apns) */
+  provider?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** Reference to users table */
+  user_id?: InputMaybe<Order_By>;
+};
+
 /** response of any mutation on the table "notification_permissions" */
 export type Notification_Permissions_Mutation_Response = {
   __typename?: "notification_permissions_mutation_response";
@@ -5666,6 +5648,13 @@ export type Notification_Permissions_Mutation_Response = {
   affected_rows: Scalars["Int"]["output"];
   /** data from the rows affected by the mutation */
   returning: Array<Notification_Permissions>;
+};
+
+/** input type for inserting object relation for remote table "notification_permissions" */
+export type Notification_Permissions_Obj_Rel_Insert_Input = {
+  data: Notification_Permissions_Insert_Input;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Notification_Permissions_On_Conflict>;
 };
 
 /** on_conflict condition type for table "notification_permissions" */
@@ -5681,8 +5670,10 @@ export type Notification_Permissions_Order_By = {
   device_info?: InputMaybe<Order_By>;
   device_token?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
+  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Order_By>;
   provider?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
+  user?: InputMaybe<Users_Order_By>;
   user_id?: InputMaybe<Order_By>;
 };
 
@@ -5737,6 +5728,12 @@ export type Notification_Permissions_Stddev_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev() on columns of table "notification_permissions" */
+export type Notification_Permissions_Stddev_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_pop on columns */
 export type Notification_Permissions_Stddev_Pop_Fields = {
   __typename?: "notification_permissions_stddev_pop_fields";
@@ -5744,11 +5741,23 @@ export type Notification_Permissions_Stddev_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev_pop() on columns of table "notification_permissions" */
+export type Notification_Permissions_Stddev_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_samp on columns */
 export type Notification_Permissions_Stddev_Samp_Fields = {
   __typename?: "notification_permissions_stddev_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev_samp() on columns of table "notification_permissions" */
+export type Notification_Permissions_Stddev_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "notification_permissions" */
@@ -5779,6 +5788,12 @@ export type Notification_Permissions_Sum_Fields = {
   __typename?: "notification_permissions_sum_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** order by sum() on columns of table "notification_permissions" */
+export type Notification_Permissions_Sum_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "notification_permissions" */
@@ -5825,11 +5840,23 @@ export type Notification_Permissions_Var_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by var_pop() on columns of table "notification_permissions" */
+export type Notification_Permissions_Var_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate var_samp on columns */
 export type Notification_Permissions_Var_Samp_Fields = {
   __typename?: "notification_permissions_var_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by var_samp() on columns of table "notification_permissions" */
+export type Notification_Permissions_Var_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** aggregate variance on columns */
@@ -5839,19 +5866,27 @@ export type Notification_Permissions_Variance_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by variance() on columns of table "notification_permissions" */
+export type Notification_Permissions_Variance_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** columns and relationships of "notifications" */
 export type Notifications = {
   __typename?: "notifications";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Notification configuration */
   config?: Maybe<Scalars["jsonb"]["output"]>;
   created_at: Scalars["bigint"]["output"];
   /** Error message if notification failed */
   error?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["uuid"]["output"];
+  /** An object relationship */
+  message: Notification_Messages;
   /** Reference to notification message */
   message_id: Scalars["uuid"]["output"];
+  /** An object relationship */
+  permission: Notification_Permissions;
   /** Reference to notification permission */
   permission_id: Scalars["uuid"]["output"];
   /** Notification status */
@@ -5869,6 +5904,17 @@ export type Notifications_Aggregate = {
   __typename?: "notifications_aggregate";
   aggregate?: Maybe<Notifications_Aggregate_Fields>;
   nodes: Array<Notifications>;
+};
+
+export type Notifications_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Notifications_Aggregate_Bool_Exp_Count>;
+};
+
+export type Notifications_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Notifications_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+  filter?: InputMaybe<Notifications_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "notifications" */
@@ -5893,10 +5939,32 @@ export type Notifications_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+/** order by aggregate values of table "notifications" */
+export type Notifications_Aggregate_Order_By = {
+  avg?: InputMaybe<Notifications_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Notifications_Max_Order_By>;
+  min?: InputMaybe<Notifications_Min_Order_By>;
+  stddev?: InputMaybe<Notifications_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Notifications_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Notifications_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Notifications_Sum_Order_By>;
+  var_pop?: InputMaybe<Notifications_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Notifications_Var_Samp_Order_By>;
+  variance?: InputMaybe<Notifications_Variance_Order_By>;
+};
+
 /** append existing jsonb value of filtered columns with new jsonb value */
 export type Notifications_Append_Input = {
   /** Notification configuration */
   config?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** input type for inserting array relation for remote table "notifications" */
+export type Notifications_Arr_Rel_Insert_Input = {
+  data: Array<Notifications_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Notifications_On_Conflict>;
 };
 
 /** aggregate avg on columns */
@@ -5906,18 +5974,24 @@ export type Notifications_Avg_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by avg() on columns of table "notifications" */
+export type Notifications_Avg_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** Boolean expression to filter rows from the table "notifications". All fields are combined with a logical 'AND'. */
 export type Notifications_Bool_Exp = {
   _and?: InputMaybe<Array<Notifications_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Notifications_Bool_Exp>;
   _or?: InputMaybe<Array<Notifications_Bool_Exp>>;
   config?: InputMaybe<Jsonb_Comparison_Exp>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
   error?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
+  message?: InputMaybe<Notification_Messages_Bool_Exp>;
   message_id?: InputMaybe<Uuid_Comparison_Exp>;
+  permission?: InputMaybe<Notification_Permissions_Bool_Exp>;
   permission_id?: InputMaybe<Uuid_Comparison_Exp>;
   status?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
@@ -5961,8 +6035,10 @@ export type Notifications_Insert_Input = {
   /** Error message if notification failed */
   error?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
+  message?: InputMaybe<Notification_Messages_Obj_Rel_Insert_Input>;
   /** Reference to notification message */
   message_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  permission?: InputMaybe<Notification_Permissions_Obj_Rel_Insert_Input>;
   /** Reference to notification permission */
   permission_id?: InputMaybe<Scalars["uuid"]["input"]>;
   /** Notification status */
@@ -5973,8 +6049,6 @@ export type Notifications_Insert_Input = {
 /** aggregate max on columns */
 export type Notifications_Max_Fields = {
   __typename?: "notifications_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Error message if notification failed */
   error?: Maybe<Scalars["String"]["output"]>;
@@ -5988,11 +6062,24 @@ export type Notifications_Max_Fields = {
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
 };
 
+/** order by max() on columns of table "notifications" */
+export type Notifications_Max_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Error message if notification failed */
+  error?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Reference to notification message */
+  message_id?: InputMaybe<Order_By>;
+  /** Reference to notification permission */
+  permission_id?: InputMaybe<Order_By>;
+  /** Notification status */
+  status?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate min on columns */
 export type Notifications_Min_Fields = {
   __typename?: "notifications_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Error message if notification failed */
   error?: Maybe<Scalars["String"]["output"]>;
@@ -6004,6 +6091,21 @@ export type Notifications_Min_Fields = {
   /** Notification status */
   status?: Maybe<Scalars["String"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** order by min() on columns of table "notifications" */
+export type Notifications_Min_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Error message if notification failed */
+  error?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Reference to notification message */
+  message_id?: InputMaybe<Order_By>;
+  /** Reference to notification permission */
+  permission_id?: InputMaybe<Order_By>;
+  /** Notification status */
+  status?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** response of any mutation on the table "notifications" */
@@ -6024,13 +6126,13 @@ export type Notifications_On_Conflict = {
 
 /** Ordering options when selecting data from "notifications". */
 export type Notifications_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   config?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   error?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
+  message?: InputMaybe<Notification_Messages_Order_By>;
   message_id?: InputMaybe<Order_By>;
+  permission?: InputMaybe<Notification_Permissions_Order_By>;
   permission_id?: InputMaybe<Order_By>;
   status?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
@@ -6049,10 +6151,6 @@ export type Notifications_Prepend_Input = {
 
 /** select columns of table "notifications" */
 export enum Notifications_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   Config = "config",
   /** column name */
@@ -6095,6 +6193,12 @@ export type Notifications_Stddev_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev() on columns of table "notifications" */
+export type Notifications_Stddev_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_pop on columns */
 export type Notifications_Stddev_Pop_Fields = {
   __typename?: "notifications_stddev_pop_fields";
@@ -6102,11 +6206,23 @@ export type Notifications_Stddev_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev_pop() on columns of table "notifications" */
+export type Notifications_Stddev_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_samp on columns */
 export type Notifications_Stddev_Samp_Fields = {
   __typename?: "notifications_stddev_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev_samp() on columns of table "notifications" */
+export type Notifications_Stddev_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "notifications" */
@@ -6119,8 +6235,6 @@ export type Notifications_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Notifications_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   /** Notification configuration */
   config?: InputMaybe<Scalars["jsonb"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -6141,6 +6255,12 @@ export type Notifications_Sum_Fields = {
   __typename?: "notifications_sum_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** order by sum() on columns of table "notifications" */
+export type Notifications_Sum_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "notifications" */
@@ -6189,6 +6309,12 @@ export type Notifications_Var_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by var_pop() on columns of table "notifications" */
+export type Notifications_Var_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate var_samp on columns */
 export type Notifications_Var_Samp_Fields = {
   __typename?: "notifications_var_samp_fields";
@@ -6196,11 +6322,23 @@ export type Notifications_Var_Samp_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by var_samp() on columns of table "notifications" */
+export type Notifications_Var_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate variance on columns */
 export type Notifications_Variance_Fields = {
   __typename?: "notifications_variance_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by variance() on columns of table "notifications" */
+export type Notifications_Variance_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to compare columns of type "numeric". All fields are combined with logical 'AND'. */
@@ -6235,8 +6373,6 @@ export enum Order_By {
 /** columns and relationships of "payments.methods" */
 export type Payments_Methods = {
   __typename?: "payments_methods";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at: Scalars["bigint"]["output"];
   /** Payment method details */
   details?: Maybe<Scalars["jsonb"]["output"]>;
@@ -6426,8 +6562,6 @@ export type Payments_Methods_Avg_Order_By = {
 /** Boolean expression to filter rows from the table "payments.methods". All fields are combined with a logical 'AND'. */
 export type Payments_Methods_Bool_Exp = {
   _and?: InputMaybe<Array<Payments_Methods_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Payments_Methods_Bool_Exp>;
   _or?: InputMaybe<Array<Payments_Methods_Bool_Exp>>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
@@ -6525,8 +6659,6 @@ export type Payments_Methods_Insert_Input = {
 /** aggregate max on columns */
 export type Payments_Methods_Max_Fields = {
   __typename?: "payments_methods_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Expiration timestamp */
   expires_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -6546,8 +6678,6 @@ export type Payments_Methods_Max_Fields = {
 
 /** order by max() on columns of table "payments.methods" */
 export type Payments_Methods_Max_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   /** Expiration timestamp */
   expires_at?: InputMaybe<Order_By>;
@@ -6568,8 +6698,6 @@ export type Payments_Methods_Max_Order_By = {
 /** aggregate min on columns */
 export type Payments_Methods_Min_Fields = {
   __typename?: "payments_methods_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Expiration timestamp */
   expires_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -6589,8 +6717,6 @@ export type Payments_Methods_Min_Fields = {
 
 /** order by min() on columns of table "payments.methods" */
 export type Payments_Methods_Min_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   /** Expiration timestamp */
   expires_at?: InputMaybe<Order_By>;
@@ -6633,8 +6759,6 @@ export type Payments_Methods_On_Conflict = {
 
 /** Ordering options when selecting data from "payments.methods". */
 export type Payments_Methods_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   details?: InputMaybe<Order_By>;
   expires_at?: InputMaybe<Order_By>;
@@ -6669,10 +6793,6 @@ export type Payments_Methods_Prepend_Input = {
 
 /** select columns of table "payments.methods" */
 export enum Payments_Methods_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   CreatedAt = "created_at",
   /** column name */
@@ -6805,8 +6925,6 @@ export type Payments_Methods_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Payments_Methods_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   /** Payment method details */
   details?: InputMaybe<Scalars["jsonb"]["input"]>;
@@ -6952,8 +7070,6 @@ export type Payments_Methods_Variance_Order_By = {
 /** columns and relationships of "payments.operations" */
 export type Payments_Operations = {
   __typename?: "payments_operations";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Operation amount */
   amount: Scalars["numeric"]["output"];
   created_at: Scalars["bigint"]["output"];
@@ -7114,8 +7230,6 @@ export type Payments_Operations_Avg_Order_By = {
 /** Boolean expression to filter rows from the table "payments.operations". All fields are combined with a logical 'AND'. */
 export type Payments_Operations_Bool_Exp = {
   _and?: InputMaybe<Array<Payments_Operations_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Payments_Operations_Bool_Exp>;
   _or?: InputMaybe<Array<Payments_Operations_Bool_Exp>>;
   amount?: InputMaybe<Numeric_Comparison_Exp>;
@@ -7237,8 +7351,6 @@ export type Payments_Operations_Insert_Input = {
 /** aggregate max on columns */
 export type Payments_Operations_Max_Fields = {
   __typename?: "payments_operations_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Operation amount */
   amount?: Maybe<Scalars["numeric"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -7272,8 +7384,6 @@ export type Payments_Operations_Max_Fields = {
 
 /** order by max() on columns of table "payments.operations" */
 export type Payments_Operations_Max_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   /** Operation amount */
   amount?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
@@ -7308,8 +7418,6 @@ export type Payments_Operations_Max_Order_By = {
 /** aggregate min on columns */
 export type Payments_Operations_Min_Fields = {
   __typename?: "payments_operations_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Operation amount */
   amount?: Maybe<Scalars["numeric"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -7343,8 +7451,6 @@ export type Payments_Operations_Min_Fields = {
 
 /** order by min() on columns of table "payments.operations" */
 export type Payments_Operations_Min_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   /** Operation amount */
   amount?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
@@ -7394,8 +7500,6 @@ export type Payments_Operations_On_Conflict = {
 
 /** Ordering options when selecting data from "payments.operations". */
 export type Payments_Operations_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   amount?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   currency?: InputMaybe<Order_By>;
@@ -7438,10 +7542,6 @@ export type Payments_Operations_Prepend_Input = {
 
 /** select columns of table "payments.operations" */
 export enum Payments_Operations_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   Amount = "amount",
   /** column name */
@@ -7606,8 +7706,6 @@ export type Payments_Operations_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Payments_Operations_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   /** Operation amount */
   amount?: InputMaybe<Scalars["numeric"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -7809,8 +7907,6 @@ export type Payments_Operations_Variance_Order_By = {
 /** columns and relationships of "payments.plans" */
 export type Payments_Plans = {
   __typename?: "payments_plans";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Plan active status */
   active?: Maybe<Scalars["Boolean"]["output"]>;
   created_at: Scalars["bigint"]["output"];
@@ -7925,8 +8021,6 @@ export type Payments_Plans_Avg_Fields = {
 /** Boolean expression to filter rows from the table "payments.plans". All fields are combined with a logical 'AND'. */
 export type Payments_Plans_Bool_Exp = {
   _and?: InputMaybe<Array<Payments_Plans_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Payments_Plans_Bool_Exp>;
   _or?: InputMaybe<Array<Payments_Plans_Bool_Exp>>;
   active?: InputMaybe<Boolean_Comparison_Exp>;
@@ -8024,8 +8118,6 @@ export type Payments_Plans_Insert_Input = {
 /** aggregate max on columns */
 export type Payments_Plans_Max_Fields = {
   __typename?: "payments_plans_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Currency code */
   currency?: Maybe<Scalars["String"]["output"]>;
@@ -8050,8 +8142,6 @@ export type Payments_Plans_Max_Fields = {
 /** aggregate min on columns */
 export type Payments_Plans_Min_Fields = {
   __typename?: "payments_plans_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Currency code */
   currency?: Maybe<Scalars["String"]["output"]>;
@@ -8098,8 +8188,6 @@ export type Payments_Plans_On_Conflict = {
 
 /** Ordering options when selecting data from "payments.plans". */
 export type Payments_Plans_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   active?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   currency?: InputMaybe<Order_By>;
@@ -8133,10 +8221,6 @@ export type Payments_Plans_Prepend_Input = {
 
 /** select columns of table "payments.plans" */
 export enum Payments_Plans_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   Active = "active",
   /** column name */
@@ -8245,8 +8329,6 @@ export type Payments_Plans_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Payments_Plans_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   /** Plan active status */
   active?: InputMaybe<Scalars["Boolean"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -8380,8 +8462,6 @@ export type Payments_Plans_Variance_Fields = {
 /** columns and relationships of "payments.providers" */
 export type Payments_Providers = {
   __typename?: "payments_providers";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Provider configuration */
   config?: Maybe<Scalars["jsonb"]["output"]>;
   created_at: Scalars["bigint"]["output"];
@@ -8413,6 +8493,8 @@ export type Payments_Providers = {
   /** Provider type */
   type?: Maybe<Scalars["String"]["output"]>;
   updated_at: Scalars["bigint"]["output"];
+  /** An object relationship */
+  user?: Maybe<Users>;
   /** Owner user ID */
   user_id?: Maybe<Scalars["uuid"]["output"]>;
   /** An array relationship */
@@ -8551,8 +8633,6 @@ export type Payments_Providers_Avg_Fields = {
 /** Boolean expression to filter rows from the table "payments.providers". All fields are combined with a logical 'AND'. */
 export type Payments_Providers_Bool_Exp = {
   _and?: InputMaybe<Array<Payments_Providers_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Payments_Providers_Bool_Exp>;
   _or?: InputMaybe<Array<Payments_Providers_Bool_Exp>>;
   config?: InputMaybe<Jsonb_Comparison_Exp>;
@@ -8572,6 +8652,7 @@ export type Payments_Providers_Bool_Exp = {
   subscriptions_aggregate?: InputMaybe<Payments_Subscriptions_Aggregate_Bool_Exp>;
   type?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+  user?: InputMaybe<Users_Bool_Exp>;
   user_id?: InputMaybe<Uuid_Comparison_Exp>;
   user_mappings?: InputMaybe<Payments_User_Payment_Provider_Mappings_Bool_Exp>;
   user_mappings_aggregate?: InputMaybe<Payments_User_Payment_Provider_Mappings_Aggregate_Bool_Exp>;
@@ -8633,6 +8714,7 @@ export type Payments_Providers_Insert_Input = {
   /** Provider type */
   type?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   /** Owner user ID */
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
   user_mappings?: InputMaybe<Payments_User_Payment_Provider_Mappings_Arr_Rel_Insert_Input>;
@@ -8641,8 +8723,6 @@ export type Payments_Providers_Insert_Input = {
 /** aggregate max on columns */
 export type Payments_Providers_Max_Fields = {
   __typename?: "payments_providers_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Default card webhook URL */
   default_card_webhook_url?: Maybe<Scalars["String"]["output"]>;
@@ -8663,8 +8743,6 @@ export type Payments_Providers_Max_Fields = {
 /** aggregate min on columns */
 export type Payments_Providers_Min_Fields = {
   __typename?: "payments_providers_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Default card webhook URL */
   default_card_webhook_url?: Maybe<Scalars["String"]["output"]>;
@@ -8707,8 +8785,6 @@ export type Payments_Providers_On_Conflict = {
 
 /** Ordering options when selecting data from "payments.providers". */
 export type Payments_Providers_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   config?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   default_card_webhook_url?: InputMaybe<Order_By>;
@@ -8723,6 +8799,7 @@ export type Payments_Providers_Order_By = {
   subscriptions_aggregate?: InputMaybe<Payments_Subscriptions_Aggregate_Order_By>;
   type?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
+  user?: InputMaybe<Users_Order_By>;
   user_id?: InputMaybe<Order_By>;
   user_mappings_aggregate?: InputMaybe<Payments_User_Payment_Provider_Mappings_Aggregate_Order_By>;
 };
@@ -8740,10 +8817,6 @@ export type Payments_Providers_Prepend_Input = {
 
 /** select columns of table "payments.providers" */
 export enum Payments_Providers_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   Config = "config",
   /** column name */
@@ -8826,8 +8899,6 @@ export type Payments_Providers_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Payments_Providers_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   /** Provider configuration */
   config?: InputMaybe<Scalars["jsonb"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -8929,8 +9000,6 @@ export type Payments_Providers_Variance_Fields = {
 /** columns and relationships of "payments.subscriptions" */
 export type Payments_Subscriptions = {
   __typename?: "payments_subscriptions";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Anchor date for billing cycle calculations */
   billing_anchor_date?: Maybe<Scalars["bigint"]["output"]>;
   /** Number of failed billing attempts for current period */
@@ -9149,8 +9218,6 @@ export type Payments_Subscriptions_Avg_Order_By = {
 /** Boolean expression to filter rows from the table "payments.subscriptions". All fields are combined with a logical 'AND'. */
 export type Payments_Subscriptions_Bool_Exp = {
   _and?: InputMaybe<Array<Payments_Subscriptions_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Payments_Subscriptions_Bool_Exp>;
   _or?: InputMaybe<Array<Payments_Subscriptions_Bool_Exp>>;
   billing_anchor_date?: InputMaybe<Bigint_Comparison_Exp>;
@@ -9286,8 +9353,6 @@ export type Payments_Subscriptions_Insert_Input = {
 /** aggregate max on columns */
 export type Payments_Subscriptions_Max_Fields = {
   __typename?: "payments_subscriptions_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Anchor date for billing cycle calculations */
   billing_anchor_date?: Maybe<Scalars["bigint"]["output"]>;
   /** Number of failed billing attempts for current period */
@@ -9329,8 +9394,6 @@ export type Payments_Subscriptions_Max_Fields = {
 
 /** order by max() on columns of table "payments.subscriptions" */
 export type Payments_Subscriptions_Max_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   /** Anchor date for billing cycle calculations */
   billing_anchor_date?: InputMaybe<Order_By>;
   /** Number of failed billing attempts for current period */
@@ -9373,8 +9436,6 @@ export type Payments_Subscriptions_Max_Order_By = {
 /** aggregate min on columns */
 export type Payments_Subscriptions_Min_Fields = {
   __typename?: "payments_subscriptions_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Anchor date for billing cycle calculations */
   billing_anchor_date?: Maybe<Scalars["bigint"]["output"]>;
   /** Number of failed billing attempts for current period */
@@ -9416,8 +9477,6 @@ export type Payments_Subscriptions_Min_Fields = {
 
 /** order by min() on columns of table "payments.subscriptions" */
 export type Payments_Subscriptions_Min_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   /** Anchor date for billing cycle calculations */
   billing_anchor_date?: InputMaybe<Order_By>;
   /** Number of failed billing attempts for current period */
@@ -9482,8 +9541,6 @@ export type Payments_Subscriptions_On_Conflict = {
 
 /** Ordering options when selecting data from "payments.subscriptions". */
 export type Payments_Subscriptions_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   billing_anchor_date?: InputMaybe<Order_By>;
   billing_retry_count?: InputMaybe<Order_By>;
   cancel_at_period_end?: InputMaybe<Order_By>;
@@ -9526,10 +9583,6 @@ export type Payments_Subscriptions_Prepend_Input = {
 
 /** select columns of table "payments.subscriptions" */
 export enum Payments_Subscriptions_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   BillingAnchorDate = "billing_anchor_date",
   /** column name */
@@ -9802,8 +9855,6 @@ export type Payments_Subscriptions_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Payments_Subscriptions_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   /** Anchor date for billing cycle calculations */
   billing_anchor_date?: InputMaybe<Scalars["bigint"]["input"]>;
   /** Number of failed billing attempts for current period */
@@ -10129,8 +10180,6 @@ export type Payments_Subscriptions_Variance_Order_By = {
 /** columns and relationships of "payments.user_payment_provider_mappings" */
 export type Payments_User_Payment_Provider_Mappings = {
   __typename?: "payments_user_payment_provider_mappings";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at: Scalars["bigint"]["output"];
   id: Scalars["uuid"]["output"];
   /** Mapping metadata */
@@ -10242,8 +10291,6 @@ export type Payments_User_Payment_Provider_Mappings_Avg_Order_By = {
 /** Boolean expression to filter rows from the table "payments.user_payment_provider_mappings". All fields are combined with a logical 'AND'. */
 export type Payments_User_Payment_Provider_Mappings_Bool_Exp = {
   _and?: InputMaybe<Array<Payments_User_Payment_Provider_Mappings_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Payments_User_Payment_Provider_Mappings_Bool_Exp>;
   _or?: InputMaybe<Array<Payments_User_Payment_Provider_Mappings_Bool_Exp>>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
@@ -10307,8 +10354,6 @@ export type Payments_User_Payment_Provider_Mappings_Insert_Input = {
 /** aggregate max on columns */
 export type Payments_User_Payment_Provider_Mappings_Max_Fields = {
   __typename?: "payments_user_payment_provider_mappings_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   /** Provider customer key */
@@ -10322,8 +10367,6 @@ export type Payments_User_Payment_Provider_Mappings_Max_Fields = {
 
 /** order by max() on columns of table "payments.user_payment_provider_mappings" */
 export type Payments_User_Payment_Provider_Mappings_Max_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   /** Provider customer key */
@@ -10338,8 +10381,6 @@ export type Payments_User_Payment_Provider_Mappings_Max_Order_By = {
 /** aggregate min on columns */
 export type Payments_User_Payment_Provider_Mappings_Min_Fields = {
   __typename?: "payments_user_payment_provider_mappings_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   /** Provider customer key */
@@ -10353,8 +10394,6 @@ export type Payments_User_Payment_Provider_Mappings_Min_Fields = {
 
 /** order by min() on columns of table "payments.user_payment_provider_mappings" */
 export type Payments_User_Payment_Provider_Mappings_Min_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   /** Provider customer key */
@@ -10384,8 +10423,6 @@ export type Payments_User_Payment_Provider_Mappings_On_Conflict = {
 
 /** Ordering options when selecting data from "payments.user_payment_provider_mappings". */
 export type Payments_User_Payment_Provider_Mappings_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   metadata?: InputMaybe<Order_By>;
@@ -10410,10 +10447,6 @@ export type Payments_User_Payment_Provider_Mappings_Prepend_Input = {
 
 /** select columns of table "payments.user_payment_provider_mappings" */
 export enum Payments_User_Payment_Provider_Mappings_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   CreatedAt = "created_at",
   /** column name */
@@ -10495,8 +10528,6 @@ export type Payments_User_Payment_Provider_Mappings_Stream_Cursor_Input = {
 /** Initial value of the column from where the streaming should start */
 export type Payments_User_Payment_Provider_Mappings_Stream_Cursor_Value_Input =
   {
-    _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-    _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
     created_at?: InputMaybe<Scalars["bigint"]["input"]>;
     id?: InputMaybe<Scalars["uuid"]["input"]>;
     /** Mapping metadata */
@@ -10613,24 +10644,24 @@ export type Query_Root = {
   auth_jwt_aggregate: Auth_Jwt_Aggregate;
   /** fetch data from the table: "auth_jwt" using primary key columns */
   auth_jwt_by_pk?: Maybe<Auth_Jwt>;
+  /** fetch data from the table: "storage.buckets" using primary key columns */
+  bucket?: Maybe<Buckets>;
+  /** fetch data from the table: "storage.buckets" */
+  buckets: Array<Buckets>;
+  /** fetch aggregated fields from the table: "storage.buckets" */
+  bucketsAggregate: Buckets_Aggregate;
   /** fetch data from the table: "debug" */
   debug: Array<Debug>;
   /** fetch aggregated fields from the table: "debug" */
   debug_aggregate: Debug_Aggregate;
   /** fetch data from the table: "debug" using primary key columns */
   debug_by_pk?: Maybe<Debug>;
-  /** fetch data from the table: "file_versions" */
-  file_versions: Array<File_Versions>;
-  /** fetch aggregated fields from the table: "file_versions" */
-  file_versions_aggregate: File_Versions_Aggregate;
-  /** fetch data from the table: "file_versions" using primary key columns */
-  file_versions_by_pk?: Maybe<File_Versions>;
+  /** fetch data from the table: "storage.files" using primary key columns */
+  file?: Maybe<Files>;
   /** An array relationship */
   files: Array<Files>;
-  /** An aggregate relationship */
-  files_aggregate: Files_Aggregate;
-  /** fetch data from the table: "files" using primary key columns */
-  files_by_pk?: Maybe<Files>;
+  /** fetch aggregated fields from the table: "storage.files" */
+  filesAggregate: Files_Aggregate;
   /** fetch data from the table: "github_issues" */
   github_issues: Array<Github_Issues>;
   /** fetch aggregated fields from the table: "github_issues" */
@@ -10649,21 +10680,21 @@ export type Query_Root = {
   logs_states_aggregate: Logs_States_Aggregate;
   /** fetch data from the table: "logs.states" using primary key columns */
   logs_states_by_pk?: Maybe<Logs_States>;
-  /** fetch data from the table: "notification_messages" */
+  /** An array relationship */
   notification_messages: Array<Notification_Messages>;
-  /** fetch aggregated fields from the table: "notification_messages" */
+  /** An aggregate relationship */
   notification_messages_aggregate: Notification_Messages_Aggregate;
   /** fetch data from the table: "notification_messages" using primary key columns */
   notification_messages_by_pk?: Maybe<Notification_Messages>;
-  /** fetch data from the table: "notification_permissions" */
+  /** An array relationship */
   notification_permissions: Array<Notification_Permissions>;
-  /** fetch aggregated fields from the table: "notification_permissions" */
+  /** An aggregate relationship */
   notification_permissions_aggregate: Notification_Permissions_Aggregate;
   /** fetch data from the table: "notification_permissions" using primary key columns */
   notification_permissions_by_pk?: Maybe<Notification_Permissions>;
-  /** fetch data from the table: "notifications" */
+  /** An array relationship */
   notifications: Array<Notifications>;
-  /** fetch aggregated fields from the table: "notifications" */
+  /** An aggregate relationship */
   notifications_aggregate: Notifications_Aggregate;
   /** fetch data from the table: "notifications" using primary key columns */
   notifications_by_pk?: Maybe<Notifications>;
@@ -10709,12 +10740,12 @@ export type Query_Root = {
   users_aggregate: Users_Aggregate;
   /** fetch data from the table: "users" using primary key columns */
   users_by_pk?: Maybe<Users>;
-  /** An array relationship */
-  viruses: Array<Viruses>;
-  /** An aggregate relationship */
-  viruses_aggregate: Viruses_Aggregate;
-  /** fetch data from the table: "viruses" using primary key columns */
-  viruses_by_pk?: Maybe<Viruses>;
+  /** fetch data from the table: "storage.virus" using primary key columns */
+  virus?: Maybe<Virus>;
+  /** fetch data from the table: "storage.virus" */
+  viruses: Array<Virus>;
+  /** fetch aggregated fields from the table: "storage.virus" */
+  virusesAggregate: Virus_Aggregate;
 };
 
 export type Query_RootAccountsArgs = {
@@ -10757,6 +10788,26 @@ export type Query_RootAuth_Jwt_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
+export type Query_RootBucketArgs = {
+  id: Scalars["String"]["input"];
+};
+
+export type Query_RootBucketsArgs = {
+  distinct_on?: InputMaybe<Array<Buckets_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Buckets_Order_By>>;
+  where?: InputMaybe<Buckets_Bool_Exp>;
+};
+
+export type Query_RootBucketsAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Buckets_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Buckets_Order_By>>;
+  where?: InputMaybe<Buckets_Bool_Exp>;
+};
+
 export type Query_RootDebugArgs = {
   distinct_on?: InputMaybe<Array<Debug_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -10777,23 +10828,7 @@ export type Query_RootDebug_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
-export type Query_RootFile_VersionsArgs = {
-  distinct_on?: InputMaybe<Array<File_Versions_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<File_Versions_Order_By>>;
-  where?: InputMaybe<File_Versions_Bool_Exp>;
-};
-
-export type Query_RootFile_Versions_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<File_Versions_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<File_Versions_Order_By>>;
-  where?: InputMaybe<File_Versions_Bool_Exp>;
-};
-
-export type Query_RootFile_Versions_By_PkArgs = {
+export type Query_RootFileArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -10805,16 +10840,12 @@ export type Query_RootFilesArgs = {
   where?: InputMaybe<Files_Bool_Exp>;
 };
 
-export type Query_RootFiles_AggregateArgs = {
+export type Query_RootFilesAggregateArgs = {
   distinct_on?: InputMaybe<Array<Files_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   order_by?: InputMaybe<Array<Files_Order_By>>;
   where?: InputMaybe<Files_Bool_Exp>;
-};
-
-export type Query_RootFiles_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
 };
 
 export type Query_RootGithub_IssuesArgs = {
@@ -11085,24 +11116,24 @@ export type Query_RootUsers_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
-export type Query_RootVirusesArgs = {
-  distinct_on?: InputMaybe<Array<Viruses_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Viruses_Order_By>>;
-  where?: InputMaybe<Viruses_Bool_Exp>;
-};
-
-export type Query_RootViruses_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Viruses_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Viruses_Order_By>>;
-  where?: InputMaybe<Viruses_Bool_Exp>;
-};
-
-export type Query_RootViruses_By_PkArgs = {
+export type Query_RootVirusArgs = {
   id: Scalars["uuid"]["input"];
+};
+
+export type Query_RootVirusesArgs = {
+  distinct_on?: InputMaybe<Array<Virus_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Virus_Order_By>>;
+  where?: InputMaybe<Virus_Bool_Exp>;
+};
+
+export type Query_RootVirusesAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Virus_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Virus_Order_By>>;
+  where?: InputMaybe<Virus_Bool_Exp>;
 };
 
 export type Subscription_Root = {
@@ -11123,6 +11154,14 @@ export type Subscription_Root = {
   auth_jwt_by_pk?: Maybe<Auth_Jwt>;
   /** fetch data from the table in a streaming manner: "auth_jwt" */
   auth_jwt_stream: Array<Auth_Jwt>;
+  /** fetch data from the table: "storage.buckets" using primary key columns */
+  bucket?: Maybe<Buckets>;
+  /** fetch data from the table: "storage.buckets" */
+  buckets: Array<Buckets>;
+  /** fetch aggregated fields from the table: "storage.buckets" */
+  bucketsAggregate: Buckets_Aggregate;
+  /** fetch data from the table in a streaming manner: "storage.buckets" */
+  buckets_stream: Array<Buckets>;
   /** fetch data from the table: "debug" */
   debug: Array<Debug>;
   /** fetch aggregated fields from the table: "debug" */
@@ -11131,21 +11170,13 @@ export type Subscription_Root = {
   debug_by_pk?: Maybe<Debug>;
   /** fetch data from the table in a streaming manner: "debug" */
   debug_stream: Array<Debug>;
-  /** fetch data from the table: "file_versions" */
-  file_versions: Array<File_Versions>;
-  /** fetch aggregated fields from the table: "file_versions" */
-  file_versions_aggregate: File_Versions_Aggregate;
-  /** fetch data from the table: "file_versions" using primary key columns */
-  file_versions_by_pk?: Maybe<File_Versions>;
-  /** fetch data from the table in a streaming manner: "file_versions" */
-  file_versions_stream: Array<File_Versions>;
+  /** fetch data from the table: "storage.files" using primary key columns */
+  file?: Maybe<Files>;
   /** An array relationship */
   files: Array<Files>;
-  /** An aggregate relationship */
-  files_aggregate: Files_Aggregate;
-  /** fetch data from the table: "files" using primary key columns */
-  files_by_pk?: Maybe<Files>;
-  /** fetch data from the table in a streaming manner: "files" */
+  /** fetch aggregated fields from the table: "storage.files" */
+  filesAggregate: Files_Aggregate;
+  /** fetch data from the table in a streaming manner: "storage.files" */
   files_stream: Array<Files>;
   /** fetch data from the table: "github_issues" */
   github_issues: Array<Github_Issues>;
@@ -11171,25 +11202,25 @@ export type Subscription_Root = {
   logs_states_by_pk?: Maybe<Logs_States>;
   /** fetch data from the table in a streaming manner: "logs.states" */
   logs_states_stream: Array<Logs_States>;
-  /** fetch data from the table: "notification_messages" */
+  /** An array relationship */
   notification_messages: Array<Notification_Messages>;
-  /** fetch aggregated fields from the table: "notification_messages" */
+  /** An aggregate relationship */
   notification_messages_aggregate: Notification_Messages_Aggregate;
   /** fetch data from the table: "notification_messages" using primary key columns */
   notification_messages_by_pk?: Maybe<Notification_Messages>;
   /** fetch data from the table in a streaming manner: "notification_messages" */
   notification_messages_stream: Array<Notification_Messages>;
-  /** fetch data from the table: "notification_permissions" */
+  /** An array relationship */
   notification_permissions: Array<Notification_Permissions>;
-  /** fetch aggregated fields from the table: "notification_permissions" */
+  /** An aggregate relationship */
   notification_permissions_aggregate: Notification_Permissions_Aggregate;
   /** fetch data from the table: "notification_permissions" using primary key columns */
   notification_permissions_by_pk?: Maybe<Notification_Permissions>;
   /** fetch data from the table in a streaming manner: "notification_permissions" */
   notification_permissions_stream: Array<Notification_Permissions>;
-  /** fetch data from the table: "notifications" */
+  /** An array relationship */
   notifications: Array<Notifications>;
-  /** fetch aggregated fields from the table: "notifications" */
+  /** An aggregate relationship */
   notifications_aggregate: Notifications_Aggregate;
   /** fetch data from the table: "notifications" using primary key columns */
   notifications_by_pk?: Maybe<Notifications>;
@@ -11251,14 +11282,14 @@ export type Subscription_Root = {
   users_by_pk?: Maybe<Users>;
   /** fetch data from the table in a streaming manner: "users" */
   users_stream: Array<Users>;
-  /** An array relationship */
-  viruses: Array<Viruses>;
-  /** An aggregate relationship */
-  viruses_aggregate: Viruses_Aggregate;
-  /** fetch data from the table: "viruses" using primary key columns */
-  viruses_by_pk?: Maybe<Viruses>;
-  /** fetch data from the table in a streaming manner: "viruses" */
-  viruses_stream: Array<Viruses>;
+  /** fetch data from the table: "storage.virus" using primary key columns */
+  virus?: Maybe<Virus>;
+  /** fetch data from the table in a streaming manner: "storage.virus" */
+  virus_stream: Array<Virus>;
+  /** fetch data from the table: "storage.virus" */
+  viruses: Array<Virus>;
+  /** fetch aggregated fields from the table: "storage.virus" */
+  virusesAggregate: Virus_Aggregate;
 };
 
 export type Subscription_RootAccountsArgs = {
@@ -11313,6 +11344,32 @@ export type Subscription_RootAuth_Jwt_StreamArgs = {
   where?: InputMaybe<Auth_Jwt_Bool_Exp>;
 };
 
+export type Subscription_RootBucketArgs = {
+  id: Scalars["String"]["input"];
+};
+
+export type Subscription_RootBucketsArgs = {
+  distinct_on?: InputMaybe<Array<Buckets_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Buckets_Order_By>>;
+  where?: InputMaybe<Buckets_Bool_Exp>;
+};
+
+export type Subscription_RootBucketsAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Buckets_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Buckets_Order_By>>;
+  where?: InputMaybe<Buckets_Bool_Exp>;
+};
+
+export type Subscription_RootBuckets_StreamArgs = {
+  batch_size: Scalars["Int"]["input"];
+  cursor: Array<InputMaybe<Buckets_Stream_Cursor_Input>>;
+  where?: InputMaybe<Buckets_Bool_Exp>;
+};
+
 export type Subscription_RootDebugArgs = {
   distinct_on?: InputMaybe<Array<Debug_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -11339,30 +11396,8 @@ export type Subscription_RootDebug_StreamArgs = {
   where?: InputMaybe<Debug_Bool_Exp>;
 };
 
-export type Subscription_RootFile_VersionsArgs = {
-  distinct_on?: InputMaybe<Array<File_Versions_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<File_Versions_Order_By>>;
-  where?: InputMaybe<File_Versions_Bool_Exp>;
-};
-
-export type Subscription_RootFile_Versions_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<File_Versions_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<File_Versions_Order_By>>;
-  where?: InputMaybe<File_Versions_Bool_Exp>;
-};
-
-export type Subscription_RootFile_Versions_By_PkArgs = {
+export type Subscription_RootFileArgs = {
   id: Scalars["uuid"]["input"];
-};
-
-export type Subscription_RootFile_Versions_StreamArgs = {
-  batch_size: Scalars["Int"]["input"];
-  cursor: Array<InputMaybe<File_Versions_Stream_Cursor_Input>>;
-  where?: InputMaybe<File_Versions_Bool_Exp>;
 };
 
 export type Subscription_RootFilesArgs = {
@@ -11373,16 +11408,12 @@ export type Subscription_RootFilesArgs = {
   where?: InputMaybe<Files_Bool_Exp>;
 };
 
-export type Subscription_RootFiles_AggregateArgs = {
+export type Subscription_RootFilesAggregateArgs = {
   distinct_on?: InputMaybe<Array<Files_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   order_by?: InputMaybe<Array<Files_Order_By>>;
   where?: InputMaybe<Files_Bool_Exp>;
-};
-
-export type Subscription_RootFiles_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
 };
 
 export type Subscription_RootFiles_StreamArgs = {
@@ -11742,30 +11773,30 @@ export type Subscription_RootUsers_StreamArgs = {
   where?: InputMaybe<Users_Bool_Exp>;
 };
 
-export type Subscription_RootVirusesArgs = {
-  distinct_on?: InputMaybe<Array<Viruses_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Viruses_Order_By>>;
-  where?: InputMaybe<Viruses_Bool_Exp>;
-};
-
-export type Subscription_RootViruses_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Viruses_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Viruses_Order_By>>;
-  where?: InputMaybe<Viruses_Bool_Exp>;
-};
-
-export type Subscription_RootViruses_By_PkArgs = {
+export type Subscription_RootVirusArgs = {
   id: Scalars["uuid"]["input"];
 };
 
-export type Subscription_RootViruses_StreamArgs = {
+export type Subscription_RootVirus_StreamArgs = {
   batch_size: Scalars["Int"]["input"];
-  cursor: Array<InputMaybe<Viruses_Stream_Cursor_Input>>;
-  where?: InputMaybe<Viruses_Bool_Exp>;
+  cursor: Array<InputMaybe<Virus_Stream_Cursor_Input>>;
+  where?: InputMaybe<Virus_Bool_Exp>;
+};
+
+export type Subscription_RootVirusesArgs = {
+  distinct_on?: InputMaybe<Array<Virus_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Virus_Order_By>>;
+  where?: InputMaybe<Virus_Bool_Exp>;
+};
+
+export type Subscription_RootVirusesAggregateArgs = {
+  distinct_on?: InputMaybe<Array<Virus_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Virus_Order_By>>;
+  where?: InputMaybe<Virus_Bool_Exp>;
 };
 
 /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
@@ -11784,8 +11815,6 @@ export type Timestamptz_Comparison_Exp = {
 /** columns and relationships of "users" */
 export type Users = {
   __typename?: "users";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** An array relationship */
   accounts: Array<Accounts>;
   /** An aggregate relationship */
@@ -11795,10 +11824,6 @@ export type Users = {
   email?: Maybe<Scalars["String"]["output"]>;
   /** Email verification timestamp */
   email_verified?: Maybe<Scalars["bigint"]["output"]>;
-  /** An array relationship */
-  files: Array<Files>;
-  /** An aggregate relationship */
-  files_aggregate: Files_Aggregate;
   /** Hasura role for permissions */
   hasura_role?: Maybe<Scalars["String"]["output"]>;
   id: Scalars["uuid"]["output"];
@@ -11808,6 +11833,14 @@ export type Users = {
   is_admin?: Maybe<Scalars["Boolean"]["output"]>;
   /** User display name */
   name?: Maybe<Scalars["String"]["output"]>;
+  /** An array relationship */
+  notification_messages: Array<Notification_Messages>;
+  /** An aggregate relationship */
+  notification_messages_aggregate: Notification_Messages_Aggregate;
+  /** An array relationship */
+  notification_permissions: Array<Notification_Permissions>;
+  /** An aggregate relationship */
+  notification_permissions_aggregate: Notification_Permissions_Aggregate;
   /** User password hash */
   password?: Maybe<Scalars["String"]["output"]>;
   updated_at: Scalars["bigint"]["output"];
@@ -11832,21 +11865,39 @@ export type UsersAccounts_AggregateArgs = {
 };
 
 /** columns and relationships of "users" */
-export type UsersFilesArgs = {
-  distinct_on?: InputMaybe<Array<Files_Select_Column>>;
+export type UsersNotification_MessagesArgs = {
+  distinct_on?: InputMaybe<Array<Notification_Messages_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Files_Order_By>>;
-  where?: InputMaybe<Files_Bool_Exp>;
+  order_by?: InputMaybe<Array<Notification_Messages_Order_By>>;
+  where?: InputMaybe<Notification_Messages_Bool_Exp>;
 };
 
 /** columns and relationships of "users" */
-export type UsersFiles_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Files_Select_Column>>;
+export type UsersNotification_Messages_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Notification_Messages_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Files_Order_By>>;
-  where?: InputMaybe<Files_Bool_Exp>;
+  order_by?: InputMaybe<Array<Notification_Messages_Order_By>>;
+  where?: InputMaybe<Notification_Messages_Bool_Exp>;
+};
+
+/** columns and relationships of "users" */
+export type UsersNotification_PermissionsArgs = {
+  distinct_on?: InputMaybe<Array<Notification_Permissions_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notification_Permissions_Order_By>>;
+  where?: InputMaybe<Notification_Permissions_Bool_Exp>;
+};
+
+/** columns and relationships of "users" */
+export type UsersNotification_Permissions_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Notification_Permissions_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notification_Permissions_Order_By>>;
+  where?: InputMaybe<Notification_Permissions_Bool_Exp>;
 };
 
 /** aggregated selection of "users" */
@@ -11890,8 +11941,6 @@ export type Users_Avg_Fields = {
 /** Boolean expression to filter rows from the table "users". All fields are combined with a logical 'AND'. */
 export type Users_Bool_Exp = {
   _and?: InputMaybe<Array<Users_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Users_Bool_Exp>;
   _or?: InputMaybe<Array<Users_Bool_Exp>>;
   accounts?: InputMaybe<Accounts_Bool_Exp>;
@@ -11899,13 +11948,15 @@ export type Users_Bool_Exp = {
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
   email?: InputMaybe<String_Comparison_Exp>;
   email_verified?: InputMaybe<Bigint_Comparison_Exp>;
-  files?: InputMaybe<Files_Bool_Exp>;
-  files_aggregate?: InputMaybe<Files_Aggregate_Bool_Exp>;
   hasura_role?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
   image?: InputMaybe<String_Comparison_Exp>;
   is_admin?: InputMaybe<Boolean_Comparison_Exp>;
   name?: InputMaybe<String_Comparison_Exp>;
+  notification_messages?: InputMaybe<Notification_Messages_Bool_Exp>;
+  notification_messages_aggregate?: InputMaybe<Notification_Messages_Aggregate_Bool_Exp>;
+  notification_permissions?: InputMaybe<Notification_Permissions_Bool_Exp>;
+  notification_permissions_aggregate?: InputMaybe<Notification_Permissions_Aggregate_Bool_Exp>;
   password?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
 };
@@ -11934,7 +11985,6 @@ export type Users_Insert_Input = {
   email?: InputMaybe<Scalars["String"]["input"]>;
   /** Email verification timestamp */
   email_verified?: InputMaybe<Scalars["bigint"]["input"]>;
-  files?: InputMaybe<Files_Arr_Rel_Insert_Input>;
   /** Hasura role for permissions */
   hasura_role?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
@@ -11944,6 +11994,8 @@ export type Users_Insert_Input = {
   is_admin?: InputMaybe<Scalars["Boolean"]["input"]>;
   /** User display name */
   name?: InputMaybe<Scalars["String"]["input"]>;
+  notification_messages?: InputMaybe<Notification_Messages_Arr_Rel_Insert_Input>;
+  notification_permissions?: InputMaybe<Notification_Permissions_Arr_Rel_Insert_Input>;
   /** User password hash */
   password?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -11952,8 +12004,6 @@ export type Users_Insert_Input = {
 /** aggregate max on columns */
 export type Users_Max_Fields = {
   __typename?: "users_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** User email address */
   email?: Maybe<Scalars["String"]["output"]>;
@@ -11974,8 +12024,6 @@ export type Users_Max_Fields = {
 /** aggregate min on columns */
 export type Users_Min_Fields = {
   __typename?: "users_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** User email address */
   email?: Maybe<Scalars["String"]["output"]>;
@@ -12018,18 +12066,17 @@ export type Users_On_Conflict = {
 
 /** Ordering options when selecting data from "users". */
 export type Users_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
   accounts_aggregate?: InputMaybe<Accounts_Aggregate_Order_By>;
   created_at?: InputMaybe<Order_By>;
   email?: InputMaybe<Order_By>;
   email_verified?: InputMaybe<Order_By>;
-  files_aggregate?: InputMaybe<Files_Aggregate_Order_By>;
   hasura_role?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   image?: InputMaybe<Order_By>;
   is_admin?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
+  notification_messages_aggregate?: InputMaybe<Notification_Messages_Aggregate_Order_By>;
+  notification_permissions_aggregate?: InputMaybe<Notification_Permissions_Aggregate_Order_By>;
   password?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
 };
@@ -12041,10 +12088,6 @@ export type Users_Pk_Columns_Input = {
 
 /** select columns of table "users" */
 export enum Users_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
   /** column name */
   CreatedAt = "created_at",
   /** column name */
@@ -12125,8 +12168,6 @@ export type Users_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Users_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   /** User email address */
   email?: InputMaybe<Scalars["String"]["input"]>;
@@ -12228,405 +12269,238 @@ export type Uuid_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars["uuid"]["input"]>>;
 };
 
-/** columns and relationships of "viruses" */
-export type Viruses = {
-  __typename?: "viruses";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  created_at: Scalars["bigint"]["output"];
-  /** Virus detection timestamp */
-  detected_at?: Maybe<Scalars["timestamptz"]["output"]>;
+/** columns and relationships of "storage.virus" */
+export type Virus = {
+  __typename?: "virus";
+  createdAt: Scalars["timestamptz"]["output"];
   /** An object relationship */
-  file?: Maybe<Files>;
-  /** Reference to infected file */
-  file_id?: Maybe<Scalars["uuid"]["output"]>;
+  file: Files;
+  fileId: Scalars["uuid"]["output"];
+  filename: Scalars["String"]["output"];
   id: Scalars["uuid"]["output"];
-  updated_at: Scalars["bigint"]["output"];
-  /** Detected virus name */
-  virus_name?: Maybe<Scalars["String"]["output"]>;
+  updatedAt: Scalars["timestamptz"]["output"];
+  userSession: Scalars["jsonb"]["output"];
+  virus: Scalars["String"]["output"];
 };
 
-/** aggregated selection of "viruses" */
-export type Viruses_Aggregate = {
-  __typename?: "viruses_aggregate";
-  aggregate?: Maybe<Viruses_Aggregate_Fields>;
-  nodes: Array<Viruses>;
+/** columns and relationships of "storage.virus" */
+export type VirusUserSessionArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-export type Viruses_Aggregate_Bool_Exp = {
-  count?: InputMaybe<Viruses_Aggregate_Bool_Exp_Count>;
+/** aggregated selection of "storage.virus" */
+export type Virus_Aggregate = {
+  __typename?: "virus_aggregate";
+  aggregate?: Maybe<Virus_Aggregate_Fields>;
+  nodes: Array<Virus>;
 };
 
-export type Viruses_Aggregate_Bool_Exp_Count = {
-  arguments?: InputMaybe<Array<Viruses_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-  filter?: InputMaybe<Viruses_Bool_Exp>;
-  predicate: Int_Comparison_Exp;
-};
-
-/** aggregate fields of "viruses" */
-export type Viruses_Aggregate_Fields = {
-  __typename?: "viruses_aggregate_fields";
-  avg?: Maybe<Viruses_Avg_Fields>;
+/** aggregate fields of "storage.virus" */
+export type Virus_Aggregate_Fields = {
+  __typename?: "virus_aggregate_fields";
   count: Scalars["Int"]["output"];
-  max?: Maybe<Viruses_Max_Fields>;
-  min?: Maybe<Viruses_Min_Fields>;
-  stddev?: Maybe<Viruses_Stddev_Fields>;
-  stddev_pop?: Maybe<Viruses_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Viruses_Stddev_Samp_Fields>;
-  sum?: Maybe<Viruses_Sum_Fields>;
-  var_pop?: Maybe<Viruses_Var_Pop_Fields>;
-  var_samp?: Maybe<Viruses_Var_Samp_Fields>;
-  variance?: Maybe<Viruses_Variance_Fields>;
+  max?: Maybe<Virus_Max_Fields>;
+  min?: Maybe<Virus_Min_Fields>;
 };
 
-/** aggregate fields of "viruses" */
-export type Viruses_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Viruses_Select_Column>>;
+/** aggregate fields of "storage.virus" */
+export type Virus_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Virus_Select_Column>>;
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
-/** order by aggregate values of table "viruses" */
-export type Viruses_Aggregate_Order_By = {
-  avg?: InputMaybe<Viruses_Avg_Order_By>;
-  count?: InputMaybe<Order_By>;
-  max?: InputMaybe<Viruses_Max_Order_By>;
-  min?: InputMaybe<Viruses_Min_Order_By>;
-  stddev?: InputMaybe<Viruses_Stddev_Order_By>;
-  stddev_pop?: InputMaybe<Viruses_Stddev_Pop_Order_By>;
-  stddev_samp?: InputMaybe<Viruses_Stddev_Samp_Order_By>;
-  sum?: InputMaybe<Viruses_Sum_Order_By>;
-  var_pop?: InputMaybe<Viruses_Var_Pop_Order_By>;
-  var_samp?: InputMaybe<Viruses_Var_Samp_Order_By>;
-  variance?: InputMaybe<Viruses_Variance_Order_By>;
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Virus_Append_Input = {
+  userSession?: InputMaybe<Scalars["jsonb"]["input"]>;
 };
 
-/** input type for inserting array relation for remote table "viruses" */
-export type Viruses_Arr_Rel_Insert_Input = {
-  data: Array<Viruses_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Viruses_On_Conflict>;
-};
-
-/** aggregate avg on columns */
-export type Viruses_Avg_Fields = {
-  __typename?: "viruses_avg_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by avg() on columns of table "viruses" */
-export type Viruses_Avg_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** Boolean expression to filter rows from the table "viruses". All fields are combined with a logical 'AND'. */
-export type Viruses_Bool_Exp = {
-  _and?: InputMaybe<Array<Viruses_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
-  _not?: InputMaybe<Viruses_Bool_Exp>;
-  _or?: InputMaybe<Array<Viruses_Bool_Exp>>;
-  created_at?: InputMaybe<Bigint_Comparison_Exp>;
-  detected_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+/** Boolean expression to filter rows from the table "storage.virus". All fields are combined with a logical 'AND'. */
+export type Virus_Bool_Exp = {
+  _and?: InputMaybe<Array<Virus_Bool_Exp>>;
+  _not?: InputMaybe<Virus_Bool_Exp>;
+  _or?: InputMaybe<Array<Virus_Bool_Exp>>;
+  createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
   file?: InputMaybe<Files_Bool_Exp>;
-  file_id?: InputMaybe<Uuid_Comparison_Exp>;
+  fileId?: InputMaybe<Uuid_Comparison_Exp>;
+  filename?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
-  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  virus_name?: InputMaybe<String_Comparison_Exp>;
+  updatedAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  userSession?: InputMaybe<Jsonb_Comparison_Exp>;
+  virus?: InputMaybe<String_Comparison_Exp>;
 };
 
-/** unique or primary key constraints on table "viruses" */
-export enum Viruses_Constraint {
+/** unique or primary key constraints on table "storage.virus" */
+export enum Virus_Constraint {
   /** unique or primary key constraint on columns "id" */
-  VirusesPkey = "viruses_pkey",
+  VirusPkey = "virus_pkey",
 }
 
-/** input type for incrementing numeric columns in table "viruses" */
-export type Viruses_Inc_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Virus_Delete_At_Path_Input = {
+  userSession?: InputMaybe<Array<Scalars["String"]["input"]>>;
 };
 
-/** input type for inserting data into table "viruses" */
-export type Viruses_Insert_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Virus detection timestamp */
-  detected_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Virus_Delete_Elem_Input = {
+  userSession?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Virus_Delete_Key_Input = {
+  userSession?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** input type for inserting data into table "storage.virus" */
+export type Virus_Insert_Input = {
+  createdAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
   file?: InputMaybe<Files_Obj_Rel_Insert_Input>;
-  /** Reference to infected file */
-  file_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  fileId?: InputMaybe<Scalars["uuid"]["input"]>;
+  filename?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Detected virus name */
-  virus_name?: InputMaybe<Scalars["String"]["input"]>;
+  updatedAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  userSession?: InputMaybe<Scalars["jsonb"]["input"]>;
+  virus?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 /** aggregate max on columns */
-export type Viruses_Max_Fields = {
-  __typename?: "viruses_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Virus detection timestamp */
-  detected_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  /** Reference to infected file */
-  file_id?: Maybe<Scalars["uuid"]["output"]>;
+export type Virus_Max_Fields = {
+  __typename?: "virus_max_fields";
+  createdAt?: Maybe<Scalars["timestamptz"]["output"]>;
+  fileId?: Maybe<Scalars["uuid"]["output"]>;
+  filename?: Maybe<Scalars["String"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Detected virus name */
-  virus_name?: Maybe<Scalars["String"]["output"]>;
-};
-
-/** order by max() on columns of table "viruses" */
-export type Viruses_Max_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  /** Virus detection timestamp */
-  detected_at?: InputMaybe<Order_By>;
-  /** Reference to infected file */
-  file_id?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** Detected virus name */
-  virus_name?: InputMaybe<Order_By>;
+  updatedAt?: Maybe<Scalars["timestamptz"]["output"]>;
+  virus?: Maybe<Scalars["String"]["output"]>;
 };
 
 /** aggregate min on columns */
-export type Viruses_Min_Fields = {
-  __typename?: "viruses_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Virus detection timestamp */
-  detected_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  /** Reference to infected file */
-  file_id?: Maybe<Scalars["uuid"]["output"]>;
+export type Virus_Min_Fields = {
+  __typename?: "virus_min_fields";
+  createdAt?: Maybe<Scalars["timestamptz"]["output"]>;
+  fileId?: Maybe<Scalars["uuid"]["output"]>;
+  filename?: Maybe<Scalars["String"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Detected virus name */
-  virus_name?: Maybe<Scalars["String"]["output"]>;
+  updatedAt?: Maybe<Scalars["timestamptz"]["output"]>;
+  virus?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** order by min() on columns of table "viruses" */
-export type Viruses_Min_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  /** Virus detection timestamp */
-  detected_at?: InputMaybe<Order_By>;
-  /** Reference to infected file */
-  file_id?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** Detected virus name */
-  virus_name?: InputMaybe<Order_By>;
-};
-
-/** response of any mutation on the table "viruses" */
-export type Viruses_Mutation_Response = {
-  __typename?: "viruses_mutation_response";
+/** response of any mutation on the table "storage.virus" */
+export type Virus_Mutation_Response = {
+  __typename?: "virus_mutation_response";
   /** number of rows affected by the mutation */
   affected_rows: Scalars["Int"]["output"];
   /** data from the rows affected by the mutation */
-  returning: Array<Viruses>;
+  returning: Array<Virus>;
 };
 
-/** on_conflict condition type for table "viruses" */
-export type Viruses_On_Conflict = {
-  constraint: Viruses_Constraint;
-  update_columns?: Array<Viruses_Update_Column>;
-  where?: InputMaybe<Viruses_Bool_Exp>;
+/** on_conflict condition type for table "storage.virus" */
+export type Virus_On_Conflict = {
+  constraint: Virus_Constraint;
+  update_columns?: Array<Virus_Update_Column>;
+  where?: InputMaybe<Virus_Bool_Exp>;
 };
 
-/** Ordering options when selecting data from "viruses". */
-export type Viruses_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  detected_at?: InputMaybe<Order_By>;
+/** Ordering options when selecting data from "storage.virus". */
+export type Virus_Order_By = {
+  createdAt?: InputMaybe<Order_By>;
   file?: InputMaybe<Files_Order_By>;
-  file_id?: InputMaybe<Order_By>;
+  fileId?: InputMaybe<Order_By>;
+  filename?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  virus_name?: InputMaybe<Order_By>;
+  updatedAt?: InputMaybe<Order_By>;
+  userSession?: InputMaybe<Order_By>;
+  virus?: InputMaybe<Order_By>;
 };
 
-/** primary key columns input for table: viruses */
-export type Viruses_Pk_Columns_Input = {
+/** primary key columns input for table: storage.virus */
+export type Virus_Pk_Columns_Input = {
   id: Scalars["uuid"]["input"];
 };
 
-/** select columns of table "viruses" */
-export enum Viruses_Select_Column {
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Virus_Prepend_Input = {
+  userSession?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** select columns of table "storage.virus" */
+export enum Virus_Select_Column {
   /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
+  CreatedAt = "createdAt",
   /** column name */
-  HasyxTableName = "_hasyx_table_name",
+  FileId = "fileId",
   /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  DetectedAt = "detected_at",
-  /** column name */
-  FileId = "file_id",
+  Filename = "filename",
   /** column name */
   Id = "id",
   /** column name */
-  UpdatedAt = "updated_at",
+  UpdatedAt = "updatedAt",
   /** column name */
-  VirusName = "virus_name",
+  UserSession = "userSession",
+  /** column name */
+  Virus = "virus",
 }
 
-/** input type for updating data in table "viruses" */
-export type Viruses_Set_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Virus detection timestamp */
-  detected_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  /** Reference to infected file */
-  file_id?: InputMaybe<Scalars["uuid"]["input"]>;
+/** input type for updating data in table "storage.virus" */
+export type Virus_Set_Input = {
+  createdAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  fileId?: InputMaybe<Scalars["uuid"]["input"]>;
+  filename?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Detected virus name */
-  virus_name?: InputMaybe<Scalars["String"]["input"]>;
+  updatedAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  userSession?: InputMaybe<Scalars["jsonb"]["input"]>;
+  virus?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-/** aggregate stddev on columns */
-export type Viruses_Stddev_Fields = {
-  __typename?: "viruses_stddev_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev() on columns of table "viruses" */
-export type Viruses_Stddev_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Viruses_Stddev_Pop_Fields = {
-  __typename?: "viruses_stddev_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev_pop() on columns of table "viruses" */
-export type Viruses_Stddev_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Viruses_Stddev_Samp_Fields = {
-  __typename?: "viruses_stddev_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev_samp() on columns of table "viruses" */
-export type Viruses_Stddev_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** Streaming cursor of the table "viruses" */
-export type Viruses_Stream_Cursor_Input = {
+/** Streaming cursor of the table "virus" */
+export type Virus_Stream_Cursor_Input = {
   /** Stream column input with initial value */
-  initial_value: Viruses_Stream_Cursor_Value_Input;
+  initial_value: Virus_Stream_Cursor_Value_Input;
   /** cursor ordering */
   ordering?: InputMaybe<Cursor_Ordering>;
 };
 
 /** Initial value of the column from where the streaming should start */
-export type Viruses_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Virus detection timestamp */
-  detected_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  /** Reference to infected file */
-  file_id?: InputMaybe<Scalars["uuid"]["input"]>;
+export type Virus_Stream_Cursor_Value_Input = {
+  createdAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  fileId?: InputMaybe<Scalars["uuid"]["input"]>;
+  filename?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Detected virus name */
-  virus_name?: InputMaybe<Scalars["String"]["input"]>;
+  updatedAt?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  userSession?: InputMaybe<Scalars["jsonb"]["input"]>;
+  virus?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-/** aggregate sum on columns */
-export type Viruses_Sum_Fields = {
-  __typename?: "viruses_sum_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** order by sum() on columns of table "viruses" */
-export type Viruses_Sum_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** update columns of table "viruses" */
-export enum Viruses_Update_Column {
+/** update columns of table "storage.virus" */
+export enum Virus_Update_Column {
   /** column name */
-  CreatedAt = "created_at",
+  CreatedAt = "createdAt",
   /** column name */
-  DetectedAt = "detected_at",
+  FileId = "fileId",
   /** column name */
-  FileId = "file_id",
+  Filename = "filename",
   /** column name */
   Id = "id",
   /** column name */
-  UpdatedAt = "updated_at",
+  UpdatedAt = "updatedAt",
   /** column name */
-  VirusName = "virus_name",
+  UserSession = "userSession",
+  /** column name */
+  Virus = "virus",
 }
 
-export type Viruses_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<Viruses_Inc_Input>;
+export type Virus_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Virus_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Virus_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Virus_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Virus_Delete_Key_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Virus_Prepend_Input>;
   /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Viruses_Set_Input>;
+  _set?: InputMaybe<Virus_Set_Input>;
   /** filter the rows which have to be updated */
-  where: Viruses_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type Viruses_Var_Pop_Fields = {
-  __typename?: "viruses_var_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by var_pop() on columns of table "viruses" */
-export type Viruses_Var_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** aggregate var_samp on columns */
-export type Viruses_Var_Samp_Fields = {
-  __typename?: "viruses_var_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by var_samp() on columns of table "viruses" */
-export type Viruses_Var_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** aggregate variance on columns */
-export type Viruses_Variance_Fields = {
-  __typename?: "viruses_variance_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by variance() on columns of table "viruses" */
-export type Viruses_Variance_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
+  where: Virus_Bool_Exp;
 };

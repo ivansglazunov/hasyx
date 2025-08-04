@@ -5,7 +5,9 @@ import { Input } from 'hasyx/components/ui/input';
 import { Label } from 'hasyx/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'hasyx/components/ui/card';
 import { Badge } from 'hasyx/components/ui/badge';
-import { emailSchema } from 'hasyx/schema';
+import { schema } from 'hasyx/schema';
+
+const emailSchema = schema.email;
 
 interface ValidationFormProps {
   className?: string;

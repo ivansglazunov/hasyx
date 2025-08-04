@@ -57,6 +57,7 @@ export function useSession(): SessionData {
 
 export interface TestAuthorizeOptions extends ApolloOptions {
   schema?: any;
+  ws?: boolean; // Allow explicit control over WebSocket usage
 };
 
 /**
@@ -72,9 +73,11 @@ export interface TestAuthorizeOptions extends ApolloOptions {
  */
 export async function testAuthorize(userId: string, {
   schema = hasyxSchema,
+  ws = false, // Default to no WebSocket for most test scenarios
   ..._options
 }: TestAuthorizeOptions = {
   schema: hasyxSchema,
+  ws: false,
 }): Promise<{ axios: AxiosInstance, apollo: HasyxApolloClient, hasyx: Hasyx }> {
   const generate = Generator(schema);
 
@@ -168,7 +171,7 @@ export async function testAuthorize(userId: string, {
   // Note: createApolloClient uses /api/graphql by default if no url is provided
   const apolloInstance = createApolloClient({
     token: jwt,
-    ws: true, // Or false, depending on test needs
+    ws, // Use the ws parameter from options
     ..._options,
   });
   testAuthorizeDebug(`Apollo client instance created with token.`);

@@ -2082,11 +2082,6 @@
           "level": 3
         },
         {
-          "title": "file_versions",
-          "url": "/hasyx/doc/FILES#file-versions",
-          "level": 3
-        },
-        {
           "title": "Permissions",
           "url": "/hasyx/doc/FILES#permissions",
           "level": 2
@@ -2112,23 +2107,8 @@
           "level": 3
         },
         {
-          "title": "Get File Info",
-          "url": "/hasyx/doc/FILES#get-file-info",
-          "level": 3
-        },
-        {
-          "title": "List Files",
-          "url": "/hasyx/doc/FILES#list-files",
-          "level": 3
-        },
-        {
           "title": "Download File",
           "url": "/hasyx/doc/FILES#download-file",
-          "level": 3
-        },
-        {
-          "title": "Update File",
-          "url": "/hasyx/doc/FILES#update-file",
           "level": 3
         },
         {
@@ -2147,6 +2127,16 @@
           "level": 3
         },
         {
+          "title": "Download File",
+          "url": "/hasyx/doc/FILES#download-file",
+          "level": 3
+        },
+        {
+          "title": "Delete File",
+          "url": "/hasyx/doc/FILES#delete-file",
+          "level": 3
+        },
+        {
           "title": "Get File Info",
           "url": "/hasyx/doc/FILES#get-file-info",
           "level": 3
@@ -2157,18 +2147,8 @@
           "level": 3
         },
         {
-          "title": "Download File",
-          "url": "/hasyx/doc/FILES#download-file",
-          "level": 3
-        },
-        {
           "title": "Update File",
           "url": "/hasyx/doc/FILES#update-file",
-          "level": 3
-        },
-        {
-          "title": "Delete File",
-          "url": "/hasyx/doc/FILES#delete-file",
           "level": 3
         },
         {
@@ -2182,13 +2162,33 @@
           "level": 3
         },
         {
-          "title": "Get File List",
-          "url": "/hasyx/doc/FILES#get-file-list",
+          "title": "Download File",
+          "url": "/hasyx/doc/FILES#download-file",
           "level": 3
         },
         {
-          "title": "Download File",
-          "url": "/hasyx/doc/FILES#download-file",
+          "title": "Delete File",
+          "url": "/hasyx/doc/FILES#delete-file",
+          "level": 3
+        },
+        {
+          "title": "Authentication",
+          "url": "/hasyx/doc/FILES#authentication",
+          "level": 2
+        },
+        {
+          "title": "JWT Token Authentication",
+          "url": "/hasyx/doc/FILES#jwt-token-authentication",
+          "level": 3
+        },
+        {
+          "title": "NextAuth Session Authentication",
+          "url": "/hasyx/doc/FILES#nextauth-session-authentication",
+          "level": 3
+        },
+        {
+          "title": "Anonymous Access",
+          "url": "/hasyx/doc/FILES#anonymous-access",
           "level": 3
         },
         {
@@ -6610,5 +6610,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-07-31T01:11:08.592Z"
+  "lastUpdated": "2025-08-04T07:06:26.628Z"
 }

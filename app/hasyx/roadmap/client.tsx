@@ -1,7 +1,7 @@
 "use client"
 
 import Debug from '@/lib/debug';
-import { Cyto, CytoStyle, CytoNode, CytoEdge } from "hasyx/lib/cyto";
+import { Cyto, CytoStyle, CytoNode, CytoEdge, useGraph } from "hasyx/lib/cyto";
 import { Card as EntityCard, Button as EntityButton, CytoNode as EntityCytoNode } from '../../../lib/entities';
 import { QueriesManager, QueriesRenderer } from 'hasyx/lib/renderer';
 import React, { useCallback, useMemo, useState, useRef } from "react";
@@ -17,6 +17,7 @@ import { useToastHandleLoadingError } from 'hasyx/hooks/toasts';
 import { parseIssue, generateIssue } from 'hasyx/lib/issues';
 import { Tag } from 'lucide-react';
 import { MultiSelect } from '@/components/ui/multi-select';
+import { useDependencyDrawingStore } from 'hasyx/stores/dependency-drawing-store';
 
 const debug = Debug('cyto');
 
@@ -623,6 +624,9 @@ export default function Client() {
   const [selectedEntity, setSelectedEntity] = useState<any>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [createIssueDialogOpen, setCreateIssueDialogOpen] = useState(false);
+  const { onDrawingComplete, cancelDrawing } = useDependencyDrawingStore();
+  const graphContext = useGraph();
+  const toggleDrawMode = graphContext?.toggleDrawMode;
 
   // Queries for QueriesRenderer
   const [queries] = useState<any[]>([
@@ -731,6 +735,20 @@ export default function Client() {
             >
               ➕ Create Issue
             </Button>
+            
+            {/* Cancel Drawing Mode Button */}
+            {onDrawingComplete && (
+              <Button 
+                onClick={() => {
+                  cancelDrawing();
+                  toggleDrawMode?.(); // Отключаем режим рисования
+                }}
+                className="w-full"
+                variant="destructive"
+              >
+                ❌ Cancel Drawing
+              </Button>
+            )}
           </div>
         </>}
       >

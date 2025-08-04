@@ -1995,4 +1995,30 @@ export class Hasura {
     
     return { success: true };
   }
+
+  async trackFunction(options: { schema: string; name: string }): Promise<any> {
+    const { schema, name } = options;
+    debug(`🔍 Tracking function ${schema}.${name}`);
+    return await this.v1({
+      type: 'pg_track_function',
+      args: {
+        source: 'default',
+        schema,
+        name
+      }
+    });
+  }
+
+  async untrackFunction(options: { schema: string; name: string }): Promise<any> {
+    const { schema, name } = options;
+    debug(`🔄 Untracking function ${schema}.${name}`);
+    return await this.v1({
+      type: 'pg_untrack_function',
+      args: {
+        source: 'default',
+        schema,
+        name
+      }
+    });
+  }
 }

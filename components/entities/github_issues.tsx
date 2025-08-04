@@ -1,16 +1,20 @@
 "use client";
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useQuery } from 'hasyx';
 import { Button as UIButton } from 'hasyx/components/ui/button';
 import { Card as UICard, CardContent, CardHeader, CardTitle } from 'hasyx/components/ui/card';
 import { Badge } from 'hasyx/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from 'hasyx/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'hasyx/components/ui/tooltip';
-import { X, GitBranch, MessageCircle, Calendar, User, Tag, ExternalLink } from 'lucide-react';
+import { X, GitBranch, MessageCircle, Calendar, User, Tag, ExternalLink, Link, ArrowRight } from 'lucide-react';
 import { CytoNode as CytoNodeComponent, CytoEdge } from 'hasyx/lib/cyto';
 import { cn } from 'hasyx/lib/utils';
 import { parseIssue } from 'hasyx/lib/issues';
+import { useDependencyDrawingStore } from 'hasyx/stores/dependency-drawing-store';
+import { updateIssueRelations } from 'hasyx/lib/issue-relations';
+import { useGraph } from 'hasyx/lib/cyto';
+import { useHasyx } from 'hasyx';
 
 interface GitHubIssueData {
   id?: string;
@@ -179,8 +183,21 @@ export function Card({ data, onClose, ...props }: {
   [key: string]: any;
 }) {
   const issueData = data;
+  const { startDrawing, onDrawingComplete, currentRelationType } = useDependencyDrawingStore();
+  const graphContext = useGraph();
+  const toggleDrawMode = graphContext?.toggleDrawMode;
+  const hasyx = useHasyx();
 
   const isPR = !!issueData.pull_request_data;
+  
+  const handleStartDrawing = useCallback((relationType: string) => {
+    // Активируем режим рисования
+    toggleDrawMode?.();
+    
+    startDrawing(relationType, hasyx, async (sourceIssueData, targetIssueData, relationType, hasyx) => {
+      await updateIssueRelations(sourceIssueData, targetIssueData, relationType, hasyx);
+    });
+  }, [startDrawing, toggleDrawMode, hasyx]);
 
   return (
     <div className="relative group pointer-events-none">
@@ -279,7 +296,41 @@ export function Card({ data, onClose, ...props }: {
           )}
         </CardContent>
       </UICard>
-      <div className="absolute group-hover:top-[100%] top-[50%] z-0 transition-all delay-500 left-0 w-full px-2 pt-1 flex justify-end">
+      <div className="absolute group-hover:top-[100%] top-[50%] z-0 transition-all delay-500 left-0 w-full px-2 pt-1 flex justify-between">
+        {/* Dependency buttons */}
+        <div className="flex gap-1 pointer-events-auto">
+          <UIButton 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => handleStartDrawing('contains')}
+            className={cn(
+              onDrawingComplete && "bg-blue-500 text-white"
+            )}
+          >
+            <Link className="w-3 h-3" />
+          </UIButton>
+          <UIButton 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => handleStartDrawing('requires')}
+            className={cn(
+              onDrawingComplete && "bg-orange-500 text-white"
+            )}
+          >
+            <ArrowRight className="w-3 h-3" />
+          </UIButton>
+          <UIButton 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => handleStartDrawing('related')}
+            className={cn(
+              onDrawingComplete && "bg-green-500 text-white"
+            )}
+          >
+            <GitBranch className="w-3 h-3" />
+          </UIButton>
+        </div>
+        
         {/* Comments button in bottom right corner */}
         {issueData.comments_count !== undefined && (
           <UIButton

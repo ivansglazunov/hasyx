@@ -34,7 +34,8 @@ import { configureStorage } from './assist-storage';
 import { configureGitHubWebhooks } from './assist-github-webhooks';
 
 // Ensure dotenv is configured only once
-if (require.main === module) {
+// @ts-ignore
+if (import.meta.url === `file://${process.argv[1]}`) {
   try {
     let projectRoot = process.cwd();
     let pkgPath = path.join(projectRoot, 'package.json');

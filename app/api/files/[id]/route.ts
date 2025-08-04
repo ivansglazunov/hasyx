@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { uploadFile } from 'hasyx/lib/files';
+import { downloadFile, deleteFile } from 'hasyx/lib/files';
 import { getTokenFromRequest } from 'hasyx/lib/auth-next';
 import Debug from 'hasyx/lib/debug';
 
-const debug = Debug('api:files');
+const debug = Debug('api:files:id');
 
 // NextAuth Token Interface
 interface NextAuthToken {
@@ -81,79 +81,39 @@ async function extractUserId(request: NextRequest): Promise<string | undefined> 
   }
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
-  debug(`POST /api/files from origin: ${request.headers.get('origin')}`);
+// GET /api/files/[id] - Download file content
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
+  const { id: fileId } = await context.params;
+  debug(`GET /api/files/${fileId} from origin: ${request.headers.get('origin')}`);
   
   try {
-    debug('Parsing form data...');
-    const formData = await request.formData();
-    debug('Form data parsed successfully');
-    
-    const file = formData.get('file') as File;
-    debug(`File extracted: ${file ? file.name : 'null'}, size: ${file ? file.size : 'N/A'}, type: ${file ? file.type : 'N/A'}`);
-    
-    debug('Extracting user ID...');
     const userId = await extractUserId(request);
     debug(`User ID extracted: ${userId}`);
     
-    const isPublic = formData.get('isPublic') === 'true';
-    const bucket = formData.get('bucket') as string || undefined;
-    debug(`isPublic: ${isPublic}, bucket: ${bucket}`);
-    
-    if (!file) {
-      debug('No file provided in request');
-      return NextResponse.json(
-        { error: 'No file provided' },
-        { status: 400 }
-      );
-    }
-    
-    debug('Converting file to buffer...');
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
-    debug(`File buffer created, size: ${fileBuffer.length} bytes`);
-    
-    debug('Calling uploadFile function...');
-    debug(`📤 Passing to uploadFile:`, { userId, isPublic, bucket });
-    const result = await uploadFile(
-      fileBuffer,
-      file.name,
-      file.type,
-      {
-        userId,
-        isPublic,
-        bucket
-      }
-    );
-    
-    debug(`📥 uploadFile result:`, { 
-      success: result.success, 
-      error: result.error,
-      fileId: result.file?.id,
-      uploadedByUserId: result.file?.uploadedByUserId
-    });
+    const result = await downloadFile(fileId, userId);
     
     if (!result.success) {
-      debug(`Upload failed: ${result.error}`);
+      debug(`Download failed: ${result.error}`);
       return NextResponse.json(
         { error: result.error },
-        { status: 500 }
+        { status: result.error === 'File not found' ? 404 : 403 }
       );
     }
     
-    debug('Upload successful, returning response');
-    return NextResponse.json({
-      success: true,
-      file: result.file,
-      presignedUrl: result.presignedUrl
+    debug('Download successful, returning file content');
+    return new NextResponse(result.fileContent, {
+      headers: {
+        'Content-Type': result.mimeType || 'application/octet-stream',
+        'Content-Disposition': `inline; filename="${result.file?.name || 'file'}"`,
+        'Cache-Control': 'public, max-age=3600'
+      }
     });
     
   } catch (error: any) {
-    debug('POST /api/files error:', error);
-    debug('Error details:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
-    });
+    debug('GET /api/files/[id] error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -161,4 +121,36 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 }
 
- 
+// DELETE /api/files/[id] - Delete file
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
+  const { id: fileId } = await context.params;
+  debug(`DELETE /api/files/${fileId} from origin: ${request.headers.get('origin')}`);
+  
+  try {
+    const userId = await extractUserId(request);
+    debug(`User ID extracted: ${userId}`);
+    
+    const result = await deleteFile(fileId, userId);
+    
+    if (!result.success) {
+      debug(`Delete failed: ${result.error}`);
+      return NextResponse.json(
+        { error: result.error },
+        { status: result.error === 'File not found' ? 404 : 403 }
+      );
+    }
+    
+    debug('Delete successful');
+    return NextResponse.json({ success: true });
+    
+  } catch (error: any) {
+    debug('DELETE /api/files/[id] error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+} 

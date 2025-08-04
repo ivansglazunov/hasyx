@@ -1,515 +1,454 @@
-import dotenv from 'dotenv';
-import path from 'path';
-import { Hasura, ColumnType } from './hasura';
-import Debug from './debug';
+import Debug from 'debug';
+import { Hasura } from 'hasyx/lib/hasura';
 
-// Initialize debug
-const debug = Debug('migration:up-storage');
+const debug = Debug('hasyx:migration:up-storage');
 
-export async function applySQLSchema(hasura: Hasura) {
-  debug('🔧 Applying storage SQL schema...');
-  
-  // Ensure public schema exists
-  await hasura.defineSchema({ schema: 'public' });
-  
-  // Define files table
-  await hasura.defineTable({
-    schema: 'public',
-    table: 'files',
-    id: 'id',
-    type: ColumnType.UUID
-  });
-  
-  // Add files table columns
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'files',
-    name: 'name',
-    type: ColumnType.TEXT,
-    comment: 'File name'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'files',
-    name: 'bucket_id',
-    type: ColumnType.TEXT,
-    comment: 'Storage bucket ID'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'files',
-    name: 'mime_type',
-    type: ColumnType.TEXT,
-    comment: 'File MIME type'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'files',
-    name: 'size',
-    type: ColumnType.BIGINT,
-    comment: 'File size in bytes'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'files',
-    name: 'etag',
-    type: ColumnType.TEXT,
-    comment: 'File ETag'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'files',
-    name: 'created_at',
-    type: ColumnType.TIMESTAMPTZ,
-    postfix: 'DEFAULT NOW()',
-    comment: 'File creation timestamp'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'files',
-    name: 'updated_at',
-    type: ColumnType.TIMESTAMPTZ,
-    postfix: 'DEFAULT NOW()',
-    comment: 'File update timestamp'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'files',
-    name: 'is_public',
-    type: ColumnType.BOOLEAN,
-    postfix: 'DEFAULT FALSE',
-    comment: 'Public file flag'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'files',
-    name: 'user_id',
-    type: ColumnType.UUID,
-    comment: 'File owner user ID'
-  });
-  
-  // Define file_versions table
-  await hasura.defineTable({
-    schema: 'public',
-    table: 'file_versions',
-    id: 'id',
-    type: ColumnType.UUID
-  });
-  
-  // Add file_versions table columns
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'file_versions',
-    name: 'file_id',
-    type: ColumnType.UUID,
-    comment: 'Reference to files table'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'file_versions',
-    name: 'version',
-    type: ColumnType.TEXT,
-    comment: 'File version'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'file_versions',
-    name: 'created_at',
-    type: ColumnType.TIMESTAMPTZ,
-    postfix: 'DEFAULT NOW()',
-    comment: 'Version creation timestamp'
-  });
-  
-  // Define viruses table (for antivirus scanning)
-  await hasura.defineTable({
-    schema: 'public',
-    table: 'viruses',
-    id: 'id',
-    type: ColumnType.UUID
-  });
-  
-  // Add viruses table columns
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'viruses',
-    name: 'file_id',
-    type: ColumnType.UUID,
-    comment: 'Reference to infected file'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'viruses',
-    name: 'virus_name',
-    type: ColumnType.TEXT,
-    comment: 'Detected virus name'
-  });
-  
-  await hasura.defineColumn({
-    schema: 'public',
-    table: 'viruses',
-    name: 'detected_at',
-    type: ColumnType.TIMESTAMPTZ,
-    postfix: 'DEFAULT NOW()',
-    comment: 'Virus detection timestamp'
-  });
-  
-  // Create foreign key constraints
-  await hasura.defineForeignKey({
-    from: { schema: 'public', table: 'files', column: 'user_id' },
-    to: { schema: 'public', table: 'users', column: 'id' },
-    on_delete: 'CASCADE',
-    on_update: 'CASCADE'
-  });
-  
-  await hasura.defineForeignKey({
-    from: { schema: 'public', table: 'file_versions', column: 'file_id' },
-    to: { schema: 'public', table: 'files', column: 'id' },
-    on_delete: 'CASCADE',
-    on_update: 'CASCADE'
-  });
-  
-  await hasura.defineForeignKey({
-    from: { schema: 'public', table: 'viruses', column: 'file_id' },
-    to: { schema: 'public', table: 'files', column: 'id' },
-    on_delete: 'CASCADE',
-    on_update: 'CASCADE'
-  });
-  
-  // Create trigger function for updated_at
-  await hasura.defineFunction({
-    schema: 'public',
-    name: 'set_current_timestamp_updated_at',
-    definition: `()
-      RETURNS TRIGGER AS $$
-      DECLARE
-        _new RECORD;
-      BEGIN
-        _new := NEW;
-        _new."updated_at" = EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000;
-        RETURN _new;
-      END;
-      $$`,
-    language: 'plpgsql'
-  });
-  
-  // Create triggers for updated_at
-  await hasura.defineTrigger({
-    schema: 'public',
-    table: 'files',
-    name: 'set_public_files_updated_at',
-    timing: 'BEFORE',
-    event: 'UPDATE',
-    function_name: 'public.set_current_timestamp_updated_at'
-  });
-  
-  // Create indexes
+async function migration_000001_create_initial_tables(hasura: Hasura) {
+  debug('🔧 Applying migration 000001_create-initial-tables...');
+
   await hasura.sql(`
-    CREATE INDEX IF NOT EXISTS "idx_files_user_id" ON "public"."files" ("user_id");
-    CREATE INDEX IF NOT EXISTS "idx_files_is_public" ON "public"."files" ("is_public");
-    CREATE INDEX IF NOT EXISTS "idx_files_created_at" ON "public"."files" ("created_at");
-    CREATE INDEX IF NOT EXISTS "idx_file_versions_file_id" ON "public"."file_versions" ("file_id");
-    CREATE INDEX IF NOT EXISTS "idx_viruses_file_id" ON "public"."viruses" ("file_id");
-    CREATE INDEX IF NOT EXISTS "idx_viruses_detected_at" ON "public"."viruses" ("detected_at");
+    BEGIN;
+    -- functions
+    CREATE OR REPLACE FUNCTION storage.set_current_timestamp_updated_at ()
+      RETURNS TRIGGER
+      LANGUAGE plpgsql
+      AS $a$
+    DECLARE
+      _new record;
+    BEGIN
+      _new := new;
+      _new. "updated_at" = now();
+      RETURN _new;
+    END;
+    $a$;
+
+    CREATE OR REPLACE FUNCTION storage.protect_default_bucket_delete ()
+      RETURNS TRIGGER
+      LANGUAGE plpgsql
+      AS $a$
+    BEGIN
+      IF OLD.ID = 'default' THEN
+        RAISE EXCEPTION 'Can not delete default bucket';
+      END IF;
+      RETURN OLD;
+    END;
+    $a$;
+
+    CREATE OR REPLACE FUNCTION storage.protect_default_bucket_update ()
+      RETURNS TRIGGER
+      LANGUAGE plpgsql
+      AS $a$
+    BEGIN
+      IF OLD.ID = 'default' AND NEW.ID <> 'default' THEN
+        RAISE EXCEPTION 'Can not rename default bucket';
+      END IF;
+      RETURN NEW;
+    END;
+    $a$;
+
+    -- tables
+    CREATE TABLE IF NOT EXISTS storage.buckets (
+      id text NOT NULL PRIMARY KEY,
+      created_at timestamp with time zone DEFAULT now() NOT NULL,
+      updated_at timestamp with time zone DEFAULT now() NOT NULL,
+      download_expiration int NOT NULL DEFAULT 30, -- 30 seconds
+      min_upload_file_size int NOT NULL DEFAULT 1,
+      max_upload_file_size int NOT NULL DEFAULT 1073741824, -- 1GB
+      cache_control text DEFAULT 'max-age=3600',
+      presigned_urls_enabled boolean NOT NULL DEFAULT TRUE
+    );
+
+    CREATE TABLE IF NOT EXISTS storage.files (
+      id uuid DEFAULT public.gen_random_uuid () NOT NULL PRIMARY KEY,
+      created_at timestamp with time zone DEFAULT now() NOT NULL,
+      updated_at timestamp with time zone DEFAULT now() NOT NULL,
+      bucket_id text NOT NULL DEFAULT 'default',
+      name text,
+      size int,
+      mime_type text,
+      etag text,
+      is_uploaded boolean DEFAULT FALSE,
+      uploaded_by_user_id uuid
+    );
+
+    -- constraints
+    DO $$
+    BEGIN
+      IF NOT EXISTS(SELECT table_name
+                FROM information_schema.table_constraints
+                WHERE table_schema = 'storage'
+                  AND table_name = 'files'
+                  AND constraint_name = 'fk_bucket')
+      THEN
+        ALTER TABLE storage.files
+          ADD CONSTRAINT fk_bucket FOREIGN KEY (bucket_id) REFERENCES storage.buckets (id) ON UPDATE CASCADE ON DELETE CASCADE;
+      END IF;
+    END $$;
+
+    -- triggers
+    DROP TRIGGER IF EXISTS set_storage_buckets_updated_at ON storage.buckets;
+    CREATE TRIGGER set_storage_buckets_updated_at
+      BEFORE UPDATE ON storage.buckets
+      FOR EACH ROW
+      EXECUTE FUNCTION storage.set_current_timestamp_updated_at ();
+
+    DROP TRIGGER IF EXISTS set_storage_files_updated_at ON storage.files;
+    CREATE TRIGGER set_storage_files_updated_at
+      BEFORE UPDATE ON storage.files
+      FOR EACH ROW
+      EXECUTE FUNCTION storage.set_current_timestamp_updated_at ();
+
+    DROP TRIGGER IF EXISTS check_default_bucket_delete ON storage.buckets;
+    CREATE TRIGGER check_default_bucket_delete
+      BEFORE DELETE ON storage.buckets
+      FOR EACH ROW
+        EXECUTE PROCEDURE storage.protect_default_bucket_delete ();
+
+    DROP TRIGGER IF EXISTS check_default_bucket_update ON storage.buckets;
+    CREATE TRIGGER check_default_bucket_update
+      BEFORE UPDATE ON storage.buckets
+      FOR EACH ROW
+        EXECUTE PROCEDURE storage.protect_default_bucket_update ();
+
+    -- data
+    DO $$
+    BEGIN
+      IF NOT EXISTS(SELECT id
+                FROM storage.buckets
+                WHERE id = 'default')
+      THEN
+        INSERT INTO storage.buckets (id)
+          VALUES ('default');
+      END IF;
+    END $$;
+
+    COMMIT;
   `);
-  
-  debug('✅ Storage SQL schema applied.');
+
+  debug('✅ Migration 000001_create-initial-tables applied.');
 }
 
-export async function trackTables(hasura: Hasura) {
-  debug('🔍 Tracking storage tables...');
-  
-  await hasura.trackTable({ schema: 'public', table: 'files' });
-  await hasura.trackTable({ schema: 'public', table: 'file_versions' });
-  await hasura.trackTable({ schema: 'public', table: 'viruses' });
-  
-  debug('✅ Storage tables tracked.');
+async function migration_000002_download_expiration_constraint(hasura: Hasura) {
+  debug('🔧 Applying migration 000002_download_expiration_constraint...');
+
+  await hasura.sql(`
+    ALTER TABLE storage.buckets
+        ADD CONSTRAINT download_expiration_valid_range
+            CHECK (download_expiration >= 1 AND download_expiration <= 604800);
+  `);
+
+  debug('✅ Migration 000002_download_expiration_constraint applied.');
 }
 
-export async function createRelationships(hasura: Hasura) {
-  debug('🔗 Creating storage relationships...');
-  
-  // Files to users relationship
-  await hasura.defineObjectRelationshipForeign({
-    schema: 'public',
-    table: 'files',
-    name: 'user',
-    key: 'user_id'
-  });
-  
-  // Users to files relationship
-  await hasura.defineArrayRelationshipForeign({
-    schema: 'public',
-    table: 'users',
-    name: 'files',
-    key: 'files.user_id'
-  });
-  
-  // Files to file_versions relationship
-  await hasura.defineArrayRelationshipForeign({
-    schema: 'public',
-    table: 'files',
-    name: 'versions',
-    key: 'file_versions.file_id'
-  });
-  
-  // File_versions to files relationship
-  await hasura.defineObjectRelationshipForeign({
-    schema: 'public',
-    table: 'file_versions',
-    name: 'file',
-    key: 'file_id'
-  });
-  
-  // Files to viruses relationship
-  await hasura.defineArrayRelationshipForeign({
-    schema: 'public',
-    table: 'files',
-    name: 'viruses',
-    key: 'viruses.file_id'
-  });
-  
-  // Viruses to files relationship
-  await hasura.defineObjectRelationshipForeign({
-    schema: 'public',
-    table: 'viruses',
-    name: 'file',
-    key: 'file_id'
-  });
-  
-  debug('✅ Storage relationships created.');
+async function migration_000003_remove_auth_dependency(hasura: Hasura) {
+  debug('🔧 Applying migration 000003_remove_auth_dependency...');
+
+  await hasura.sql(`
+    ALTER TABLE storage.files DROP CONSTRAINT IF EXISTS fk_user;
+  `);
+
+  debug('✅ Migration 000003_remove_auth_dependency applied.');
 }
 
-export async function applyPermissions(hasura: Hasura) {
-  debug('🔐 Applying storage permissions...');
-  
-  // Anonymous permissions - full access (for development, will be overridden in production)
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'select',
-    role: 'anonymous',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'insert',
-    role: 'anonymous',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'update',
-    role: 'anonymous',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'delete',
-    role: 'anonymous',
-    filter: {}
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'file_versions',
-    operation: 'select',
-    role: 'anonymous',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'file_versions',
-    operation: 'insert',
-    role: 'anonymous',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'file_versions',
-    operation: 'update',
-    role: 'anonymous',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'file_versions',
-    operation: 'delete',
-    role: 'anonymous',
-    filter: {}
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'viruses',
-    operation: 'select',
-    role: 'anonymous',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'viruses',
-    operation: 'insert',
-    role: 'anonymous',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'viruses',
-    operation: 'update',
-    role: 'anonymous',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'viruses',
-    operation: 'delete',
-    role: 'anonymous',
-    filter: {}
-  });
-  
-  // Files table permissions
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'select',
-    role: 'user',
-    filter: {
-      _or: [
-        { user_id: { _eq: 'X-Hasura-User-Id' } },
-        { is_public: { _eq: true } }
-      ]
-    },
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'insert',
-    role: 'user',
-    filter: {
-      user_id: { _eq: 'X-Hasura-User-Id' }
-    },
-    columns: ['id', 'name', 'bucket_id', 'mime_type', 'size', 'etag', 'created_at', 'updated_at', 'is_public', 'user_id']
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'update',
-    role: 'user',
-    filter: {
-      user_id: { _eq: 'X-Hasura-User-Id' }
-    },
-    columns: ['name', 'is_public', 'updated_at']
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'delete',
-    role: 'user',
-    filter: {
-      user_id: { _eq: 'X-Hasura-User-Id' }
+async function migration_000004_add_metadata_column(hasura: Hasura) {
+  debug('🔧 Applying migration 000004_add-metadata-column...');
+
+  await hasura.sql(`
+    ALTER TABLE "storage"."files" ADD COLUMN IF NOT EXISTS "metadata" JSONB;
+  `);
+
+  debug('✅ Migration 000004_add-metadata-column applied.');
+}
+
+async function migration_000005_add_viruses_table(hasura: Hasura) {
+  debug('🔧 Applying migration 000005_add-viruses-table...');
+
+  await hasura.sql(`
+    CREATE TABLE IF NOT EXISTS storage.virus (
+      id uuid DEFAULT public.gen_random_uuid () NOT NULL PRIMARY KEY,
+      created_at timestamp with time zone DEFAULT now() NOT NULL,
+      updated_at timestamp with time zone DEFAULT now() NOT NULL,
+      file_id UUID NOT NULL REFERENCES storage.files(id),
+      filename TEXT NOT NULL,
+      virus TEXT NOT NULL,
+      user_session JSONB NOT NULL
+    );
+
+    DROP TRIGGER IF EXISTS set_storage_virus_updated_at ON storage.virus;
+    CREATE TRIGGER set_storage_virus_updated_at
+      BEFORE UPDATE ON storage.virus
+      FOR EACH ROW
+      EXECUTE FUNCTION storage.set_current_timestamp_updated_at ();
+  `);
+
+  debug('✅ Migration 000005_add-viruses-table applied.');
+}
+
+async function createSchemaAndMigrations(hasura: Hasura) {
+  debug('🔧 Creating storage schema and schema_migrations table...');
+
+  // Create storage schema
+  await hasura.sql(`CREATE SCHEMA IF NOT EXISTS storage;`);
+
+  // Create schema_migrations table
+  await hasura.sql(`
+    CREATE TABLE IF NOT EXISTS storage.schema_migrations (
+      version bigint NOT NULL PRIMARY KEY,
+      dirty boolean NOT NULL DEFAULT FALSE
+    );
+  `);
+
+  debug('✅ Storage schema and schema_migrations table created.');
+}
+
+async function trackStorageTables(hasura: Hasura) {
+  debug('🔍 Tracking storage tables with customization...');
+
+  // Track buckets table with customization (hasura-storage compatible)
+  await hasura.v1({
+    type: 'pg_track_table',
+    args: {
+      source: 'default',
+      table: { schema: 'storage', name: 'buckets' },
+      configuration: {
+        custom_name: 'buckets',
+        custom_root_fields: {
+          select: 'buckets',
+          select_by_pk: 'bucket',
+          select_aggregate: 'bucketsAggregate',
+          insert: 'insertBuckets',
+          insert_one: 'insertBucket',
+          update: 'updateBuckets',
+          update_by_pk: 'updateBucket',
+          delete: 'deleteBuckets',
+          delete_by_pk: 'deleteBucket'
+        },
+        custom_column_names: {
+          id: 'id',
+          created_at: 'createdAt',
+          updated_at: 'updatedAt',
+          download_expiration: 'downloadExpiration',
+          min_upload_file_size: 'minUploadFileSize',
+          max_upload_file_size: 'maxUploadFileSize',
+          cache_control: 'cacheControl',
+          presigned_urls_enabled: 'presignedUrlsEnabled'
+        }
+      }
     }
   });
-  
-  // Admin permissions
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'select',
-    role: 'admin',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'insert',
-    role: 'admin',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'update',
-    role: 'admin',
-    filter: {},
-    columns: true
-  });
-  
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'files',
-    operation: 'delete',
-    role: 'admin',
-    filter: {}
-  });
-  
-  // File_versions table permissions
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'file_versions',
-    operation: 'select',
-    role: 'user',
-    filter: {
-      file: {
-        _or: [
-          { user_id: { _eq: 'X-Hasura-User-Id' } },
-          { is_public: { _eq: true } }
-        ]
+
+  // Track files table with customization (hasura-storage compatible)
+  await hasura.v1({
+    type: 'pg_track_table',
+    args: {
+      source: 'default',
+      table: { schema: 'storage', name: 'files' },
+      configuration: {
+        custom_name: 'files',
+        custom_root_fields: {
+          select: 'files',
+          select_by_pk: 'file',
+          select_aggregate: 'filesAggregate',
+          insert: 'insertFiles',
+          insert_one: 'insertFile',  // ← hasura-storage uses this
+          update: 'updateFiles', 
+          update_by_pk: 'updateFile', // ← hasura-storage uses this
+          delete: 'deleteFiles',
+          delete_by_pk: 'deleteFile'  // ← hasura-storage uses this
+        },
+        custom_column_names: {
+          id: 'id',
+          created_at: 'createdAt',
+          updated_at: 'updatedAt',
+          bucket_id: 'bucketId',
+          name: 'name',
+          size: 'size',
+          mime_type: 'mimeType',
+          etag: 'etag',
+          is_uploaded: 'isUploaded',
+          uploaded_by_user_id: 'uploadedByUserId',
+          metadata: 'metadata'
+        }
       }
-    },
-    columns: true
+    }
   });
-  
-  // Viruses table permissions (admin only)
-  await hasura.definePermission({
-    schema: 'public',
-    table: 'viruses',
-    operation: 'select',
-    role: 'admin',
-    filter: {},
-    columns: true
+
+  // Track virus table with customization (hasura-storage compatible)
+  await hasura.v1({
+    type: 'pg_track_table',
+    args: {
+      source: 'default',
+      table: { schema: 'storage', name: 'virus' },
+      configuration: {
+        custom_name: 'virus',
+        custom_root_fields: {
+          select: 'viruses',
+          select_by_pk: 'virus',
+          select_aggregate: 'virusesAggregate',
+          insert: 'insertViruses',
+          insert_one: 'insertVirus',  // ← hasura-storage uses this
+          update: 'updateViruses',
+          update_by_pk: 'updateVirus',
+          delete: 'deleteViruses',
+          delete_by_pk: 'deleteVirus'
+        },
+        custom_column_names: {
+          id: 'id',
+          created_at: 'createdAt',
+          updated_at: 'updatedAt',
+          file_id: 'fileId',
+          filename: 'filename',
+          virus: 'virus',
+          user_session: 'userSession'
+        }
+      }
+    }
   });
+
+  debug('✅ Storage tables tracked with customization.');
+}
+
+async function createStoragePermissions(hasura: Hasura) {
+  debug('🔐 Creating permissions for file operations (all roles - no restrictions for now)...');
+
+  // All roles that can access files: storage, user, anonymous
+  const roles = ['storage', 'user', 'anonymous'];
   
-  debug('✅ Storage permissions applied.');
+  for (const role of roles) {
+    // Permissions on storage.buckets
+    await hasura.definePermission({
+      schema: 'storage',
+      table: 'buckets',
+      operation: 'select',
+      role,
+      filter: {}, // No restrictions for now
+      columns: true
+    });
+
+    await hasura.definePermission({
+      schema: 'storage',
+      table: 'buckets',
+      operation: 'insert',
+      role,
+      filter: {},
+      columns: true
+    });
+
+    await hasura.definePermission({
+      schema: 'storage',
+      table: 'buckets',
+      operation: 'update',
+      role,
+      filter: {},
+      columns: true
+    });
+
+    // Permissions on storage.files
+    await hasura.definePermission({
+      schema: 'storage',
+      table: 'files',
+      operation: 'select',
+      role,
+      filter: {}, // No restrictions for now - all files accessible
+      columns: true
+    });
+
+    await hasura.definePermission({
+      schema: 'storage',
+      table: 'files',
+      operation: 'insert',
+      role,
+      filter: {},
+      columns: true
+    });
+
+    await hasura.definePermission({
+      schema: 'storage',
+      table: 'files',
+      operation: 'update',
+      role,
+      filter: {}, // No restrictions for now
+      columns: true
+    });
+
+    await hasura.definePermission({
+      schema: 'storage',
+      table: 'files',
+      operation: 'delete',
+      role,
+      filter: {}, // No restrictions for now
+      columns: true
+    });
+
+    // Permissions on storage.virus
+    await hasura.definePermission({
+      schema: 'storage',
+      table: 'virus',
+      operation: 'select',
+      role,
+      filter: {},
+      columns: true
+    });
+
+    await hasura.definePermission({
+      schema: 'storage',
+      table: 'virus',
+      operation: 'insert',
+      role,
+      filter: {},
+      columns: true
+    });
+  }
+
+  debug('✅ Open permissions created for all roles (storage, user, anonymous).');
+}
+
+async function createStorageRelationships(hasura: Hasura) {
+  debug('🔗 Creating storage relationships...');
+
+  // Object relationship: files -> bucket (files.bucket_id -> buckets.id)
+  await hasura.v1({
+    type: 'pg_create_object_relationship',
+    args: {
+      source: 'default',
+      table: { schema: 'storage', name: 'files' },
+      name: 'bucket',
+      using: {
+        foreign_key_constraint_on: ['bucket_id']
+      }
+    }
+  });
+
+  // Array relationship: buckets -> files (buckets.id <- files.bucket_id)
+  await hasura.v1({
+    type: 'pg_create_array_relationship',
+    args: {
+      source: 'default',
+      table: { schema: 'storage', name: 'buckets' },
+      name: 'files',
+      using: {
+        foreign_key_constraint_on: {
+          table: { schema: 'storage', name: 'files' },
+          columns: ['bucket_id']
+        }
+      }
+    }
+  });
+
+  // Object relationship: virus -> file (virus.file_id -> files.id)
+  await hasura.v1({
+    type: 'pg_create_object_relationship',
+    args: {
+      source: 'default',
+      table: { schema: 'storage', name: 'virus' },
+      name: 'file',
+      using: {
+        foreign_key_constraint_on: ['file_id']
+      }
+    }
+  });
+
+  debug('✅ Storage relationships created.');
 }
 
 export async function up(customHasura?: Hasura) {
@@ -524,10 +463,21 @@ export async function up(customHasura?: Hasura) {
     // Ensure default data source exists before any operations
     await hasura.ensureDefaultSource();
     
-    await applySQLSchema(hasura);
-    await trackTables(hasura);
-    await createRelationships(hasura);
-    await applyPermissions(hasura);
+    // Create schema and migrations table first
+    await createSchemaAndMigrations(hasura);
+    
+    // Apply migrations in strict order
+    await migration_000001_create_initial_tables(hasura);
+    await migration_000002_download_expiration_constraint(hasura);
+    await migration_000003_remove_auth_dependency(hasura);
+    await migration_000004_add_metadata_column(hasura);
+    await migration_000005_add_viruses_table(hasura);
+
+    // Apply Hasura metadata (track tables with customization and create relationships)
+    await trackStorageTables(hasura);
+    await createStorageRelationships(hasura);
+    await createStoragePermissions(hasura);
+
     debug('✨ Hasura Storage migration UP completed successfully!');
     return true;
   } catch (error) {
@@ -535,4 +485,4 @@ export async function up(customHasura?: Hasura) {
     debug('❌ Storage UP Migration failed.');
     return false;
   }
-} 
+}

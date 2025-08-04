@@ -1136,7 +1136,7 @@ describe('Aggregate Field Tests', () => {
                 }
             },
             { 
-                notification_messages_aggregate: {
+                files_aggregate: {
                     where: {
                         id: { _is_null: false }
                     },
@@ -1150,7 +1150,7 @@ describe('Aggregate Field Tests', () => {
     const result = generate(options);
 
     const expectedQuery = `
-      query QueryUsers($v1: notification_messages_bool_exp) {
+      query QueryUsers($v1: files_bool_exp) {
         users {
           id
           name
@@ -1159,7 +1159,7 @@ describe('Aggregate Field Tests', () => {
               count
             }
           }
-          notification_messages_aggregate(where: $v1) {
+          files_aggregate(where: $v1) {
             aggregate {
               count
             }

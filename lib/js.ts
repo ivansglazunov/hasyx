@@ -12,6 +12,7 @@ import Debug from './debug';
 // Import all exports from index.ts to provide as context
 import * as hasyxLib from './index';
 import { generateConsole } from './ai/console';
+import jsan from 'jsan';
 
 const debug = Debug('hasyx:js');
 
@@ -132,9 +133,10 @@ async function main() {
   if (evalScript) {
     debug(`Executing script string: ${evalScript}`);
     try {
-      const result = await exec.exec(evalScript);
-      if (result !== undefined) {
-        console.log('📤 Result:', result);
+      const { result: execResult, logs } = await exec.exec(evalScript);
+      console.log('📤 Result:', jsan.stringify(execResult, null, 2));
+      if (logs && logs.length) {
+        console.log('📝 Logs:', jsan.stringify(logs, null, 2));
       }
       process.exit(0);
     } catch (error) {
@@ -150,9 +152,10 @@ async function main() {
     }
     try {
       const fileContent = await fs.readFile(fullPath, 'utf-8');
-      const result = await exec.exec(fileContent);
-      if (result !== undefined) {
-        console.log('📤 Result:', result);
+      const { result: execResult, logs } = await exec.exec(fileContent);
+      console.log('📤 Result:', jsan.stringify(execResult, null, 2));
+      if (logs && logs.length) {
+        console.log('📝 Logs:', jsan.stringify(logs, null, 2));
       }
       process.exit(0);
     } catch (error) {
@@ -186,7 +189,12 @@ async function main() {
         }
         
         const result = await exec.exec(cleanCmd);
-        callback(null, result);
+        if (result) {
+          const formatted = jsan.stringify(result, null, 2);
+          callback(null, formatted);
+        } else {
+          callback(null, result);
+        }
       } catch (error) {
         callback(error);
       }
