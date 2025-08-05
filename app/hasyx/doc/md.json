@@ -6479,6 +6479,49 @@
       "level": 1
     },
     {
+      "title": "Files Components",
+      "url": "/hasyx/doc/README",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Компоненты",
+          "url": "/hasyx/doc/README#",
+          "level": 2
+        },
+        {
+          "title": "Примеры использования",
+          "url": "/hasyx/doc/README#",
+          "level": 2
+        },
+        {
+          "title": "Простая кнопка загрузки",
+          "url": "/hasyx/doc/README#",
+          "level": 3
+        },
+        {
+          "title": "Кастомная зона drop & drop",
+          "url": "/hasyx/doc/README#drop-drop",
+          "level": 3
+        },
+        {
+          "title": "Загрузка только изображений",
+          "url": "/hasyx/doc/README#",
+          "level": 3
+        },
+        {
+          "title": "Особенности",
+          "url": "/hasyx/doc/README#",
+          "level": 2
+        },
+        {
+          "title": "Тестирование",
+          "url": "/hasyx/doc/README#",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Sidebar Components",
       "url": "/hasyx/doc/README",
       "collapse": true,
@@ -6610,5 +6653,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-08-04T07:06:26.628Z"
+  "lastUpdated": "2025-08-05T04:33:42.277Z"
 }

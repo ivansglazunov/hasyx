@@ -95,6 +95,7 @@ interface DefinePermissionOptions {
   check?: any; // For insert operations
   aggregate?: boolean;
   columns?: boolean | string[];
+  set?: Record<string, string>; // Column presets for insert operations
 }
 
 interface DeletePermissionOptions {
@@ -796,7 +797,7 @@ export class Hasura {
   }
 
   async definePermission(options: DefinePermissionOptions): Promise<any> {
-    const { schema, table, operation, role, filter, check, aggregate = false, columns = true } = options;
+    const { schema, table, operation, role, filter, check, aggregate = false, columns = true, set } = options;
     
     if (Array.isArray(role)) {
       debug(`🔐 Defining ${operation} permission for multiple roles in ${schema}.${table}: ${role.join(', ')}`);
@@ -834,6 +835,10 @@ export class Hasura {
     // For insert operations, use 'check' instead of 'filter'
     if (operation === 'insert') {
       permissionArgs.permission.check = filter;
+      // Add column presets if provided
+      if (set) {
+        permissionArgs.permission.set = set;
+      }
     } else {
       permissionArgs.permission.filter = filter;
     }

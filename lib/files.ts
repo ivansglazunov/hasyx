@@ -540,7 +540,7 @@ export async function updateFile(
     
     return {
       success: true,
-      file: updatedFile
+      file: updatedFile as FileInfo
     };
     
   } catch (error: any) {

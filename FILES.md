@@ -85,7 +85,7 @@ STORAGE_S3_ENDPOINT=http://hasyx-minio:9000
 STORAGE_S3_FORCE_PATH_STYLE=true
 
 # Hasura storage endpoint
-HASURA_STORAGE_URL=http://hasura-storage:8000
+HASURA_STORAGE_URL=http://localhost:3001
 NEXT_PUBLIC_HASURA_STORAGE_URL=http://localhost:3001
 
 # JWT configuration

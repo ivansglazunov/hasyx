@@ -461,14 +461,18 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 ├── components/
 │   ├── sidebar/
 │   │   └── ✨ layout.tsx        # Sidebar layout component
-│   └── entities/
-│       └── ✨ default.tsx       # Default entity component
+│   ├── entities/
+│   │   └── ✨ default.tsx       # Default entity component
+│   ├── ✨ multi-select-hasyx.tsx # MultiSelect component for hasyx integration
+│   └── ✨ room.tsx              # Room component for messaging interface
 ├── lib/
 │   ├── ✨ entities.tsx          # Entity definitions (from entities.template)
 │   ├── ✨ ask.ts               # AI assistant integration (from ask.template)
 │   ├── ✨ debug.ts             # Debug utilities (from debug.template)
 │   ├── ✨ cli.ts               # CLI utilities (from cli.template)
-│   └── ✨ github-telegram-bot.ts # GitHub→Telegram bot integration (from github-telegram-bot.template)
+│   ├── ✨ github-telegram-bot.ts # GitHub→Telegram bot integration (from github-telegram-bot.template)
+│   ├── ✨ messaging.tsx         # Messaging main component
+│   └── ✨ messaging-client.tsx  # Messaging client component
 ├── migrations/
 │   ├── 1746660891582-hasyx-users/
 │   │   ├── ✨ up.ts
@@ -507,6 +511,15 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │   │   │   └── ✨ page.tsx      # Visual GraphQL query builder page
 │   │   ├── validation/
 │   │   │   └── ✨ page.tsx      # Form validation testing page
+│   │   ├── files/
+│   │   │   └── ✨ page.tsx      # Files management page
+│   │   ├── messaging/
+│   │   │   └── ✨ page.tsx      # Messaging interface page
+│   │   ├── roadmap/
+│   │   │   ├── ✨ page.tsx      # Development roadmap page
+│   │   │   └── ✨ client.tsx    # Roadmap client component
+│   │   ├── telegram-miniapp/
+│   │   │   └── ✨ page.tsx      # Telegram Mini App page
 │   │   └── doc/
 │   │       ├── ✨ page.tsx      # Documentation index page
 │   │       └── [filename]/

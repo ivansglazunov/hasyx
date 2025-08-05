@@ -58,6 +58,10 @@ export const sidebar: SidebarData = {
           title: "📁 Files",
           url: "/hasyx/files",
         },
+        {
+          title: "💬 Messaging",
+          url: "/hasyx/messaging",
+        },
       ],
     },
     // Add documentation section with collapse functionality

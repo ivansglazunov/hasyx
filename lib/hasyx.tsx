@@ -77,7 +77,7 @@ export class Hasyx {
     return this._user?.id || null;
   }
 
-  testAuthorize(userId: string, options: TestAuthorizeOptions): Promise<{ axios: AxiosInstance, apollo: HasyxApolloClient, hasyx: Hasyx }> {
+  testAuthorize(userId: string, options: TestAuthorizeOptions): Promise<{ axios: AxiosInstance, apollo: HasyxApolloClient, hasyx: Hasyx, jwt: string }> {
     return testAuthorize(userId, {
       url: this.apolloClient._options.url,
       ws: this.apolloClient._options.ws,
@@ -171,7 +171,10 @@ export class Hasyx {
    * @returns Promise resolving with the mutation result data. For `_by_pk` updates, returns the updated object. For bulk updates (using `where`), returns the full `{ affected_rows, returning }` object.
    * @throws ApolloError if the mutation fails or returns GraphQL errors.
    */
-  async update<TData = any>(options: HasyxOptions): Promise<TData> {
+  async update<TData = any>(options: HasyxOptions): Promise<TData | {
+    returning: TData[];
+    affected_rows: number;
+  }> {
     const { role, ...genOptions } = options;
     debug('Executing update with options:', genOptions, 'Role:', role);
     const generated: GenerateResult = this.generate({ ...genOptions, operation: 'update' });
@@ -253,7 +256,10 @@ export class Hasyx {
    * @returns Promise resolving with the upserted record data.
    * @throws ApolloError if the operation fails.
    */
-  async upsert<TData = any>(options: HasyxOptions): Promise<TData> {
+  async upsert<TData = any>(options: HasyxOptions): Promise<TData | {
+    returning: TData[];
+    affected_rows: number;
+  }> {
     const { role, on_conflict, ...genOptions } = options;
     debug('Executing upsert with options:', genOptions, 'on_conflict:', on_conflict, 'Role:', role);
 

@@ -78,7 +78,7 @@ export async function testAuthorize(userId: string, {
 }: TestAuthorizeOptions = {
   schema: hasyxSchema,
   ws: false,
-}): Promise<{ axios: AxiosInstance, apollo: HasyxApolloClient, hasyx: Hasyx }> {
+}): Promise<{ axios: AxiosInstance, apollo: HasyxApolloClient, hasyx: Hasyx, jwt: string }> {
   const generate = Generator(schema);
 
   const testAuthorizeDebug = Debug('auth:testAuthorize');
@@ -180,5 +180,5 @@ export async function testAuthorize(userId: string, {
   const hasyxInstance = new Hasyx(apolloInstance, generate);
   testAuthorizeDebug(`Hasyx instance created.`);
 
-  return { axios: axiosInstance, apollo: apolloInstance, hasyx: hasyxInstance };
+  return { axios: axiosInstance, apollo: apolloInstance, hasyx: hasyxInstance, jwt };
 }

@@ -119,6 +119,12 @@ interface MultiSelectProps
    * Optional, can be used to add custom styles.
    */
   className?: string;
+
+  /**
+   * Callback function triggered when search input changes.
+   * Receives the current search term.
+   */
+  onSearch?: (searchTerm: string) => void;
 }
 
 export const MultiSelect = React.forwardRef<
@@ -137,6 +143,7 @@ export const MultiSelect = React.forwardRef<
       modalPopover = false,
       asChild = false,
       className,
+      onSearch,
       ...props
     },
     ref
@@ -156,6 +163,12 @@ export const MultiSelect = React.forwardRef<
         newSelectedValues.pop();
         setSelectedValues(newSelectedValues);
         onValueChange(newSelectedValues);
+      }
+    };
+
+    const handleSearchChange = (value: string) => {
+      if (onSearch) {
+        onSearch(value);
       }
     };
 
@@ -298,6 +311,7 @@ export const MultiSelect = React.forwardRef<
             <CommandInput
               placeholder="Search..."
               onKeyDown={handleInputKeyDown}
+              onValueChange={handleSearchChange}
             />
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>

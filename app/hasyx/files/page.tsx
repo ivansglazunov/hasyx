@@ -1,10 +1,15 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import sidebar from "@/app/sidebar";
 import { SidebarLayout } from "hasyx/components/sidebar/layout";
-import { useQuery, useHasyx, useSubscription } from 'hasyx';
+import { useSubscription, useHasyx } from 'hasyx';
 import { toast } from 'sonner';
+import { Files, FilesZone, useFilesUpload, useFilesStore } from 'hasyx/components/files';
+import { Button } from 'hasyx/components/ui/button';
+import { Status } from 'hasyx/components/hasyx/status';
+import { useChoose } from 'hasyx/hooks/choose';
+import { Checkbox } from 'hasyx/components/ui/checkbox';
 
 // Types for files
 interface File {
@@ -23,11 +28,10 @@ type ViewMode = 'grid' | 'list' | 'table';
 
 export default function FilesPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [dragActive, setDragActive] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { handleFilesSelected, handleUploadComplete, handleUploadError } = useFilesUpload();
+  const { choose, setChoose, toggleChoose, clearChoose, isChosen } = useChoose();
   const hasyx = useHasyx();
+  const filesStore = useFilesStore();
 
   // Use hasura-storage files table
   const { data: files = [], loading, error } = useSubscription({
@@ -41,78 +45,6 @@ export default function FilesPage() {
   });
 
   console.log(files);
-
-  // File upload handler
-  const handleFileUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-
-    setIsUploading(true);
-    setUploadProgress(0);
-
-    try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('isPublic', 'false');
-
-        const response = await fetch('/api/files', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error(`Upload failed for ${file.name}`);
-        }
-
-        setUploadProgress(((i + 1) / files.length) * 100);
-      }
-
-      // Clear input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      
-      // Refresh file list
-      toast.success(`Successfully uploaded ${files.length} file${files.length !== 1 ? 's' : ''}`);
-    } catch (error) {
-      console.error('Upload error:', error);
-      toast.error('Upload failed');
-    } finally {
-      setIsUploading(false);
-      setUploadProgress(0);
-    }
-  };
-
-  // Drag and drop handlers
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDragIn = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-      setDragActive(true);
-    }
-  };
-
-  const handleDragOut = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFileUpload(e.dataTransfer.files);
-    }
-  };
 
   // Function to format file size
   const formatFileSize = (bytes: number): string => {
@@ -169,31 +101,47 @@ export default function FilesPage() {
     }
   };
 
-  if (loading) return (
-    <SidebarLayout sidebarData={sidebar} breadcrumb={[
-      { title: 'Hasyx', link: '/' },
-      { title: 'Files', link: '/hasyx/files' }
-    ]}>
-      <div className="flex flex-1 flex-col gap-4 p-4">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+  // Function to delete selected files
+  const handleDeleteSelected = async () => {
+    if (!choose || choose.length === 0) return;
+    
+    if (!confirm(`Are you sure you want to delete ${choose.length} selected file${choose.length !== 1 ? 's' : ''}?`)) return;
+
+    try {
+      await hasyx.delete({ 
+        table: 'deleteFiles',
+        where: { id: { _in: choose } }
+      });
+      
+      toast.success(`Successfully deleted ${choose.length} file${choose.length !== 1 ? 's' : ''}`);
+      clearChoose(); // Очищаем выбор после удаления
+    } catch (error) {
+      console.error('Delete selected files error:', error);
+      toast.error('Failed to delete selected files');
+    }
+  };
+
+  // Function to select all files
+  const handleSelectAll = () => {
+    const allFileIds = files.map(file => file.id);
+    setChoose(allFileIds);
+  };
+
+  // Показываем ошибку только если она есть и данные не загружены
+  if (error && !files.length) {
+    return (
+      <SidebarLayout sidebarData={sidebar} breadcrumb={[
+        { title: 'Hasyx', link: '/' },
+        { title: 'Files', link: '/hasyx/files' }
+      ]}>
+        <div className="flex flex-1 flex-col gap-4 p-4">
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+            <div className="text-destructive">Error loading files: {error.message}</div>
+          </div>
         </div>
-      </div>
-    </SidebarLayout>
-  );
-  
-  if (error) return (
-    <SidebarLayout sidebarData={sidebar} breadcrumb={[
-      { title: 'Hasyx', link: '/' },
-      { title: 'Files', link: '/hasyx/files' }
-    ]}>
-      <div className="flex flex-1 flex-col gap-4 p-4">
-        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-          <div className="text-destructive">Error loading files: {error.message}</div>
-        </div>
-      </div>
-    </SidebarLayout>
-  );
+      </SidebarLayout>
+    );
+  }
 
   return (
     <SidebarLayout sidebarData={sidebar} breadcrumb={[
@@ -208,104 +156,154 @@ export default function FilesPage() {
           </p>
         </div>
         
-        {/* Control Panel */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 bg-card p-6 rounded-xl shadow-sm border border-border">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-4 sm:mb-0">
-            {/* Upload Button */}
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-primary-foreground px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
-            >
-              <span>{isUploading ? '⏳' : '📤'}</span>
-              <span>{isUploading ? 'Uploading...' : 'Upload Files'}</span>
-            </button>
-            
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              className="hidden"
-              onChange={(e) => handleFileUpload(e.target.files)}
-              disabled={isUploading}
+        {/* Upload Zone */}
+        <Files
+          onFilesSelected={handleFilesSelected}
+          onUploadComplete={handleUploadComplete}
+          onUploadError={handleUploadError}
+          multiple
+          className="mb-6 bg-card p-8 rounded-xl shadow-sm border-2 border-dashed border-border hover:border-primary transition-colors cursor-pointer"
+          dragActiveClassName="border-primary bg-primary/10"
+        >
+          <div className="text-center space-y-4">
+            <div className="text-6xl">📁</div>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-semibold">Drop files here</h2>
+              <p className="text-muted-foreground">or click to select files</p>
+            </div>
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2 mx-auto">
+              <span>📤</span>
+              <span>Upload Files</span>
+            </Button>
+          </div>
+          
+          {/* FilesZone inside the upload area */}
+          <div className="mt-6">
+            <FilesZone 
+              onRemove={(id) => filesStore.removeFile(id)}
+              renderRemoveButton={(id) => (
+                <button
+                  onClick={e => { e.stopPropagation(); filesStore.removeFile(id); }}
+                  className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                  title="Remove file"
+                  type="button"
+                >
+                  ✕
+                </button>
+              )}
             />
-
-            {/* Drag & Drop Zone */}
-            <div
-              className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
-                dragActive 
-                  ? 'border-primary bg-primary/10' 
-                  : 'border-border hover:border-border/80'
-              }`}
-              onDragEnter={handleDragIn}
-              onDragLeave={handleDragOut}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-            >
-              <div className="text-muted-foreground">
-                {dragActive ? 'Drop files here' : 'Drag & drop files here'}
-              </div>
-            </div>
           </div>
+        </Files>
 
-          {/* Upload Progress */}
-          {isUploading && (
-            <div className="w-full sm:w-64">
-              <div className="bg-muted rounded-full h-2">
-                <div 
-                  className="bg-primary h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
+        {/* File Counter and Controls */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-sm text-muted-foreground bg-muted px-4 py-2 rounded-lg">
+            {loading ? (
+              <div className="flex items-center space-x-2">
+                <Status status="connecting" label="Loading..." />
               </div>
-              <div className="text-sm text-muted-foreground mt-1">{Math.round(uploadProgress)}%</div>
+            ) : (
+              `${files.length} file${files.length !== 1 ? 's' : ''}`
+            )}
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            {/* Choose Controls */}
+            {choose ? (
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={handleDeleteSelected}
+                >
+                  Delete
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleSelectAll}
+                >
+                  All
+                </Button>
+                <span className="text-sm font-medium text-primary">
+                  {choose.length} choosed
+                </span>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={clearChoose}
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setChoose([])}
+              >
+                Choose
+              </Button>
+            )}
+            
+            {/* View Mode Toggle */}
+            <div className="flex items-center space-x-2 bg-muted rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'grid' 
+                    ? 'bg-background text-primary shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                🖼️ Grid
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'list' 
+                    ? 'bg-background text-primary shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                📋 List
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'table' 
+                    ? 'bg-background text-primary shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                📊 Table
+              </button>
             </div>
-          )}
-
-          {/* View Mode Toggle */}
-          <div className="flex items-center space-x-2 bg-muted rounded-lg p-1">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                viewMode === 'grid' 
-                  ? 'bg-background text-primary shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              🖼️ Grid
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                viewMode === 'list' 
-                  ? 'bg-background text-primary shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              📋 List
-            </button>
-            <button
-              onClick={() => setViewMode('table')}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                viewMode === 'table' 
-                  ? 'bg-background text-primary shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              📊 Table
-            </button>
           </div>
         </div>
 
-        {/* File Counter */}
-        <div className="mb-4 text-sm text-muted-foreground bg-muted px-4 py-2 rounded-lg inline-block">
-          {files.length} file{files.length !== 1 ? 's' : ''}
-        </div>
+        {/* Loading indicator for files */}
+        {loading && (
+          <div className="flex items-center justify-center py-8">
+            <Status status="connecting" label="Loading files..." />
+          </div>
+        )}
 
         {/* Content based on view mode */}
-        {viewMode === 'grid' && (
+        {!loading && viewMode === 'grid' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {files.map((file) => (
-              <div key={file.id} className="bg-card rounded-xl shadow-sm border border-border p-6 hover:shadow-md transition-shadow duration-200">
+              <div key={file.id} className="bg-card rounded-xl shadow-sm border border-border p-6 hover:shadow-md transition-shadow duration-200 relative">
+                {/* Checkbox for selection */}
+                {choose && (
+                  <div className="absolute top-2 left-2 z-10">
+                    <Checkbox
+                      checked={isChosen(file.id)}
+                      onCheckedChange={() => toggleChoose(file.id)}
+                    />
+                  </div>
+                )}
+                
                 <div className="text-center">
                   {file.mimeType.startsWith('image/') ? (
                     <div className="mb-4">
@@ -368,12 +366,20 @@ export default function FilesPage() {
           </div>
         )}
 
-              {viewMode === 'list' && (
+        {!loading && viewMode === 'list' && (
           <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
           {files.map((file) => (
               <div key={file.id} className="p-6 border-b border-border/50 last:border-b-0 hover:bg-muted/50 transition-colors">
               <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
+                    {/* Checkbox for selection */}
+                    {choose && (
+                      <Checkbox
+                        checked={isChosen(file.id)}
+                        onCheckedChange={() => toggleChoose(file.id)}
+                      />
+                    )}
+                    
                     {file.mimeType.startsWith('image/') ? (
                       <div className="w-12 h-12 flex-shrink-0">
                         <img 
@@ -425,39 +431,52 @@ export default function FilesPage() {
             </div>
           ))}
         </div>
-      )}
+              )}
 
-              {viewMode === 'table' && (
+        {!loading && viewMode === 'table' && (
           <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
           <table className="w-full">
             <thead className="bg-muted/50">
               <tr>
+                {choose && (
                   <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Select
+                  </th>
+                )}
+                <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   File
                 </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Size
                 </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Type
                 </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Created
                 </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Status
                 </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Actions
-                  </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
-              <tbody className="bg-card divide-y divide-border/50">
+            <tbody className="bg-card divide-y divide-border/50">
               {files.map((file) => (
-                  <tr key={file.id} className="hover:bg-muted/50 transition-colors">
+                <tr key={file.id} className="hover:bg-muted/50 transition-colors">
+                  {choose && (
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Checkbox
+                        checked={isChosen(file.id)}
+                        onCheckedChange={() => toggleChoose(file.id)}
+                      />
+                    </td>
+                  )}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                        <span className="text-2xl mr-3">{getFileIcon(file.mimeType)}</span>
+                      <span className="text-2xl mr-3">{getFileIcon(file.mimeType)}</span>
                       <div className="text-sm font-medium text-foreground">{file.name}</div>
                     </div>
                   </td>
@@ -479,23 +498,23 @@ export default function FilesPage() {
                       {file.isUploaded ? 'Uploaded' : 'Processing'}
                     </span>
                   </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-3">
-                        <a
-                          href={`/api/files/${file.id}`}
-                          download={file.name}
-                          className="text-primary hover:text-primary/80"
-                        >
-                          📥 Download
-                        </a>
-                        <button
-                          onClick={() => handleDelete(file.id)}
-                          className="text-destructive hover:text-destructive/80"
-                        >
-                          🗑️ Delete
-                        </button>
-                      </div>
-                    </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-3">
+                      <a
+                        href={`/api/files/${file.id}`}
+                        download={file.name}
+                        className="text-primary hover:text-primary/80"
+                      >
+                        📥 Download
+                      </a>
+                      <button
+                        onClick={() => handleDelete(file.id)}
+                        className="text-destructive hover:text-destructive/80"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -503,19 +522,7 @@ export default function FilesPage() {
         </div>
       )}
 
-              {files.length === 0 && (
-          <div className="text-center py-16 bg-card rounded-xl shadow-sm border border-border">
-            <div className="text-8xl mb-6">📁</div>
-            <div className="text-2xl text-foreground mb-4">No files yet</div>
-            <div className="text-muted-foreground mb-6">Upload your first file to get started</div>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-medium transition-colors duration-200"
-            >
-              📤 Upload Files
-            </button>
-        </div>
-      )}
+
       </div>
     </SidebarLayout>
   );

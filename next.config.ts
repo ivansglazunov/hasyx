@@ -95,6 +95,19 @@ const config: NextConfig = {
 
   // Prevent double mount unmount
   reactStrictMode: false,
+  
+  // Configure API routes for file uploads
+  experimental: {
+    serverComponentsExternalPackages: [],
+  },
+  
+  // Increase body size limit for file uploads
+  api: {
+    bodyParser: {
+      sizeLimit: '50mb',
+    },
+    responseLimit: '50mb',
+  },
 };
 
 export default withNextIntl(config);
