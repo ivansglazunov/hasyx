@@ -366,6 +366,20 @@ async function updateEnvironmentVariables(envPath: string, config: StorageConfig
 }
 
 /**
+ * Get package name from package.json in current directory
+ */
+async function getPackageName(): Promise<string> {
+  try {
+    const packageJsonPath = path.join(process.cwd(), 'package.json');
+    const packageJson = await fs.readJson(packageJsonPath);
+    return packageJson.name || 'hasyx';
+  } catch (error) {
+    debug('Failed to read package.json:', error);
+    return 'hasyx';
+  }
+}
+
+/**
  * Create docker-compose.yml file
  */
 async function createDockerCompose(): Promise<void> {
@@ -378,6 +392,10 @@ async function createDockerCompose(): Promise<void> {
     console.log('⏩ docker-compose.yml already exists, skipping creation');
     return;
   }
+
+  // Get package name from package.json
+  const packageName = await getPackageName();
+  const dockerUsername = process.env.DOCKER_USERNAME || 'ivansglazunov';
 
   const dockerComposeContent = `version: "3.8"
 services:
@@ -495,15 +513,13 @@ services:
       minio:
         condition: service_healthy
   hasyx:
-    image: node:18-alpine
+    image: ${dockerUsername}/${packageName}:latest
     container_name: hasyx-app
     restart: unless-stopped
     ports:
-      - 3000:3000
-    volumes:
-      - ./:/app
-      - /app/node_modules
-    working_dir: /app
+      - ${process.env.PORT || '3000'}:${process.env.PORT || '3000'}
+    env_file:
+      - .env
     command: npm run dev
     environment:
       TEST_TOKEN: ${process.env.TEST_TOKEN || 'your-test-token'}
@@ -563,7 +579,7 @@ services:
       NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: ${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || ''}
       JEST_LOCAL: ${process.env.JEST_LOCAL || '0'}
       OPENROUTER_API_KEY: ${process.env.OPENROUTER_API_KEY || ''}
-      PORT: ${process.env.PORT || '3004'}
+      PORT: ${process.env.PORT || '3000'}
       HOST: ${process.env.HOST || '127.0.0.1'}
       HASYX_DNS_DOMAIN: ${process.env.HASYX_DNS_DOMAIN || ''}
       CLOUDFLARE_API_TOKEN: ${process.env.CLOUDFLARE_API_TOKEN || ''}
@@ -602,7 +618,7 @@ services:
       STORAGE_LOG_LEVEL: ${process.env.STORAGE_LOG_LEVEL || 'info'}
       STORAGE_LOG_FORMAT: ${process.env.STORAGE_LOG_FORMAT || 'json'}
       HASURA_STORAGE_URL: ${process.env.HASURA_STORAGE_URL || 'http://hasura-storage:8000'}
-      NEXT_PUBLIC_HASURA_STORAGE_URL: ${process.env.NEXT_PUBLIC_HASURA_STORAGE_URL || 'http://localhost:3001'}
+      NEXT_PUBLIC_HASURA_STORAGE_URL: ${process.env.NEXT_PUBLIC_HASURA_STORAGE_URL || 'http://hasura-storage:8000'}
       HASURA_GRAPHQL_ENDPOINT: ${process.env.HASURA_GRAPHQL_ENDPOINT || 'http://graphql-engine:8080/v1/graphql'}
     env_file:
       - .env

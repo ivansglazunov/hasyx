@@ -37,9 +37,13 @@ export async function upMessagingSchema(hasura: Hasura) {
   const msgColumns: Array<[string, ColumnType, string | undefined]> = [
     ['user_id', ColumnType.UUID, undefined],
     ['value', ColumnType.TEXT, undefined],
+    ['i', ColumnType.BIGINT, "NOT NULL DEFAULT nextval('messages_i_seq')"],
     ['created_at', ColumnType.BIGINT, "NOT NULL DEFAULT (EXTRACT(EPOCH FROM NOW())*1000)::bigint"],
     ['updated_at', ColumnType.BIGINT, "NOT NULL DEFAULT (EXTRACT(EPOCH FROM NOW())*1000)::bigint"],
   ];
+  // Create sequence for messages i column
+  await hasura.sql(`CREATE SEQUENCE IF NOT EXISTS public.messages_i_seq;`);
+
   for (const [name, type, postfix] of msgColumns) {
     await hasura.defineColumn({ schema: 'public', table: 'messages', name, type, postfix });
   }
@@ -58,10 +62,31 @@ export async function upMessagingSchema(hasura: Hasura) {
     await hasura.defineColumn({ schema: 'public', table: 'replies', name, type, postfix });
   }
 
+  /* ------------------------ message_reads ------------------------ */
+  await hasura.defineTable({ schema: 'public', table: 'message_reads', id: 'id', type: ColumnType.UUID });
+
+  const readColumns: Array<[string, ColumnType, string | undefined]> = [
+    ['user_id', ColumnType.UUID, 'NOT NULL'],
+    ['room_id', ColumnType.UUID, 'NOT NULL'],
+    ['last_i', ColumnType.BIGINT, 'NOT NULL DEFAULT 0'],
+    ['created_at', ColumnType.BIGINT, "NOT NULL DEFAULT (EXTRACT(EPOCH FROM NOW())*1000)::bigint"],
+    ['updated_at', ColumnType.BIGINT, "NOT NULL DEFAULT (EXTRACT(EPOCH FROM NOW())*1000)::bigint"],
+  ];
+  for (const [name, type, postfix] of readColumns) {
+    await hasura.defineColumn({ schema: 'public', table: 'message_reads', name, type, postfix });
+  }
+
+  // Add unique constraint for user_id + room_id
+  await hasura.sql(`ALTER TABLE public.message_reads ADD CONSTRAINT unique_user_room UNIQUE (user_id, room_id);`);
+
   // Foreign keys -------------------------------------------------------------
   await hasura.sql(`ALTER TABLE public.replies
     ADD CONSTRAINT fk_replies_room FOREIGN KEY (room_id) REFERENCES public.rooms(id) ON DELETE CASCADE,
     ADD CONSTRAINT fk_replies_message FOREIGN KEY (message_id) REFERENCES public.messages(id) ON DELETE CASCADE;
+  `);
+
+  await hasura.sql(`ALTER TABLE public.message_reads
+    ADD CONSTRAINT fk_message_reads_room FOREIGN KEY (room_id) REFERENCES public.rooms(id) ON DELETE CASCADE;
   `);
 
   /* ---------------- helper functions & triggers ---------------- */
@@ -79,7 +104,7 @@ BEGIN
 END;$$`,
   });
 
-  for (const tbl of ['rooms', 'messages']) {
+  for (const tbl of ['rooms', 'messages', 'message_reads']) {
     await hasura.defineTrigger({
       schema: 'public',
       table: tbl,
@@ -165,8 +190,44 @@ END;$$`,
     replace: true,
   });
 
+  // User ID trigger for message_reads
+  await hasura.defineFunction({
+    schema: 'public',
+    name: 'set_message_reads_user_id_trigger',
+    replace: true,
+    language: 'plpgsql',
+    definition: `()
+RETURNS TRIGGER AS $$
+DECLARE
+  session_vars json;
+  user_id text;
+BEGIN
+  -- Get session variables from hasura.user
+  session_vars := current_setting('hasura.user', true)::json;
+  
+  -- Extract user_id from session variables
+  user_id := session_vars ->> 'x-hasura-user-id';
+  
+  -- If operation is performed by a user (has session variables), set user_id
+  IF user_id IS NOT NULL AND user_id != '' THEN
+    NEW.user_id = user_id::uuid;
+  END IF;
+  
+  RETURN NEW;
+END;$$`,
+  });
+  await hasura.defineTrigger({
+    schema: 'public',
+    table: 'message_reads',
+    name: 'set_message_reads_user_id',
+    timing: 'BEFORE',
+    event: 'INSERT',
+    function_name: 'public.set_message_reads_user_id_trigger',
+    replace: true,
+  });
+
   // Track tables
-  for (const tbl of ['rooms', 'messages', 'replies']) {
+  for (const tbl of ['rooms', 'messages', 'replies', 'message_reads']) {
     await hasura.trackTable({ schema: 'public', table: tbl });
   }
 
@@ -403,6 +464,37 @@ END;$$`,
     role: 'user',
     filter: { id: { _eq: '00000000-0000-0000-0000-000000000000' } },
     columns: [],
+  });
+
+  /* -------------------- message_reads permissions --------------------------- */
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'message_reads',
+    operation: 'select',
+    role: 'user',
+    filter: { user_id: { _eq: 'X-Hasura-User-Id' } },
+    columns: true,
+    aggregate: true,
+  });
+
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'message_reads',
+    operation: 'insert',
+    role: 'user',
+    filter: {},
+    check: {},
+    columns: ['id', 'room_id', 'last_i'],
+    set: { user_id: 'X-Hasura-User-Id' },
+  });
+
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'message_reads',
+    operation: 'update',
+    role: 'user',
+    filter: { user_id: { _eq: 'X-Hasura-User-Id' } },
+    columns: ['last_i'],
   });
 
   debug('✅ Base tables created with helper triggers and tracked.');

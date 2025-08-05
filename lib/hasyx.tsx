@@ -256,10 +256,7 @@ export class Hasyx {
    * @returns Promise resolving with the upserted record data.
    * @throws ApolloError if the operation fails.
    */
-  async upsert<TData = any>(options: HasyxOptions): Promise<TData | {
-    returning: TData[];
-    affected_rows: number;
-  }> {
+  async upsert<TData = any>(options: HasyxOptions): Promise<TData> {
     const { role, on_conflict, ...genOptions } = options;
     debug('Executing upsert with options:', genOptions, 'on_conflict:', on_conflict, 'Role:', role);
 
@@ -351,7 +348,7 @@ export class Hasyx {
           // Check if update actually affected any rows
           if (updateResult) {
             debug('Fallback upsert: UPDATE successful');
-            return updateResult;
+            return (updateResult as any)?.returning[0] as TData;
           } else {
             debug('Fallback upsert: UPDATE affected 0 rows, trying INSERT');
             // If no rows were updated, try INSERT
@@ -594,6 +591,174 @@ export class Hasyx {
       });
       return () => {
         debug('Unsubscribing from Apollo subscription.');
+
+        if (emitTimeoutId) {
+          clearTimeout(emitTimeoutId);
+          emitTimeoutId = null;
+        }
+        apolloSubscription.unsubscribe();
+      };
+    });
+  }
+
+  /**
+   * Creates a streaming subscription using Hasura's streaming API.
+   * This method is specifically for streaming subscriptions that use cursor-based pagination.
+   * @param options - Configuration options for the stream operation
+   * @returns Observable that emits stream data
+   */
+  stream<TData = any, TVariables extends OperationVariables = OperationVariables>(
+    options: HasyxOptions
+  ): Observable<TData> {
+    const { role, pollingInterval, ws, ...genOptions } = options;
+    const interval = pollingInterval || DEFAULT_POLLING_INTERVAL;
+    const useWebSockets = ws !== undefined ? ws : !+(process.env.NEXT_PUBLIC_WS || '1') === false;
+
+    debug(`Initiating streaming subscription with options:`,
+      genOptions, 'Role:', role, `Explicit WS: ${ws}`, `Effective WS: ${useWebSockets}`,
+      !useWebSockets ? `Polling interval: ${interval}ms` : '');
+
+    debug(`Hasyx.stream: useWebSockets = ${useWebSockets}, explicit ws = ${ws}, NEXT_PUBLIC_WS = ${process.env.NEXT_PUBLIC_WS}`);
+    if (process.env.NODE_ENV === 'test' && ws === true) {
+      debug("Hasyx.stream: FORCING WebSocket mode for tests");
+    }
+    if (useWebSockets && !this.apolloClient._options.ws) {
+      debug("WebSocket is requested, but the Apollo client was not created with ws: true. Falling back to polling mode.");
+
+      return this._streamWithPolling<TData>({ role, ...genOptions }, interval);
+    }
+    if (!useWebSockets) {
+      debug('Creating polling-based streaming subscription Observable');
+      debug("Hasyx.stream: Using polling-based streaming subscription (HTTP mode)");
+
+      return this._streamWithPolling<TData>({ role, ...genOptions }, interval);
+    }
+    return this._streamWithWebSocket<TData, TVariables>({ role, ...genOptions });
+  }
+
+  private _streamWithPolling<TData>(options: HasyxOptions & { role?: string }, interval: number): Observable<TData> {
+    const { role, ...genOptions } = options;
+    debug('Creating polling-based streaming subscription Observable');
+    debug("Hasyx._streamWithPolling: Using HTTP polling for streaming subscription");
+    return new Observable<TData>(observer => {
+      let lastData: TData | null = null;
+      let isActive = true;
+      let timeoutId: NodeJS.Timeout | null = null;
+      
+      const pollForChanges = async () => {
+        if (!isActive) {
+          return;
+        }
+
+        try {
+          const result = await this.select<TData>({
+            ...genOptions,
+            role
+          });
+          if (!isEqual(result, lastData)) {
+            debug('Polling streaming subscription detected changes:', JSON.stringify(result));
+            lastData = result as TData;
+            observer.next(result);
+          }
+          if (isActive) {
+            timeoutId = setTimeout(pollForChanges, interval);
+            // Allow process to exit even if this timeout is pending
+            timeoutId.unref?.();
+          }
+        } catch (error) {
+          debug('Error during polling streaming subscription:', error);
+
+          if (isActive) {
+            observer.error(error);
+          }
+        }
+      };
+      pollForChanges();
+      return () => {
+        debug('Unsubscribing from polling streaming subscription.');
+        isActive = false;
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+      };
+    });
+  }
+
+  private _streamWithWebSocket<TData, TVariables extends OperationVariables>(
+    options: HasyxOptions & { role?: string }
+  ): Observable<TData> {
+    const { role, ...genOptions } = options;
+    const generated: GenerateResult = this.generate({ ...genOptions, operation: 'stream' });
+    debug(`Hasyx._streamWithWebSocket: Using WebSocket-based streaming subscription. Query name: ${generated.queryName}`);
+    debug('Creating WebSocket-based streaming subscription Observable');
+    
+    return new Observable<TData>(observer => {
+      let lastEmitTime = 0;
+      let pendingData: TData | null = null;
+      let emitTimeoutId: NodeJS.Timeout | null = null;
+      const resolvedInterval = typeof options.pollingInterval === 'number' ?
+        options.pollingInterval : DEFAULT_POLLING_INTERVAL;
+      const minEmitInterval = resolvedInterval;
+
+      debug(`[Hasyx.stream/WS] Effective minEmitInterval: ${minEmitInterval}ms (options.pollingInterval: ${options.pollingInterval}, DEFAULT_POLLING_INTERVAL: ${DEFAULT_POLLING_INTERVAL})`);
+      const throttledEmit = (data: TData) => {
+        const now = Date.now();
+        const timeSinceLastEmit = now - lastEmitTime;
+        debug(`[throttledEmit] Called. Now: ${now}, LastEmit: ${lastEmitTime}, SinceLast: ${timeSinceLastEmit}, MinInterval: ${minEmitInterval}, PendingData: ${JSON.stringify(pendingData)}, EmitTimeoutId: ${emitTimeoutId}`);
+
+        if (timeSinceLastEmit >= minEmitInterval) {
+          debug(`[throttledEmit] Emitting immediately. TimeSinceLast: ${timeSinceLastEmit} >= MinInterval: ${minEmitInterval}`);
+          lastEmitTime = now;
+          observer.next(data);
+          pendingData = null;
+          if (emitTimeoutId) {
+            clearTimeout(emitTimeoutId);
+            emitTimeoutId = null;
+          }
+        } else {
+          debug(`[throttledEmit] Throttling. TimeSinceLast: ${timeSinceLastEmit} < MinInterval: ${minEmitInterval}`);
+          pendingData = data;
+          if (!emitTimeoutId) {
+            const delay = minEmitInterval - timeSinceLastEmit;
+            debug(`[throttledEmit] Setting timeout for ${delay}ms`);
+            emitTimeoutId = setTimeout(() => {
+              if (pendingData) {
+                debug(`[throttledEmit] Timeout fired, emitting pending data`);
+                lastEmitTime = Date.now();
+                observer.next(pendingData);
+                pendingData = null;
+                emitTimeoutId = null;
+              }
+            }, delay);
+            emitTimeoutId.unref?.();
+          }
+        }
+      };
+
+      const apolloSubscription = this.apolloClient.subscribe({
+        query: generated.query,
+        variables: generated.variables,
+        context: role ? { headers: { 'x-hasura-role': role } } : undefined,
+      }).subscribe({
+        next: (response: any) => {
+          debug('Streaming subscription received data:', response);
+          const data = response.data?.[generated.queryName];
+          if (data !== undefined) {
+            throttledEmit(data);
+          }
+        },
+        error: (error) => {
+          debug('Streaming subscription error:', error);
+          observer.error(error);
+        },
+        complete: () => {
+          debug('Streaming subscription completed.');
+          observer.complete();
+        },
+      });
+      return () => {
+        debug('Unsubscribing from Apollo streaming subscription.');
 
         if (emitTimeoutId) {
           clearTimeout(emitTimeoutId);

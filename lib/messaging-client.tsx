@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react';
-import { useQuery, useHasyx } from 'hasyx';
+import { useQuery, useHasyx, useSubscription } from 'hasyx';
 import { Button } from 'hasyx/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 'hasyx/components/ui/dialog';
 import { Input } from 'hasyx/components/ui/input';
@@ -48,7 +48,7 @@ export function MessagingClient() {
   });
 
   // Запрос для получения списка комнат
-  const { data: rooms = [], loading: roomsLoading } = useQuery({
+  const { data: rooms = [], loading: roomsLoading } = useSubscription({
     table: 'rooms',
     where: {},
     returning: [

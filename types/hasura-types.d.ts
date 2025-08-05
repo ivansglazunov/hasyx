@@ -4068,10 +4068,275 @@ export type Logs_States_Variance_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** columns and relationships of "message_reads" */
+export type Message_Reads = {
+  __typename?: "message_reads";
+  created_at: Scalars["bigint"]["output"];
+  id: Scalars["uuid"]["output"];
+  last_i: Scalars["bigint"]["output"];
+  room_id: Scalars["uuid"]["output"];
+  updated_at: Scalars["bigint"]["output"];
+  user_id: Scalars["uuid"]["output"];
+};
+
+/** aggregated selection of "message_reads" */
+export type Message_Reads_Aggregate = {
+  __typename?: "message_reads_aggregate";
+  aggregate?: Maybe<Message_Reads_Aggregate_Fields>;
+  nodes: Array<Message_Reads>;
+};
+
+/** aggregate fields of "message_reads" */
+export type Message_Reads_Aggregate_Fields = {
+  __typename?: "message_reads_aggregate_fields";
+  avg?: Maybe<Message_Reads_Avg_Fields>;
+  count: Scalars["Int"]["output"];
+  max?: Maybe<Message_Reads_Max_Fields>;
+  min?: Maybe<Message_Reads_Min_Fields>;
+  stddev?: Maybe<Message_Reads_Stddev_Fields>;
+  stddev_pop?: Maybe<Message_Reads_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Message_Reads_Stddev_Samp_Fields>;
+  sum?: Maybe<Message_Reads_Sum_Fields>;
+  var_pop?: Maybe<Message_Reads_Var_Pop_Fields>;
+  var_samp?: Maybe<Message_Reads_Var_Samp_Fields>;
+  variance?: Maybe<Message_Reads_Variance_Fields>;
+};
+
+/** aggregate fields of "message_reads" */
+export type Message_Reads_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Message_Reads_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+/** aggregate avg on columns */
+export type Message_Reads_Avg_Fields = {
+  __typename?: "message_reads_avg_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  last_i?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** Boolean expression to filter rows from the table "message_reads". All fields are combined with a logical 'AND'. */
+export type Message_Reads_Bool_Exp = {
+  _and?: InputMaybe<Array<Message_Reads_Bool_Exp>>;
+  _not?: InputMaybe<Message_Reads_Bool_Exp>;
+  _or?: InputMaybe<Array<Message_Reads_Bool_Exp>>;
+  created_at?: InputMaybe<Bigint_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  last_i?: InputMaybe<Bigint_Comparison_Exp>;
+  room_id?: InputMaybe<Uuid_Comparison_Exp>;
+  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+  user_id?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "message_reads" */
+export enum Message_Reads_Constraint {
+  /** unique or primary key constraint on columns "id" */
+  MessageReadsPkey = "message_reads_pkey",
+  /** unique or primary key constraint on columns "user_id", "room_id" */
+  UniqueUserRoom = "unique_user_room",
+}
+
+/** input type for incrementing numeric columns in table "message_reads" */
+export type Message_Reads_Inc_Input = {
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  last_i?: InputMaybe<Scalars["bigint"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+};
+
+/** input type for inserting data into table "message_reads" */
+export type Message_Reads_Insert_Input = {
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  last_i?: InputMaybe<Scalars["bigint"]["input"]>;
+  room_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** aggregate max on columns */
+export type Message_Reads_Max_Fields = {
+  __typename?: "message_reads_max_fields";
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  last_i?: Maybe<Scalars["bigint"]["output"]>;
+  room_id?: Maybe<Scalars["uuid"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  user_id?: Maybe<Scalars["uuid"]["output"]>;
+};
+
+/** aggregate min on columns */
+export type Message_Reads_Min_Fields = {
+  __typename?: "message_reads_min_fields";
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  last_i?: Maybe<Scalars["bigint"]["output"]>;
+  room_id?: Maybe<Scalars["uuid"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  user_id?: Maybe<Scalars["uuid"]["output"]>;
+};
+
+/** response of any mutation on the table "message_reads" */
+export type Message_Reads_Mutation_Response = {
+  __typename?: "message_reads_mutation_response";
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars["Int"]["output"];
+  /** data from the rows affected by the mutation */
+  returning: Array<Message_Reads>;
+};
+
+/** on_conflict condition type for table "message_reads" */
+export type Message_Reads_On_Conflict = {
+  constraint: Message_Reads_Constraint;
+  update_columns?: Array<Message_Reads_Update_Column>;
+  where?: InputMaybe<Message_Reads_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "message_reads". */
+export type Message_Reads_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  last_i?: InputMaybe<Order_By>;
+  room_id?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  user_id?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: message_reads */
+export type Message_Reads_Pk_Columns_Input = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** select columns of table "message_reads" */
+export enum Message_Reads_Select_Column {
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Id = "id",
+  /** column name */
+  LastI = "last_i",
+  /** column name */
+  RoomId = "room_id",
+  /** column name */
+  UpdatedAt = "updated_at",
+  /** column name */
+  UserId = "user_id",
+}
+
+/** input type for updating data in table "message_reads" */
+export type Message_Reads_Set_Input = {
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  last_i?: InputMaybe<Scalars["bigint"]["input"]>;
+  room_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** aggregate stddev on columns */
+export type Message_Reads_Stddev_Fields = {
+  __typename?: "message_reads_stddev_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  last_i?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Message_Reads_Stddev_Pop_Fields = {
+  __typename?: "message_reads_stddev_pop_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  last_i?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Message_Reads_Stddev_Samp_Fields = {
+  __typename?: "message_reads_stddev_samp_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  last_i?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** Streaming cursor of the table "message_reads" */
+export type Message_Reads_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Message_Reads_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Message_Reads_Stream_Cursor_Value_Input = {
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  last_i?: InputMaybe<Scalars["bigint"]["input"]>;
+  room_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** aggregate sum on columns */
+export type Message_Reads_Sum_Fields = {
+  __typename?: "message_reads_sum_fields";
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  last_i?: Maybe<Scalars["bigint"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** update columns of table "message_reads" */
+export enum Message_Reads_Update_Column {
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Id = "id",
+  /** column name */
+  LastI = "last_i",
+  /** column name */
+  RoomId = "room_id",
+  /** column name */
+  UpdatedAt = "updated_at",
+  /** column name */
+  UserId = "user_id",
+}
+
+export type Message_Reads_Updates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<Message_Reads_Inc_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Message_Reads_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Message_Reads_Bool_Exp;
+};
+
+/** aggregate var_pop on columns */
+export type Message_Reads_Var_Pop_Fields = {
+  __typename?: "message_reads_var_pop_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  last_i?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate var_samp on columns */
+export type Message_Reads_Var_Samp_Fields = {
+  __typename?: "message_reads_var_samp_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  last_i?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate variance on columns */
+export type Message_Reads_Variance_Fields = {
+  __typename?: "message_reads_variance_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  last_i?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
 /** columns and relationships of "messages" */
 export type Messages = {
   __typename?: "messages";
   created_at: Scalars["bigint"]["output"];
+  i: Scalars["bigint"]["output"];
   id: Scalars["uuid"]["output"];
   /** An array relationship */
   replies: Array<Replies>;
@@ -4133,6 +4398,7 @@ export type Messages_Aggregate_FieldsCountArgs = {
 export type Messages_Avg_Fields = {
   __typename?: "messages_avg_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
+  i?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -4142,6 +4408,7 @@ export type Messages_Bool_Exp = {
   _not?: InputMaybe<Messages_Bool_Exp>;
   _or?: InputMaybe<Array<Messages_Bool_Exp>>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
+  i?: InputMaybe<Bigint_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
   replies?: InputMaybe<Replies_Bool_Exp>;
   replies_aggregate?: InputMaybe<Replies_Aggregate_Bool_Exp>;
@@ -4159,12 +4426,14 @@ export enum Messages_Constraint {
 /** input type for incrementing numeric columns in table "messages" */
 export type Messages_Inc_Input = {
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  i?: InputMaybe<Scalars["bigint"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
 };
 
 /** input type for inserting data into table "messages" */
 export type Messages_Insert_Input = {
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  i?: InputMaybe<Scalars["bigint"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   replies?: InputMaybe<Replies_Arr_Rel_Insert_Input>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -4176,6 +4445,7 @@ export type Messages_Insert_Input = {
 export type Messages_Max_Fields = {
   __typename?: "messages_max_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
+  i?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
   user_id?: Maybe<Scalars["uuid"]["output"]>;
@@ -4186,6 +4456,7 @@ export type Messages_Max_Fields = {
 export type Messages_Min_Fields = {
   __typename?: "messages_min_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
+  i?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
   user_id?: Maybe<Scalars["uuid"]["output"]>;
@@ -4218,6 +4489,7 @@ export type Messages_On_Conflict = {
 /** Ordering options when selecting data from "messages". */
 export type Messages_Order_By = {
   created_at?: InputMaybe<Order_By>;
+  i?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   replies_aggregate?: InputMaybe<Replies_Aggregate_Order_By>;
   updated_at?: InputMaybe<Order_By>;
@@ -4235,6 +4507,8 @@ export enum Messages_Select_Column {
   /** column name */
   CreatedAt = "created_at",
   /** column name */
+  I = "i",
+  /** column name */
   Id = "id",
   /** column name */
   UpdatedAt = "updated_at",
@@ -4247,6 +4521,7 @@ export enum Messages_Select_Column {
 /** input type for updating data in table "messages" */
 export type Messages_Set_Input = {
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  i?: InputMaybe<Scalars["bigint"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
@@ -4257,6 +4532,7 @@ export type Messages_Set_Input = {
 export type Messages_Stddev_Fields = {
   __typename?: "messages_stddev_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
+  i?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -4264,6 +4540,7 @@ export type Messages_Stddev_Fields = {
 export type Messages_Stddev_Pop_Fields = {
   __typename?: "messages_stddev_pop_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
+  i?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -4271,6 +4548,7 @@ export type Messages_Stddev_Pop_Fields = {
 export type Messages_Stddev_Samp_Fields = {
   __typename?: "messages_stddev_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
+  i?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -4285,6 +4563,7 @@ export type Messages_Stream_Cursor_Input = {
 /** Initial value of the column from where the streaming should start */
 export type Messages_Stream_Cursor_Value_Input = {
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  i?: InputMaybe<Scalars["bigint"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
@@ -4295,6 +4574,7 @@ export type Messages_Stream_Cursor_Value_Input = {
 export type Messages_Sum_Fields = {
   __typename?: "messages_sum_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
+  i?: Maybe<Scalars["bigint"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
 };
 
@@ -4302,6 +4582,8 @@ export type Messages_Sum_Fields = {
 export enum Messages_Update_Column {
   /** column name */
   CreatedAt = "created_at",
+  /** column name */
+  I = "i",
   /** column name */
   Id = "id",
   /** column name */
@@ -4325,6 +4607,7 @@ export type Messages_Updates = {
 export type Messages_Var_Pop_Fields = {
   __typename?: "messages_var_pop_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
+  i?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -4332,6 +4615,7 @@ export type Messages_Var_Pop_Fields = {
 export type Messages_Var_Samp_Fields = {
   __typename?: "messages_var_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
+  i?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -4339,6 +4623,7 @@ export type Messages_Var_Samp_Fields = {
 export type Messages_Variance_Fields = {
   __typename?: "messages_variance_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
+  i?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -4381,6 +4666,10 @@ export type Mutation_Root = {
   delete_logs_states?: Maybe<Logs_States_Mutation_Response>;
   /** delete single row from the table: "logs.states" */
   delete_logs_states_by_pk?: Maybe<Logs_States>;
+  /** delete data from the table: "message_reads" */
+  delete_message_reads?: Maybe<Message_Reads_Mutation_Response>;
+  /** delete single row from the table: "message_reads" */
+  delete_message_reads_by_pk?: Maybe<Message_Reads>;
   /** delete data from the table: "messages" */
   delete_messages?: Maybe<Messages_Mutation_Response>;
   /** delete single row from the table: "messages" */
@@ -4469,6 +4758,10 @@ export type Mutation_Root = {
   insert_logs_states?: Maybe<Logs_States_Mutation_Response>;
   /** insert a single row into the table: "logs.states" */
   insert_logs_states_one?: Maybe<Logs_States>;
+  /** insert data into the table: "message_reads" */
+  insert_message_reads?: Maybe<Message_Reads_Mutation_Response>;
+  /** insert a single row into the table: "message_reads" */
+  insert_message_reads_one?: Maybe<Message_Reads>;
   /** insert data into the table: "messages" */
   insert_messages?: Maybe<Messages_Mutation_Response>;
   /** insert a single row into the table: "messages" */
@@ -4575,6 +4868,14 @@ export type Mutation_Root = {
   update_logs_states_by_pk?: Maybe<Logs_States>;
   /** update multiples rows of table: "logs.states" */
   update_logs_states_many?: Maybe<Array<Maybe<Logs_States_Mutation_Response>>>;
+  /** update data of the table: "message_reads" */
+  update_message_reads?: Maybe<Message_Reads_Mutation_Response>;
+  /** update single row of the table: "message_reads" */
+  update_message_reads_by_pk?: Maybe<Message_Reads>;
+  /** update multiples rows of table: "message_reads" */
+  update_message_reads_many?: Maybe<
+    Array<Maybe<Message_Reads_Mutation_Response>>
+  >;
   /** update data of the table: "messages" */
   update_messages?: Maybe<Messages_Mutation_Response>;
   /** update single row of the table: "messages" */
@@ -4762,6 +5063,16 @@ export type Mutation_RootDelete_Logs_StatesArgs = {
 
 /** mutation root */
 export type Mutation_RootDelete_Logs_States_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** mutation root */
+export type Mutation_RootDelete_Message_ReadsArgs = {
+  where: Message_Reads_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootDelete_Message_Reads_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -5002,6 +5313,18 @@ export type Mutation_RootInsert_Logs_StatesArgs = {
 export type Mutation_RootInsert_Logs_States_OneArgs = {
   object: Logs_States_Insert_Input;
   on_conflict?: InputMaybe<Logs_States_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsert_Message_ReadsArgs = {
+  objects: Array<Message_Reads_Insert_Input>;
+  on_conflict?: InputMaybe<Message_Reads_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsert_Message_Reads_OneArgs = {
+  object: Message_Reads_Insert_Input;
+  on_conflict?: InputMaybe<Message_Reads_On_Conflict>;
 };
 
 /** mutation root */
@@ -5383,6 +5706,25 @@ export type Mutation_RootUpdate_Logs_States_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Logs_States_ManyArgs = {
   updates: Array<Logs_States_Updates>;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Message_ReadsArgs = {
+  _inc?: InputMaybe<Message_Reads_Inc_Input>;
+  _set?: InputMaybe<Message_Reads_Set_Input>;
+  where: Message_Reads_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Message_Reads_By_PkArgs = {
+  _inc?: InputMaybe<Message_Reads_Inc_Input>;
+  _set?: InputMaybe<Message_Reads_Set_Input>;
+  pk_columns: Message_Reads_Pk_Columns_Input;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Message_Reads_ManyArgs = {
+  updates: Array<Message_Reads_Updates>;
 };
 
 /** mutation root */
@@ -11689,6 +12031,12 @@ export type Query_Root = {
   logs_states_aggregate: Logs_States_Aggregate;
   /** fetch data from the table: "logs.states" using primary key columns */
   logs_states_by_pk?: Maybe<Logs_States>;
+  /** fetch data from the table: "message_reads" */
+  message_reads: Array<Message_Reads>;
+  /** fetch aggregated fields from the table: "message_reads" */
+  message_reads_aggregate: Message_Reads_Aggregate;
+  /** fetch data from the table: "message_reads" using primary key columns */
+  message_reads_by_pk?: Maybe<Message_Reads>;
   /** fetch data from the table: "messages" */
   messages: Array<Messages>;
   /** fetch aggregated fields from the table: "messages" */
@@ -11948,6 +12296,26 @@ export type Query_RootLogs_States_AggregateArgs = {
 };
 
 export type Query_RootLogs_States_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+export type Query_RootMessage_ReadsArgs = {
+  distinct_on?: InputMaybe<Array<Message_Reads_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Message_Reads_Order_By>>;
+  where?: InputMaybe<Message_Reads_Bool_Exp>;
+};
+
+export type Query_RootMessage_Reads_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Message_Reads_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Message_Reads_Order_By>>;
+  where?: InputMaybe<Message_Reads_Bool_Exp>;
+};
+
+export type Query_RootMessage_Reads_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -13079,6 +13447,14 @@ export type Subscription_Root = {
   logs_states_by_pk?: Maybe<Logs_States>;
   /** fetch data from the table in a streaming manner: "logs.states" */
   logs_states_stream: Array<Logs_States>;
+  /** fetch data from the table: "message_reads" */
+  message_reads: Array<Message_Reads>;
+  /** fetch aggregated fields from the table: "message_reads" */
+  message_reads_aggregate: Message_Reads_Aggregate;
+  /** fetch data from the table: "message_reads" using primary key columns */
+  message_reads_by_pk?: Maybe<Message_Reads>;
+  /** fetch data from the table in a streaming manner: "message_reads" */
+  message_reads_stream: Array<Message_Reads>;
   /** fetch data from the table: "messages" */
   messages: Array<Messages>;
   /** fetch aggregated fields from the table: "messages" */
@@ -13421,6 +13797,32 @@ export type Subscription_RootLogs_States_StreamArgs = {
   batch_size: Scalars["Int"]["input"];
   cursor: Array<InputMaybe<Logs_States_Stream_Cursor_Input>>;
   where?: InputMaybe<Logs_States_Bool_Exp>;
+};
+
+export type Subscription_RootMessage_ReadsArgs = {
+  distinct_on?: InputMaybe<Array<Message_Reads_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Message_Reads_Order_By>>;
+  where?: InputMaybe<Message_Reads_Bool_Exp>;
+};
+
+export type Subscription_RootMessage_Reads_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Message_Reads_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Message_Reads_Order_By>>;
+  where?: InputMaybe<Message_Reads_Bool_Exp>;
+};
+
+export type Subscription_RootMessage_Reads_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+export type Subscription_RootMessage_Reads_StreamArgs = {
+  batch_size: Scalars["Int"]["input"];
+  cursor: Array<InputMaybe<Message_Reads_Stream_Cursor_Input>>;
+  where?: InputMaybe<Message_Reads_Bool_Exp>;
 };
 
 export type Subscription_RootMessagesArgs = {

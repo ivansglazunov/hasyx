@@ -8,6 +8,7 @@ import { Hasyx } from './hasyx';
 import schema from '../public/hasura-schema.json';
 import Debug from './debug';
 import { hashPassword } from './authDbUtils';
+import { gql } from '@apollo/client/core';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
@@ -701,5 +702,118 @@ describe('Messaging module (skeleton)', () => {
       userH.apolloClient.terminate?.();
       adminH.apolloClient.terminate?.();
     }, 30000);
+
+
   });
+
+    // ❗ Real Hasura streaming subscription test (WebSocket)
+    it('streaming subscription emits new messages after cursor', async () => {
+      const adminH = createAdminHasyx();
+      const user = await createTestUser(adminH, 'stream');
+      const { hasyx: userH } = await adminH.testAuthorize(user.id, { ws: true });
+
+      // Create room
+      const roomId = uuidv4();
+      await adminH.insert({
+        table: 'rooms',
+        object: {
+          id: roomId,
+          user_id: user.id,
+          title: 'Stream Room',
+          allow_select_users: ['user'],
+          allow_reply_users: ['user'],
+        },
+      });
+
+      // Insert initial message (i1)
+      const msg1Id = uuidv4();
+      const msg1 = await userH.insert({
+        table: 'messages',
+        object: { id: msg1Id, value: 'Hello 1' },
+        returning: ['i'],
+      });
+      console.log('📝 Created msg1 with i:', msg1.i);
+      await userH.insert({
+        table: 'replies',
+        object: { id: uuidv4(), message_id: msg1Id, room_id: roomId },
+      });
+
+      const SUB_QUERY = gql`
+        subscription ($room_id: uuid!, $cursor: [messages_stream_cursor_input!]!) {
+          messages_stream(
+            batch_size: 5,
+            cursor: $cursor,
+            where: { replies: { room_id: { _eq: $room_id } } }
+          ) {
+            id
+            value
+            i
+            user_id
+          }
+        }
+      `;
+
+      const sub$ = userH.apolloClient.subscribe({
+        query: SUB_QUERY,
+        variables: {
+          room_id: roomId,
+          cursor: [{ initial_value: { i: msg1.i }, ordering: "ASC" }],
+        },
+      });
+
+      const received: any[] = [];
+      let subscription: any;
+
+      const subPromise = new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          subscription?.unsubscribe();
+          reject(new Error('subscription timeout'));
+        }, 5000);
+        
+        subscription = sub$.subscribe({
+          next: (data) => {
+            console.log('📨 Received message:', data.data.messages_stream[0]);
+            received.push(data.data.messages_stream[0]);
+            if (received.length === 1) {
+              clearTimeout(timeout);
+              subscription?.unsubscribe();
+              resolve();
+            }
+          },
+          error: (error) => {
+            console.error('❌ Subscription error:', error);
+            clearTimeout(timeout);
+            subscription?.unsubscribe();
+            reject(error);
+          },
+        });
+      });
+
+      // Insert new message (i2) that should be streamed
+      const msg2Id = uuidv4();
+      const msg2 = await userH.insert({
+        table: 'messages',
+        object: { id: msg2Id, value: 'Hello 2' },
+        returning: ['i'],
+      });
+      console.log('📝 Created msg2 with i:', msg2.i);
+      await userH.insert({
+        table: 'replies',
+        object: { id: uuidv4(), message_id: msg2Id, room_id: roomId },
+      });
+
+      await subPromise; // wait for subscription to emit
+
+      expect(received).toHaveLength(1);
+      expect(received[0].value).toBe('Hello 2');
+
+      // cleanup
+      await adminH.delete({ table: 'replies', where: { room_id: { _eq: roomId } } });
+      await adminH.delete({ table: 'messages', where: { id: { _in: [msg1Id, msg2Id] } } });
+      await adminH.delete({ table: 'rooms', pk_columns: { id: roomId } });
+      await adminH.delete({ table: 'users', pk_columns: { id: user.id } });
+
+      userH.apolloClient.terminate?.();
+      adminH.apolloClient.terminate?.();
+    }, 20000);
 }); 

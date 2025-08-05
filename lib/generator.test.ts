@@ -462,6 +462,46 @@ describe('GraphQL Query Generator Unit Tests', () => {
     debug('✅ Subscription passed');
   });
 
+  it('Test 10b: Should generate a streaming subscription correctly', () => {
+    debug('\n📝 Test 10b: Streaming subscription');
+    const options: GenerateOptions = {
+        operation: 'stream',
+        table: 'messages',
+        where: { replies: { room_id: { _eq: 'room-123' } } },
+        cursor: [{ initial_value: { i: 10 }, ordering: "ASC" }],
+        batch_size: 5,
+        returning: ['id', 'value', 'i', 'user_id']
+    };
+    const result = generate(options);
+
+    const expectedQuery = `
+      subscription SubscriptionMessagesStream($v1: Int!, $v2: [messages_stream_cursor_input]!, $v3: messages_bool_exp) {
+        messages_stream(batch_size: $v1, cursor: $v2, where: $v3) {
+          id
+          value
+          i
+          user_id
+        }
+      }
+    `;
+
+    const expectedVariables = {
+      v1: 5,
+      v2: [{ initial_value: { i: 10 }, ordering: "ASC" }],
+      v3: {
+        replies: {
+          room_id: {
+            _eq: 'room-123'
+          }
+        }
+      }
+    };
+
+    expect(normalizeString(result.queryString)).toBe(normalizeString(expectedQuery));
+    expect(result.variables).toEqual(expectedVariables);
+    debug('✅ Streaming subscription passed');
+  });
+
   it('Test 11: Should generate a query with a complex where clause correctly', () => {
     debug('\n📝 Test 11: Complex where clause');
     const options: GenerateOptions = {
@@ -523,6 +563,51 @@ describe('GraphQL Query Generator Unit Tests', () => {
     debug('✅ Complex where query passed');
   });
 
+  it('Test 11b: Should generate a streaming subscription with complex where clause correctly', () => {
+    debug('\n📝 Test 11b: Streaming subscription with complex where');
+    const options: GenerateOptions = {
+        operation: 'stream',
+        table: 'messages',
+        where: {
+          _and: [
+            { user_id: { _eq: 'user-123' } },
+            { replies: { room_id: { _eq: 'room-456' } } }
+          ]
+        },
+        cursor: [{ initial_value: { i: 25 }, ordering: "ASC" }],
+        batch_size: 10,
+        returning: ['id', 'value', 'i', 'user_id', 'created_at']
+    };
+    const result = generate(options);
+
+    const expectedQuery = `
+      subscription SubscriptionMessagesStream($v1: Int!, $v2: [messages_stream_cursor_input]!, $v3: messages_bool_exp) {
+        messages_stream(batch_size: $v1, cursor: $v2, where: $v3) {
+          id
+          value
+          i
+          user_id
+          created_at
+        }
+      }
+    `;
+
+    const expectedVariables = {
+      v1: 10,
+      v2: [{ initial_value: { i: 25 }, ordering: "ASC" }],
+      v3: {
+        _and: [
+          { user_id: { _eq: 'user-123' } },
+          { replies: { room_id: { _eq: 'room-456' } } }
+        ]
+      }
+    };
+
+    expect(normalizeString(result.queryString)).toBe(normalizeString(expectedQuery));
+    expect(result.variables).toEqual(expectedVariables);
+    debug('✅ Streaming subscription with complex where passed');
+  });
+
   it('Test 12: Should generate a nested query with alias and parameters correctly', () => {
     debug('\n📝 Test 12: Nested query with alias and parameters');
     const options: GenerateOptions = {
@@ -570,6 +655,44 @@ describe('GraphQL Query Generator Unit Tests', () => {
     expect(normalizeString(result.queryString)).toBe(normalizeString(expectedQuery));
     expect(result.variables).toEqual(expectedVariables);
     debug('✅ Nested query with alias/params passed');
+  });
+
+  it('Test 12b: Should generate a streaming subscription for different table correctly', () => {
+    debug('\n📝 Test 12b: Streaming subscription for different table');
+    const options: GenerateOptions = {
+        operation: 'stream',
+        table: 'users',
+        where: { is_admin: { _eq: true } },
+        cursor: [{ initial_value: { created_at: '2024-01-01T00:00:00Z' }, ordering: "ASC" }],
+        batch_size: 3,
+        returning: ['id', 'name', 'email', 'created_at']
+    };
+    const result = generate(options);
+
+    const expectedQuery = `
+      subscription SubscriptionUsersStream($v1: Int!, $v2: [users_stream_cursor_input]!, $v3: users_bool_exp) {
+        users_stream(batch_size: $v1, cursor: $v2, where: $v3) {
+          id
+          name
+          email
+          created_at
+        }
+      }
+    `;
+
+    const expectedVariables = {
+      v1: 3,
+      v2: [{ initial_value: { created_at: '2024-01-01T00:00:00Z' }, ordering: "ASC" }],
+      v3: {
+        is_admin: {
+          _eq: true
+        }
+      }
+    };
+
+    expect(normalizeString(result.queryString)).toBe(normalizeString(expectedQuery));
+    expect(result.variables).toEqual(expectedVariables);
+    debug('✅ Streaming subscription for different table passed');
   });
 
   it('Test 13: Should append relations (with alias, where, limit) to default returning fields when returning is an object', () => {
@@ -1136,9 +1259,9 @@ describe('Aggregate Field Tests', () => {
                 }
             },
             { 
-                files_aggregate: {
+                accounts_aggregate: {
                     where: {
-                        id: { _is_null: false }
+                        provider: { _eq: 'google' }
                     },
                     aggregate: {
                         count: ['*']
@@ -1150,7 +1273,7 @@ describe('Aggregate Field Tests', () => {
     const result = generate(options);
 
     const expectedQuery = `
-      query QueryUsers($v1: files_bool_exp) {
+      query QueryUsers($v1: accounts_bool_exp) {
         users {
           id
           name
@@ -1159,7 +1282,7 @@ describe('Aggregate Field Tests', () => {
               count
             }
           }
-          files_aggregate(where: $v1) {
+          accounts_aggregate(where: $v1) {
             aggregate {
               count
             }
@@ -1169,7 +1292,7 @@ describe('Aggregate Field Tests', () => {
     `;
 
     const expectedVariables = {
-      v1: { id: { _is_null: false } }
+      v1: { provider: { _eq: 'google' } }
     };
 
     expect(normalizeString(result.queryString)).toBe(normalizeString(expectedQuery));

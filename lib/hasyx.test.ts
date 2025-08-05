@@ -127,7 +127,7 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
         // Testing UPDATE
         debug('📝 Testing UPDATE: Modifying name of first user...');
         const newName = `Updated User ${Date.now()}`;
-        const updatedUser = await adminHasyx.update<TestUser>({
+        const updatedUser = await adminHasyx.update({
           table: 'users',
           pk_columns: { id: testUsers[0].id },
           _set: { name: newName },
@@ -575,4 +575,256 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
     const foundEntry = results.find(r => r.id === debugEntryId);
     expect(foundEntry).toBeDefined();
   }, 15000);
+
+  describe('Stream method', () => {
+    it('should create streaming subscription with WebSocket', async () => {
+      const adminHasyx = createAdminHasyx();
+      const user = await createTestUser(adminHasyx, 'stream-test');
+      const { hasyx: userHasyx } = await adminHasyx.testAuthorize(user.id, { ws: true });
+
+      // Create room for streaming test
+      const roomId = uuidv4();
+      await adminHasyx.insert({
+        table: 'rooms',
+        object: {
+          id: roomId,
+          user_id: user.id,
+          title: 'Stream Test Room',
+          allow_select_users: ['user'],
+          allow_reply_users: ['user'],
+        },
+        returning: ['id'],
+      });
+
+      // Create initial message
+      const msg1Id = uuidv4();
+      const msg1 = await userHasyx.insert({
+        table: 'messages',
+        object: { id: msg1Id, value: 'Initial message' },
+        returning: ['i'],
+      });
+
+      await userHasyx.insert({
+        table: 'replies',
+        object: { id: uuidv4(), message_id: msg1Id, room_id: roomId },
+        returning: ['id'],
+      });
+
+      // Create streaming subscription
+      const stream$ = userHasyx.stream<any[]>({
+        table: 'messages',
+        where: { replies: { room_id: { _eq: roomId } } },
+        cursor: [{ initial_value: { i: msg1.i }, ordering: "ASC" }],
+        batch_size: 5,
+        returning: ['id', 'value', 'i', 'user_id'],
+        ws: true,
+      });
+
+      const received: any[] = [];
+      let subscription: any;
+
+      const streamPromise = new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          subscription?.unsubscribe();
+          reject(new Error('stream timeout'));
+        }, 5000);
+        
+        subscription = stream$.subscribe({
+          next: (data) => {
+            debug('📨 Stream received data:', data);
+            received.push(data);
+            if (received.length === 1) {
+              clearTimeout(timeout);
+              subscription?.unsubscribe();
+              resolve();
+            }
+          },
+          error: (error) => {
+            debug('❌ Stream error:', error);
+            clearTimeout(timeout);
+            subscription?.unsubscribe();
+            reject(error);
+          },
+        });
+      });
+
+      // Create new message that should be streamed
+      const msg2Id = uuidv4();
+      const msg2 = await userHasyx.insert({
+        table: 'messages',
+        object: { id: msg2Id, value: 'Streamed message' },
+        returning: ['i'],
+      });
+
+      await userHasyx.insert({
+        table: 'replies',
+        object: { id: uuidv4(), message_id: msg2Id, room_id: roomId },
+        returning: ['id'],
+      });
+
+      await streamPromise;
+
+      expect(received).toHaveLength(1);
+      expect(received[0]).toHaveLength(1);
+      expect(received[0][0].value).toBe('Streamed message');
+
+      // Cleanup
+      await adminHasyx.delete({ table: 'replies', where: { room_id: { _eq: roomId } } });
+      await adminHasyx.delete({ table: 'messages', where: { id: { _in: [msg1Id, msg2Id] } } });
+      await adminHasyx.delete({ table: 'rooms', pk_columns: { id: roomId } });
+      await adminHasyx.delete({ table: 'users', pk_columns: { id: user.id } });
+
+      cleanupHasyx(userHasyx, 'stream test');
+      cleanupHasyx(adminHasyx, 'stream test');
+    }, 20000);
+
+    it('should fallback to polling when WebSocket is not available', async () => {
+      const adminHasyx = createAdminHasyx();
+      const user = await createTestUser(adminHasyx, 'stream-polling');
+      const { hasyx: userHasyx } = await adminHasyx.testAuthorize(user.id, { ws: false });
+
+      // Create room for streaming test
+      const roomId = uuidv4();
+      await adminHasyx.insert({
+        table: 'rooms',
+        object: {
+          id: roomId,
+          user_id: user.id,
+          title: 'Stream Polling Room',
+          allow_select_users: ['user'],
+          allow_reply_users: ['user'],
+        },
+        returning: ['id'],
+      });
+
+      // Create initial message
+      const msg1Id = uuidv4();
+      await userHasyx.insert({
+        table: 'messages',
+        object: { id: msg1Id, value: 'Initial message' },
+        returning: ['i'],
+      });
+
+      await userHasyx.insert({
+        table: 'replies',
+        object: { id: uuidv4(), message_id: msg1Id, room_id: roomId },
+        returning: ['id'],
+      });
+
+      // Create streaming subscription with polling fallback
+      const stream$ = userHasyx.stream<any[]>({
+        table: 'messages',
+        where: { replies: { room_id: { _eq: roomId } } },
+        cursor: [{ initial_value: { i: 0 }, ordering: "ASC" }],
+        batch_size: 5,
+        returning: ['id', 'value', 'i', 'user_id'],
+        ws: false,
+        pollingInterval: 1000,
+      });
+
+      const received: any[] = [];
+      let subscription: any;
+
+      const streamPromise = new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          subscription?.unsubscribe();
+          reject(new Error('stream polling timeout'));
+        }, 10000);
+        
+        subscription = stream$.subscribe({
+          next: (data) => {
+            debug('📨 Stream polling received data:', data);
+            received.push(data);
+            if (received.length >= 1) {
+              clearTimeout(timeout);
+              subscription?.unsubscribe();
+              resolve();
+            }
+          },
+          error: (error) => {
+            debug('❌ Stream polling error:', error);
+            clearTimeout(timeout);
+            subscription?.unsubscribe();
+            reject(error);
+          },
+        });
+      });
+
+      // Create new message that should be detected by polling
+      const msg2Id = uuidv4();
+      await userHasyx.insert({
+        table: 'messages',
+        object: { id: msg2Id, value: 'Polled message' },
+        returning: ['i'],
+      });
+
+      await userHasyx.insert({
+        table: 'replies',
+        object: { id: uuidv4(), message_id: msg2Id, room_id: roomId },
+        returning: ['id'],
+      });
+
+      await streamPromise;
+
+      expect(received.length).toBeGreaterThan(0);
+
+      // Cleanup
+      await adminHasyx.delete({ table: 'replies', where: { room_id: { _eq: roomId } } });
+      await adminHasyx.delete({ table: 'messages', where: { id: { _in: [msg1Id, msg2Id] } } });
+      await adminHasyx.delete({ table: 'rooms', pk_columns: { id: roomId } });
+      await adminHasyx.delete({ table: 'users', pk_columns: { id: user.id } });
+
+      cleanupHasyx(userHasyx, 'stream polling test');
+      cleanupHasyx(adminHasyx, 'stream polling test');
+    }, 15000);
+
+    it('should handle stream errors gracefully', async () => {
+      const adminHasyx = createAdminHasyx();
+      const user = await createTestUser(adminHasyx, 'stream-error');
+      const { hasyx: userHasyx } = await adminHasyx.testAuthorize(user.id, { ws: true });
+
+      // Create streaming subscription with invalid cursor
+      const stream$ = userHasyx.stream<any[]>({
+        table: 'messages',
+        where: { id: { _eq: 'invalid-uuid' } },
+        cursor: [{ initial_value: { i: -1 }, ordering: "ASC" }],
+        batch_size: 5,
+        returning: ['id', 'value'],
+        ws: true,
+      });
+
+      let errorReceived = false;
+      let subscription: any;
+
+      const errorPromise = new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          subscription?.unsubscribe();
+          reject(new Error('stream error timeout'));
+        }, 5000);
+        
+        subscription = stream$.subscribe({
+          next: (data) => {
+            debug('📨 Stream received data (unexpected):', data);
+          },
+          error: (error) => {
+            debug('❌ Stream error received (expected):', error);
+            errorReceived = true;
+            clearTimeout(timeout);
+            subscription?.unsubscribe();
+            resolve();
+          },
+        });
+      });
+
+      await errorPromise;
+
+      expect(errorReceived).toBe(true);
+
+      // Cleanup
+      await adminHasyx.delete({ table: 'users', pk_columns: { id: user.id } });
+
+      cleanupHasyx(userHasyx, 'stream error test');
+      cleanupHasyx(adminHasyx, 'stream error test');
+    }, 10000);
+  });
 });

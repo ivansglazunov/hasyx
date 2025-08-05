@@ -4,7 +4,7 @@ import Debug from './debug';
 const debug = Debug('apollo:generator');
 
 // Types for options and return value
-export type GenerateOperation = 'query' | 'subscription' | 'insert' | 'update' | 'delete';
+export type GenerateOperation = 'query' | 'subscription' | 'stream' | 'insert' | 'update' | 'delete';
 
 export type Generate = {
     (opts: GenerateOptions): GenerateResult;
@@ -37,6 +37,9 @@ export interface GenerateOptions {
   varCounter?: number;
   on_conflict?: OnConflictOptions; // Added for upsert
   role?: string;
+  // Streaming subscription specific options
+  cursor?: Record<string, any>; // For streaming cursor
+  batch_size?: number; // For streaming batch size
 }
 
 export interface GenerateResult {
@@ -133,7 +136,7 @@ export function Generator(schema: any): Generate { // We take the __schema objec
     let targetRoot: any = queryRoot;
     if (operation === 'insert' || operation === 'update' || operation === 'delete') {
         targetRoot = mutationRoot || queryRoot;
-    } else if (operation === 'subscription') {
+    } else if (operation === 'subscription' || operation === 'stream') {
         targetRoot = subscriptionRoot || queryRoot;
     }
     
@@ -143,7 +146,7 @@ export function Generator(schema: any): Generate { // We take the __schema objec
     if (aggregate) {
         namesToTry.push(`${table}_aggregate`);
     } else if (opts.pk_columns) {
-        if (operation === 'query' || operation === 'subscription') {
+        if (operation === 'query' || operation === 'subscription' || operation === 'stream') {
             namesToTry.push(`${table}_by_pk`);
         } else if (operation === 'update') {
             namesToTry.push(`update_${table}_by_pk`);
@@ -159,6 +162,9 @@ export function Generator(schema: any): Generate { // We take the __schema objec
         namesToTry.push(`update_${table}`);
     } else if (operation === 'delete') {
         namesToTry.push(`delete_${table}`);
+    } else if (operation === 'stream') {
+        // For streaming, try the stream-specific field name
+        namesToTry.push(`${table}_stream`);
     }
     
     // Always try the base table name as fallback
@@ -276,7 +282,7 @@ export function Generator(schema: any): Generate { // We take the __schema objec
              }
         } else if (where && where[argName] !== undefined) {
              value = where[argName];
-        } else if (argName === 'distinct_on' && distinctOn && ['query', 'subscription'].includes(operation)) {
+        } else if (argName === 'distinct_on' && distinctOn && ['query', 'subscription', 'stream'].includes(operation)) {
             // --- Handle distinct_on ---
             value = distinctOn;
              // We need the argument definition for distinct_on to get its type
@@ -287,6 +293,26 @@ export function Generator(schema: any): Generate { // We take the __schema objec
                  debug(`[generator] 'distinct_on' provided in options, but field "${queryName}" does not accept it according to the schema.`);
              }
              // --- End handle distinct_on ---
+        } else if (argName === 'cursor' && opts.cursor && operation === 'stream') {
+            // --- Handle cursor for streaming ---
+            value = opts.cursor;
+            const cursorArgDef = queryInfo.args.find((a: any) => a.name === 'cursor');
+            if (cursorArgDef) {
+                addArgument(argName, value, cursorArgDef);
+            } else {
+                debug(`[generator] 'cursor' provided in options, but field "${queryName}" does not accept it according to the schema.`);
+            }
+            // --- End handle cursor ---
+        } else if (argName === 'batch_size' && opts.batch_size && operation === 'stream') {
+            // --- Handle batch_size for streaming ---
+            value = opts.batch_size;
+            const batchSizeArgDef = queryInfo.args.find((a: any) => a.name === 'batch_size');
+            if (batchSizeArgDef) {
+                addArgument(argName, value, batchSizeArgDef);
+            } else {
+                debug(`[generator] 'batch_size' provided in options, but field "${queryName}" does not accept it according to the schema.`);
+            }
+            // --- End handle batch_size ---
         } else if (opts[argName as keyof GenerateOptions] !== undefined) {
              // Handle general arguments like limit, offset, where, order_by
              // But skip on_conflict here as it's handled separately for the mutation field
@@ -339,6 +365,7 @@ export function Generator(schema: any): Generate { // We take the __schema objec
         parentTypeName: string | null,
         currentVarCounterRef: { count: number }
     ): string {
+        debug(`[processReturningField] Processing field:`, field);
         if (typeof field === 'string') {
             return field.trim();
         }
@@ -346,6 +373,7 @@ export function Generator(schema: any): Generate { // We take the __schema objec
       if (typeof field === 'object' && field !== null) {
         const fieldName = Object.keys(field)[0];
         const subFieldsOrParams = field[fieldName];
+        debug(`[processReturningField] Field name: ${fieldName}, subFieldsOrParams:`, subFieldsOrParams);
 
         if (typeof subFieldsOrParams === 'object' && subFieldsOrParams !== null && (subFieldsOrParams as any)._isColumnsFunctionCall) {
             const fieldInfo = findTypeDetails(parentTypeName)?.fields?.find((f: any) => f.name === fieldName);
@@ -651,8 +679,14 @@ export function Generator(schema: any): Generate { // We take the __schema objec
 
     if (returning) {
       if (Array.isArray(returning)) {
+        debug(`[generator] Processing returning array with ${returning.length} items`);
         finalReturningFields = returning
-          .map(field => processReturningField(field, topLevelReturnTypeName, varCounterRef))
+          .map((field, index) => {
+            debug(`[generator] Processing field ${index}:`, field);
+            const result = processReturningField(field, topLevelReturnTypeName, varCounterRef);
+            debug(`[generator] Field ${index} result:`, result);
+            return result;
+          })
           .filter(Boolean);
       } else if (typeof returning === 'string') {
         finalReturningFields = returning.split(/\s+/).filter(Boolean)
@@ -705,7 +739,7 @@ export function Generator(schema: any): Generate { // We take the __schema objec
 
     let gqlOperationType: 'query' | 'mutation' | 'subscription';
     if (operation === 'query') gqlOperationType = 'query';
-    else if (operation === 'subscription') gqlOperationType = 'subscription';
+    else if (operation === 'subscription' || operation === 'stream') gqlOperationType = 'subscription';
     else gqlOperationType = 'mutation';
 
     const opNamePrefix = gqlOperationType.charAt(0).toUpperCase() + gqlOperationType.slice(1);
