@@ -21,7 +21,7 @@ export default function RootLayout({
   children,
 }: {
   locale?: string;
-  children: React.ReactNode
+  children?: any;
 }) {
   return (
     <>
