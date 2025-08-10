@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { hasyxEvent, HasuraEventPayload } from 'hasyx/lib/events';
-import { Hasura } from 'hasyx/lib/hasura';
+import { Hasura } from '@/lib/hasura/hasura';
 import Debug from 'hasyx/lib/debug';
 import { GoogleAuth } from 'google-auth-library';
 
@@ -91,12 +91,12 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
     switch (permissionData.provider) {
       case 'firebase':
         debug('Sending via Firebase provider');
-        const { sendFirebaseNotification } = await import('hasyx/lib/notify-firebase');
+        const { sendFirebaseNotification } = await import('@/lib/notify/notify-firebase');
         result = await sendFirebaseNotification(permissionData, messageData, notification, getOAuthAccessTokenForServer);
         break;
       case 'telegram_bot':
         debug('Sending via Telegram Bot provider');
-        const { sendTelegramNotification } = await import('hasyx/lib/notify-telegram');
+        const { sendTelegramNotification } = await import('@/lib/notify/notify-telegram');
         result = await sendTelegramNotification(permissionData, messageData, notification);
         break;
       default:

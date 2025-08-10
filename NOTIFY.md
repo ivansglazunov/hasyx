@@ -27,7 +27,7 @@ Hasyx aims to provide a unified and extensible system for delivering push notifi
 
 ## Workflow Overview
 
-1.  **Client-Side Permission**: The client application (e.g., web browser, mobile app) requests notification permission from the user. For channel notifications, this is handled server-side by `npx hasyx assist` linking a Project User to a channel.
+1.  **Client-Side Permission**: The client application (e.g., web browser, mobile app) requests notification permission from the user. For channel notifications, link a Project User to a channel using your admin tools or CLI where applicable (no assist required).
 2.  **Token Registration**: If permission is granted (or configured for a channel), the client receives a device token (or channel ID is configured). This, along with user/project user and device/channel info, is stored in `notification_permissions`.
 3.  **Sending a Notification**:
     *   An action (e.g., user interaction, scheduled task, admin panel) triggers the need to send a notification.

@@ -10,6 +10,90 @@ The Schedule system enables you to:
 - **Process events** in real-time through Hasura triggers
 - **Handle complex timing scenarios** with proper cleanup and state management
 
+## DB Scheduler Plan (One‑off Events Integration)
+
+This section captures the implementation plan to finalize the DB scheduler using Hasura One‑off Scheduled Events and event triggers. It complements the existing docs below and will guide further development.
+
+- Goals
+  - **Structured tables**: `public.schedule` describes recurrence rules; `public.events` stores concrete events and their lifecycle.
+  - **One‑off parity**: every row in `public.events` must have a corresponding Hasura one‑off scheduled event (created/updated/deleted in sync).
+  - **Minimal API routes**: routes only validate Hasura secret and delegate to library functions, so behavior is extendable downstream.
+
+- Tables & migrations
+  - `public.schedule`
+    - `id` uuid PK
+    - `user_id` uuid NULL
+    - `object_id` uuid NULL
+    - `cron` text NOT NULL (recurrence rule)
+    - `start_at` bigint NOT NULL (unix seconds, first allowed run)
+    - `end_at` bigint NULL (unix seconds, last allowed run)
+    - `duration_sec` bigint NULL (optional event duration in seconds)
+    - `meta` jsonb NULL
+    - `created_at` timestamptz DEFAULT now()
+    - `updated_at` timestamptz DEFAULT now()
+  - `public.events`
+    - `id` uuid PK
+    - `schedule_id` uuid NULL REFERENCES `schedule(id)`
+    - `user_id` uuid NULL
+    - `object_id` uuid NULL
+    - `one_off_id` text NULL (Hasura one‑off event id)
+    - `plan_start` bigint NOT NULL (unix seconds)
+    - `plan_end` bigint NULL (unix seconds)
+    - `start` bigint NULL (unix seconds)
+    - `end` bigint NULL (unix seconds)
+    - `status` text NOT NULL DEFAULT 'pending' ('pending' | 'in_progress' | 'completed' | 'cancelled')
+    - `meta` jsonb NULL
+    - `created_at` timestamptz DEFAULT now()
+    - `updated_at` timestamptz DEFAULT now()
+  - Migrations follow existing style (`migrations/<ts>-hasyx-schedule/{up,down}.ts`) using utilities in `lib/hasura/hasura.ts`.
+
+- Hasura One‑off Scheduled Events
+  - Add methods in `lib/hasura/hasura.ts`:
+    - `defineOneOffEvent({ webhook, scheduleAtIso, payload?, headers?, retry_conf? })` → Metadata API `create_scheduled_event`
+    - `undefineOneOffEvent({ event_id })` → Metadata API `delete_scheduled_event` with `{ type: 'one_off' }`
+  - One‑off payload must contain `client_event_id` (equals `public.events.id`) and, if available, `schedule_id` for correlation.
+
+- Triggers and routes
+  - `events/events.json` (already present): on `INSERT/UPDATE/DELETE` in `public.events` ensures the corresponding Hasura one‑off exists/updates/cancels.
+  - Add `events/schedule.json`:
+    - table: `public.schedule`; operations: insert/update/delete; webhook: `/api/events/schedule`.
+    - Behavior:
+      - INSERT: compute and create exactly one next pending event for the new schedule (within `[start_at, end_at]`).
+      - UPDATE: delete the nearest not‑yet‑started event for this schedule and create a new one from the updated rule.
+      - DELETE: optional cleanup of nearest not‑yet‑started event.
+  - One‑off execution webhook (e.g. `/api/events/one-off`): on callback, marks event as started and, if `schedule_id` is present, computes and inserts the next event.
+
+- Library responsibilities (`lib/schedule.ts`)
+  - `computeNextEvent(schedule, lastEvent?)` → returns the next planned event object (`plan_start`, `plan_end`, `schedule_id`, etc.)
+  - `ensureHasuraOneOffForEvent(hasura, event)` → creates one‑off in Hasura for `plan_start` and stores `one_off_id` back into `public.events`.
+  - `cancelHasuraOneOffForEvent(hasura, event)` → cancels pending one‑off by `one_off_id`.
+  - `onEventRowChange(payload)`
+    - INSERT: create one‑off and store `one_off_id`.
+    - UPDATE: if `plan_start` changed and event not started, cancel old one‑off and create a new one; keep `one_off_id` in sync.
+    - DELETE: if not started, cancel one‑off.
+  - `onScheduleRowChange(payload)`
+    - INSERT: insert exactly one next pending event for the schedule.
+    - UPDATE: delete the nearest future event for this schedule and insert a recalculated one.
+  - `onOneOffExecuted(request)`
+    - Locate event by `client_event_id` from payload, set `status: in_progress`, set `start`.
+    - If `schedule_id` exists, compute and insert one next event.
+
+- API routes are thin wrappers only
+  - Each `app/api/events/*` route validates `X-Hasura-Event-Secret` and delegates:
+    - `/api/events/events` → `onEventRowChange`
+    - `/api/events/schedule` → `onScheduleRowChange`
+    - `/api/events/one-off` → `onOneOffExecuted`
+  - Business logic remains in `lib/schedule.ts` to keep downstream extension simple.
+
+- Time units and consistency
+  - Use unix seconds (bigint) for DB columns to stay consistent with current examples in this document.
+  - Convert to ISO‑8601 when calling Hasura `create_scheduled_event` (`schedule_at`).
+
+- Safety & idempotency
+  - All webhooks must check `X-Hasura-Event-Secret`.
+  - Keep operations idempotent (double deliveries, retries) by correlating via `client_event_id` and current `status`/timestamps.
+
+
 ## Architecture
 
 ### Database Schema

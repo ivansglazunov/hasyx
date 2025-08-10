@@ -17,17 +17,29 @@ Hasyx Files Storage provides:
 
 ### 1. Configure File Storage
 
-Run the file storage configuration assistant:
+Configure storage via `hasyx.config.json`:
 
-```bash
-npx hasyx assist
+```json
+{
+  "storage": {
+    "local": {
+      "provider": "minio",
+      "bucket": "default",
+      "endpoint": "http://hasyx-minio:9000",
+      "forcePathStyle": true,
+      "useLocal": true,
+      "publicUrl": "http://localhost:3001",
+      "serviceUrl": "http://hasura-storage:8000"
+    }
+  },
+  "variants": {
+    "dev": { "storage": "local" }
+  },
+  "variant": "dev"
+}
 ```
 
-Or configure storage specifically:
-
-```bash
-npx hasyx assist --skip-auth --skip-repo --skip-env --skip-package --skip-init --skip-hasura --skip-secrets --skip-oauth --skip-resend --skip-vercel --skip-sync --skip-commit --skip-migrations --skip-firebase --skip-telegram --skip-project-user --skip-openrouter --skip-pg --skip-dns --skip-docker --skip-github --skip-github-webhooks
-```
+After saving the configuration, `.env` will be generated; then proceed with migrations and types.
 
 ### 2. Apply Migrations
 
@@ -49,17 +61,7 @@ npx hasyx schema
 
 ### Local Storage (MinIO)
 
-For development or self-hosted environments:
-
-```bash
-npx hasyx assist
-```
-
-This will create:
-- MinIO as S3-compatible storage
-- Local bucket for files
-- hasura-storage service configuration
-- Workflow for local development
+For development or self-hosted environments, configure storage via `hasyx.config.json` (see Quick Start), then regenerate `.env` and compose using the config tool. This sets up MinIO and hasura-storage for local use.
 
 ### Cloud Storage
 

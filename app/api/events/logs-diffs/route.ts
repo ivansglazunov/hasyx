@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { hasyxEvent, HasuraEventPayload } from 'hasyx/lib/events';
-import { handleLogsDiffsEventTrigger } from 'hasyx/lib/logs-diffs';
+import { handleLogsDiffsEventTrigger } from '@/lib/logs/logs-diffs';
 import Debug from 'hasyx/lib/debug';
 
 const debug = Debug('api:events:logs-diffs');

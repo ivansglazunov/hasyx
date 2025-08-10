@@ -1,7 +1,7 @@
 import { SubdomainManager, SubdomainManagerConfig, SubdomainConfig, SubdomainInfo } from './subdomain';
-import { CloudFlare, DnsRecord } from './cloudflare';
+import { CloudFlare, DnsRecord } from './cloudflare/cloudflare';
 import { SSL, CertificateInfo } from './ssl';
-import { Nginx, SiteConfig } from './nginx';
+import { Nginx, SiteConfig } from './nginx/nginx';
 import Debug from './debug';
 import { execSync } from 'child_process';
 import * as dotenv from 'dotenv';

@@ -8,20 +8,20 @@ interface ParsedIssue {
 }
 
 /**
- * Извлекает ссылки на issues и commits из текста
+ * Extract references to issues and commits from text
  */
 function extractReferences(text: string): { issues: string[], commits: string[] } {
   const issues: string[] = [];
   const commits: string[] = [];
 
-  // Ищем ссылки на issues (#123, #456)
+  // Find issue references (#123, #456)
   const issuePattern = /#(\d+)/g;
   let match;
   while ((match = issuePattern.exec(text)) !== null) {
     issues.push(`issue:${match[1]}`);
   }
 
-  // Ищем ссылки на commits (commit:abc123, commit:def456)
+  // Find commit references (commit:abc123, commit:def456)
   const commitPattern = /commit:([a-f0-9]+)/gi;
   while ((match = commitPattern.exec(text)) !== null) {
     commits.push(`commit:${match[1]}`);
@@ -31,7 +31,7 @@ function extractReferences(text: string): { issues: string[], commits: string[] 
 }
 
 /**
- * Парсит тело issue и извлекает релейшены из сворачиваемого блока в конце
+ * Parse issue body and extract relations from the collapsible block at the end
  */
 export function parseIssue(body: string): ParsedIssue {
   if (!body) {
@@ -50,19 +50,19 @@ export function parseIssue(body: string): ParsedIssue {
       const relationsJson = match[1];
       relations = JSON.parse(relationsJson);
       
-      // Удаляем блок с релейшенами из контента и убираем лишние переносы строк
+      // Remove relations block from content and trim extra newlines
       content = body.replace(collapsibleBlockRegex, '').trim();
     } catch (error) {
       console.error('Failed to parse relations JSON:', error);
-      // В случае ошибки парсинга JSON, возвращаем весь контент
+      // On JSON parse error, return full content
       content = body.trim();
     }
   } else {
-    // Если блок не найден, возвращаем весь контент как content
+    // If block not found, return full content as content
     content = body.trim();
   }
 
-  // Извлекаем ссылки из контента и добавляем их в relations
+  // Extract references from content and add to relations
   const { issues, commits } = extractReferences(content);
   
   if (issues.length > 0) {
@@ -76,9 +76,9 @@ export function parseIssue(body: string): ParsedIssue {
 }
 
 /**
- * Генерирует полное тело issue с релейшенами в сворачиваемом блоке в конце
- * Возвращает строку, готовую для сохранения в GitHub
- * Ключи 'issues' и 'commits' не попадают в метаблок
+ * Generate full issue body with relations inside a collapsible block at the end
+ * Returns a string ready for GitHub
+ * Keys 'issues' and 'commits' are not included in the meta block
  */
 export function generateIssue(content: string, relations: IssueRelations): string {
   if (!content && Object.keys(relations).length === 0) {
@@ -87,12 +87,12 @@ export function generateIssue(content: string, relations: IssueRelations): strin
 
   let body = content.trim();
 
-  // Фильтруем relations, убирая автоматически извлеченные ключи
+  // Filter relations, removing auto-extracted keys
   const filteredRelations = { ...relations };
   delete filteredRelations.issues;
   delete filteredRelations.commits;
 
-  // Добавляем блок с релейшенами только если они есть
+  // Append relations block only if non-empty
   if (Object.keys(filteredRelations).length > 0) {
     const relationsJson = JSON.stringify(filteredRelations, null, 2);
     const relationsBlock = `\n\n<details>\n<summary>Relations</summary>\n\`\`\`json\n${relationsJson}\n\`\`\`\n</details>`;

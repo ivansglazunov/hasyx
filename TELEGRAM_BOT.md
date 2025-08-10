@@ -48,7 +48,7 @@ OPENROUTER_API_KEY=your_openrouter_api_key
 
 #### Optional:
 ```bash
-HASYX_GITHUB_TELEGRAM_BOT=1  # 1=enabled, 2=test mode, unset=disabled
+GITHUB_TELEGRAM_BOT=1  # 1=enabled, 2=test mode, unset=disabled
 ```
 
 ### 3. GitHub Repository Secrets
@@ -58,7 +58,7 @@ Configure these secrets in your GitHub repository settings:
 - `TELEGRAM_BOT_TOKEN` - Your Telegram bot API token
 - `TELEGRAM_CHANNEL_ID` - Channel ID for GitHub commit notifications
 - `OPENROUTER_API_KEY` - OpenRouter API key for AI message generation
-- `HASYX_GITHUB_TELEGRAM_BOT` - (Optional) Control mode: `1` or `2`
+- `GITHUB_TELEGRAM_BOT` - (Optional) Control mode: `1` or `2`
 
 ### 4. Telegram Bot Setup
 
@@ -69,7 +69,7 @@ Configure these secrets in your GitHub repository settings:
 
 ## 📋 Configuration Options
 
-### HASYX_GITHUB_TELEGRAM_BOT Modes:
+### GITHUB_TELEGRAM_BOT Modes:
 - **`1`** - Production mode: sends real notifications
 - **`2`** - Test mode: generates messages but doesn't send
 - **Unset** - Disabled: no notifications sent
@@ -102,7 +102,7 @@ You can modify the target workflows in the `.github/workflows/telegram-notificat
 ## 🧪 Testing
 
 ### Test Mode:
-Set `HASYX_GITHUB_TELEGRAM_BOT=2` to enable test mode where:
+Set `GITHUB_TELEGRAM_BOT=2` to enable test mode where:
 - Messages are generated but not sent to Telegram
 - Output is displayed in GitHub Actions logs
 - Perfect for verifying configuration
@@ -114,7 +114,7 @@ export GITHUB_SHA=your_commit_sha
 export GITHUB_TOKEN=your_github_token
 export TELEGRAM_BOT_TOKEN=your_bot_token
 export OPENROUTER_API_KEY=your_openrouter_key
-export HASYX_GITHUB_TELEGRAM_BOT=2  # Test mode
+export GITHUB_TELEGRAM_BOT=2  # Test mode
 
 # Run the notification script
 npx tsx lib/github-telegram-bot.ts
@@ -166,7 +166,7 @@ const targetWorkflows = ['test', 'npm-publish', 'Deploy Next.js site to Pages'];
 ### Common Issues:
 
 **No notifications sent:**
-- Check `HASYX_GITHUB_TELEGRAM_BOT` is set to `1`
+- Check `GITHUB_TELEGRAM_BOT` is set to `1`
 - Verify `TELEGRAM_CHANNEL_ID` is configured correctly
 - Ensure bot has administrator permissions in the channel
 - Check GitHub Actions logs for errors
@@ -188,7 +188,7 @@ const targetWorkflows = ['test', 'npm-publish', 'Deploy Next.js site to Pages'];
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [Telegram Bot API](https://core.telegram.org/bots/api)
 - [OpenRouter API](https://openrouter.ai/docs)
-- [Hasyx Assistant](./lib/assist-telegram.ts) - Setup automation
+ 
 
 ## 🤝 Contributing
 

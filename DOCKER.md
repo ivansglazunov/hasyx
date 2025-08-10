@@ -113,8 +113,8 @@ Hasyx creates `.github/workflows/docker-publish.yml` for automatic image publish
 ### Setup GitHub Secrets
 1. Go to Settings → Secrets and variables → Actions
 2. Add secrets:
-   - `DOCKER_USERNAME` - Docker Hub username
-   - `DOCKER_PASSWORD` - Docker Hub password or access token
+   - `DOCKERHUB_USERNAME` - Docker Hub username
+   - `DOCKERHUB_PASSWORD` - Docker Hub password or access token
 
 ### Automatic Publishing
 - **Push to main/master** → publish with `latest` tag
@@ -219,19 +219,49 @@ sudo netstat -tulpn | grep <port>
 npx hasyx docker undefine <port>
 ```
 
-## 🎯 Integration with assist
+## 🎯 Configuration via hasyx.config.json
 
-Docker configuration available through interactive assistant:
+Configure Docker Hub credentials and image naming via `hasyx.config.json`.
 
-```bash
-npx hasyx assist
-# Select Docker setup when prompted
+1) Add Docker Hub credentials:
+
+```json
+{
+  "dockerhub": {
+    "default": {
+      "username": "your_dockerhub_username",
+      "password": "your_dockerhub_token"
+    }
+  }
+}
 ```
 
-This will configure:
-- Docker installation check
-- PORT variable in .env
-- Project information display
+2) Attach them to a variant:
+
+```json
+{
+  "variants": {
+    "prod": { "dockerhub": "default" },
+    "dev":  { "dockerhub": "default" }
+  },
+  "variant": "dev"
+}
+```
+
+3) Optionally define host port and public URL in `hosts`:
+
+```json
+{
+  "hosts": {
+    "local": { "port": 3000, "url": "http://localhost:3000", "clientOnly": false }
+  },
+  "variants": {
+    "dev": { "host": "local" }
+  }
+}
+```
+
+After saving the configuration, `.env` will be generated/updated by the config generator. Then use `npx hasyx docker ...` commands as shown above.
 
 ## 🔄 Workflow Integration
 

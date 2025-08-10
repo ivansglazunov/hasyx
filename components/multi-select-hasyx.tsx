@@ -20,7 +20,7 @@ interface MultiSelectHasyxProps {
 export function MultiSelectHasyx({
   value,
   onValueChange,
-  placeholder = "Выберите пользователей...",
+  placeholder = "Select users...",
   queryGenerator
 }: MultiSelectHasyxProps) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -51,20 +51,20 @@ export function MultiSelectHasyx({
   const options = useMemo(() => {
     const customOptions = [
       {
-        label: 'Все пользователи',
+        label: 'All users',
         value: 'user',
         icon: Users,
         color: '0366d6', // GitHub blue
       },
       {
-        label: 'Анонимные пользователи',
+        label: 'Anonymous users',
         value: 'anonymous',
         icon: User,
         color: '6b7280', // Gray
       },
     ];
 
-    // Добавляем пользователей из базы данных
+    // Add users from database
     const dbOptions = users.map((user: any) => ({
       label: user.name || `User ${user.id}`,
       value: user.id,

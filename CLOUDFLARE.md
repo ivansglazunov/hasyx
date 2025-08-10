@@ -13,7 +13,7 @@ The `CloudFlare` class provides comprehensive DNS management that:
 - Implements define/undefine patterns for idempotent operations
 - Integrates seamlessly with SSL certificate and nginx management
 
-⚠️ **Important**: This module requires proper CloudFlare API configuration. Use the assist command to configure required API credentials.
+⚠️ **Important**: This module requires proper CloudFlare API configuration. Configure CloudFlare via `hasyx.config.json` (section `cloudflare`), then `.env` is generated automatically.
 
 <details>
 <summary>Core Exports (`lib/cloudflare.ts`)</summary>
@@ -58,47 +58,22 @@ Before using the CloudFlare module, you must configure the environment:
 3. **Zone ID**: Get Zone ID from CloudFlare dashboard
 4. **Domain Configuration**: Set primary domain for subdomain management
 
-### Environment Configuration with Assist
+### Configuration via hasyx.config.json
 
-⚠️ **Required Setup**: Configure CloudFlare API credentials:
-
-```bash
-npx hasyx assist dns
-```
-
-This will prompt you to configure:
-- `HASYX_DNS_DOMAIN`: Your primary domain name
-- `CLOUDFLARE_API_TOKEN`: API token with Zone:Edit permissions
-- `CLOUDFLARE_ZONE_ID`: Zone ID from CloudFlare dashboard
-- `LETSENCRYPT_EMAIL`: Email for SSL certificates
-
-**Example assist session:**
-```bash
-$ npx hasyx assist dns
-
-🌐 DNS Management Configuration
-===============================
-
-Do you want to configure DNS/SSL/Cloudflare management? (y/n): y
-
-Enter your DNS domain (e.g., example.com): yourdomain.com
-✅ DNS domain set to: yourdomain.com
-
-☁️ Cloudflare Configuration
-============================
-
-Do you want to configure Cloudflare for DNS management? (y/n): y
-
-Enter Cloudflare API Token: your_api_token_here
-✅ Cloudflare API Token configured
-
-Enter Cloudflare Zone ID: your_zone_id_here
-✅ Cloudflare Zone ID configured
-
-Enter LetsEncrypt email for SSL certificates: admin@yourdomain.com
-
-✅ Cloudflare configuration completed successfully!
-💾 Configuration saved to .env file
+Set parameters in the config:
+```json
+{
+  "dns": { "default": { "domain": "yourdomain.com" } },
+  "cloudflare": {
+    "prod": {
+      "apiToken": "cf_token",
+      "zoneId": "cf_zone",
+      "letsEncryptEmail": "admin@yourdomain.com"
+    }
+  },
+  "variants": { "prod": { "dns": "default", "cloudflare": "prod" } },
+  "variant": "prod"
+}
 ```
 
 ### Manual Environment Configuration
@@ -141,7 +116,7 @@ const cloudflare = new CloudFlare({
 
 // Verify configuration
 if (!process.env.CLOUDFLARE_API_TOKEN || !process.env.CLOUDFLARE_ZONE_ID) {
-  console.error('CloudFlare credentials not configured. Run: npx hasyx assist dns');
+  console.error('CloudFlare credentials not configured. Configure via hasyx.config.json and regenerate .env');
   process.exit(1);
 }
 
@@ -179,7 +154,7 @@ console.log(`DNS record: ${record?.name} → ${record?.content}`);
 ```typescript
 import { CloudFlare } from 'hasyx';
 
-// Environment variables configuration (from assist or manual setup)
+// Environment variables configuration (from hasyx.config.json or manual setup)
 const cloudflare = new CloudFlare({
   apiToken: process.env.CLOUDFLARE_API_TOKEN!,
   zoneId: process.env.CLOUDFLARE_ZONE_ID!,
@@ -188,7 +163,7 @@ const cloudflare = new CloudFlare({
 
 // Configuration validation
 if (!cloudflare) {
-  throw new Error('CloudFlare configuration incomplete. Run: npx hasyx assist dns');
+  throw new Error('CloudFlare configuration incomplete. Configure via hasyx.config.json and regenerate .env');
 }
 
 console.log(`CloudFlare DNS manager ready for domain: ${process.env.HASYX_DNS_DOMAIN}`);
@@ -512,10 +487,10 @@ try {
     await cloudflare.define('app', { ip: '149.102.136.233' });
   } else if (error.message.includes('authentication')) {
     console.log('Check CLOUDFLARE_API_TOKEN configuration');
-    console.log('Run: npx hasyx assist dns');
+    console.log('Configure via hasyx.config.json and regenerate .env');
   } else if (error.message.includes('zone')) {
     console.log('Check CLOUDFLARE_ZONE_ID configuration');
-    console.log('Run: npx hasyx assist dns');
+    console.log('Configure via hasyx.config.json and regenerate .env');
   } else {
     console.error('Unexpected CloudFlare API error:', error);
   }
@@ -533,7 +508,7 @@ try {
   });
 } catch (error) {
   console.error('Configuration error:', error.message);
-  console.log('Run: npx hasyx assist dns');
+  console.log('Configure via hasyx.config.json and regenerate .env');
   // "CloudFlare configuration incomplete: apiToken, zoneId, and domain are required"
 }
 ```
@@ -581,10 +556,7 @@ await cloudflare.define('api', {
 ### 4. Environment-Based Configuration
 
 ```bash
-# Configure via assist command (recommended)
-npx hasyx assist dns
-
-# Or set manually
+# Configure via hasyx.config.json and regenerate .env, or set manually
 CLOUDFLARE_API_TOKEN=your_api_token_here
 CLOUDFLARE_ZONE_ID=your_zone_id_here
 HASYX_DNS_DOMAIN=yourdomain.com
@@ -616,10 +588,7 @@ HASYX_DNS_DOMAIN=yourdomain.com
 
 **Credentials not configured:**
 ```bash
-# Configure via assist (recommended)
-npx hasyx assist dns
-
-# Or set environment variables manually
+# Verify variables after regenerating .env from hasyx.config.json, or set manually
 export CLOUDFLARE_API_TOKEN=your_api_token_here
 export CLOUDFLARE_ZONE_ID=your_zone_id_here
 export HASYX_DNS_DOMAIN=yourdomain.com

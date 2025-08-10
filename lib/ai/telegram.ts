@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { TelegramUpdate, sendTelegramMessage } from '../telegram-bot';
+import { TelegramUpdate, sendTelegramMessage } from '../telegram/telegram-bot';
 import Debug from '../debug';
 import { Dialog, DialogEvent } from './dialog';
 import { OpenRouterProvider } from './providers/openrouter';
@@ -8,8 +8,9 @@ import { Tool } from './tool';
 
 const debug = Debug('ai:telegram');
 
+type ToolsResolverContext = { chatId: number; message: TelegramUpdate['message'] };
 interface TelegramHandlerOptions {
-  tools: Tool[];
+  tools: Tool[] | ((ctx: ToolsResolverContext) => Promise<Tool[]> | Tool[]);
   getSystemPrompt: (tools: Tool[]) => string;
 }
 
@@ -93,13 +94,17 @@ export function generateTelegramHandler(options: TelegramHandlerOptions) {
 
       if (!dialog) {
         debug(`Creating new Dialog for chat ${chatId}`);
-        debug('Available tools:', tools?.map(t => t.name) || []);
+        // Resolve tools dynamically (function) or use static list
+        const activeTools = typeof tools === 'function'
+          ? await Promise.resolve(tools({ chatId, message }))
+          : tools;
+        debug('Available tools:', activeTools?.map(t => t.name) || []);
         const provider = new OpenRouterProvider({ token: process.env.OPENROUTER_API_KEY, model: 'deepseek/deepseek-chat-v3-0324:free' });
 
         dialog = new Dialog({
           provider,
-          tools,
-          systemPrompt: getSystemPrompt(tools),
+          tools: activeTools,
+          systemPrompt: getSystemPrompt(activeTools),
           onChange: (event: DialogEvent) => {
             debug(`Dialog onChange event for chat ${chatId}:`, event.type);
             return handleEvent(chatId, event);

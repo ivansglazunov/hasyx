@@ -3,7 +3,7 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
-import { newGithubTelegramBot } from 'hasyx/lib/github-telegram-bot-hasyx';
+import { newGithubTelegramBot } from '@/lib/github/github-telegram-bot-hasyx';
 
 // Load environment variables from .env file in the consumer project
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -33,7 +33,7 @@ export const handleGithubTelegramBot = newGithubTelegramBot({
   githubToken: process.env.GITHUB_TOKEN,
   telegramBotToken: process.env.TELEGRAM_BOT_TOKEN,
   openRouterApiKey: process.env.OPENROUTER_API_KEY,
-  enabled: process.env.HASYX_GITHUB_TELEGRAM_BOT,
+  enabled: process.env.GITHUB_TELEGRAM_BOT,
 
   systemPrompt: `You are a GitHub Telegram Notification Bot.
 Your ONLY task is to take the provided data and generate a single, celebratory Telegram message in English, formatted with Telegram Markdown.

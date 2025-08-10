@@ -13,7 +13,7 @@ The `SubdomainManager` class provides comprehensive subdomain management that:
 - Implements define/undefine patterns for idempotent operations
 - Handles error scenarios with automatic cleanup
 
-⚠️ **Important**: This module requires proper environment configuration for CloudFlare API, SSL email, and domain settings. Use the assist command to configure all required credentials.
+⚠️ **Important**: This module requires proper environment configuration for CloudFlare API, SSL email, and domain settings. All variables are configured via `hasyx.config.json` (sections `dns` and `cloudflare`) followed by `.env` generation.
 
 <details>
 <summary>Core Exports (`lib/subdomain.ts`)</summary>
@@ -83,10 +83,7 @@ The CLI command requires these environment variables:
 - `CLOUDFLARE_ZONE_ID` - CloudFlare Zone ID for your domain
 - `LETSENCRYPT_EMAIL` (optional) - Email for SSL certificates
 
-Configure all variables using:
-```bash
-npx hasyx assist
-```
+Variables are set via `hasyx.config.json` and automatically propagated into `.env`.
 
 If environment variables are missing, the CLI will show:
 ```bash
@@ -95,7 +92,7 @@ If environment variables are missing, the CLI will show:
    CLOUDFLARE_API_TOKEN
    CLOUDFLARE_ZONE_ID
 
-💡 To configure these variables, run: npx hasyx assist
+💡 Configure these via hasyx.config.json (dns/cloudflare) and regenerate .env
 ```
 
 ## Core Features
@@ -139,56 +136,11 @@ Before using the SubdomainManager, you must configure the environment:
 4. **System Requirements**: nginx and certbot installed
 5. **Domain Configuration**: Primary domain for subdomain management
 
-### Environment Configuration with Assist
+### Configuration via hasyx.config.json
 
-⚠️ **Required Setup**: Configure all required credentials and settings:
-
-```bash
-npx hasyx assist dns
-```
-
-This will configure all required environment variables:
-- `HASYX_DNS_DOMAIN`: Your primary domain name
-- `CLOUDFLARE_API_TOKEN`: API token with Zone:Edit permissions
-- `CLOUDFLARE_ZONE_ID`: Zone ID from CloudFlare dashboard
-- `LETSENCRYPT_EMAIL`: Email for SSL certificates
-
-**Example assist session:**
-```bash
-$ npx hasyx assist dns
-
-🌐 DNS Management Configuration
-===============================
-
-Do you want to configure DNS/SSL/Cloudflare management? (y/n): y
-
-Enter your DNS domain (e.g., example.com): yourdomain.com
-✅ DNS domain set to: yourdomain.com
-
-☁️ Cloudflare Configuration
-============================
-
-Do you want to configure Cloudflare for DNS management? (y/n): y
-
-Enter Cloudflare API Token: your_api_token_here
-✅ Cloudflare API Token configured
-
-Enter Cloudflare Zone ID: your_zone_id_here
-✅ Cloudflare Zone ID configured
-
-Enter LetsEncrypt email for SSL certificates: admin@yourdomain.com
-✅ LetsEncrypt email configured
-
-✅ Cloudflare configuration completed successfully!
-💾 Configuration saved to .env file
-
-🎉 DNS management configuration completed!
-🚀 You can now use DNS management features:
-   • Create subdomains programmatically
-   • Manage SSL certificates
-   • Configure reverse proxies
-   • Automate DNS record management
-```
+Configure these sections in `hasyx.config.json`, then regenerate `.env`:
+- `dns` with `domain`
+- `cloudflare` with `apiToken`, `zoneId`, `letsEncryptEmail`
 
 ### Manual Environment Configuration
 
@@ -234,7 +186,7 @@ const requiredVars = [
 
 for (const varName of requiredVars) {
   if (!process.env[varName]) {
-    console.error(`${varName} not configured. Run: npx hasyx assist dns`);
+    console.error(`${varName} not configured. Configure via hasyx.config.json (dns/cloudflare) and regenerate .env`);
     process.exit(1);
   }
 }
@@ -294,7 +246,7 @@ function validateEnvironment() {
 
   if (missing.length > 0) {
     console.error(`❌ Missing required environment variables: ${missing.join(', ')}`);
-    console.log('💡 Run: npx hasyx assist dns');
+    console.log('💡 Configure via hasyx.config.json (dns/cloudflare) and regenerate .env');
     process.exit(1);
   }
 
@@ -658,7 +610,7 @@ try {
   } else if (error.message.includes('Nginx configuration')) {
     console.log('Nginx configuration failed, check nginx service');
   } else if (error.message.includes('not configured')) {
-    console.log('Environment not configured. Run: npx hasyx assist dns');
+    console.log('Environment not configured. Configure via hasyx.config.json and regenerate .env');
   } else {
     console.error('Unexpected error:', error);
   }
@@ -680,7 +632,7 @@ function validateEnvironment() {
   
   if (missing.length > 0) {
     console.error(`Missing environment variables: ${missing.join(', ')}`);
-    console.error('Run: npx hasyx assist dns');
+    console.error('Configure via hasyx.config.json and regenerate .env');
     process.exit(1);
   }
   
@@ -774,10 +726,7 @@ for (const subdomain of subdomains) {
 
 **Environment not configured:**
 ```bash
-# Configure all required variables
-npx hasyx assist dns
-
-# Verify configuration
+# Verify configuration after updating hasyx.config.json and regenerating .env
 echo "Domain: $HASYX_DNS_DOMAIN"
 echo "CloudFlare Token: ${CLOUDFLARE_API_TOKEN:0:10}..."
 echo "Zone ID: ${CLOUDFLARE_ZONE_ID:0:10}..."

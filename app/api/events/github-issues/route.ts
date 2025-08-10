@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { hasyxEvent, HasuraEventPayload } from 'hasyx/lib/events';
-import { getGitHubAccessToken, hasGitHubScope } from 'hasyx/lib/authDbUtils';
-import { createApolloClient } from 'hasyx/lib/apollo';
+import { getGitHubAccessToken, hasGitHubScope } from '@/lib/github/auth';
+import { createApolloClient } from '@/lib/apollo/apollo';
 import { Generator } from 'hasyx/lib/generator';
-import { Hasyx } from 'hasyx/lib/hasyx';
+import { Hasyx } from '@/lib/hasyx/hasyx';
 import { Octokit } from 'octokit';
 import schema from '../../../../public/hasura-schema.json';
 import Debug from 'hasyx/lib/debug';

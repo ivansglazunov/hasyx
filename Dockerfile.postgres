@@ -1,0 +1,18 @@
+FROM ghcr.io/supabase/plv8:3.1.5-pg15 AS plv8
+
+FROM postgres:15
+
+USER root
+
+# Copy the PLV8 Debian package from the plv8 stage and install it
+COPY --from=plv8 /tmp/plv8_*.deb /tmp/plv8.deb
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+      ca-certificates \
+      libstdc++6; \
+    apt-get install -y --no-install-recommends /tmp/plv8.deb; \
+    rm -rf /var/lib/apt/lists/* /tmp/plv8.deb
+
+

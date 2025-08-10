@@ -33,7 +33,7 @@ export function middleware(request: NextRequest) {
   }
   
   // Skip API routes in static builds
-  const isStaticBuild = process.env.npm_lifecycle_event === 'build:client';
+  const isStaticBuild = process.env.npm_lifecycle_event === 'client';
   
   if (isStaticBuild && isApiRoute) {
     // In static builds, skip API routes by returning early

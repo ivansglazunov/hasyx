@@ -64,7 +64,7 @@ To use Firebase web push notifications with Hasyx, you need to configure the fol
     *   Click "Generate new private key" and download the JSON file.
     *   **Store this file securely.** Do not commit it to your repository.
     *   Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable in your server environment (e.g., Vercel project settings) to the *full path* to this JSON file if running locally, or paste the *contents* of the JSON file directly into the environment variable value if your hosting provider supports that (like Vercel).
-        *   You can use the `npx hasyx assist` command to help set up this and other environment variables.
+        *   Configure via `hasyx.config.json` (telegramBot/telegramLogin) and regenerate `.env`.
 
 3.  **Web Push Certificate (VAPID Key)**:
     *   In Firebase Console: Project Settings > Cloud Messaging > Web configuration (at the bottom).
@@ -95,7 +95,7 @@ To use Firebase web push notifications with Hasyx, you need to configure the fol
     # NEXT_PUBLIC_BASE_URL=https://your-app.com
     ```
 
-    *   The `npx hasyx assist` command can help guide you through setting many of these variables.
+    *   These variables are generated from `hasyx.config.json` by the config tool.
 
 5.  **Install Dependencies**:
     *   `firebase` (for client-side SDK)
@@ -227,7 +227,7 @@ This document outlines how Hasyx integrates with Telegram Bots for user interact
     # Optional: Custom pre-prompt for the AI for Telegram interactions
     TELEGRAM_AI_PREPROMPT="You are a very helpful assistant."
     ```
-    The `npx hasyx assist` command can guide you through setting `TELEGRAM_BOT_TOKEN`.
+    Set `TELEGRAM_BOT_TOKEN` via `hasyx.config.json` and regenerate `.env`.
 
 3.  **Set Webhook**:
     *   Hasyx relies on a webhook to receive updates from Telegram. The API route `app/api/telegram_bot/route.ts` handles these updates.
@@ -238,7 +238,7 @@ This document outlines how Hasyx integrates with Telegram Bots for user interact
         *   Make sure your `/api/telegram_bot` endpoint is reachable from the internet.
 
 4.  **Bot Profile Picture (Optional but Recommended)**:
-    *   The `npx hasyx assist` command (after configuring the bot token) or `npx hasyx assets` (if `TELEGRAM_BOT_TOKEN` is set) will attempt to set your bot's profile picture using the `public/logo.png` from your project.
+    *   The `npx hasyx assets` command (if `TELEGRAM_BOT_TOKEN` is set) will attempt to set your bot's profile picture using `public/logo.png`.
     *   Ensure `public/logo.png` is your desired bot avatar.
     *   Alternatively, you can set the bot's profile picture manually via BotFather using the `/setuserpic` command.
 

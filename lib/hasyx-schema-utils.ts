@@ -19,10 +19,10 @@ export interface HasuraTable {
 }
 
 /**
- * Получает правильную схему и имя таблицы на основе имени типа GraphQL и маппинга таблиц
- * @param graphQLTypeName Имя типа GraphQL
- * @param tableMappings Маппинг таблиц
- * @returns Объект с полями schema и table
+ * Get proper schema and table name based on GraphQL type name and table mappings
+ * @param graphQLTypeName GraphQL type name
+ * @param tableMappings Table mappings
+ * @returns Object with schema and table
  */
 export function getProperSchemaAndTable(
   graphQLTypeName: string, 
@@ -42,10 +42,10 @@ export function getProperSchemaAndTable(
 }
 
 /**
- * Извлекает информацию о таблицах из схемы GraphQL
- * @param schemaTypes Массив типов схемы GraphQL
- * @param tableMappings Маппинг таблиц
- * @returns Массив объектов HasuraTable
+ * Extract tables info from GraphQL schema
+ * @param schemaTypes Array of GraphQL schema types
+ * @param tableMappings Table mappings
+ * @returns Array of HasuraTable objects
  */
 export function getTablesFromGraphQLSchema(
   schemaTypes: any[], 
@@ -102,7 +102,7 @@ export function getTablesFromGraphQLSchema(
           name: table
         },
         columns,
-        primary_key: null // Первичный ключ нужно получать отдельно
+        primary_key: null // Primary key should be fetched separately
       });
     }
   }

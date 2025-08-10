@@ -2,8 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo, ReactNode } from 'react';
 import { useHasyx, useSubscription } from '../lib';
-import { getDeviceInfo, NotificationPermission } from 'hasyx/lib/notify';
-import { getFirebaseConfig } from 'hasyx/lib/notify-firebase';
+import { getDeviceInfo, NotificationPermission } from '@/lib/notify/notify';
+import { getFirebaseConfig } from '@/lib/notify/notify-firebase';
 import { useSession } from '../lib';
 import { v4 as uuidv4 } from 'uuid';
 import Debug from 'hasyx/lib/debug';
@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from 'hasyx/components/ui/ta
 import { Checkbox } from 'hasyx/components/ui/checkbox';
 import { Label } from 'hasyx/components/ui/label';
 import { toast } from 'sonner';
+import { useTranslations } from 'hasyx';
 
 const debug = Debug('notify:component');
 
@@ -403,6 +404,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 export function NotificationCard() {
   const hasyx = useHasyx();
   const userId = hasyx?.userId;
+  const tN = useTranslations('notifications');
   
   const [notificationTitle, setNotificationTitle] = useState('Test Notification');
   const [notificationBody, setNotificationBody] = useState('This is a test notification!');
@@ -571,11 +573,11 @@ export function NotificationCard() {
     return (
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <CardTitle>Notifications</CardTitle>
-          <CardDescription>Login is required to work with notifications</CardDescription>
+          <CardTitle>{tN('loginRequiredTitle')}</CardTitle>
+          <CardDescription>{tN('loginRequiredDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>Please log in to manage your notification settings.</p>
+          <p>{tN('pleaseLogin')}</p>
         </CardContent>
       </Card>
     );
@@ -586,30 +588,30 @@ export function NotificationCard() {
       <CardHeader>
         <CardTitle className="flex items-center">
           <Bell className="mr-2 h-5 w-5" />
-          Notifications
+          {tN('title')}
           {permissions.length > 0 && (
             <Badge variant="outline" className="ml-2 bg-green-100 text-green-700 border-green-300">
-              {permissions.length} provider{permissions.length !== 1 ? 's' : ''}
+              {tN('providersCount', { count: permissions.length })}
             </Badge>
           )}
         </CardTitle>
         <CardDescription>
-          Manage your notification preferences and send test notifications.
+          {tN('description')}
         </CardDescription>
       </CardHeader>
       
       <Tabs defaultValue="send" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mx-6">
-          <TabsTrigger value="send">Send Notification</TabsTrigger>
-          <TabsTrigger value="history">History ({notifications.length})</TabsTrigger>
+          <TabsTrigger value="send">{tN('tabs.send')}</TabsTrigger>
+          <TabsTrigger value="history">{tN('tabs.historyWithCount', { count: notifications.length })}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="send" className="space-y-4 p-6 pt-4">
           {permissionsError && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>Failed to load notification permissions: {permissionsError.message}</AlertDescription>
+              <AlertTitle>{tN('permissionsErrorTitle')}</AlertTitle>
+              <AlertDescription>{tN('permissionsErrorDescription', { message: permissionsError.message })}</AlertDescription>
             </Alert>
           )}
           
@@ -622,23 +624,23 @@ export function NotificationCard() {
           ) : permissions.length === 0 ? (
             <Alert>
               <Info className="h-4 w-4" />
-              <AlertTitle>No Notification Providers</AlertTitle>
+              <AlertTitle>{tN('noProvidersTitle')}</AlertTitle>
               <AlertDescription>
-                You don't have any notification providers set up. Try logging in with Telegram or enabling web push notifications.
+                {tN('noProvidersDescription')}
               </AlertDescription>
             </Alert>
           ) : (
             <>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-medium">Available Notification Methods</h4>
+                  <h4 className="font-medium">{tN('availableMethods')}</h4>
                   <div className="flex items-center space-x-2">
                     <Checkbox 
                       id="select-all"
                       checked={selectedProviders.length === permissions.length && permissions.length > 0}
                       onCheckedChange={handleSelectAll}
                     />
-                    <Label htmlFor="select-all" className="text-sm">Select All</Label>
+                    <Label htmlFor="select-all" className="text-sm">{tN('selectAll')}</Label>
                   </div>
                 </div>
                 
@@ -658,8 +660,8 @@ export function NotificationCard() {
                           </Label>
                           <p className="text-xs text-muted-foreground">
                             {permission.provider === 'telegram_bot' ? 
-                              `Chat ID: ${permission.device_token}` :
-                              `Token: ${permission.device_token.substring(0, 20)}...`
+                              `${tN('labels.chatId')}: ${permission.device_token}` :
+                              `${tN('labels.token')}: ${permission.device_token.substring(0, 20)}...`
                             }
                           </p>
                         </div>
@@ -673,15 +675,15 @@ export function NotificationCard() {
               </div>
               
               <div className="space-y-3">
-                <h4 className="font-medium">Notification Content</h4>
+                <h4 className="font-medium">{tN('content')}</h4>
                 <Input
-                  placeholder="Notification Title"
+                  placeholder={tN('titlePlaceholder')}
                   value={notificationTitle}
                   onChange={(e) => setNotificationTitle(e.target.value)}
                   disabled={isSending}
                 />
                 <Textarea
-                  placeholder="Notification Body"
+                  placeholder={tN('bodyPlaceholder')}
                   value={notificationBody}
                   onChange={(e) => setNotificationBody(e.target.value)}
                   disabled={isSending}
@@ -694,12 +696,12 @@ export function NotificationCard() {
                 >
                   {isSending ? (
                     <>
-                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> Sending...
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> {tN('sending')}
                     </>
                   ) : (
                     <>
                       <BellRing className="mr-2 h-4 w-4" /> 
-                      Send to {selectedProviders.length} provider{selectedProviders.length !== 1 ? 's' : ''}
+                      {tN('sendToProviders', { count: selectedProviders.length })}
                     </>
                   )}
                 </Button>
@@ -711,7 +713,7 @@ export function NotificationCard() {
         <TabsContent value="history" className="space-y-4 p-6 pt-4">
           <div className="flex items-center space-x-2">
             <History className="h-4 w-4" />
-            <h4 className="font-medium">Recent Notifications</h4>
+            <h4 className="font-medium">{tN('recent')}</h4>
           </div>
           
           {notificationsLoading ? (
@@ -723,9 +725,9 @@ export function NotificationCard() {
           ) : notifications.length === 0 ? (
             <Alert>
               <Info className="h-4 w-4" />
-              <AlertTitle>No Notifications</AlertTitle>
+              <AlertTitle>{tN('historyEmptyTitle')}</AlertTitle>
               <AlertDescription>
-                You haven't sent any notifications yet. Use the "Send Notification" tab to create your first one.
+                {tN('historyEmptyDescription')}
               </AlertDescription>
             </Alert>
           ) : (

@@ -69,9 +69,9 @@ Hasyx takes responsibility for:
 *   **GitHub → Telegram Bot Integration:** Automated CI/CD notifications via Telegram bot with AI-generated commit summaries, strict status reporting, and privacy-focused messaging. Features strict workflow status reporting (PASSED/FAILED for tests, builds, deploys), privacy-focused messaging (no author names), smart MD file linking, and rich English-language notifications. Waits for all workflows to complete, then sends detailed messages with commit analysis, test results, deployment URLs, and direct links to repository and documentation. Uses a modular architecture: **`github-telegram-bot-hasyx.ts`** (core functionality with generator function), **`github-telegram-bot.ts`** (project-specific configuration), and **`github-telegram-bot.template`** (template for child projects). Configurable via `HASYX_GITHUB_TELEGRAM_BOT` environment variable. See [`TELEGRAM_BOT.md`](lib/TELEGRAM_BOT.md) for setup and configuration details.
 *   [Coming Soon] Preparing Capacitor for building cross-platform applications (Android, iOS, Desktop, Browser Extensions, etc.).
 *   **Cytoscape Integration:** A powerful set of React components for graph visualizations using Cytoscape.js, allowing for custom HTML rendering within nodes and reactive style updates. See [`CYTO.md`](CYTO.md) for details.
-*   **DNS and SSL Management:** Comprehensive subdomain management with automated HTTPS setup using CloudFlare DNS, Let's Encrypt SSL certificates, and nginx configuration. Features include DNS propagation waiting, automatic certificate renewal, idempotent operations, and complete subdomain lifecycle management. Use `npx hasyx assist dns` to configure CloudFlare API credentials and domain settings. See [`CLOUDFLARE.md`](CLOUDFLARE.md), [`SSL.md`](SSL.md), [`NGINX.md`](NGINX.md), and [`SUBDOMAIN.md`](SUBDOMAIN.md) for details.
+*   **DNS and SSL Management:** Comprehensive subdomain management with automated HTTPS setup using CloudFlare DNS, Let's Encrypt SSL certificates, and nginx configuration. Features include DNS propagation waiting, automatic certificate renewal, idempotent operations, and complete subdomain lifecycle management. Configure CloudFlare API credentials and domain settings via `hasyx.config.json` (keys: `HASYX_DNS_DOMAIN`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID`, `LETSENCRYPT_EMAIL`). See [`CLOUDFLARE.md`](CLOUDFLARE.md), [`SSL.md`](SSL.md), [`NGINX.md`](NGINX.md), and [`SUBDOMAIN.md`](SUBDOMAIN.md) for details.
 *   **URL Query State Management:** A powerful `use-query` hook for synchronizing state between multiple components using URL query parameters. Features automatic URL synchronization, multi-component state sharing, TypeScript support, browser navigation compatibility, SSR safety, and JSON serialization for complex objects. Perfect for search pages, filters, pagination, and any scenario where you need shareable, bookmarkable URLs with persistent state. See [`USE-QUERY.md`](USE-QUERY.md) for complete documentation and examples.
-*   **Docker Hub Publishing:** Automated Docker image building and publishing via GitHub Actions with configurable publishing control. Features multi-architecture support (AMD64/ARM64), optimized Dockerfile with multi-stage builds. Interactive configuration available through `npx tsx lib/assist-docker.ts`. See [`DOCKER.md`](DOCKER.md) for complete documentation and setup instructions.
+*   **Docker Hub Publishing:** Automated Docker image building and publishing via GitHub Actions with configurable publishing control. Features multi-architecture support (AMD64/ARM64), optimized Dockerfile with multi-stage builds. Configure `DOCKERHUB_USERNAME`/`DOCKERHUB_PASSWORD` via `hasyx.config.json`. See [`DOCKER.md`](DOCKER.md) for complete documentation and setup instructions.
 
 Applying best development practices from the listed ecosystems, we have combined these libraries into a single framework for rapid deployment.
 
@@ -139,7 +139,7 @@ Applying best development practices from the listed ecosystems, we have combined
 Explore the different modules and functionalities of Hasyx:
 
 *   **[AI.md](./AI.md):** High-level overview of the event-driven AI architecture.
-*   **[ASK.md](./ASK.md):** Guide to using the AI assistant command-line interface.
+*   **[ASK.md](./ASK.md):** Guide to using the AI command-line interface.
 *   **[OLLAMA.md](./OLLAMA.md):** Instructions for using local models with Ollama.
 *   **[OPENROUTER.md](./OPENROUTER.md):** Instructions for using cloud models with OpenRouter.
 *   **[GENERATOR.md](GENERATOR.md):** Learn about the powerful dynamic query generator for Hasura.
@@ -358,6 +358,30 @@ You can extend the CLI by modifying your `lib/cli.ts` file to add project-specif
 
 ---
 
+### `config`
+
+Interactive project configuration and silent artifacts generation.
+
+```bash
+# Interactive UI (Ink-based). Edits hasyx.config.json and auto-updates .env and docker-compose.yml on changes
+npx hasyx config
+
+# Silent mode: only generate .env and docker-compose.yml and exit (no UI)
+npx hasyx config --silent
+
+# Equivalent npm script provided in this repo for development
+npm run config
+```
+
+What it does:
+- Reads/writes `hasyx.config.json`
+- Generates `.env` via `lib/config/env.tsx`
+- Generates `docker-compose.yml` via `lib/config/docker-compose.tsx`
+
+Tip: Use `--silent` in CI to re-generate artifacts without interactive UI.
+
+---
+
 ### `init`
 
 Initializes Hasyx in your Next.js project. It copies necessary API routes, configuration files, and applies the `next-ws` patch for WebSocket support.
@@ -397,7 +421,7 @@ During initialization, Hasyx ensures that the following npm scripts are added to
   "schema": "npx hasyx schema",
   "npm-publish": "npm run build && npm publish",
   "cli": "NODE_OPTIONS=\"--experimental-vm-modules\" npx hasyx",
-  "assist": "NODE_OPTIONS=\"--experimental-vm-modules\" npx hasyx assist",
+  
   "js": "NODE_OPTIONS=\"--experimental-vm-modules\" npx hasyx js",
   "logs": "npx hasyx logs",
   "logs-diffs": "npx hasyx logs-diffs",
@@ -463,16 +487,12 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │   │   └── ✨ layout.tsx        # Sidebar layout component
 │   ├── entities/
 │   │   └── ✨ default.tsx       # Default entity component
-│   ├── ✨ multi-select-hasyx.tsx # MultiSelect component for hasyx integration
-│   └── ✨ room.tsx              # Room component for messaging interface
 ├── lib/
 │   ├── ✨ entities.tsx          # Entity definitions (from entities.template)
 │   ├── ✨ ask.ts               # AI assistant integration (from ask.template)
 │   ├── ✨ debug.ts             # Debug utilities (from debug.template)
 │   ├── ✨ cli.ts               # CLI utilities (from cli.template)
 │   ├── ✨ github-telegram-bot.ts # GitHub→Telegram bot integration (from github-telegram-bot.template)
-│   ├── ✨ messaging.tsx         # Messaging main component
-│   └── ✨ messaging-client.tsx  # Messaging client component
 ├── migrations/
 │   ├── 1746660891582-hasyx-users/
 │   │   ├── ✨ up.ts
@@ -692,7 +712,7 @@ The CLI automatically loads environment variables from the `.env` file in your p
 
 ---
 
-### `assist` 🔧
+ 
 
 **Interactive Project Configuration Assistant**
 
@@ -700,10 +720,10 @@ Interactive assistant to set up and configure your Hasyx project with step-by-st
 
 ```bash
 # Run the full assistant (recommended for new projects)
-npx hasyx assist
+npx hasyx
 
 # Skip specific steps
-npx hasyx assist --skip-auth --skip-repo --skip-env --skip-package --skip-init --skip-hasura --skip-secrets --skip-oauth --skip-resend --skip-vercel --skip-sync --skip-commit --skip-migrations --skip-firebase --skip-telegram --skip-project-user --skip-openrouter --skip-pg --skip-dns --skip-docker --skip-github --skip-storage
+
 ```
 
 **🎯 Available Configuration Options:**
@@ -774,19 +794,19 @@ npx hasyx assist --skip-auth --skip-repo --skip-env --skip-package --skip-init -
 **New Project Setup:**
 ```bash
 # Complete setup for a new project
-npx hasyx assist
+npx hasyx
 ```
 
 **GitHub Webhooks Only:**
 ```bash
 # Configure only GitHub webhooks
-npx hasyx assist --skip-auth --skip-repo --skip-env --skip-package --skip-init --skip-hasura --skip-secrets --skip-oauth --skip-resend --skip-vercel --skip-sync --skip-commit --skip-migrations --skip-firebase --skip-telegram --skip-project-user --skip-openrouter --skip-pg --skip-dns --skip-docker --skip-github --skip-storage
+
 ```
 
 **Storage Configuration Only:**
 ```bash
 # Configure only storage
-npx hasyx assist --skip-auth --skip-repo --skip-env --skip-package --skip-init --skip-hasura --skip-secrets --skip-oauth --skip-resend --skip-vercel --skip-sync --skip-commit --skip-migrations --skip-firebase --skip-telegram --skip-project-user --skip-openrouter --skip-pg --skip-dns --skip-docker --skip-github --skip-github-webhooks
+
 ```
 
 **📖 See [GITHUB-WEBHOOKS.md](GITHUB-WEBHOOKS.md) for detailed webhook setup instructions.**
@@ -830,7 +850,7 @@ The following environment variables are required:
 
 Configure these variables using:
 ```bash
-npx hasyx assist
+npx hasyx
 ```
 
 **✨ Features:**
@@ -885,11 +905,11 @@ npm run ask -- -e "What is the capital of France?"
 - `-h, --help` - Show help information
 
 **🎯 Real-time Progress Features:**
-- **🧠 AI думает...** - When AI is generating responses
-- **💭 AI ответил (N символов)** - Response received with character count
-- **📋 Найден JS/TSX код для выполнения** - Code found for execution
-- **⚡ Выполняется JS/TSX код...** - Code execution in progress
-- **✅ Результат выполнения** - Execution results displayed
+- **🧠 AI is thinking...** - When AI is generating responses
+- **💭 AI responded (N characters)** - Response received with character count
+- **📋 Found JS/TSX code to execute** - Code found for execution
+- **⚡ Executing JS/TSX code...** - Code execution in progress
+- **✅ Execution result** - Execution results displayed
 
 **🔄 Automatic Code Execution:**
 - AI can execute JavaScript and TypeScript code automatically
@@ -901,18 +921,18 @@ npm run ask -- -e "What is the capital of France?"
 ```bash
 $ npx hasyx ask -e "Check process.platform"
 
-🧠 AI думает...
-💭 AI ответил (156 символов)
-📋 Найден JS код для выполнения:
+🧠 AI is thinking...
+💭 AI responded (156 characters)
+📋 Found JS code to execute:
 ```js
 process.platform
 ```
-⚡ Выполняется JS код...
-✅ Результат выполнения:
+⚡ Executing JS code...
+✅ Execution result:
 darwin
 
-🧠 AI думает...
-💭 AI ответил (298 символов)
+🧠 AI is thinking...
+💭 AI responded (298 characters)
 
 You're running on macOS (darwin platform)...
 ```

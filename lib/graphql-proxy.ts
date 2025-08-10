@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import http from 'http';
 import ws, { WebSocket, WebSocketServer } from 'ws';
 import { getToken } from 'next-auth/jwt';
-import { getTokenFromIncomingMessage, getTokenFromRequest } from 'hasyx/lib/auth-next';
+import { getTokenFromIncomingMessage, getTokenFromRequest } from '@/lib/users/auth-next';
 import Debug from './debug';
 import { generateJWT } from 'hasyx/lib/jwt';
 

@@ -3,6 +3,7 @@
 import React from 'react';
 import { useFilesStore, UploadingFile } from './store';
 import { cn } from 'hasyx/lib/utils';
+import { useTranslations } from 'hasyx';
 
 export interface FilesZoneProps {
   className?: string;
@@ -19,6 +20,7 @@ export default function FilesZone({
   onRemove,
   renderRemoveButton
 }: FilesZoneProps) {
+  const tFiles = useTranslations('files');
   const { uploadingFiles, removeFile } = useFilesStore();
 
   const displayFiles = showCompleted 
@@ -59,13 +61,13 @@ export default function FilesZone({
   const getStatusText = (status: UploadingFile['status']) => {
     switch (status) {
       case 'uploading':
-        return 'Uploading...';
+        return tFiles('status.uploading');
       case 'completed':
-        return 'Completed';
+        return tFiles('status.completed');
       case 'error':
-        return 'Error';
+        return tFiles('status.error');
       default:
-        return 'Unknown';
+        return tFiles('status.unknown');
     }
   };
 
@@ -138,7 +140,7 @@ export default function FilesZone({
               <button
                 onClick={e => { e.stopPropagation(); (onRemove ?? removeFile)(file.id); }}
                 className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                title="Remove file"
+                title={tFiles('removeFile')}
                 type="button"
               >
                 ✕

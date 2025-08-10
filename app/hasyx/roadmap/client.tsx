@@ -11,13 +11,15 @@ import { Button } from 'hasyx/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from 'hasyx/components/ui/dialog';
 import { Input } from 'hasyx/components/ui/input';
 import { Textarea } from 'hasyx/components/ui/textarea';
+import { MarkdownEditor } from 'hasyx/lib/wysiwyg';
 import { useQuery, useHasyx } from 'hasyx';
 import { toast } from 'sonner';
 import { useToastHandleLoadingError } from 'hasyx/hooks/toasts';
 import { parseIssue, generateIssue } from 'hasyx/lib/issues';
 import { Tag } from 'lucide-react';
 import { MultiSelect } from '@/components/ui/multi-select';
-import { useDependencyDrawingStore } from 'hasyx/stores/dependency-drawing-store';
+import { useTranslations } from 'hasyx';
+import { useDependencyDrawingStore } from '@/hooks/dependency-drawing-store';
 
 const debug = Debug('cyto');
 
@@ -377,6 +379,9 @@ function CreateIssueDialog({
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const hasyx = useHasyx();
+  const tIssues = useTranslations('issues');
+  const tForms = useTranslations('forms');
+  const tSuccess = useTranslations('success');
 
   // Get all issues to extract unique labels
   const { data: allIssues = [] } = useQuery({
@@ -412,7 +417,7 @@ function CreateIssueDialog({
 
   const handleCreateIssue = async () => {
     if (!title.trim()) {
-      toast.error('Issue title is required');
+      toast.error(tIssues('titleRequired'));
       return;
     }
 
@@ -471,7 +476,7 @@ function CreateIssueDialog({
       });
 
       debug('✅ Issue inserted into database:', result);
-      toast.success('Issue created successfully! Event handler will sync with GitHub.');
+      toast.success(tSuccess('issueCreated'));
       
       // Reset form
       setTitle('');
@@ -486,7 +491,7 @@ function CreateIssueDialog({
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       debug('❌ Failed to create GitHub issue:', error);
       console.error('Create issue error:', error);
-      toast.error(`Failed to create issue: ${errorMessage}`);
+      toast.error(tIssues('failedToCreate', { message: errorMessage }));
     } finally {
       setIsCreating(false);
     }
@@ -503,17 +508,17 @@ function CreateIssueDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Create GitHub Issue</DialogTitle>
+          <DialogTitle>{tIssues('createGitHubIssue')}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="issue-title" className="text-sm font-medium">
-              Title *
+              {tIssues('title')} *
             </label>
             <Input
               id="issue-title"
-              placeholder="Enter issue title..."
+              placeholder={tForms('placeholders.issueTitle')}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={isCreating}
@@ -522,13 +527,13 @@ function CreateIssueDialog({
           
           <div className="space-y-2">
             <label htmlFor="issue-labels" className="text-sm font-medium">
-              Labels
+              {tIssues('labels')}
             </label>
             <MultiSelect
               options={uniqueLabels}
               onValueChange={setSelectedLabels}
               defaultValue={selectedLabels}
-              placeholder="Select labels..."
+              placeholder={tForms('placeholders.selectLabels')}
               variant="default"
               animation={0.5}
               maxCount={5}
@@ -538,15 +543,14 @@ function CreateIssueDialog({
           
           <div className="space-y-2">
             <label htmlFor="issue-body" className="text-sm font-medium">
-              Description
+              {tIssues('description')}
             </label>
-            <Textarea
-              id="issue-body"
-              placeholder="Enter issue description..."
+            <MarkdownEditor
               value={body}
-              onChange={(e) => setBody(e.target.value)}
-              disabled={isCreating}
-              rows={6}
+              onChange={setBody}
+              placeholder={tForms('placeholders.issueDescription')}
+              minHeight={160}
+              className="w-full"
             />
           </div>
         </div>
@@ -557,13 +561,13 @@ function CreateIssueDialog({
             onClick={handleCancel}
             disabled={isCreating}
           >
-            Cancel
+            {useTranslations('actions')('cancel')}
           </Button>
           <Button
             onClick={handleCreateIssue}
             disabled={isCreating || !title.trim()}
           >
-            {isCreating ? 'Creating...' : 'Create Issue'}
+            {isCreating ? tIssues('creating') : tIssues('createIssue')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -656,6 +660,8 @@ export default function Client() {
     order_by: [{ updated_at: 'desc' }],
   });
 
+  const tIssues = useTranslations('issues');
+  const tSuccess = useTranslations('success');
   const handleSyncGitHubIssues = async () => {
     setIsSyncing(true);
     try {
@@ -675,12 +681,12 @@ export default function Client() {
       }
 
       debug('✅ GitHub issues sync completed:', result);
-      toast.success(`Successfully synced ${result.synced} GitHub issues`);
+      toast.success(tSuccess('issuesSynced', { count: result.synced }));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       debug('❌ GitHub issues sync failed:', error);
       console.error('GitHub issues sync error:', error);
-      toast.error(`Failed to sync GitHub issues: ${errorMessage}`);
+      toast.error(tIssues('failedToSync', { message: errorMessage }));
     } finally {
       setIsSyncing(false);
     }
@@ -688,7 +694,7 @@ export default function Client() {
 
   const handleIssueCreated = useCallback((issue: any) => {
     debug('🎉 Issue created:', issue);
-    // Можно добавить дополнительную логику, например, обновить список issues
+    // Additional logic can be added here, e.g., refresh issues list
   }, []);
 
   const onGraphLoaded = useCallback((cy) => {
@@ -721,7 +727,7 @@ export default function Client() {
               disabled={isSyncing}
               className="w-full"
             >
-              {isSyncing ? '🔄 Syncing...' : '🔄 Sync GitHub Issues'}
+              {isSyncing ? tIssues('syncing') : tIssues('sync')}
             </Button>
           </div>
         </>}
@@ -733,7 +739,7 @@ export default function Client() {
               className="w-full"
               variant="default"
             >
-              ➕ Create Issue
+              ➕ {tIssues('createIssue')}
             </Button>
             
             {/* Cancel Drawing Mode Button */}
@@ -741,12 +747,12 @@ export default function Client() {
               <Button 
                 onClick={() => {
                   cancelDrawing();
-                  toggleDrawMode?.(); // Отключаем режим рисования
+                  toggleDrawMode?.(); // Disable drawing mode
                 }}
                 className="w-full"
                 variant="destructive"
               >
-                ❌ Cancel Drawing
+                {tIssues('cancelDrawing')}
               </Button>
             )}
           </div>

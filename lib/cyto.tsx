@@ -15,7 +15,7 @@ import Debug from './debug';
 import { v4 as uuidv4 } from 'uuid';
 import { useTheme } from '../components/theme-switcher';
 import { formatRgb, parse } from 'culori';
-import { useDependencyDrawingStore } from '../stores/dependency-drawing-store';
+import { useDependencyDrawingStore } from '../hooks/dependency-drawing-store';
 
 import klay from 'cytoscape-klay';
 import cytoscape from 'cytoscape';
@@ -228,13 +228,13 @@ export const Cyto = memo(function Cyto({
       added.remove();
       debug('ehcomplete', s, t);
       
-      // Добавляем вызов Zustand store для обработки зависимостей
+      // Add Zustand store call to handle dependencies
       try {
         const { completeDrawing, currentRelationType } = useDependencyDrawingStore.getState();
         if (completeDrawing && currentRelationType) {
-          // Получаем данные issues из source и target
-          const sourceIssueData = s; // Уже есть в data
-          const targetIssueData = t; // Уже есть в data
+          // Get issues data from source and target
+          const sourceIssueData = s; // Already in data
+          const targetIssueData = t; // Already in data
           
           completeDrawing(sourceIssueData, targetIssueData, currentRelationType);
         }
@@ -395,7 +395,7 @@ export const Cyto = memo(function Cyto({
         canLink: (source, target) => {
           const s = source.data();
           const t = target.data();
-          // Проверяем, что это GitHub issues
+          // Ensure these are GitHub issues
           return s.github_id && t.github_id;
         },
         edgeParams: (source, target) => {
@@ -410,7 +410,7 @@ export const Cyto = memo(function Cyto({
     }
   }, [_cy, eh]);
 
-  // Экспортируем toggleDrawMode через useGraph
+  // Export toggleDrawMode via useGraph
   const contextValue = useMemo(() => ({ 
     cyRef, 
     layout, 

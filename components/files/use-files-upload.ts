@@ -8,7 +8,7 @@ export function useFilesUpload() {
     files.forEach(file => {
       const fileId = addFile(file);
       
-      // Симулируем прогресс загрузки
+      // Simulate upload progress
       const simulateProgress = () => {
         let progress = 0;
         const interval = setInterval(() => {
@@ -26,8 +26,8 @@ export function useFilesUpload() {
   }, [addFile, updateProgress]);
 
   const handleUploadComplete = useCallback((fileId: string) => {
-    // Находим файл по имени (так как у нас нет прямой связи)
-    // В реальном приложении нужно будет улучшить эту логику
+    // Find the file by name (since we don't have a direct link)
+    // In a real app, this logic should be improved
     const uploadingFiles = useFilesStore.getState().uploadingFiles;
     const file = uploadingFiles.find(f => f.status === 'uploading');
     if (file) {

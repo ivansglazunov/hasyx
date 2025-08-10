@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { testAuthorize } from 'hasyx/lib/auth';
-import { createApolloClient } from 'hasyx/lib/apollo';
+import { _authorize } from '@/lib/users/auth';
+import { createApolloClient } from '@/lib/apollo/apollo';
 import { Generator } from 'hasyx/lib/generator';
-import { Hasyx } from 'hasyx/lib/hasyx';
+import { Hasyx } from '@/lib/hasyx/hasyx';
 import hasyxSchema from '../../../../public/hasura-schema.json';
 import dotenv from 'dotenv';
 import axios from 'axios';
@@ -93,7 +93,7 @@ const isLocal = !!+process.env.JEST_LOCAL!;
     }
 
     // Authenticate as user 1
-    const { axios: axios1 } = await testAuthorize(testUser1.id, { ws: false });
+    const { axios: axios1 } = await _authorize(testUser1.id, { ws: false });
     axios1.defaults.baseURL = baseURL;
 
     // Make API request to get JWT
@@ -114,7 +114,7 @@ const isLocal = !!+process.env.JEST_LOCAL!;
     }
 
     // Authenticate as user 1
-    const { axios: axios1 } = await testAuthorize(testUser1.id, { ws: false });
+    const { axios: axios1 } = await _authorize(testUser1.id, { ws: false });
     axios1.defaults.baseURL = baseURL;
 
     // Get JWT token
@@ -148,11 +148,11 @@ const isLocal = !!+process.env.JEST_LOCAL!;
     }
 
     // Authenticate as user 1
-    const { axios: axios1 } = await testAuthorize(testUser1.id, { ws: false });
+    const { axios: axios1 } = await _authorize(testUser1.id, { ws: false });
     axios1.defaults.baseURL = baseURL;
     
     // Authenticate as user 2
-    const { axios: axios2 } = await testAuthorize(testUser2.id, { ws: false });
+    const { axios: axios2 } = await _authorize(testUser2.id, { ws: false });
     axios2.defaults.baseURL = baseURL;
 
     // Each user gets their own JWT

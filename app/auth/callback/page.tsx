@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuthCallback, AuthCallbackCompleting, AuthCallbackError } from 'hasyx/lib/auth-callback';
+import { useAuthCallback, AuthCallbackCompleting, AuthCallbackError } from '@/lib/users/auth-callback';
 
 export default function AuthCallbackPage() {
   const callbackState = useAuthCallback();

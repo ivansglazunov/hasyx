@@ -1,6 +1,296 @@
 {
-  "hasyx": {
+  "common": {
+    "loading": "Loading...",
+    "search": "Search",
+    "saving": "Saving...",
+    "moreCount": "+ {count} more",
+    "error": "Error",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "config": {
+    "loading": "Loading configuration...",
+    "variant": "variant",
+    "items": "{count} items",
+    "back": "Back",
+    "selectVariant": "Select variant",
+    "pickVariant": "Pick variant",
+    "newKeyName": "New {section} key name",
+    "add": "+ Add",
+    "open": "Open",
+    "delete": "Delete",
+    "editSection": "edit {section} config",
+    "saving": "Saving…",
+    "changesSaved": "Changes saved",
+    "validationErrors": "Validation errors: {count}",
+    "notSet": "not set",
+    "noHost": "no host",
+    "noHasura": "no hasura"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "clear": "Clear",
+    "edit": "Edit",
+    "close": "Close",
+    "open": "Open",
+    "upload": "Upload",
+    "download": "Download",
+    "retry": "Retry",
+    "copy": "Copy",
+    "apply": "Apply",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "disconnect": "Disconnect"
+  },
+  "nav": {
+    "home": "Home",
+    "files": "Files",
+    "payments": "Payments",
+    "messaging": "Messaging",
+    "settings": "Settings",
+    "diagnostics": "Diagnostics",
+    "config": "Config",
+    "pwaDiagnostics": "PWA Diagnostics",
+    "constructor": "Constructor",
+    "aframe": "A-Frame",
+    "cyto": "Cyto",
+    "telegram": "Telegram",
+    "roadmap": "Roadmap",
+    "validation": "Validation",
+    "hoverCardDemo": "Hover Card Demo",
+    "shockDemo": "Shock Demo",
+    "documentation": "Documentation"
+  },
+  "forms": {
+    "labels": {
+      "email": "Email",
+      "password": "Password",
+      "name": "Name",
+      "title": "Title",
+      "description": "Description"
+    },
+    "placeholders": {
+      "typeToSearch": "Type to search...",
+      "search": "Search...",
+      "selectOptions": "Select options",
+      "issueTitle": "Enter issue title...",
+      "issueDescription": "Enter issue description...",
+      "selectLabels": "Select labels..."
+    },
+    "noResults": "No results found.",
+    "selectAll": "Select all",
+    "validation": {
+      "required": "This field is required",
+      "invalidEmail": "Enter a valid email",
+      "minLength": "Minimum length is {min}",
+      "maxLength": "Maximum length is {max}"
+    }
+  },
+  "errors": {
+    "network": "Network error. Please try again.",
+    "unknown": "Something went wrong",
+    "updateFailed": "Failed to update",
+    "accountDisconnectFailed": "Failed to disconnect account"
+  },
+  "success": {
+    "saved": "Saved successfully",
+    "updated": "Updated successfully",
+    "deleted": "Deleted successfully",
+    "issueUpdated": "Issue updated",
+    "accountDisconnected": "{provider} account disconnected successfully",
+    "issuesSynced": "Successfully synced {count} GitHub issues",
+    "issueCreated": "Issue created successfully! Event handler will sync with GitHub."
+  },
+  "tooltips": {
+    "themeToggle": "Toggle theme",
+    "deleteAccountConnection": "Delete account connection"
+  },
+  "theme": {
     "light": "Light",
-    "dark": "Dark"
+    "dark": "Dark",
+    "system": "System"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "signInToYourAccount": "Sign in to your account",
+    "continueWith": "Continue with {provider}",
+    "connectedAccounts": "Connected Accounts"
+  },
+  "pages": {
+    "config": {
+      "title": "🛠️ Hasyx Config",
+      "description": "Edit configuration using JSON Schema form. Saving regenerates .env and docker-compose.yml"
+    },
+    "files": {
+      "title": "📁 Files",
+      "description": "Manage and organize your files with drag & drop support"
+    },
+    "validation": {
+      "title": "Form Validation",
+      "description": "Test real-time form validation using Zod schemas"
+    },
+    "hoverCard": {
+      "title": "Hover Card"
+    },
+    "documentation": {
+      "title": "Documentation",
+      "loading": "Loading...",
+      "notFoundTitle": "Document Not Found",
+      "notFoundDescription": "The requested markdown file could not be found.",
+      "back": "Back to Documentation",
+      "ariaLinkToHeading": "Link to this heading"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Manage your notification preferences and send test notifications.",
+    "loginRequiredTitle": "Notifications",
+    "loginRequiredDescription": "Login is required to work with notifications",
+    "pleaseLogin": "Please log in to manage your notification settings.",
+    "tabs": {
+      "send": "Send Notification",
+      "history": "History",
+      "historyWithCount": "History ({count})"
+    },
+    "permissionsErrorTitle": "Error",
+    "permissionsErrorDescription": "Failed to load notification permissions: {message}",
+    "noProvidersTitle": "No Notification Providers",
+    "noProvidersDescription": "You don't have any notification providers set up. Try logging in with Telegram or enabling web push notifications.",
+    "availableMethods": "Available Notification Methods",
+    "selectAll": "Select All",
+    "content": "Notification Content",
+    "titlePlaceholder": "Notification Title",
+    "bodyPlaceholder": "Notification Body",
+    "sending": "Sending...",
+    "sendToProviders": "Send to {count} {count, plural, one {provider} other {providers}}",
+    "providersCount": "{count} {count, plural, one {provider} other {providers}}",
+    "recent": "Recent Notifications",
+    "historyEmptyTitle": "No Notifications",
+    "historyEmptyDescription": "You haven't sent any notifications yet. Use the \"Send Notification\" tab to create your first one.",
+    "status": {
+      "sent": "Sent",
+      "failed": "Failed",
+      "pending": "Pending"
+    },
+    "providerNames": {
+      "webPush": "Web Push (Firebase)",
+      "telegramBot": "Telegram Bot"
+    },
+    "labels": {
+      "chatId": "Chat ID",
+      "token": "Token"
+    },
+    "toast": {
+      "selectProvidersAndContent": "Please select providers and enter notification content",
+      "sentSuccess": "Notification created and sent to {count} {count, plural, one {provider} other {providers}}",
+      "sendFailed": "Failed to send notification: {message}"
+    }
+  },
+  "files": {
+    "empty": "No files yet",
+    "items": "{count, plural, one {# file} other {# files}}",
+    "status": {
+      "uploading": "Uploading...",
+      "completed": "Completed",
+      "error": "Error",
+      "unknown": "Unknown"
+    },
+    "removeFile": "Remove file",
+    "loadingFiles": "Loading files...",
+    "selected": "{count} selected",
+    "status": {
+      "uploading": "Uploading...",
+      "completed": "Completed",
+      "error": "Error",
+      "unknown": "Unknown",
+      "uploaded": "Uploaded",
+      "processing": "Processing"
+    },
+    "view": {
+      "grid": "Grid",
+      "list": "List",
+      "table": "Table"
+    },
+    "table": {
+      "select": "Select",
+      "file": "File",
+      "size": "Size",
+      "type": "Type",
+      "created": "Created",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "confirm": {
+      "deleteOne": "Are you sure you want to delete this file?",
+      "deleteMany": "Are you sure you want to delete {count} selected {count, plural, one {file} other {files}}?"
+    },
+    "toast": {
+      "deleteSuccessOne": "File deleted successfully",
+      "deleteFailed": "Delete failed",
+      "deleteSuccessMany": "Successfully deleted {count} {count, plural, one {file} other {files}}",
+      "deleteFailedMany": "Failed to delete selected files",
+      "errorLoading": "Error loading files: {message}"
+    },
+    "example": {
+      "title": "📁 Files Upload Example",
+      "simpleButton": "Simple Button Upload",
+      "uploadFiles": "📤 Upload Files",
+      "customDropZone": "Custom Drop Zone",
+      "dropHere": "Drop files here",
+      "orClick": "or click to select files",
+      "uploadingFiles": "Uploading Files"
+    }
+  },
+  "accounts": {
+    "noUserId": "No user ID available",
+    "loading": "Loading accounts...",
+    "noConnected": "No connected accounts",
+    "addAccount": "Add account",
+    "disconnectTitle": "Disconnect Account",
+    "disconnectDescription": "Are you sure you want to disconnect your {provider} account? This action cannot be undone and you will need to reconnect the account if you want to use it again.",
+    "addAccountTitle": "Add Account",
+    "addAccountDescription": "Choose a provider to link a new account to your profile"
+  },
+  "messaging": {
+    "createRoom": "Create room",
+    "createNewRoom": "Create a new room",
+    "roomTitle": "Room title",
+    "enterRoomTitle": "Enter room title...",
+    "whoCanView": "Who can view messages",
+    "whoCanEdit": "Who can edit messages",
+    "whoCanReply": "Who can reply",
+    "whoCanRemoveOwn": "Who can remove own messages",
+    "whoCanDeleteAny": "Who can delete any messages",
+    "selectUsers": "Select users...",
+    "creating": "Creating...",
+    "noRooms": "No rooms",
+    "loadingRooms": "Loading rooms...",
+    "selectRoomToView": "Select a room to view messages",
+    "loadingMessages": "Loading messages...",
+    "noMessages": "No messages",
+    "startConversation": "Start the conversation!",
+    "enterMessage": "Enter a message...",
+    "createdAt": "Created {date}",
+    "messagesCount": "{count} messages"
+  },
+  "issues": {
+    "createIssue": "Create Issue",
+    "createGitHubIssue": "Create GitHub Issue",
+    "title": "Title",
+    "labels": "Labels",
+    "description": "Description",
+    "creating": "Creating...",
+    "sync": "🔄 Sync GitHub Issues",
+    "syncing": "🔄 Syncing...",
+    "cancelDrawing": "❌ Cancel Drawing",
+    "titleRequired": "Issue title is required",
+    "failedToCreate": "Failed to create issue: {message}",
+    "failedToSync": "Failed to sync GitHub issues: {message}"
   }
 }

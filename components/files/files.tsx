@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback, ReactNode } from 'react';
+import { useTranslations } from 'hasyx';
 import { cn } from 'hasyx/lib/utils';
 
 export interface FilesProps {
@@ -28,18 +29,19 @@ export default function Files({
 }: FilesProps) {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const tFiles = useTranslations('files');
 
   const handleFiles = useCallback(async (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     const fileArray = Array.from(files);
     
-    // Вызываем callback если предоставлен
+    // Call callback if provided
     if (onFilesSelected) {
       onFilesSelected(fileArray);
     }
 
-    // Если есть onUploadComplete, загружаем файлы на сервер
+    // If onUploadComplete exists, upload files to the server
     if (onUploadComplete) {
       for (let i = 0; i < fileArray.length; i++) {
         const file = fileArray[i];
@@ -55,7 +57,7 @@ export default function Files({
           });
 
           if (!response.ok) {
-            throw new Error(`Upload failed for ${file.name}`);
+            throw new Error(tFiles('status.error'));
           }
 
           const result = await response.json();
@@ -63,7 +65,7 @@ export default function Files({
         } catch (error) {
           console.error('Upload error:', error);
           if (onUploadError) {
-            onUploadError(`Failed to upload ${file.name}`);
+            onUploadError(tFiles('status.error'));
           }
         }
       }

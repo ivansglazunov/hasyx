@@ -8,6 +8,7 @@ import { ScrollArea } from 'hasyx/components/ui/scroll-area';
 import { Button } from 'hasyx/components/ui/button';
 import { Textarea } from 'hasyx/components/ui/textarea';
 import { MessageSquare, Users, Edit, Trash2, Reply, Send } from 'lucide-react';
+import { useTranslations } from 'hasyx';
 
 interface RoomProps {
   room: {
@@ -41,10 +42,11 @@ interface Reply {
 
 export default function Room({ room }: RoomProps) {
   const hasyx = useHasyx();
+  const tMsg = useTranslations('messaging');
   const [newMessage, setNewMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
 
-  // Получаем сообщения для этой комнаты
+  // Fetch messages for this room
   const { data: messages = [], loading: messagesLoading } = useSubscription({
     table: 'messages',
     where: {
@@ -56,7 +58,7 @@ export default function Room({ room }: RoomProps) {
     order_by: [{ created_at: 'asc' }],
   });
 
-  // Получаем пользователей для отображения имен
+  // Fetch users to display names
   const { data: users = [] } = useQuery({
     table: 'users',
     where: {},
@@ -73,7 +75,7 @@ export default function Room({ room }: RoomProps) {
 
     setIsSending(true);
     try {
-      // Создаем сообщение
+      // Create a message
       const messageId = crypto.randomUUID();
       const message = await hasyx.insert({
         table: 'messages',
@@ -84,7 +86,7 @@ export default function Room({ room }: RoomProps) {
         returning: ['id', 'value', 'user_id'],
       });
 
-      // Создаем reply, связывающий сообщение с комнатой
+      // Create reply linking message to the room
       const replyId = crypto.randomUUID();
       await hasyx.insert({
         table: 'replies',
@@ -96,10 +98,10 @@ export default function Room({ room }: RoomProps) {
         returning: ['id'],
       });
 
-      console.log('✅ Сообщение отправлено:', message);
+      console.log('✅ Message sent:', message);
       setNewMessage('');
     } catch (error) {
-      console.error('❌ Ошибка при отправке сообщения:', error);
+      console.error('❌ Error sending message:', error);
     } finally {
       setIsSending(false);
     }
@@ -114,37 +116,37 @@ export default function Room({ room }: RoomProps) {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Заголовок комнаты */}
+      {/* Room header */}
       <div className="p-4 border-b">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold">{room.title}</h1>
             <p className="text-sm text-muted-foreground">
-              Создана {new Date(room.created_at).toLocaleDateString()}
+              {tMsg('createdAt', { date: new Date(room.created_at).toLocaleDateString() })}
             </p>
           </div>
           <div className="flex items-center space-x-2">
             <Badge variant="secondary">
               <MessageSquare className="w-3 h-3 mr-1" />
-              {messages.length} сообщений
+              {tMsg('messagesCount', { count: messages.length })}
             </Badge>
           </div>
         </div>
       </div>
 
-      {/* Область чата */}
+      {/* Chat area */}
       <div className="flex-1 flex flex-col">
-        {/* Список сообщений */}
+        {/* Message list */}
         <ScrollArea className="flex-1 p-4">
           {messagesLoading ? (
             <div className="text-center py-8 text-muted-foreground">
-              Загрузка сообщений...
+              {tMsg('loadingMessages')}
             </div>
           ) : messages.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>Нет сообщений</p>
-              <p className="text-sm">Начните разговор первым!</p>
+              <p>{tMsg('noMessages')}</p>
+              <p className="text-sm">{tMsg('startConversation')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -174,11 +176,11 @@ export default function Room({ room }: RoomProps) {
           )}
         </ScrollArea>
 
-        {/* Форма отправки сообщения */}
+        {/* Message form */}
         <div className="p-4 border-t bg-background">
           <div className="flex space-x-2">
             <Textarea
-              placeholder="Введите сообщение..."
+              placeholder={tMsg('enterMessage')}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}

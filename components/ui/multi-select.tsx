@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "hasyx";
 import {
   Popover,
   PopoverContent,
@@ -148,6 +149,10 @@ export const MultiSelect = React.forwardRef<
     },
     ref
   ) => {
+    const tCommon = useTranslations('common');
+    const tForms = useTranslations('forms');
+    const tActions = useTranslations('actions');
+
     const [selectedValues, setSelectedValues] =
       React.useState<string[]>(defaultValue);
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
@@ -266,7 +271,7 @@ export const MultiSelect = React.forwardRef<
                       )}
                       style={{ animationDuration: `${animation}s` }}
                     >
-                      {`+ ${selectedValues.length - maxCount} more`}
+                  {tCommon('moreCount', { count: selectedValues.length - maxCount })}
                       <XCircle
                         className="ml-2 h-4 w-4 cursor-pointer"
                         onClick={(event) => {
@@ -295,7 +300,7 @@ export const MultiSelect = React.forwardRef<
             ) : (
               <div className="flex items-center justify-between w-full mx-auto">
                 <span className="text-sm text-muted-foreground mx-3">
-                  {placeholder}
+                  {placeholder || tForms('placeholders.selectOptions')}
                 </span>
                 <ChevronDown className="h-4 cursor-pointer text-muted-foreground mx-2" />
               </div>
@@ -309,12 +314,12 @@ export const MultiSelect = React.forwardRef<
         >
           <Command>
             <CommandInput
-              placeholder="Search..."
+              placeholder={tForms('placeholders.search')}
               onKeyDown={handleInputKeyDown}
               onValueChange={handleSearchChange}
             />
             <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandEmpty>{tForms('noResults')}</CommandEmpty>
               <CommandGroup>
                 <CommandItem
                   key="all"
@@ -331,7 +336,7 @@ export const MultiSelect = React.forwardRef<
                   >
                     <CheckIcon className="h-4 w-4" />
                   </div>
-                  <span>(Select All)</span>
+                  <span>({tForms('selectAll')})</span>
                 </CommandItem>
                 {options.map((option) => {
                   const isSelected = selectedValues.includes(option.value);
@@ -375,7 +380,7 @@ export const MultiSelect = React.forwardRef<
                         onSelect={handleClear}
                         className="flex-1 justify-center cursor-pointer"
                       >
-                        Clear
+                        {tActions('clear')}
                       </CommandItem>
                       <Separator
                         orientation="vertical"
@@ -387,7 +392,7 @@ export const MultiSelect = React.forwardRef<
                     onSelect={() => setIsPopoverOpen(false)}
                     className="flex-1 justify-center cursor-pointer max-w-full"
                   >
-                    Close
+                  {tActions('close')}
                   </CommandItem>
                 </div>
               </CommandGroup>

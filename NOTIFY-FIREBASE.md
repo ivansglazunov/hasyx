@@ -62,7 +62,7 @@ To use Firebase web push notifications with Hasyx, you need to configure the fol
     *   Click "Generate new private key" and download the JSON file.
     *   **Store this file securely.** Do not commit it to your repository.
     *   Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable in your server environment (e.g., Vercel project settings) to the *full path* to this JSON file if running locally, or paste the *contents* of the JSON file directly into the environment variable value if your hosting provider supports that (like Vercel).
-        *   You can use the `npx hasyx assist` command to help set up this and other environment variables.
+        *   Configure these via `hasyx.config.json` (firebase admin/public) and regenerate `.env`.
 
 3.  **Web Push Certificate (VAPID Key)**:
     *   In Firebase Console: Project Settings > Cloud Messaging > Web configuration (at the bottom).
@@ -93,7 +93,7 @@ To use Firebase web push notifications with Hasyx, you need to configure the fol
     # NEXT_PUBLIC_BASE_URL=https://your-app.com 
     ```
 
-    *   The `npx hasyx assist` command can help guide you through setting many of these variables.
+    *   These variables are generated from `hasyx.config.json` by the config tool.
 
 5.  **Install Dependencies**:
     *   `firebase` (for client-side SDK)

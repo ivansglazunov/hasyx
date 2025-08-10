@@ -8,6 +8,7 @@ import cola from 'cytoscape-cola';
 import edgehandles from 'cytoscape-edgehandles';
 import edgeConnections from 'cytoscape-edge-connections';
 import klay from 'cytoscape-klay';
+import { getLocale } from 'hasyx/lib/i18n';
 
 
 cytoscape.use(klay);
@@ -16,11 +17,11 @@ cytoscape.use(cola);
 cytoscape.use(edgeConnections);
 cytoscape.use(edgehandles);
 
+const defaultLocale = getLocale();
+
 export default function RootLayout({
-  locale: defaultLocale = 'en',
   children,
 }: {
-  locale?: string;
   children?: any;
 }) {
   return (

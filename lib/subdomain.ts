@@ -1,7 +1,7 @@
 import Debug from './debug';
-import { CloudFlare } from './cloudflare';
+import { CloudFlare } from './cloudflare/cloudflare';
 import { SSL, WildcardCertificateInfo } from './ssl';
-import { Nginx } from './nginx';
+import { Nginx } from './nginx/nginx';
 import * as fs from 'fs';
 
 const debug = Debug('subdomain');

@@ -9,7 +9,7 @@ import { useTranslations } from "hasyx";
 export function ThemeSwitcher(props: any) {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useNextTheme();
-  const t = useTranslations('hasyx');
+  const t = useTranslations('theme');
 
   useEffect(() => {
     setMounted(true);

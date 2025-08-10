@@ -6,7 +6,7 @@ import { Generator } from './generator'; // Import the default export (the ready
 // import schema from '../public/hasura-schema.json'; // Assuming schema.json is in the same directory
 import introspectionResult from '../public/hasura-schema.json'; // Import the full result
 import Debug from './debug'; // Import the actual Debug function
-import { createApolloClient } from './apollo'; // Import apollo client creator
+import { createApolloClient } from './apollo/apollo'; // Import apollo client creator
 import dotenv from 'dotenv'; // To load .env for client creation
 import path from 'path';
 

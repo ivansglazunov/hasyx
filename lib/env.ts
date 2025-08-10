@@ -17,8 +17,8 @@ interface DockerComposeConfig {
 }
 
 /**
- * Устанавливает переменные окружения в docker-compose.yml файле
- * и обновляет их в запущенном контейнере если он существует
+ * Set environment variables in docker-compose.yml file
+ * and update them in a running container if it exists
  */
 export const envCommand = async (): Promise<void> => {
   debug('Executing env command');
@@ -28,19 +28,19 @@ export const envCommand = async (): Promise<void> => {
   const envPath = path.join(projectRoot, '.env');
   const dockerComposePath = path.join(projectRoot, 'docker-compose.yml');
   
-  // Проверяем существование .env файла
+  // Check if .env file exists
   if (!fs.existsSync(envPath)) {
     console.error('❌ .env file not found');
     console.error('💡 Please create .env file first or run "npx hasyx init"');
     process.exit(1);
   }
   
-  // Читаем переменные из .env файла
+  // Read variables from .env file
   console.log('📖 Reading environment variables from .env...');
   const envContent = fs.readFileSync(envPath, 'utf-8');
   const envVars: Record<string, string> = {};
   
-  // Парсим .env файл
+  // Parse .env file
   envContent.split('\n').forEach(line => {
     const trimmedLine = line.trim();
     if (trimmedLine && !trimmedLine.startsWith('#')) {
@@ -55,7 +55,7 @@ export const envCommand = async (): Promise<void> => {
   
   debug(`Found ${Object.keys(envVars).length} environment variables`);
   
-  // Проверяем существование docker-compose.yml
+  // Check if docker-compose.yml exists
   if (!fs.existsSync(dockerComposePath)) {
     console.log('📝 Creating docker-compose.yml...');
     await createDockerComposeFile(dockerComposePath, envVars);
@@ -66,12 +66,12 @@ export const envCommand = async (): Promise<void> => {
     console.log('✅ Updated docker-compose.yml with environment variables');
   }
   
-  // Проверяем Docker и обновляем контейнер если он запущен
+  // Check Docker and update container if running
   await updateRunningContainer(projectRoot, envVars);
 };
 
 /**
- * Создает новый docker-compose.yml файл с переменными окружения
+ * Create new docker-compose.yml file with environment variables
  */
 const createDockerComposeFile = async (dockerComposePath: string, envVars: Record<string, string>): Promise<void> => {
   const projectName = getProjectName();
@@ -91,7 +91,7 @@ const createDockerComposeFile = async (dockerComposePath: string, envVars: Recor
 };
 
 /**
- * Добавляет переменные окружения к существующему YAML файлу
+ * Add environment variables to existing YAML file
  */
 const addEnvToYamlFile = async (dockerComposePath: string, envVars: Record<string, string>): Promise<void> => {
   try {
@@ -100,7 +100,7 @@ const addEnvToYamlFile = async (dockerComposePath: string, envVars: Record<strin
     
     const projectName = getProjectName();
     
-    // Создаем сервис для приложения, если его нет
+    // Create service for app if it doesn't exist
     if (!config.services) {
       config.services = {};
     }
@@ -117,23 +117,23 @@ const addEnvToYamlFile = async (dockerComposePath: string, envVars: Record<strin
       };
     }
     
-    // Добавляем переменные окружения к существующим
+    // Append environment variables to existing
     if (!config.services[projectName].environment) {
       config.services[projectName].environment = {};
     }
     
-    // Обновляем переменные окружения
+    // Update environment variables
     config.services[projectName].environment = { 
       ...config.services[projectName].environment, 
       ...envVars 
     };
     
-    // Добавляем env_file если его нет
+    // Add env_file if missing
     if (!config.services[projectName].env_file) {
       config.services[projectName].env_file = ['.env'];
     }
     
-    // Записываем обратно в YAML формате
+    // Write back in YAML format
     const updatedContent = stringify(config, { 
       indent: 2,
       lineWidth: 120,
@@ -149,19 +149,19 @@ const addEnvToYamlFile = async (dockerComposePath: string, envVars: Record<strin
 };
 
 /**
- * Обновляет существующий docker-compose.yml файл с новыми переменными окружения
+ * Update existing docker-compose.yml with new environment variables
  */
 const updateDockerComposeFile = async (dockerComposePath: string, envVars: Record<string, string>): Promise<void> => {
   try {
-    // Читаем файл как текст, так как он может быть в формате YAML
+    // Read file as text since it may be YAML
     const fileContent = fs.readFileSync(dockerComposePath, 'utf-8');
     
-    // Проверяем, является ли файл JSON
+    // Check if file is JSON
     let existingConfig: DockerComposeConfig;
     try {
       existingConfig = JSON.parse(fileContent);
     } catch {
-      // Если не JSON, то это YAML, добавляем переменные к существующим сервисам
+      // If not JSON, treat as YAML and add variables to existing services
       console.log('📝 File is in YAML format, adding environment variables to existing services...');
       await addEnvToYamlFile(dockerComposePath, envVars);
       return;
@@ -169,7 +169,7 @@ const updateDockerComposeFile = async (dockerComposePath: string, envVars: Recor
     
     const projectName = getProjectName();
     
-    // Обновляем или создаем сервис
+    // Update or create service
     if (!existingConfig.services) {
       existingConfig.services = {};
     }
@@ -178,7 +178,7 @@ const updateDockerComposeFile = async (dockerComposePath: string, envVars: Recor
       existingConfig.services[projectName] = {};
     }
     
-    // Обновляем переменные окружения, сохраняя существующие
+    // Update environment variables while preserving existing
     const currentEnv = existingConfig.services[projectName].environment || {};
     existingConfig.services[projectName].environment = { ...currentEnv, ...envVars };
     existingConfig.services[projectName].env_file = ['.env'];
@@ -192,10 +192,10 @@ const updateDockerComposeFile = async (dockerComposePath: string, envVars: Recor
 };
 
 /**
- * Обновляет переменные окружения в запущенном контейнере
+ * Update environment variables in a running container
  */
 const updateRunningContainer = async (projectRoot: string, envVars: Record<string, string>): Promise<void> => {
-  // Проверяем установлен ли Docker
+  // Check if Docker is installed
   const dockerVersionResult = spawn.sync('docker', ['--version'], { 
     stdio: 'pipe',
     cwd: projectRoot 
@@ -209,7 +209,7 @@ const updateRunningContainer = async (projectRoot: string, envVars: Record<strin
   
   const projectName = getProjectName();
   
-  // Проверяем запущен ли контейнер
+  // Check if container is running
   const psResult = spawn.sync('docker', ['ps', '--filter', `name=${projectName}`, '--format', '{{.Names}}'], {
     stdio: 'pipe',
     cwd: projectRoot,
@@ -224,7 +224,7 @@ const updateRunningContainer = async (projectRoot: string, envVars: Record<strin
   
   console.log('🔄 Updating environment variables in running container...');
   
-  // Останавливаем контейнер
+  // Stop container
   const stopResult = spawn.sync('docker-compose', ['stop'], {
     stdio: 'inherit',
     cwd: projectRoot
@@ -236,7 +236,7 @@ const updateRunningContainer = async (projectRoot: string, envVars: Record<strin
     return;
   }
   
-  // Запускаем контейнер с новыми переменными
+  // Start container with new variables
   const upResult = spawn.sync('docker-compose', ['up', '-d'], {
     stdio: 'inherit',
     cwd: projectRoot
@@ -253,7 +253,7 @@ const updateRunningContainer = async (projectRoot: string, envVars: Record<strin
 };
 
 /**
- * Получает имя проекта из package.json
+ * Get project name from package.json
  */
 const getProjectName = (): string => {
   try {

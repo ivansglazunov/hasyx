@@ -15,8 +15,9 @@ import { LogOut, LogIn, User, Settings, Github, Mail, MailCheck, Trash2 } from "
 import { signOut, signIn } from "next-auth/react";
 import { useHasyx, useNewHasyx, useSession } from 'hasyx';
 import { useSubscription } from 'hasyx';
-import { Accounts } from '../accounts';
+import { Accounts } from '../hasyx/users/accounts';
 import { OAuthButtons } from '../auth/oauth-buttons';
+import { useTranslations } from 'hasyx';
 
 function getInitials(name: string | null | undefined): string {
   if (!name) return "U";
@@ -94,7 +95,7 @@ function DropdownAccountItem({ account, delete: handleDelete, _delete }: any) {
           handleDelete(account);
         }}
         className="text-xs text-muted-foreground hover:text-destructive"
-        title="Delete account connection"
+        title={useTranslations('tooltips')('deleteAccountConnection')}
       >
         <Trash2 size={14} />
       </button>
@@ -103,9 +104,10 @@ function DropdownAccountItem({ account, delete: handleDelete, _delete }: any) {
 }
 
 function UserAccountsList({ userId }: { userId: string }) {
+  const tAuth = useTranslations('auth');
   return (
     <div className="space-y-1">
-      <DropdownMenuLabel className="text-xs text-muted-foreground">Connected Accounts</DropdownMenuLabel>
+      <DropdownMenuLabel className="text-xs text-muted-foreground">{tAuth('connectedAccounts')}</DropdownMenuLabel>
       <Accounts userId={userId} AccountComponent={DropdownAccountItem} />
     </div>
   );
@@ -114,6 +116,7 @@ function UserAccountsList({ userId }: { userId: string }) {
 // function AuthenticatedUserMenu({ session }: { session: any }) {
 function AuthenticatedUserMenu({}: {}) {
   const hasyx = useHasyx();
+  const tAuth = useTranslations('auth');
   const handleSignOut = async () => {
     hasyx.logout({ callbackUrl: '/' });
   };
@@ -137,16 +140,17 @@ function AuthenticatedUserMenu({}: {}) {
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={handleSignOut} className="text-red-600 focus:text-red-600">
         <LogOut className="mr-2 h-4 w-4" />
-        Sign out
+        {tAuth('signOut')}
       </DropdownMenuItem>
     </>
   );
 }
 
 function UnauthenticatedUserMenu() {
+  const tAuth = useTranslations('auth');
   return (
     <>
-      <DropdownMenuLabel>Sign in to your account</DropdownMenuLabel>
+      <DropdownMenuLabel>{tAuth('signInToYourAccount')}</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <div className="p-2">
         <OAuthButtons />
@@ -158,6 +162,8 @@ function UnauthenticatedUserMenu() {
 export function UserProfileDropdown() {
   const hasyx = useHasyx();
   const [open, setOpen] = useState(false);
+  const tCommon = useTranslations('common');
+  const tAuth = useTranslations('auth');
 
   const isAuthenticated = hasyx?.userId;
   const isLoading = false;
@@ -168,7 +174,7 @@ export function UserProfileDropdown() {
         <Button variant="ghost" className="relative h-8 w-auto rounded-full px-3" disabled={isLoading}>
           {isLoading ? (
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Loading...</span>
+              <span className="text-sm font-medium">{tCommon('loading')}</span>
               <div className="h-6 w-6 rounded-full bg-muted animate-pulse" />
             </div>
           ) : isAuthenticated ? (
@@ -185,7 +191,7 @@ export function UserProfileDropdown() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Sign in</span>
+              <span className="text-sm font-medium">{tAuth('signIn')}</span>
               <LogIn className="h-4 w-4" />
             </div>
           )}

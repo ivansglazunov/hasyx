@@ -11,7 +11,7 @@ export function useToastHandleError(error: any, prefix: string = "Error") {
   const lastErrorRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // Если ошибки нет, сбрасываем последнюю ошибку
+    // If there is no error, reset the last error
     if (!error) {
       lastErrorRef.current = null;
       return;

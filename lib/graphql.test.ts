@@ -8,9 +8,9 @@ import { Subscription } from 'zen-observable-ts'; // For handling subscription c
 // Load environment variables from root .env
 dotenv.config({ path: path.join(process.cwd(), '.env') });
 
-import { createApolloClient } from './apollo'; // Hasyx creator from lib
-import { hashPassword } from './authDbUtils'; // For user creation
-import { Hasyx } from './hasyx'; // Import the Hasyx class
+import { createApolloClient } from './apollo/apollo'; // Hasyx creator from lib
+import { hashPassword } from './users/auth-server'; // For user creation
+import { Hasyx } from './hasyx/hasyx'; // Import the Hasyx class
 import Debug from './debug'; // Import Debug
 import { Generator } from './generator'; // Import the Generator function
 import schema from '../public/hasura-schema.json'; // Import the schema

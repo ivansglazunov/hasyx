@@ -37,7 +37,6 @@
     "hasura:types": "graphql-codegen --config ./lib/hasura-types.ts",
     "npm-publish": "npm run build && npm publish",
     "cli": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx ./lib/cli.ts",
-    "assist": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx ./lib/assist.ts",
     "ask": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/ask.ts",
     "js": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/js.ts",
     "tsx": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/tsx.ts",
@@ -45,7 +44,9 @@
     "logs": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs",
     "logs-diffs": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs-diffs",
     "logs-states": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs-states",
-    "env": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli.ts env"
+    "env": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli.ts env",
+    "config": "npx tsx lib/config.tsx",
+    "typedoc": "npx typedoc --out public/typedoc --entryPointStrategy expand --exclude '**/node_modules/**' --exclude '**/.next/**' lib components hooks"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -66,6 +67,7 @@
     "@graphql-codegen/cli": "5.0.5",
     "@graphql-codegen/typescript": "4.1.6",
     "@hookform/resolvers": "5.0.1",
+    "@inkjs/ui": "^2.0.0",
     "@jest/globals": "29.7.0",
     "@openrouter/ai-sdk-provider": "0.5.0",
     "@radix-ui/react-accordion": "1.2.10",
@@ -95,9 +97,10 @@
     "@radix-ui/react-toggle-group": "1.1.9",
     "@radix-ui/react-tooltip": "1.2.6",
     "@react-hook/debounce": "4.0.0",
-    "@rjsf/core": "^5.24.12",
-    "@rjsf/utils": "^5.24.12",
-    "@rjsf/validator-ajv8": "^5.24.12",
+    "@rjsf/core": "^6.0.0-beta.12",
+    "@rjsf/shadcn": "^6.0.0-beta.12",
+    "@rjsf/utils": "^6.0.0-beta.12",
+    "@rjsf/validator-ajv8": "^6.0.0-beta.12",
     "@swc/core": "1.11.21",
     "@swc/jest": "0.2.37",
     "@tailwindcss/cli": "4.1.4",
@@ -120,6 +123,8 @@
     "@types/react-dom": "19",
     "@types/uuid": "10.0.0",
     "@types/ws": "8.18.1",
+    "@udecode/plate-common": "^36.3.9",
+    "@udecode/plate-serializer-md": "^36.4.0",
     "@vercel/analytics": "1.5.0",
     "aframe": "1.7.1",
     "aframe-react": "4.4.0",
@@ -160,6 +165,7 @@
     "graphql": "16.10.0",
     "graphql-ws": "5.16.2",
     "ignore-loader": "0.1.2",
+    "ink": "^6.1.0",
     "input-otp": "1.4.2",
     "isomorphic-ws": "5.0.0",
     "jest": "30.0.0-alpha.6",
@@ -188,7 +194,6 @@
     "react-dom": "19.0.0",
     "react-fast-compare": "3.2.2",
     "react-hook-form": "7.56.4",
-    "react-jsonschema-form": "github:rjsf-team/react-jsonschema-form",
     "react-markdown": "10.1.0",
     "react-resizable-panels": "2.1.9",
     "react-resize-detector": "12.0.2",
@@ -200,6 +205,10 @@
     "resend": "4.3.0",
     "rxjs": "7.8.2",
     "sharp": "0.33.4",
+    "slate": "^0.118.0",
+    "slate-dom": "^0.117.4",
+    "slate-history": "^0.113.1",
+    "slate-react": "^0.117.4",
     "sonner": "2.0.3",
     "tailwind-merge": "3.2.0",
     "tailwindcss": "4.1.4",
@@ -217,14 +226,15 @@
     "vm-browserify": "1.1.2",
     "ws": "8.18.2",
     "yaml": "^2.8.0",
-    "zod": "^3.25.4",
-    "zod-to-json-schema": "^3.24.6",
+    "zod": "^4.0.15",
     "zustand": "^5.0.6"
   },
   "bin": {
     "hasyx": "./lib/cli.js"
   },
   "devDependencies": {
-    "eruda": "^3.4.3"
+    "eruda": "^3.4.3",
+    "typedoc": "^0.28.9",
+    "zod-to-json-schema": "^3.24.6"
   }
 }

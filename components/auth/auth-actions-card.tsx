@@ -10,8 +10,9 @@ import Image from 'next/image';
 import React from "react";
 import { useHasyx, useSession, useSubscription } from 'hasyx';
 import { OAuthButtons } from './oauth-buttons';
-import { Accounts } from '../accounts';
+import { Accounts } from '../hasyx/users/accounts';
 import Debug from 'hasyx/lib/debug';
+import { useTranslations } from 'hasyx';
 
 // Import provider icons (assuming they exist)
 // import GoogleIcon from 'hasyx/public/icons/google.svg';
@@ -21,6 +22,8 @@ const debug = Debug('auth:actions-card');
 
 export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
   const hasyx = useHasyx();
+  const tAuth = useTranslations('auth');
+  const tCommon = useTranslations('common');
   const { data: session, status } = useSession();
   const loading = status === 'loading';
   const userId = session?.user?.id;
@@ -64,8 +67,8 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
         <CardContent className="space-y-4">
           <div className="grid w-full items-center gap-2">
             <Label>Client Session status (useSession().user.id())</Label>
-            {loading && <p className="flex items-center"><Loader2 className="mr-2 h-4 w-4 animate-spin" />Loading session...</p>}
-            {!session && !loading && <p>Not signed in</p>}
+            {loading && <p className="flex items-center"><Loader2 className="mr-2 h-4 w-4 animate-spin" />{tCommon('loading')}</p>}
+            {!session && !loading && <p>{tAuth('signIn')}</p>}
           </div>
           <div className="grid w-full items-center gap-2">
             <Label>Sign In with OAuth</Label>
@@ -79,9 +82,9 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
   // If user is authenticated, show tabs
   return (
     <Card {...props}>
-      <CardHeader>
-        <CardTitle>Session & OAuth</CardTitle>
-        <CardDescription>View session status and manage your connected accounts.</CardDescription>
+        <CardHeader>
+          <CardTitle>Session & OAuth</CardTitle>
+          <CardDescription>View session status and manage your connected accounts.</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="auth">
@@ -133,9 +136,9 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
             </div>
 
             <div className="grid w-full items-center gap-2">
-              <Label>Sign Out</Label>
+              <Label>{tAuth('signOut')}</Label>
               <Button onClick={handleSignOut} disabled={loading}>
-                <LogOut className="mr-2 h-4 w-4" /> Sign Out
+                <LogOut className="mr-2 h-4 w-4" /> {tAuth('signOut')}
               </Button>
             </div>
           </TabsContent>

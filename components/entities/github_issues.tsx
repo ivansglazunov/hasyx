@@ -1,20 +1,25 @@
 "use client";
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { useQuery } from 'hasyx';
 import { Button as UIButton } from 'hasyx/components/ui/button';
 import { Card as UICard, CardContent, CardHeader, CardTitle } from 'hasyx/components/ui/card';
 import { Badge } from 'hasyx/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from 'hasyx/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'hasyx/components/ui/tooltip';
-import { X, GitBranch, MessageCircle, Calendar, User, Tag, ExternalLink, Link, ArrowRight } from 'lucide-react';
+import { X, GitBranch, MessageCircle, Calendar, User, Tag, ExternalLink, Link, ArrowRight, Pencil } from 'lucide-react';
 import { CytoNode as CytoNodeComponent, CytoEdge } from 'hasyx/lib/cyto';
 import { cn } from 'hasyx/lib/utils';
 import { parseIssue } from 'hasyx/lib/issues';
-import { useDependencyDrawingStore } from 'hasyx/stores/dependency-drawing-store';
+import { useDependencyDrawingStore } from '@/hooks/dependency-drawing-store';
 import { updateIssueRelations } from 'hasyx/lib/issue-relations';
 import { useGraph } from 'hasyx/lib/cyto';
 import { useHasyx } from 'hasyx';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from 'hasyx/components/ui/dialog';
+import { MarkdownEditor } from 'hasyx/lib/wysiwyg';
+import { Input } from 'hasyx/components/ui/input';
+import { toast } from 'sonner';
+import { useTranslations } from 'hasyx';
 
 interface GitHubIssueData {
   id?: string;
@@ -156,11 +161,15 @@ function extractIssueReferences(body: string | null, relations: any = {}): { iss
   };
 }
 
-export function Button({ data, ...props }: {
+function IssueButton({ data, ...props }: {
   data: GitHubIssueData;
   [key: string]: any;
 }) {
   const issueData = data;
+  const tActions = useTranslations('actions');
+  const tSuccess = useTranslations('success');
+  const tErrors = useTranslations('errors');
+  const tCommon = useTranslations('common');
 
   const displayTitle = issueData?.title || `Issue #${issueData?.number}`;
   const stateColor = issueData?.state === 'open' ? 'bg-green-500' : 'bg-red-500';
@@ -187,6 +196,17 @@ export function Card({ data, onClose, ...props }: {
   const graphContext = useGraph();
   const toggleDrawMode = graphContext?.toggleDrawMode;
   const hasyx = useHasyx();
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editTitle, setEditTitle] = useState<string>(issueData.title || "");
+  const [editBody, setEditBody] = useState<string>(issueData.body || "");
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (isEditOpen) {
+      setEditTitle(issueData.title || "");
+      setEditBody(issueData.body || "");
+    }
+  }, [isEditOpen, issueData.title, issueData.body]);
 
   const isPR = !!issueData.pull_request_data;
   
@@ -332,16 +352,73 @@ export function Card({ data, onClose, ...props }: {
         </div>
         
         {/* Comments button in bottom right corner */}
-        {issueData.comments_count !== undefined && (
+        <div className="flex gap-1 pointer-events-auto">
           <UIButton
             variant="ghost"
-            className="text-xs pointer-events-auto"
+            size="sm"
+            onClick={() => setIsEditOpen(true)}
+            className="text-xs"
           >
-            <MessageCircle className="w-3 h-3 mr-1" />
-            {issueData.comments_count}
+            <Pencil className="w-3 h-3 mr-1" />
+            {tActions('edit')}
           </UIButton>
-        )}
+          {issueData.comments_count !== undefined && (
+            <UIButton
+              variant="ghost"
+              size="sm"
+              className="text-xs"
+            >
+              <MessageCircle className="w-3 h-3 mr-1" />
+              {issueData.comments_count}
+            </UIButton>
+          )}
+        </div>
       </div>
+
+      {/* Edit dialog */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>{tActions('edit')} Issue</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Title</label>
+              <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Description</label>
+              <MarkdownEditor value={editBody} onChange={setEditBody} minHeight={220} />
+            </div>
+          </div>
+          <DialogFooter>
+            <UIButton variant="outline" onClick={() => setIsEditOpen(false)} disabled={isSaving}>{tActions('cancel')}</UIButton>
+            <UIButton
+              onClick={async () => {
+                if (!issueData.id) return;
+                setIsSaving(true);
+                try {
+                  await hasyx.update({
+                    table: 'github_issues',
+                    where: { id: { _eq: issueData.id } },
+                    _set: { title: editTitle, body: editBody, updated_at: Date.now() },
+                    returning: ['id'],
+                  });
+                  toast.success(tSuccess('issueUpdated'));
+                  setIsEditOpen(false);
+                } catch (e: any) {
+                  toast.error(e?.message || tErrors('updateFailed'));
+                } finally {
+                  setIsSaving(false);
+                }
+              }}
+              disabled={isSaving || !editTitle?.trim()}
+            >
+              {isSaving ? tCommon('saving') : tActions('save')}
+            </UIButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

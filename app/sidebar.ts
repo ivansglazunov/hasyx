@@ -1,5 +1,8 @@
 import { SidebarData } from "hasyx/components/sidebar";
 import pckg from "@/package.json";
+import { getLocale } from "hasyx/lib/i18n";
+import en from "@/i18n/en.json";
+import ru from "@/i18n/ru.json";
 
 // Import static documentation navigation
 let docNavigation: any = null;
@@ -8,6 +11,12 @@ try {
 } catch (error) {
   console.warn("Documentation navigation not found, will be populated dynamically");
 }
+
+const t = (key: keyof typeof en.nav) => {
+  const locale = getLocale();
+  const messages = locale === 'ru' ? (ru as any) : (en as any);
+  return messages.nav[key];
+};
 
 export const sidebar: SidebarData = {
   name: pckg.name,
@@ -19,54 +28,66 @@ export const sidebar: SidebarData = {
       url: "#",
       items: [
         {
-          title: "🧪 Diagnostics",
+          title: `🧪 ${t('diagnostics')}`,
           url: "/hasyx/diagnostics",
         },
         {
-          title: "🟡 PWA Diagnostics",
+          title: `🛠️ ${t('config')}`,
+          url: "/hasyx/config",
+        },
+        {
+          title: `🟡 ${t('pwaDiagnostics')}`,
           url: "/hasyx/pwa",
         },
         {
-          title: "🟢 Constructor",
+          title: `🟢 ${t('constructor')}`,
           url: "/hasyx/constructor",
         },
         {
-          title: "🟠 A-Frame",
+          title: `🟠 ${t('aframe')}`,
           url: "/hasyx/aframe",
         },
         {
-          title: "🟢 Cyto",
+          title: `🟢 ${t('cyto')}`,
           url: "/hasyx/cyto",
         },
         {
-          title: "🟡 Payments",
+          title: `🟡 ${t('payments')}`,
           url: "/hasyx/payments",
         },
         {
-          title: "🟢 Telegram",
+          title: `🟢 ${t('telegram')}`,
           url: "/hasyx/telegram-miniapp",
         },
         {
-          title: "🟠 Roadmap",
+          title: `🟠 ${t('roadmap')}`,
           url: "/hasyx/roadmap",
         },
         {
-          title: "🔍 Validation",
+          title: `🔍 ${t('validation')}`,
           url: "/hasyx/validation",
         },
         {
-          title: "📁 Files",
+          title: `📁 ${t('files')}`,
           url: "/hasyx/files",
         },
         {
-          title: "💬 Messaging",
+          title: `💬 ${t('messaging')}`,
           url: "/hasyx/messaging",
+        },
+        {
+          title: `🃏 ${t('hoverCardDemo')}`,
+          url: "/hasyx/hover-card",
+        },
+        {
+          title: `💢 ${t('shockDemo')}`,
+          url: "/hasyx/shock-hook",
         },
       ],
     },
     // Add documentation section with collapse functionality
     {
-      title: "📚 Documentation",
+      title: `📚 ${t('documentation')}`,
       url: "/hasyx/doc",
       items: docNavigation?.items || [],
     },
