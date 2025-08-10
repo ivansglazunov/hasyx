@@ -10,7 +10,7 @@ import Image from 'next/image';
 import React from "react";
 import { useHasyx, useSession, useSubscription } from 'hasyx';
 import { OAuthButtons } from './oauth-buttons';
-import { Accounts } from '../accounts';
+import { Accounts } from '../hasyx/users/accounts';
 import Debug from 'hasyx/lib/debug';
 
 // Import provider icons (assuming they exist)

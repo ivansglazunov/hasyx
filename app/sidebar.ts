@@ -23,6 +23,10 @@ export const sidebar: SidebarData = {
           url: "/hasyx/diagnostics",
         },
         {
+          title: "🛠️ Config",
+          url: "/hasyx/config",
+        },
+        {
           title: "🟡 PWA Diagnostics",
           url: "/hasyx/pwa",
         },
@@ -61,6 +65,14 @@ export const sidebar: SidebarData = {
         {
           title: "💬 Messaging",
           url: "/hasyx/messaging",
+        },
+        {
+          title: "🃏 Hover Card Demo",
+          url: "/hasyx/hover-card",
+        },
+        {
+          title: "💢 Shock Demo",
+          url: "/hasyx/shock-hook",
         },
       ],
     },

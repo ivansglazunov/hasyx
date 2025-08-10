@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { up } from '../../lib/up-github';
+import { up } from '../../lib/github/up-github';
 
 // Load environment variables from root .env file
 dotenv.config();

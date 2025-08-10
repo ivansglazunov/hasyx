@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
-import { createApolloClient } from './apollo';
-import { Hasyx } from './hasyx'; 
+import { createApolloClient } from './apollo/apollo';
+import { Hasyx } from './hasyx/hasyx'; 
 import { Generator } from './generator';
-import { hashPassword } from './authDbUtils';
+import { hashPassword } from './users/auth-server';
 import schema from '../public/hasura-schema.json';
 
 // Load environment variables

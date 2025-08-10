@@ -1,4 +1,4 @@
-import { Hasura } from './hasura';
+import { Hasura } from './hasura/hasura';
 import Debug from './debug';
 import fs from 'fs-extra';
 import path from 'path';

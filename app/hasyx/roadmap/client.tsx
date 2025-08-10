@@ -11,13 +11,14 @@ import { Button } from 'hasyx/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from 'hasyx/components/ui/dialog';
 import { Input } from 'hasyx/components/ui/input';
 import { Textarea } from 'hasyx/components/ui/textarea';
+import { MarkdownEditor } from 'hasyx/lib/wysiwyg';
 import { useQuery, useHasyx } from 'hasyx';
 import { toast } from 'sonner';
 import { useToastHandleLoadingError } from 'hasyx/hooks/toasts';
 import { parseIssue, generateIssue } from 'hasyx/lib/issues';
 import { Tag } from 'lucide-react';
 import { MultiSelect } from '@/components/ui/multi-select';
-import { useDependencyDrawingStore } from 'hasyx/stores/dependency-drawing-store';
+import { useDependencyDrawingStore } from '@/hooks/dependency-drawing-store';
 
 const debug = Debug('cyto');
 
@@ -540,13 +541,12 @@ function CreateIssueDialog({
             <label htmlFor="issue-body" className="text-sm font-medium">
               Description
             </label>
-            <Textarea
-              id="issue-body"
-              placeholder="Enter issue description..."
+            <MarkdownEditor
               value={body}
-              onChange={(e) => setBody(e.target.value)}
-              disabled={isCreating}
-              rows={6}
+              onChange={setBody}
+              placeholder="Enter issue description..."
+              minHeight={160}
+              className="w-full"
             />
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import _ from 'lodash';
-import { useQuery, useSubscription, useNewHasyx } from "hasyx/lib/hasyx-client";
+import { useQuery, useSubscription, useNewHasyx } from "@/lib/hasyx/hasyx-client";
 import { SidebarLayout } from "hasyx/components/sidebar/layout";
 import { SidebarData } from "hasyx/components/sidebar";
 import { Card, CardHeader, CardTitle, CardContent } from "hasyx/components/ui/card";

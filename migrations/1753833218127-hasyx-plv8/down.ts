@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { down } from 'hasyx/lib/down-plv8';
+import { down } from '@/lib/plv8/down-plv8';
 
 // Load environment variables from root .env file
 dotenv.config();

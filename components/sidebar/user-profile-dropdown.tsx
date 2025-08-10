@@ -15,7 +15,7 @@ import { LogOut, LogIn, User, Settings, Github, Mail, MailCheck, Trash2 } from "
 import { signOut, signIn } from "next-auth/react";
 import { useHasyx, useNewHasyx, useSession } from 'hasyx';
 import { useSubscription } from 'hasyx';
-import { Accounts } from '../accounts';
+import { Accounts } from '../hasyx/users/accounts';
 import { OAuthButtons } from '../auth/oauth-buttons';
 
 function getInitials(name: string | null | undefined): string {

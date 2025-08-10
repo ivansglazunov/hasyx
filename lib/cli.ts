@@ -25,7 +25,6 @@ import {
   localCommandDescribe,
   vercelCommandDescribe,
   jsCommandDescribe, jsCommand,
-
   tsxCommandDescribe, tsxCommand,
   subdomainCommandDescribe,
   dockerCommandDescribe,
@@ -40,6 +39,8 @@ import {
   localCommand,
   vercelCommand,
   configureStorage,
+  githubCommandDescribe,
+  vercelSyncCommand,
 } from 'hasyx/lib/cli-hasyx';
 
 // Ask command is handled separately with its own imports
@@ -74,7 +75,6 @@ initCommandDescribe(program.command('init')).action(async (options) => {
 devCommandDescribe(program.command('dev')).action(devCommand);
 buildCommandDescribe(program.command('build')).action(buildCommand);
 startCommandDescribe(program.command('start')).action(startCommand);
-buildClientCommandDescribe(program.command('build:client')).action(buildClientCommand);
 buildClientCommandDescribe(program.command('client')).action(buildClientCommand);
 migrateCommandDescribe(program.command('migrate')).action(async (filter) => {
   await migrateCommand(filter);
@@ -118,6 +118,10 @@ vercelCommandDescribe(program.command('vercel')).action(async () => {
   vercelCommand();
 });
 
+// New groups
+githubCommandDescribe(program.command('github'));
+vercelCommandDescribe(program.command('vercel'));
+
 jsCommandDescribe(program.command('js [filePath]')).action(jsCommand);
 
 askCommandDescribe(program.command('ask')).action(askCommand);
@@ -142,7 +146,7 @@ envCommandDescribe(program.command('env')).action(async () => {
 
 // Storage command
 program.command('storage')
-  .description('Configure hasura-storage with S3-compatible cloud or local storage')
+  .description('Configure hasura-storage with S3-compatible cloud or local storage [⚠️ deprecated - use assist instead]')
   .option('--skip-local', 'Skip local storage option')
   .option('--skip-cloud', 'Skip cloud storage option')
   .option('--skip-antivirus', 'Skip antivirus configuration')

@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { spawn, ChildProcess } from 'child_process';
 import { SubdomainManager } from './subdomain';
-import { CloudFlare } from './cloudflare';
+import { CloudFlare } from './cloudflare/cloudflare';
 import { SSL } from './ssl';
-import { Nginx } from './nginx';
+import { Nginx } from './nginx/nginx';
 import { findPort } from './find-port';
 import Debug from './debug';
 

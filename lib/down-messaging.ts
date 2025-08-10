@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { Hasura } from './hasura';
+import { Hasura } from './hasura/hasura';
 import Debug from './debug';
 
 dotenv.config();

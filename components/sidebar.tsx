@@ -14,7 +14,7 @@ import {
   SidebarMenuSubButton,
   SidebarRail,
 } from "hasyx/components/ui/sidebar";
-import { ProjectAndVersion } from "hasyx/components/version-switcher";
+import { ProjectAndVersion } from "@/components/project-title-button";
 import { ThemeSwitcher } from "./theme-switcher";
 import { LocaleSwitcher } from "./locale-switcher";
 import { usePathname } from 'next/navigation';
@@ -312,7 +312,7 @@ export function Sidebar({ data }: { data: SidebarData }) {
   
   return (
     <SidebarComponent>
-      <SidebarHeader>
+      <SidebarHeader className="pt-3">
         <ProjectAndVersion
           name={data.name}
           logo={data.logo}

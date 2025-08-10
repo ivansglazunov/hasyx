@@ -2,12 +2,12 @@ import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 
-import { createApolloClient } from './apollo';
+import { createApolloClient } from './apollo/apollo';
 import { Generator } from './generator';
-import { Hasyx } from './hasyx';
+import { Hasyx } from './hasyx/hasyx';
 import schema from '../public/hasura-schema.json';
 import Debug from './debug';
-import { hashPassword } from './authDbUtils';
+import { hashPassword } from './users/auth-server';
 import { gql } from '@apollo/client/core';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -91,7 +91,7 @@ describe('Messaging module (skeleton)', () => {
       const adminH = createAdminHasyx();
       const user = await createTestUser(adminH, 'room-owner');
 
-      const { hasyx: userH } = await adminH.testAuthorize(user.id, { ws: false });
+      const { hasyx: userH } = await adminH._authorize(user.id, { ws: false });
 
       const roomId = uuidv4();
       const inserted = await userH.insert({
@@ -120,7 +120,7 @@ describe('Messaging module (skeleton)', () => {
     it('user can create message in room (allow_reply)', async () => {
       const adminH = createAdminHasyx();
       const user = await createTestUser(adminH, 'msg-creator');
-      const { hasyx: userH } = await adminH.testAuthorize(user.id, { ws: false });
+      const { hasyx: userH } = await adminH._authorize(user.id, { ws: false });
 
       // Create room with allow_reply_users: ['user']
       const roomId = uuidv4();
@@ -181,8 +181,8 @@ describe('Messaging module (skeleton)', () => {
       const adminH = createAdminHasyx();
       const author = await createTestUser(adminH, 'author');
       const editor = await createTestUser(adminH, 'editor');
-      const { hasyx: authorH } = await adminH.testAuthorize(author.id, { ws: false });
-      const { hasyx: editorH } = await adminH.testAuthorize(editor.id, { ws: false });
+      const { hasyx: authorH } = await adminH._authorize(author.id, { ws: false });
+      const { hasyx: editorH } = await adminH._authorize(editor.id, { ws: false });
 
       // Create room without allow_change_users for editor
       const roomId = uuidv4();
@@ -246,7 +246,7 @@ describe('Messaging module (skeleton)', () => {
     it('user can edit own message when allow_change permits', async () => {
       const adminH = createAdminHasyx();
       const author = await createTestUser(adminH, 'author');
-      const { hasyx: authorH } = await adminH.testAuthorize(author.id, { ws: false });
+      const { hasyx: authorH } = await adminH._authorize(author.id, { ws: false });
 
       // Create room with allow_change_users: ['user']
       const roomId = uuidv4();
@@ -310,8 +310,8 @@ describe('Messaging module (skeleton)', () => {
       const adminH = createAdminHasyx();
       const author = await createTestUser(adminH, 'author');
       const viewer = await createTestUser(adminH, 'viewer');
-      const { hasyx: authorH } = await adminH.testAuthorize(author.id, { ws: false });
-      const { hasyx: viewerH } = await adminH.testAuthorize(viewer.id, { ws: false });
+      const { hasyx: authorH } = await adminH._authorize(author.id, { ws: false });
+      const { hasyx: viewerH } = await adminH._authorize(viewer.id, { ws: false });
 
       // Create room with allow_select_users: ['user']
       const roomId = uuidv4();
@@ -374,7 +374,7 @@ describe('Messaging module (skeleton)', () => {
     it('editing requires all rooms to allow change', async () => {
       const adminH = createAdminHasyx();
       const author = await createTestUser(adminH, 'author');
-      const { hasyx: authorH } = await adminH.testAuthorize(author.id, { ws: false });
+      const { hasyx: authorH } = await adminH._authorize(author.id, { ws: false });
 
       // Create two rooms - one allows change, one doesn't
       const room1Id = uuidv4();
@@ -464,7 +464,7 @@ describe('Messaging module (skeleton)', () => {
     it('user can reply when allow_reply permits', async () => {
       const adminH = createAdminHasyx();
       const user = await createTestUser(adminH, 'replier');
-      const { hasyx: userH } = await adminH.testAuthorize(user.id, { ws: false });
+      const { hasyx: userH } = await adminH._authorize(user.id, { ws: false });
 
       // Create room with allow_reply_users: ['user']
       const roomId = uuidv4();
@@ -520,7 +520,7 @@ describe('Messaging module (skeleton)', () => {
     it('user can remove own reply when allow_remove permits', async () => {
       const adminH = createAdminHasyx();
       const user = await createTestUser(adminH, 'remover');
-      const { hasyx: userH } = await adminH.testAuthorize(user.id, { ws: false });
+      const { hasyx: userH } = await adminH._authorize(user.id, { ws: false });
 
       // Create room with allow_remove_users: ['user']
       const roomId = uuidv4();
@@ -582,8 +582,8 @@ describe('Messaging module (skeleton)', () => {
       const adminH = createAdminHasyx();
       const author = await createTestUser(adminH, 'author');
       const deleter = await createTestUser(adminH, 'deleter');
-      const { hasyx: authorH, jwt: authorJwt } = await adminH.testAuthorize(author.id, { ws: false });
-      const { hasyx: deleterH, jwt: deleterJwt } = await adminH.testAuthorize(deleter.id, { ws: false });
+      const { hasyx: authorH, jwt: authorJwt } = await adminH._authorize(author.id, { ws: false });
+      const { hasyx: deleterH, jwt: deleterJwt } = await adminH._authorize(deleter.id, { ws: false });
 
       // Create room with allow_delete_users: ['user']
       const roomId = uuidv4();
@@ -646,7 +646,7 @@ describe('Messaging module (skeleton)', () => {
     it('update on replies is forbidden', async () => {
       const adminH = createAdminHasyx();
       const user = await createTestUser(adminH, 'updater');
-      const { hasyx: userH } = await adminH.testAuthorize(user.id, { ws: false });
+      const { hasyx: userH } = await adminH._authorize(user.id, { ws: false });
 
       // Create room
       const roomId = uuidv4();
@@ -710,7 +710,7 @@ describe('Messaging module (skeleton)', () => {
     it('streaming subscription emits new messages after cursor', async () => {
       const adminH = createAdminHasyx();
       const user = await createTestUser(adminH, 'stream');
-      const { hasyx: userH } = await adminH.testAuthorize(user.id, { ws: true });
+      const { hasyx: userH } = await adminH._authorize(user.id, { ws: true });
 
       // Create room
       const roomId = uuidv4();

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { TBankPaymentProcessor, TBankProviderDBConfig } from '@/lib/payments/tbank'; 
 import { tbankAppOptions } from '@/app/payments/tbank/options';
 import { Hasyx } from 'hasyx'; 
-import { createApolloClient } from 'hasyx/lib/apollo'; 
+import { createApolloClient } from '@/lib/apollo/apollo'; 
 import { Generator } from 'hasyx/lib/generator';
 import schema from '@/public/hasura-schema.json';
 import Debug from 'hasyx/lib/debug';

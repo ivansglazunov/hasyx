@@ -1,15 +1,12 @@
-import authOptions from "@/app/options"
-import sidebar from "@/app/sidebar"
-import Messaging from "hasyx/lib/messaging"
-import useSsr, { SsrResult } from "hasyx/lib/ssr"
+import sidebar from "@/app/sidebar";
+import pckg from "@/package.json";
+import { SidebarLayout } from "hasyx/components/sidebar/layout";
+import { Messaging } from "hasyx/components/hasyx/messaging/messaging";
 
 export default async function MessagingPage() {
-  const { session } = await useSsr(authOptions) as SsrResult;
-
   return (
-    <Messaging 
-      serverSession={session} 
-      sidebarData={sidebar} 
-    />
+    <SidebarLayout sidebarData={sidebar} breadcrumb={[{ title: pckg.name, link: '/' }]}>
+      <Messaging/>
+    </SidebarLayout>
   );
 } 

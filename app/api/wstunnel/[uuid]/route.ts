@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { handleWstunnel, WstunnelOptions } from 'hasyx/lib/wstunnel';
 import Debug from 'hasyx/lib/debug';
+import { getTokenFromRequest } from '@/lib/users/auth-next';
+import { Hasyx } from '@/lib/hasyx/hasyx';
+import { createApolloClient } from '@/lib/apollo/apollo';
+import { Generator } from 'hasyx/lib/generator';
+import schema from '../../../../public/hasura-schema.json';
 
 const debug = Debug('api:wstunnel');
 
@@ -12,6 +17,19 @@ export async function POST(
   debug(`Received POST request to /api/wstunnel/${uuid}`);
   
   try {
+    // Admin check
+    const token = await getTokenFromRequest(request);
+    const userId = (token as any)?.sub as string | undefined;
+    if (!userId) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+    const apollo = createApolloClient({ secret: process.env.HASURA_ADMIN_SECRET });
+    const hasyx = new Hasyx(apollo, Generator(schema as any));
+    const allowed = await hasyx.isAdmin(userId);
+    if (!allowed) {
+      return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
+    }
+
     if (!uuid) {
       debug('Missing UUID parameter');
       return NextResponse.json(

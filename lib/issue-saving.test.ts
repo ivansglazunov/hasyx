@@ -1,7 +1,7 @@
-import { createApolloClient } from './apollo';
+import { createApolloClient } from './apollo/apollo';
 import { Generator } from './generator';
-import { Hasyx } from './hasyx';
-import { getGitHubAccessToken, hasGitHubScope } from './authDbUtils';
+import { Hasyx } from './hasyx/hasyx';
+import { getGitHubAccessToken, hasGitHubScope } from './github/auth';
 import schema from '../public/hasura-schema.json';
 import Debug from './debug';
 

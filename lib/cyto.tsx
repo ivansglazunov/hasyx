@@ -15,7 +15,7 @@ import Debug from './debug';
 import { v4 as uuidv4 } from 'uuid';
 import { useTheme } from '../components/theme-switcher';
 import { formatRgb, parse } from 'culori';
-import { useDependencyDrawingStore } from '../stores/dependency-drawing-store';
+import { useDependencyDrawingStore } from '../hooks/dependency-drawing-store';
 
 import klay from 'cytoscape-klay';
 import cytoscape from 'cytoscape';

@@ -13,26 +13,109 @@ import { migrate } from './migrate';
 import { unmigrate } from './unmigrate';
 import { generateHasuraSchema } from './hasura-schema';
 import { runJsEnvironment } from './js';
+import { parseEnvFile } from './assist-common';
+import * as gh from './github';
+import * as vercelApi from './vercel/index';
+import { setWebhook as tgSetWebhook, removeWebhook as tgRemoveWebhook, calibrate as tgCalibrate } from './telegram';
 import { askCommand, askCommandDescribe } from './ask';
 import { runTsxEnvironment } from './tsx';
 import { assetsCommand } from './assets';
 import { eventsCommand } from './events-cli';
 import { unbuildCommand } from './unbuild';
 import { runTelegramSetupAndCalibration } from './assist';
-import { configureStorage } from './assist-storage';
+import { configureStorage } from './files/assist-storage';
 import { localCommand } from './local';
 import { vercelCommand } from './vercel';
-import { CloudFlare, CloudflareConfig, DnsRecord } from './cloudflare';
+import { CloudFlare, CloudflareConfig, DnsRecord } from './cloudflare/cloudflare';
 import { SSL } from './ssl';
-import { Nginx } from './nginx';
-import { configureDocker, listContainers, defineContainer, undefineContainer, showContainerLogs, showContainerEnv } from './assist-docker';
-import { processLogs } from './logs';
-import { processConfiguredDiffs } from './logs-diffs';
-import { processConfiguredStates } from './logs-states';
+import { Nginx } from './nginx/nginx';
+import { configureDocker } from './assist-docker';
+import { listContainers, defineContainer, undefineContainer, showContainerLogs, showContainerEnv } from './docker';
+import { processLogs } from './logs/logs';
+import { processConfiguredDiffs } from './logs/logs-diffs';
+import { processConfiguredStates } from './logs/logs-states';
 import { envCommand } from './env';
 
-export {
+export { 
   assetsCommand, eventsCommand, unbuildCommand, assist, localCommand, vercelCommand, processLogs, processConfiguredDiffs, processConfiguredStates, configureStorage, envCommand };
+
+/**
+ * GitHub sync command: purge all repo secrets and sync from .env
+ */
+export const githubSyncCommand = async () => {
+  const remoteUrl = gh.getRemoteUrl();
+  if (!remoteUrl) {
+    console.error('❌ Git remote origin not found. Initialize a GitHub repo first.');
+    process.exit(1);
+  }
+  gh.ensureGhCli();
+  try { gh.checkAuth(); } catch (e) { console.error('❌ GitHub CLI not authenticated. Run: gh auth login'); process.exit(1); }
+
+  // List and remove all existing secrets
+  const list = spawn.sync('gh', ['secret', 'list', '-R', remoteUrl], { encoding: 'utf-8' });
+  const lines = (list.stdout || '').split('\n').map(l => l.trim()).filter(Boolean);
+  for (const line of lines) {
+    const name = line.split(/\s+/)[0];
+    if (!name) continue;
+    spawn.sync('gh', ['secret', 'remove', name, '-R', remoteUrl], { encoding: 'utf-8' });
+  }
+
+  // Add from .env
+  const env = parseEnvFile('.env');
+  for (const [key, value] of Object.entries(env)) {
+    if (key.startsWith('GITHUB_')) continue; // reserved
+    if (typeof value !== 'string') continue;
+    try { gh.setSecret(remoteUrl, key, value); console.log(`✅ Set ${key}`); } catch { console.warn(`⚠️ Failed to set ${key}`); }
+  }
+  console.log('✅ GitHub secrets synchronized from .env');
+};
+
+/**
+ * Describe GitHub commands
+ */
+export const githubCommandDescribe = (cmd: Command) => {
+  const c = cmd.description('GitHub operations');
+  c.command('sync').description('Purge and sync GitHub Actions secrets from .env').action(githubSyncCommand);
+  return c;
+};
+
+/**
+ * Vercel sync command: purge Vercel envs and sync from .env for all environments
+ */
+export const vercelSyncCommand = async () => {
+  const env = parseEnvFile('.env');
+  const token = env.VERCEL_TOKEN;
+  const project = env.VERCEL_PROJECT_NAME;
+  const teamId = env.VERCEL_TEAM_ID;
+  if (!token || !project) {
+    console.error('❌ Missing VERCEL_TOKEN or VERCEL_PROJECT_NAME in .env');
+    process.exit(1);
+  }
+  // Ensure linked
+  if (!vercelApi.link(project, token, teamId)) {
+    console.error(`❌ Failed to link to Vercel project ${project}`);
+    process.exit(1);
+  }
+  // Pull current to know keys
+  if (!vercelApi.envPull(token, '.env.vercel')) {
+    console.warn('⚠️ Could not pull current Vercel env; proceeding with sync');
+  }
+  const current = parseEnvFile('.env.vercel');
+  const envTypes: Array<'production'|'preview'|'development'> = ['production', 'preview', 'development'];
+  // Remove all currently present keys
+  for (const key of Object.keys(current)) {
+    for (const t of envTypes) { vercelApi.envRemove(key, t, token); }
+  }
+  // Add all from .env excluding Vercel control keys
+  for (const [key, value] of Object.entries(env)) {
+    if (['VERCEL_TOKEN','VERCEL_TEAM_ID','VERCEL_PROJECT_NAME'].includes(key)) continue;
+    if (typeof value !== 'string') continue;
+    for (const t of envTypes) { vercelApi.envAdd(key, t, value, token); }
+  }
+  console.log('✅ Vercel environment variables synchronized from .env');
+};
+
+// (moved into existing describe functions below)
 
 // Load .env file from current working directory
 const envResult = dotenv.config({ path: path.join(process.cwd(), '.env') });
@@ -276,8 +359,6 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'app/hasyx/doc/[filename]/client.tsx': 'app/hasyx/doc/[filename]/client.tsx',
     'components/sidebar/layout.tsx': 'components/sidebar/layout.tsx',
     'components/entities/default.tsx': 'components/entities/default.tsx',
-    'components/multi-select-hasyx.tsx': 'components/multi-select-hasyx.tsx',
-    'components/room.tsx': 'components/room.tsx',
     'lib/entities.tsx': 'lib/entities.template',
     'lib/ask.ts': 'lib/ask.template',
     'schema.tsx': 'schema.tsx',
@@ -318,13 +399,10 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'lib/debug.ts': 'lib/debug.template',
     'lib/cli.ts': 'lib/cli.template',
     'lib/github-telegram-bot.ts': 'lib/github-telegram-bot.template',
-    'lib/messaging.tsx': 'lib/messaging.tsx',
-    'lib/messaging-client.tsx': 'lib/messaging-client.tsx',
     'env.template': 'env.template',
     'app/api/events/subscription-billing/route.ts': 'app/api/events/subscription-billing/route.ts',
     'app/api/events/notify/route.ts': 'app/api/events/notify/route.ts',
     'app/api/events/logs-diffs/route.ts': 'app/api/events/logs-diffs/route.ts',
-
   };
 
   // Ensure directories exist
@@ -747,7 +825,7 @@ export const startCommand = () => {
 };
 
 export const buildClientCommand = async () => {
-  debug('Executing "build:client" command via CLI.');
+  debug('Executing "client" command via CLI.');
   const cwd = process.cwd();
   
   console.log('📦 Building Next.js application for client export...');
@@ -756,7 +834,7 @@ export const buildClientCommand = async () => {
   try {
     await buildClient();
     console.log('✅ Client build completed successfully!');
-    debug('Finished executing "build:client" command via CLI.');
+    debug('Finished executing "client" command via CLI.');
   } catch (error) {
     console.error('❌ Client build failed:', error);
     debug(`Error in buildClient command: ${error}`);
@@ -881,7 +959,7 @@ async function ensureOpenRouterApiKey() {
     console.log('🔑 OpenRouter API Key not found. Let\'s set it up...');
     
     try {
-      const { configureOpenRouter } = await import('./assist-openrouter');
+      const { configureOpenRouter } = await import('./ai/providers/assist-openrouter');
       const { createRlInterface } = await import('./assist-common');
       const path = await import('path');
       const dotenv = await import('dotenv');
@@ -1419,20 +1497,42 @@ export const assistCommandDescribe = (cmd: Command) => {
 };
 
 export const telegramCommandDescribe = (cmd: Command) => {
-  return cmd
-    .description('Setup and calibrate Telegram Bot, Admin Group, and Announcement Channel.')
-    .option('--skip-bot', 'Skip interactive Telegram Bot setup (token, name, webhook, etc.)')
-    .option('--skip-admin-group', 'Skip Telegram Admin Group setup (chat_id for correspondence)')
-    .option('--skip-channel', 'Skip Telegram Announcement Channel setup (channel_id, project user link)')
-    .option('--skip-calibration', 'Skip Telegram bot calibration process');
+  const group = cmd
+    .description('Telegram bot operations');
+  group.addHelpText('after', '\nLegacy: Deprecated interactive setup is removed; use subcommands.');
+  group
+    .command('webhook define <url>')
+    .description('Set Telegram webhook URL')
+    .action(async (url: string) => { await tgSetWebhook(url); console.log('✅ Webhook defined'); });
+  group
+    .command('webhook undefine')
+    .description('Remove Telegram webhook')
+    .action(async () => { await tgRemoveWebhook(); console.log('✅ Webhook removed'); });
+  group
+    .command('calibrate')
+    .description('Calibrate Telegram bot (webhook/menu/commands)')
+    .option('--project <name>', 'Project name for menu button')
+    .option('--webhook <url>', 'Webhook URL to set before calibration')
+    .action(async (options: { project?: string; webhook?: string }) => {
+      await tgCalibrate({ projectName: options.project, webhookUrl: options.webhook });
+      console.log('✅ Bot calibrated');
+    });
+  return group;
 };
 
 export const localCommandDescribe = (cmd: Command) => {
-  return cmd.description('Switch environment URL variables to local development (http://localhost:3000)');
+  return cmd.description('Switch environment URL variables to local development (http://localhost:3000) [⚠️ deprecated - use assist instead]');
 };
 
 export const vercelCommandDescribe = (cmd: Command) => {
-  return cmd.description('Switch environment URL variables to Vercel deployment');
+  const group = cmd.description('Vercel operations');
+  // legacy description retained in help
+  group.addHelpText('after', '\nLegacy: Switch environment URL variables to Vercel deployment [deprecated - use assist instead]');
+  group
+    .command('sync')
+    .description('Purge and sync Vercel environment variables from .env')
+    .action(vercelSyncCommand);
+  return group;
 };
 
 export const jsCommandDescribe = (cmd: Command) => {
@@ -1451,7 +1551,7 @@ export const tsxCommandDescribe = (cmd: Command) => {
 
 export const subdomainCommandDescribe = (cmd: Command) => {
   const subCmd = cmd
-    .description('Manage DNS records, SSL certificates, and Nginx configurations for subdomains')
+    .description('Manage DNS records, SSL certificates, and Nginx configurations for subdomains [⚠️ deprecated - use assist instead]')
     .addHelpText('after', `
 Examples:
   npx hasyx subdomain list                              # List all DNS records
@@ -1501,12 +1601,12 @@ export const logsStatesCommandDescribe = (cmd: Command) => {
 };
 
 export const envCommandDescribe = (cmd: Command) => {
-  return cmd.description('Update environment variables in docker-compose.yml and restart running container if needed');
+  return cmd.description('Update environment variables in docker-compose.yml and restart running container if needed [⚠️ deprecated - use assist instead]');
 };
 
 export const dockerCommandDescribe = (cmd: Command) => {
   const subCmd = cmd
-    .description('Manage Docker containers with automatic updates via Watchtower')
+    .description('Manage Docker containers with automatic updates via Watchtower [⚠️ deprecated - use assist instead]')
     .addHelpText('after', `
 Examples:
   npx hasyx docker ls              # List running containers for this project
@@ -1584,9 +1684,6 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
   startCommandDescribe(program.command('start')).action(startCommand);
 
   // Build client command
-  buildClientCommandDescribe(program.command('build:client')).action(buildClientCommand);
-
-  // Client command (alias for build:client)
   buildClientCommandDescribe(program.command('client')).action(buildClientCommand);
 
   // Migrate command

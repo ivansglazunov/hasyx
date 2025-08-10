@@ -1,17 +1,17 @@
 "use client"
 
-import { useCreateApolloClient } from './apollo';
+import { useCreateApolloClient } from './apollo/apollo';
 import { ThemeProvider } from "hasyx/components/theme-provider";
 import { url, API_URL } from 'hasyx/lib/url';
 import { SessionProvider, useSession as useSessionNextAuth } from "next-auth/react";
 import { useMemo, createContext, useContext, useEffect, useState } from "react";
 import Debug from './debug';
 import { Generate } from './generator';
-import { Hasyx } from './hasyx';
+import { Hasyx } from './hasyx/hasyx';
 import { NotificationProvider } from '../components/notify';
 import { Analytics } from "@vercel/analytics/next"
-import { HasyxClient } from './hasyx-client';
-import { TelegramMiniappProvider, useTelegramMiniapp } from './telegram-miniapp';
+import { HasyxClient } from './hasyx/hasyx-client';
+import { TelegramMiniappProvider, useTelegramMiniapp } from './telegram/telegram-miniapp';
 import { JwtAuthProvider } from '../components/jwt-auth';
 import { signOut, signIn } from "next-auth/react";
 

@@ -463,16 +463,12 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │   │   └── ✨ layout.tsx        # Sidebar layout component
 │   ├── entities/
 │   │   └── ✨ default.tsx       # Default entity component
-│   ├── ✨ multi-select-hasyx.tsx # MultiSelect component for hasyx integration
-│   └── ✨ room.tsx              # Room component for messaging interface
 ├── lib/
 │   ├── ✨ entities.tsx          # Entity definitions (from entities.template)
 │   ├── ✨ ask.ts               # AI assistant integration (from ask.template)
 │   ├── ✨ debug.ts             # Debug utilities (from debug.template)
 │   ├── ✨ cli.ts               # CLI utilities (from cli.template)
 │   ├── ✨ github-telegram-bot.ts # GitHub→Telegram bot integration (from github-telegram-bot.template)
-│   ├── ✨ messaging.tsx         # Messaging main component
-│   └── ✨ messaging-client.tsx  # Messaging client component
 ├── migrations/
 │   ├── 1746660891582-hasyx-users/
 │   │   ├── ✨ up.ts

@@ -3,7 +3,7 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
-import { newGithubTelegramBot } from 'hasyx/lib/github-telegram-bot-hasyx';
+import { newGithubTelegramBot } from '@/lib/github/github-telegram-bot-hasyx';
 
 // Load environment variables from .env file in the consumer project
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });

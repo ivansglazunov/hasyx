@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-
 // Export all validation schemas as a single object
 export const schema = {
   // Email validation schema

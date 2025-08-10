@@ -1,4 +1,4 @@
-import { Hasura, ColumnType } from './hasura';
+import { Hasura, ColumnType } from './hasura/hasura';
 import Debug from './debug';
 
 // Initialize debug

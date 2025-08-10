@@ -6,6 +6,8 @@ import path from 'path';
 import spawn from 'cross-spawn';
 import { SpawnSyncOptions } from 'child_process';
 import fs from 'fs-extra';
+import * as vercel from './vercel/index';
+import * as gh from './github';
 
 const debug = Debug('assist:sync');
 
@@ -44,19 +46,8 @@ export async function syncEnvironmentVariables(rl: readline.Interface, envPath: 
           console.log("   You might be prompted by Vercel CLI to confirm the project and scope (team/organization).");
 
           // First try to link using project name via environment variable or use interactive mode
-          process.env.VERCEL_PROJECT_ID = vercelProjectNameForLink;
-          const linkCommandParts = ['npx', 'vercel', 'link', '--yes', `--token=${vercelToken}`];
-          if (vercelOrgId) {
-            linkCommandParts.push(`--scope=${vercelOrgId}`);
-          }
-
-          debug(`Executing Vercel link command: ${linkCommandParts.join(' ')}`);
-          const linkResult = spawn.sync(linkCommandParts[0], linkCommandParts.slice(1), { 
-            stdio: 'inherit',
-            env: { ...process.env, VERCEL_PROJECT_ID: vercelProjectNameForLink }
-          });
-
-          if (linkResult.status === 0) {
+          const linked = vercel.link(vercelProjectNameForLink, vercelToken, vercelOrgId);
+          if (linked) {
             console.log(`✅ Successfully linked to Vercel project: ${vercelProjectNameForLink}.`);
             debug('Vercel link successful.');
             isLinkedSuccessfully = true;
@@ -66,7 +57,7 @@ export async function syncEnvironmentVariables(rl: readline.Interface, envPath: 
             }
           } else {
             console.error(`❌ Failed to link to Vercel project "${vercelProjectNameForLink}". Vercel environment sync will be skipped.`);
-            debug('Vercel link failed. Status:', linkResult.status, 'Error:', linkResult.error);
+            debug('Vercel link failed.');
           }
         } else {
           const vercelJsonPath = path.join(process.cwd(), '.vercel', 'project.json');
@@ -92,13 +83,10 @@ export async function syncEnvironmentVariables(rl: readline.Interface, envPath: 
           console.log(`\n🔄 Now syncing environment variables with the linked Vercel project...`);
           const tokenArgsForEnv = [`--token=${vercelToken}`];
 
-          const pullArgs = ['env', 'pull', '.env.vercel', '--yes', ...tokenArgsForEnv];
-          debug(`Executing Vercel env pull: npx vercel ${pullArgs.join(' ')}`);
-          const pullResult = spawn.sync('npx', ['vercel', ...pullArgs], { stdio: 'inherit' });
-
-          if (pullResult.status !== 0) {
+          const pulled = vercel.envPull(vercelToken, '.env.vercel');
+          if (!pulled) {
             console.error('❌ Failed to pull Vercel environment variables.');
-            debug('Vercel env pull failed. Status:', pullResult.status, 'Error:', pullResult.error);
+            debug('Vercel env pull failed.');
           } else {
             console.log('✅ Pulled Vercel environment. Merging and pushing local settings...');
             debug('Vercel env pull successful.');
@@ -132,41 +120,11 @@ export async function syncEnvironmentVariables(rl: readline.Interface, envPath: 
 
               for (const envType of ['production', 'preview', 'development']) {
                 // 1. Attempt to remove the variable first (suppress errors, as it might not exist)
-                const rmArgs = ['env', 'rm', key, envType, '--yes', ...tokenArgsForEnv];
-                debug(`Executing Vercel env rm for ${key} from ${envType}: npx vercel ${rmArgs.join(' ')}`);
-                const rmResult = spawn.sync('npx', ['vercel', ...rmArgs], {
-                  stdio: 'pipe', // Capture output, don't inherit
-                  encoding: 'utf-8'
-                });
-
-                if (rmResult.status !== 0) {
-                  // Log non-critical errors (e.g., variable not found)
-                  if (rmResult.stderr && !rmResult.stderr.includes('not found')) {
-                     debug(`Warning during Vercel env rm for ${key} from ${envType} (status ${rmResult.status}): ${rmResult.stderr}`);
-                  } else if (!rmResult.stderr) {
-                     debug(`Warning during Vercel env rm for ${key} from ${envType} (status ${rmResult.status}, no stderr)`);
-                  }
-                } else {
-                  debug(`Successfully removed ${key} from Vercel ${envType} env (or it was not present).`);
-                }
+                vercel.envRemove(key, envType as any, vercelToken);
 
                 // 2. Add the variable
-                const addArgs = ['env', 'add', key, envType, ...tokenArgsForEnv];
-                debug(`Executing Vercel env add for ${key} to ${envType} with value via stdin: npx vercel ${addArgs.join(' ')}`);
-                const addResult = spawn.sync('npx', ['vercel', ...addArgs], {
-                  stdio: ['pipe', 'pipe', 'pipe'],
-                  input: valueToPush,
-                  encoding: 'utf-8'
-                });
-
-                if (addResult.status !== 0) {
-                  console.error(`❌ Failed to add/update ${key} in Vercel ${envType} env. Error: ${addResult.stderr || addResult.error || 'Unknown error'}`);
-                  debug(`Failed to add/update ${key} in Vercel ${envType}. Stdout: ${addResult.stdout}, Stderr: ${addResult.stderr}, Error: ${addResult.error}`);
-                } else {
-                  // Only log success for add, as rm might have "failed" by var not existing
-                  console.log(`✅ Added/Updated ${key} in Vercel ${envType} env.`);
-                  debug(`Successfully added/updated ${key} in Vercel ${envType} env. Stdout: ${addResult.stdout}`);
-                }
+                vercel.envAdd(key, envType as any, valueToPush, vercelToken);
+                console.log(`✅ Added/Updated ${key} in Vercel ${envType} env.`);
               }
             }
             if (changesPushed) { // This will always be true if desiredVercelState is not empty
@@ -197,7 +155,7 @@ export async function syncEnvironmentVariables(rl: readline.Interface, envPath: 
   if (!options.skipGithub) {
     if (await askYesNo(rl, 'Do you want to sync .env with GitHub Actions secrets?', false)) {
       debug('Proceeding with GitHub Actions secrets sync.');
-      const remoteUrl = getGitHubRemoteUrl();
+        const remoteUrl = getGitHubRemoteUrl() || gh.getRemoteUrl();
       if (!remoteUrl) { 
         console.log('⚠️ GitHub remote URL not found. Skipping GitHub secrets sync.');
         debug('GitHub remote URL not found, skipping GitHub secrets sync.');
@@ -211,7 +169,7 @@ export async function syncEnvironmentVariables(rl: readline.Interface, envPath: 
         // OPENROUTER_API_KEY should NOT be in excludedKeys by default if we want to sync it.
         debug('GitHub Actions secrets excluded keys:', excludedKeys);
         
-        for (const [key, value] of Object.entries(baseEnvForGithub)) {
+          for (const [key, value] of Object.entries(baseEnvForGithub)) {
           if (excludedKeys.includes(key) || typeof value !== 'string') {
             debug(`Skipping ${key} from GitHub secrets sync (excluded or not a string).`);
             continue;
@@ -222,14 +180,13 @@ export async function syncEnvironmentVariables(rl: readline.Interface, envPath: 
             continue;
           }
           debug(`Attempting to set GitHub secret: ${key}`);
-          const secretSetResult = spawn.sync('gh', ['secret', 'set', key, '--body', value, '-R', remoteUrl], { stdio: 'pipe', encoding: 'utf-8' });
-          if (secretSetResult.status !== 0) { 
-            console.error(`❌ Failed to set GitHub secret: ${key}`); 
-            debug(`Failed to set GitHub secret: ${key}. Stderr:`, secretSetResult.stderr?.toString(), 'Error:', secretSetResult.error);
-          } else { 
-            console.log(`✅ Set GitHub secret: ${key}`);
-            debug(`Successfully set GitHub secret: ${key}`);
-          }
+            try {
+              gh.setSecret(remoteUrl, key, value);
+              console.log(`✅ Set GitHub secret: ${key}`);
+              debug(`Successfully set GitHub secret: ${key}`);
+            } catch (e) {
+              console.error(`❌ Failed to set GitHub secret: ${key}`);
+            }
         }
         console.log('✅ GitHub Actions secrets sync complete.');
       }

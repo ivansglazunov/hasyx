@@ -1,5 +1,5 @@
-import { Hasyx } from './hasyx'; // Import from generated package
-import { comparePassword, hashPassword } from './authDbUtils';
+import { Hasyx } from './hasyx/hasyx'; // Import from generated package
+import { comparePassword, hashPassword } from './users/auth-server';
 import Debug from './debug';
 import { sendVerificationEmail } from './email';
 import { generateVerificationToken } from './tokenUtils';

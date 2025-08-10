@@ -6479,86 +6479,309 @@
       "level": 1
     },
     {
-      "title": "Files Components",
-      "url": "/hasyx/doc/README",
+      "title": "Анализ Assist-файлов и их соответствия config.tsx",
+      "url": "/hasyx/doc/assist-to-config",
       "collapse": true,
       "items": [
         {
-          "title": "Компоненты",
-          "url": "/hasyx/doc/README#",
+          "title": "Список всех assist-файлов в проекте",
+          "url": "/hasyx/doc/assist-to-config#assist",
           "level": 2
         },
         {
-          "title": "Примеры использования",
-          "url": "/hasyx/doc/README#",
+          "title": "Основные assist-файлы:",
+          "url": "/hasyx/doc/assist-to-config#assist",
+          "level": 3
+        },
+        {
+          "title": "Assist-файлы для пользователей:",
+          "url": "/hasyx/doc/assist-to-config#assist",
+          "level": 3
+        },
+        {
+          "title": "Assist-файлы для интеграций:",
+          "url": "/hasyx/doc/assist-to-config#assist",
+          "level": 3
+        },
+        {
+          "title": "Assist-файлы для GitHub:",
+          "url": "/hasyx/doc/assist-to-config#assist-github",
+          "level": 3
+        },
+        {
+          "title": "Assist-файлы для Cloudflare:",
+          "url": "/hasyx/doc/assist-to-config#assist-cloudflare",
+          "level": 3
+        },
+        {
+          "title": "Анализ соответствия переменных окружения",
+          "url": "/hasyx/doc/assist-to-config#",
           "level": 2
         },
         {
-          "title": "Простая кнопка загрузки",
-          "url": "/hasyx/doc/README#",
+          "title": "Переменные из config.tsx, которые НЕ обрабатываются assist-файлами:",
+          "url": "/hasyx/doc/assist-to-config#configtsx-assist",
           "level": 3
         },
         {
-          "title": "Кастомная зона drop & drop",
-          "url": "/hasyx/doc/README#drop-drop",
-          "level": 3
-        },
-        {
-          "title": "Загрузка только изображений",
-          "url": "/hasyx/doc/README#",
-          "level": 3
-        },
-        {
-          "title": "Особенности",
-          "url": "/hasyx/doc/README#",
+          "title": "Дополнительные действия assist-файлов (кроме заполнения .env)",
+          "url": "/hasyx/doc/assist-to-config#assist-env",
           "level": 2
         },
         {
-          "title": "Тестирование",
-          "url": "/hasyx/doc/README#",
+          "title": "1. 🔄 `lib/assist-docker.ts`",
+          "url": "/hasyx/doc/assist-to-config#1-libassist-dockerts",
+          "level": 3
+        },
+        {
+          "title": "2. `lib/files/assist-storage.ts`",
+          "url": "/hasyx/doc/assist-to-config#2-libfilesassist-storagets",
+          "level": 3
+        },
+        {
+          "title": "3. 🔄 `lib/assist-telegram.ts`",
+          "url": "/hasyx/doc/assist-to-config#3-libassist-telegramts",
+          "level": 3
+        },
+        {
+          "title": "4. `lib/assist-migrations.ts`",
+          "url": "/hasyx/doc/assist-to-config#4-libassist-migrationsts",
+          "level": 3
+        },
+        {
+          "title": "5. 🔄 `lib/assist-commit.ts`",
+          "url": "/hasyx/doc/assist-to-config#5-libassist-committs",
+          "level": 3
+        },
+        {
+          "title": "6. 🔄 `lib/assist-sync.ts`",
+          "url": "/hasyx/doc/assist-to-config#6-libassist-syncts",
+          "level": 3
+        },
+        {
+          "title": "7. 🔄 `lib/github/assist-github-auth.ts`",
+          "url": "/hasyx/doc/assist-to-config#7-libgithubassist-github-authts",
+          "level": 3
+        },
+        {
+          "title": "8. 🔄 `lib/github/assist-github-webhooks.ts`",
+          "url": "/hasyx/doc/assist-to-config#8-libgithubassist-github-webhooksts",
+          "level": 3
+        },
+        {
+          "title": "9. 🔄 `lib/hasyx/assist-hasyx.ts`",
+          "url": "/hasyx/doc/assist-to-config#9-libhasyxassist-hasyxts",
+          "level": 3
+        },
+        {
+          "title": "10. 🔄 `lib/assist-env.ts`",
+          "url": "/hasyx/doc/assist-to-config#10-libassist-envts",
+          "level": 3
+        },
+        {
+          "title": "Заключение",
+          "url": "/hasyx/doc/assist-to-config#",
+          "level": 2
+        },
+        {
+          "title": "Неиспользуемые из config.tsx",
+          "url": "/hasyx/doc/assist-to-config#configtsx",
+          "level": 2
+        },
+        {
+          "title": "Рекомендации",
+          "url": "/hasyx/doc/assist-to-config#",
           "level": 2
         }
       ],
       "level": 1
     },
     {
-      "title": "Sidebar Components",
-      "url": "/hasyx/doc/README",
+      "title": "Config Tasks - План автоматической регенерации .env",
+      "url": "/hasyx/doc/config.tasks",
       "collapse": true,
       "items": [
         {
-          "title": "Components",
-          "url": "/hasyx/doc/README#components",
+          "title": "Цель",
+          "url": "/hasyx/doc/config.tasks#",
           "level": 2
         },
         {
-          "title": "SidebarLayout",
-          "url": "/hasyx/doc/README#sidebarlayout",
+          "title": "Анализ текущего состояния",
+          "url": "/hasyx/doc/config.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Существующие файлы:",
+          "url": "/hasyx/doc/config.tasks#",
           "level": 3
         },
         {
-          "title": "UserProfileDropdown",
-          "url": "/hasyx/doc/README#userprofiledropdown",
+          "title": "Структура hasyx.config.json:",
+          "url": "/hasyx/doc/config.tasks#hasyxconfigjson",
           "level": 3
         },
         {
-          "title": "Features",
-          "url": "/hasyx/doc/README#features",
+          "title": "План реализации",
+          "url": "/hasyx/doc/config.tasks#",
           "level": 2
         },
         {
-          "title": "Dependencies",
-          "url": "/hasyx/doc/README#dependencies",
+          "title": "Этап 1: Создание базового генератора .env",
+          "url": "/hasyx/doc/config.tasks#1-env",
+          "level": 3
+        },
+        {
+          "title": "Этап 2: Пошаговое добавление схем",
+          "url": "/hasyx/doc/config.tasks#2",
+          "level": 3
+        },
+        {
+          "title": "Этап 3: Интеграция с UI",
+          "url": "/hasyx/doc/config.tasks#3-ui",
+          "level": 3
+        },
+        {
+          "title": "Этап 4: Очистка config.tsx",
+          "url": "/hasyx/doc/config.tasks#4-configtsx",
+          "level": 3
+        },
+        {
+          "title": "Этап 3: Интеграция с существующими схемами",
+          "url": "/hasyx/doc/config.tasks#3",
+          "level": 3
+        },
+        {
+          "title": "Этап 4: Система разрешения ссылок",
+          "url": "/hasyx/doc/config.tasks#4",
+          "level": 3
+        },
+        {
+          "title": "Этап 5: Генерация .env файла",
+          "url": "/hasyx/doc/config.tasks#5-env",
+          "level": 3
+        },
+        {
+          "title": "Этап 6: Интеграция с UI",
+          "url": "/hasyx/doc/config.tasks#6-ui",
+          "level": 3
+        },
+        {
+          "title": "Этап 7: Миграция существующих данных",
+          "url": "/hasyx/doc/config.tasks#7",
+          "level": 3
+        },
+        {
+          "title": "Этап 8: Тестирование и валидация",
+          "url": "/hasyx/doc/config.tasks#8",
+          "level": 3
+        },
+        {
+          "title": "Приоритеты реализации",
+          "url": "/hasyx/doc/config.tasks#",
           "level": 2
         },
         {
-          "title": "Usage with Authentication",
-          "url": "/hasyx/doc/README#usage-with-authentication",
+          "title": "Высокий приоритет:",
+          "url": "/hasyx/doc/config.tasks#",
+          "level": 3
+        },
+        {
+          "title": "Средний приоритет:",
+          "url": "/hasyx/doc/config.tasks#",
+          "level": 3
+        },
+        {
+          "title": "Низкий приоритет:",
+          "url": "/hasyx/doc/config.tasks#",
+          "level": 3
+        },
+        {
+          "title": "Следующие шаги",
+          "url": "/hasyx/doc/config.tasks#",
           "level": 2
         },
         {
-          "title": "Styling",
-          "url": "/hasyx/doc/README#styling",
+          "title": "Вопросы для обсуждения",
+          "url": "/hasyx/doc/config.tasks#",
+          "level": 2
+        },
+        {
+          "title": "Ожидаемый результат",
+          "url": "/hasyx/doc/config.tasks#",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "План выноса операционного функционала assist в классы mechanics",
+      "url": "/hasyx/doc/mechanics.tasks",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Базовая инфраструктура (core)",
+          "url": "/hasyx/doc/mechanics.tasks#core",
+          "level": 2
+        },
+        {
+          "title": "Docker",
+          "url": "/hasyx/doc/mechanics.tasks#docker",
+          "level": 2
+        },
+        {
+          "title": "Storage (files)",
+          "url": "/hasyx/doc/mechanics.tasks#storage-files",
+          "level": 2
+        },
+        {
+          "title": "Telegram Bot",
+          "url": "/hasyx/doc/mechanics.tasks#telegram-bot",
+          "level": 2
+        },
+        {
+          "title": "Hasura Migrations/Metadata",
+          "url": "/hasyx/doc/mechanics.tasks#hasura-migrationsmetadata",
+          "level": 2
+        },
+        {
+          "title": "Git (commit/push)",
+          "url": "/hasyx/doc/mechanics.tasks#git-commitpush",
+          "level": 2
+        },
+        {
+          "title": "Sync (Vercel/GitHub secrets)",
+          "url": "/hasyx/doc/mechanics.tasks#sync-vercelgithub-secrets",
+          "level": 2
+        },
+        {
+          "title": "GitHub Auth/Repo",
+          "url": "/hasyx/doc/mechanics.tasks#github-authrepo",
+          "level": 2
+        },
+        {
+          "title": "GitHub Webhooks",
+          "url": "/hasyx/doc/mechanics.tasks#github-webhooks",
+          "level": 2
+        },
+        {
+          "title": "Hasyx Init",
+          "url": "/hasyx/doc/mechanics.tasks#hasyx-init",
+          "level": 2
+        },
+        {
+          "title": "Env/Package",
+          "url": "/hasyx/doc/mechanics.tasks#envpackage",
+          "level": 2
+        },
+        {
+          "title": "Дополнительно (Cloudflare/DNS — позже)",
+          "url": "/hasyx/doc/mechanics.tasks#cloudflaredns",
+          "level": 2
+        },
+        {
+          "title": "Полный список запланированных правок",
+          "url": "/hasyx/doc/mechanics.tasks#",
           "level": 2
         }
       ],
@@ -6653,5 +6876,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-08-05T08:01:24.655Z"
+  "lastUpdated": "2025-08-10T01:35:53.717Z"
 }
