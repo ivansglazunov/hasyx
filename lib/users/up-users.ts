@@ -61,6 +61,11 @@ export async function applySQLSchema(hasura: Hasura) {
     type: ColumnType.TEXT,
     comment: 'User password hash'
   });
+  // Remove legacy password column from users table (migrating to accounts.credential_hash)
+  await hasura.sql(`
+    ALTER TABLE "public"."users"
+    DROP COLUMN IF EXISTS "password";
+  `);
   
   await hasura.defineColumn({
     schema: 'public',
@@ -204,6 +209,15 @@ export async function applySQLSchema(hasura: Hasura) {
     type: ColumnType.JSONB,
     comment: 'Additional provider-specific data (e.g., Telegram username, photo_url)'
   });
+
+  // Add credential_hash for email/phone credential providers
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'accounts',
+    name: 'credential_hash',
+    type: ColumnType.TEXT,
+    comment: 'Password hash for credentials providers (email/phone)'
+  });
   
   // Define auth_jwt table for JWT authentication
   debug('  🔧 Creating auth_jwt table...');
@@ -244,6 +258,93 @@ export async function applySQLSchema(hasura: Hasura) {
   
   debug('  🔧 Tracking auth_jwt table...');
   await hasura.trackTable({ schema: 'public', table: 'auth_jwt' });
+
+  // Define verification_codes table for OTP flows (email/phone)
+  debug('  🔧 Creating verification_codes table...');
+  await hasura.createTable({
+    schema: 'public',
+    table: 'verification_codes',
+    id: 'id',
+    type: ColumnType.UUID,
+  });
+
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'verification_codes',
+    name: 'provider',
+    type: ColumnType.TEXT,
+    postfix: 'NOT NULL',
+    comment: 'Provider used for verification (email or phone)'
+  });
+
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'verification_codes',
+    name: 'identifier',
+    type: ColumnType.TEXT,
+    postfix: 'NOT NULL',
+    comment: 'Email address or phone number being verified'
+  });
+
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'verification_codes',
+    name: 'user_id',
+    type: ColumnType.UUID,
+    comment: 'Optional user who initiated verification (may differ from owner)'
+  });
+
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'verification_codes',
+    name: 'code_hash',
+    type: ColumnType.TEXT,
+    postfix: 'NOT NULL',
+    comment: 'BCrypt hash of the verification code'
+  });
+
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'verification_codes',
+    name: 'expires_at',
+    type: ColumnType.TIMESTAMPTZ,
+    postfix: 'NOT NULL',
+    comment: 'Expiration timestamp of the code'
+  });
+
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'verification_codes',
+    name: 'consumed_at',
+    type: ColumnType.TIMESTAMPTZ,
+    comment: 'When the code was successfully used'
+  });
+
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'verification_codes',
+    name: 'attempts',
+    type: ColumnType.INTEGER,
+    postfix: 'DEFAULT 0',
+    comment: 'Number of verification attempts'
+  });
+
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'verification_codes',
+    name: 'created_at',
+    type: ColumnType.TIMESTAMPTZ,
+  });
+
+  await hasura.defineColumn({
+    schema: 'public',
+    table: 'verification_codes',
+    name: 'updated_at',
+    type: ColumnType.TIMESTAMPTZ,
+  });
+
+  debug('  🔧 Tracking verification_codes table...');
+  await hasura.trackTable({ schema: 'public', table: 'verification_codes' });
   
   // Create foreign key constraint
   await hasura.defineForeignKey({

@@ -15,7 +15,16 @@ type UISchemaSection = {
   type: 'variant' | 'keys';
   title?: string;
   description?: string;
-  fields?: Array<{ key: string; label: string; description?: string; kind: 'string' | 'number' | 'boolean' | 'reference'; referenceKey?: string }>;
+  fields?: Array<{
+    key: string;
+    label: string;
+    description?: string;
+    kind: 'string' | 'number' | 'boolean' | 'reference';
+    referenceKey?: string;
+    isRequired?: boolean;
+    enumValues?: string[];
+    defaultValue?: any;
+  }>;
 };
 
 async function fetchConfig(): Promise<{ config: ConfigObject; schema: any; ui: { sections: UISchemaSection[] } }> {

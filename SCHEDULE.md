@@ -104,6 +104,7 @@ The Schedule system uses two main tables:
 ```sql
 CREATE TABLE public.schedule (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title TEXT,
     message_id UUID,
     cron TEXT NOT NULL,
     start_at BIGINT NOT NULL,
@@ -118,6 +119,7 @@ CREATE TABLE public.schedule (
 ```sql
 CREATE TABLE public.events (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title TEXT,
     schedule_id UUID REFERENCES schedule(id),
     message_id UUID NOT NULL,
     user_id UUID,

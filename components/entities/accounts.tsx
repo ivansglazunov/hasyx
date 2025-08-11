@@ -8,6 +8,7 @@ import { Badge } from 'hasyx/components/ui/badge';
 import { X } from 'lucide-react';
 import { CytoNode as CytoNodeComponent } from 'hasyx/lib/cyto';
 import { cn } from 'hasyx/lib/utils';
+import { useTranslations } from 'hasyx';
 
 interface AccountData {
   id?: string;
@@ -75,12 +76,13 @@ export function Card({ data, onClose, ...props }: {
   );
   
   const accountData = providedData || fetchedAccount;
+  const tAccounts = useTranslations('entities.accounts');
   
   if (loading) {
     return (
       <UICard className="w-80" {...props}>
         <CardContent className="p-4">
-          <div className="text-sm text-muted-foreground">Loading account...</div>
+          <div className="text-sm text-muted-foreground">{tAccounts('loading')}</div>
         </CardContent>
       </UICard>
     );
@@ -90,7 +92,7 @@ export function Card({ data, onClose, ...props }: {
     return (
       <UICard className="w-80" {...props}>
         <CardContent className="p-4">
-          <div className="text-sm text-destructive">Failed to load account</div>
+          <div className="text-sm text-destructive">{tAccounts('failed')}</div>
         </CardContent>
       </UICard>
     );
@@ -116,10 +118,10 @@ export function Card({ data, onClose, ...props }: {
             </div>
             <div>
               <CardTitle className="text-base capitalize">
-                {accountData.provider || 'Unknown Provider'}
+                {accountData.provider || tAccounts('unknownProvider')}
               </CardTitle>
               {accountData.provider_id && (
-                <p className="text-sm text-muted-foreground">ID: {accountData.provider_id}</p>
+                <p className="text-sm text-muted-foreground">{tAccounts('id')}: {accountData.provider_id}</p>
               )}
             </div>
           </div>
@@ -138,19 +140,19 @@ export function Card({ data, onClose, ...props }: {
       <CardContent className="pt-0">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs">ID: {accountData.id}</Badge>
+            <Badge variant="outline" className="text-xs">{tAccounts('id')}: {accountData.id}</Badge>
             {accountData.user_id && (
-              <Badge variant="secondary" className="text-xs">User: {accountData.user_id}</Badge>
+              <Badge variant="secondary" className="text-xs">{tAccounts('user')}: {accountData.user_id}</Badge>
             )}
           </div>
           {accountData.created_at && (
             <div className="text-xs text-muted-foreground">
-              Created: {new Date(accountData.created_at).toLocaleDateString()}
+              {tAccounts('created')}: {new Date(accountData.created_at).toLocaleDateString()}
             </div>
           )}
           {accountData.updated_at && (
             <div className="text-xs text-muted-foreground">
-              Updated: {new Date(accountData.updated_at).toLocaleDateString()}
+              {tAccounts('updated')}: {new Date(accountData.updated_at).toLocaleDateString()}
             </div>
           )}
         </div>

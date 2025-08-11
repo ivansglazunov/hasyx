@@ -2077,4 +2077,48 @@ export class Hasura {
       }
     });
   }
+
+  /**
+   * Create a Hasura one-off scheduled event
+   * Docs: metadata API type create_scheduled_event
+   */
+  async defineOneOffEvent(options: {
+    webhook: string;
+    scheduleAtIso: string; // ISO-8601
+    payload?: any;
+    headers?: Array<{ name: string; value?: string; value_from_env?: string }>;
+    retry_conf?: {
+      num_retries?: number;
+      timeout_seconds?: number;
+      tolerance_seconds?: number;
+      retry_interval_seconds?: number;
+    };
+  }): Promise<any> {
+    const { webhook, scheduleAtIso, payload, headers, retry_conf } = options;
+    return await this.v1({
+      type: 'create_scheduled_event',
+      args: {
+        webhook,
+        schedule_at: scheduleAtIso,
+        payload: payload ?? {},
+        headers: headers ?? [],
+        retry_conf,
+      },
+    });
+  }
+
+  /**
+   * Delete a pending one-off scheduled event by id
+   * Docs: metadata API type delete_scheduled_event with { type: 'one_off' }
+   */
+  async undefineOneOffEvent(options: { event_id: string }): Promise<any> {
+    const { event_id } = options;
+    return await this.v1({
+      type: 'delete_scheduled_event',
+      args: {
+        type: 'one_off',
+        event_id,
+      },
+    });
+  }
 }

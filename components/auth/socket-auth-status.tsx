@@ -6,6 +6,7 @@ import { Label } from "hasyx/components/ui/label";
 import { Status } from 'hasyx/components/hasyx/status';
 import { CodeBlock } from 'hasyx/components/code-block';
 import Debug from 'hasyx/lib/debug';
+import { useTranslations } from 'hasyx';
 import { url } from 'hasyx/lib/url';
 
 const debug = Debug('auth:socket-status');
@@ -15,6 +16,7 @@ type SocketAuthData = { authenticated: false } | { authenticated: true, userId: 
 const URL = (process.env.NEXT_PUBLIC_MAIN_URL || process.env.NEXT_PUBLIC_BASE_URL || window.location.host)!;
 
 export function SocketAuthStatus() {
+  const tStatus = useTranslations('authStatus');
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
   const [authData, setAuthData] = useState<SocketAuthData | null>(null);
   const [error, setError] = useState<any>(null);
@@ -109,8 +111,8 @@ export function SocketAuthStatus() {
       <CardHeader>
          <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="text-lg">WebSocket /api/auth Status</CardTitle>
-            <CardDescription>Status received via WebSocket connection.</CardDescription>
+            <CardTitle className="text-lg">{tStatus('ws.title')}</CardTitle>
+            <CardDescription>{tStatus('ws.description')}</CardDescription>
           </div>
            {/* Optional: Add reconnect button */}
            {/* <Button variant="ghost" size="icon" onClick={connectWebSocket} disabled={connectionStatus === 'connecting'} aria-label="Reconnect WebSocket">
@@ -120,7 +122,7 @@ export function SocketAuthStatus() {
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex items-center space-x-2">
-           <Label>WS Connection:</Label>
+           <Label>{tStatus('ws.connection')}</Label>
            <Status 
              status={statusLabel} 
              error={error}
@@ -128,27 +130,27 @@ export function SocketAuthStatus() {
         </div>
         {connectionStatus === 'connected' && authData && (
           <div>
-            <Label>Authentication Status:</Label>
+            <Label>{tStatus('ws.authStatus')}</Label>
              <p className={`text-sm ${authData.authenticated ? 'text-green-600' : 'text-red-600'}`}>
-                {authData.authenticated ? 'Authenticated' : 'Not Authenticated'}
+                {authData.authenticated ? tStatus('authenticated') : tStatus('notAuthenticated')}
              </p>
           </div>
         )}
         {connectionStatus === 'connected' && authData?.authenticated && (
           <div>
-            <Label>Received User Data:</Label>
+            <Label>{tStatus('ws.userData')}</Label>
             {/* Display userId and token data sent by the server */}
             <CodeBlock value={JSON.stringify({ userId: authData.userId, token: authData.token }, null, 2)} />
           </div>
         )}
          {connectionStatus === 'error' && (
           <div>
-            <Label className='text-red-500'>Connection/Auth Error:</Label>
-            <CodeBlock value={error?.message || 'Unknown WebSocket error'} />
+            <Label className='text-red-500'>{tStatus('ws.connError')}</Label>
+            <CodeBlock value={error?.message || tStatus('unknownWsError')} />
           </div>
         )}
          {connectionStatus === 'idle' && (
-            <p className="text-sm text-muted-foreground">WebSocket connection is idle/closed.</p>
+            <p className="text-sm text-muted-foreground">{tStatus('ws.idle')}</p>
          )}
       </CardContent>
     </Card>

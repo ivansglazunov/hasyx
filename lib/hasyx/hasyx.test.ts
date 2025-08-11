@@ -321,6 +321,200 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
     }, 30000);
   });
 
+  describe('Hasyx One-off Scheduled Events', () => {
+    it('should schedule a one-off event in ~1 minute and observe Hasura invocation', async () => {
+      const adminHasyx = createAdminHasyx();
+      try {
+        const markerId = uuidv4();
+        const scheduleAtEpochSec = Math.floor(Date.now() / 1000) + 60; // +1 minute
+        debug(`[test:hasyx:oneoff] Scheduling one-off for ${new Date(scheduleAtEpochSec * 1000).toISOString()} with marker: ${markerId}`);
+
+        const createRes = await adminHasyx.scheduleOneOff({
+          scheduleAtEpochSec,
+          payload: {
+            client_event_id: markerId,
+            schedule_id: null,
+            source: 'hasyx-test',
+          },
+        });
+        debug('[test:hasyx:oneoff] create_scheduled_event response:', createRes);
+
+        // Resolve scheduled_event id by payload marker
+        let scheduledEventId: string | null = null;
+        const resolveEventId = async () => {
+          const sql = `
+            SELECT id, status, scheduled_time
+            FROM hdb_catalog.hdb_scheduled_events
+            WHERE payload ->> 'client_event_id' = '${markerId}'
+            ORDER BY created_at DESC
+            LIMIT 1;
+          `;
+          const res = await adminHasyx.sql(sql);
+          const rows = Array.isArray(res?.result) ? res.result.slice(1) : [];
+          if (rows.length > 0) {
+            scheduledEventId = rows[0][0];
+            const status = rows[0][1];
+            const st = rows[0][2];
+            debug(`[test:hasyx:oneoff] Found event id=${scheduledEventId}, status=${status}, scheduled_time=${st}`);
+            return true;
+          }
+          return false;
+        };
+
+        const waitFor = async (ms: number) => new Promise(res => setTimeout(res, ms));
+
+        // Poll for the scheduled event row to appear (Hasura writes immediately)
+        {
+          const deadline = Date.now() + 30000; // 30s
+          while (Date.now() < deadline) {
+            if (await resolveEventId()) break;
+            await waitFor(1000);
+          }
+          expect(scheduledEventId).toBeTruthy();
+        }
+
+        // Wait until scheduled time + buffer then poll invocations
+        const bufferMs = 30000; // 30s buffer after scheduled time
+        const nowMs = Date.now();
+        const targetTimeMs = scheduleAtEpochSec * 1000;
+        if (nowMs < targetTimeMs + 1000) {
+          const toWait = Math.min(90000, targetTimeMs - nowMs + bufferMs);
+          debug(`[test:hasyx:oneoff] Waiting ${Math.ceil(toWait/1000)}s for execution window...`);
+          await waitFor(toWait);
+        }
+
+        // Poll for delivery confirmation: either delivered status or a log row in invocation logs
+        let delivered = false;
+        let invocationFound = false;
+        {
+          const deadline = Date.now() + 120000; // up to 120s to see delivery/log
+          while (Date.now() < deadline && scheduledEventId) {
+            // Check status in hdb_scheduled_events
+            const statusSql = `
+              SELECT status, tries, next_retry_at
+              FROM hdb_catalog.hdb_scheduled_events
+              WHERE id = '${scheduledEventId}'
+              LIMIT 1;
+            `;
+            const statusRes = await adminHasyx.sql(statusSql);
+            const statusRows = Array.isArray(statusRes?.result) ? statusRes.result.slice(1) : [];
+            if (statusRows.length > 0) {
+              const status = statusRows[0][0];
+              debug(`[test:hasyx:oneoff] event status = ${status}`);
+              if (status === 'delivered') {
+                delivered = true;
+                break;
+              }
+            }
+
+            // Check invocation logs table
+            const logsSql = `
+              SELECT COUNT(*)
+              FROM hdb_catalog.hdb_scheduled_event_invocation_logs
+              WHERE event_id = '${scheduledEventId}';
+            `;
+            const logsRes = await adminHasyx.sql(logsSql);
+            const logsRows = Array.isArray(logsRes?.result) ? logsRes.result.slice(1) : [];
+            const cnt = logsRows.length > 0 ? parseInt(logsRows[0][0], 10) : 0;
+            debug(`[test:hasyx:oneoff] invocation_logs count = ${cnt}`);
+            if (cnt > 0) {
+              invocationFound = true;
+              break;
+            }
+
+            await waitFor(2000);
+          }
+        }
+
+        expect(delivered || invocationFound).toBe(true);
+      } finally {
+        cleanupHasyx(adminHasyx, 'one-off');
+      }
+    }, 180000);
+
+    it('should create and then cancel a pending one-off scheduled event', async () => {
+      const adminHasyx = createAdminHasyx();
+      const markerId = uuidv4();
+      let scheduledEventId: string | null = null;
+      try {
+        // Schedule far enough in the future to ensure it's still pending when we cancel
+        const scheduleAtEpochSec = Math.floor(Date.now() / 1000) + 600; // +10 minutes
+        debug(`[test:hasyx:oneoff-cancel] Scheduling one-off for ${new Date(scheduleAtEpochSec * 1000).toISOString()} with marker: ${markerId}`);
+
+        await adminHasyx.scheduleOneOff({
+          scheduleAtEpochSec,
+          payload: {
+            client_event_id: markerId,
+            schedule_id: null,
+            source: 'hasyx-test-cancel',
+          },
+        });
+
+        // Resolve event id by marker
+        const waitFor = async (ms: number) => new Promise(res => setTimeout(res, ms));
+        const resolveEventId = async () => {
+          const sql = `
+            SELECT id, status
+            FROM hdb_catalog.hdb_scheduled_events
+            WHERE payload ->> 'client_event_id' = '${markerId}'
+            ORDER BY created_at DESC
+            LIMIT 1;
+          `;
+          const res = await adminHasyx.sql(sql);
+          const rows = Array.isArray(res?.result) ? res.result.slice(1) : [];
+          if (rows.length > 0) {
+            scheduledEventId = rows[0][0];
+            const status = rows[0][1];
+            debug(`[test:hasyx:oneoff-cancel] Found event id=${scheduledEventId}, status=${status}`);
+            return true;
+          }
+          return false;
+        };
+
+        {
+          const deadline = Date.now() + 30000; // 30s
+          while (Date.now() < deadline) {
+            if (await resolveEventId()) break;
+            await waitFor(1000);
+          }
+          expect(scheduledEventId).toBeTruthy();
+        }
+
+        // Cancel the one-off event
+        await adminHasyx.hasura!.undefineOneOffEvent({ event_id: scheduledEventId! });
+
+        // Confirm it's gone
+        let existsAfterCancel = true;
+        {
+          const deadline = Date.now() + 30000; // 30s
+          while (Date.now() < deadline) {
+            const checkSql = `
+              SELECT COUNT(*)
+              FROM hdb_catalog.hdb_scheduled_events
+              WHERE id = '${scheduledEventId}';
+            `;
+            const res = await adminHasyx.sql(checkSql);
+            const rows = Array.isArray(res?.result) ? res.result.slice(1) : [];
+            const cnt = rows.length > 0 ? parseInt(rows[0][0], 10) : 0;
+            debug(`[test:hasyx:oneoff-cancel] remaining rows for id=${scheduledEventId}: ${cnt}`);
+            if (cnt === 0) { existsAfterCancel = false; break; }
+            await waitFor(1000);
+          }
+        }
+
+        expect(existsAfterCancel).toBe(false);
+      } finally {
+        // Best-effort cleanup if still present
+        if (scheduledEventId) {
+          try {
+            await adminHasyx.hasura!.undefineOneOffEvent({ event_id: scheduledEventId });
+          } catch {}
+        }
+        cleanupHasyx(adminHasyx, 'one-off cancel');
+      }
+    }, 90000);
+  });
+
   // Moved and refactored Upsert test
   it('should perform a full upsert cycle: upsert (insert) -> select -> upsert (update) -> select -> delete -> select', async () => {
     const adminHasyx = createAdminHasyx();

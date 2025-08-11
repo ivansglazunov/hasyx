@@ -999,42 +999,9 @@ export const jsCommand = async (filePath: string | undefined, options: any) => {
  * Ensures OPENROUTER_API_KEY is available, setting it up interactively if needed
  */
 async function ensureOpenRouterApiKey() {
-  if (!process.env.OPENROUTER_API_KEY) {
-    console.log('🔑 OpenRouter API Key not found. Let\'s set it up...');
-    
-    try {
-      const { configureOpenRouter } = await import('./ai/providers/assist-openrouter');
-      const { createRlInterface } = await import('./assist-common');
-      const path = await import('path');
-      const dotenv = await import('dotenv');
-      
-      const rl = createRlInterface();
-      const envPath = path.join(process.cwd(), '.env');
-      
-      try {
-        await configureOpenRouter(rl, envPath);
-        
-        // Reload environment variables
-        const envResult = dotenv.config({ path: envPath });
-        if (envResult.error) {
-          console.debug('Warning: Could not reload .env file:', envResult.error);
-        }
-        
-        // Check if the key is now available
-        if (!process.env.OPENROUTER_API_KEY) {
-          console.error('❌ OPENROUTER_API_KEY is still not available. Please check your .env file.');
-          process.exit(1);
-        }
-        
-        console.log('✅ OpenRouter API Key configured successfully!');
-      } finally {
-        rl.close();
-      }
-    } catch (error) {
-      console.error('❌ Failed to configure OpenRouter API Key:', error);
-      process.exit(1);
-    }
-  }
+  if (process.env.OPENROUTER_API_KEY) return;
+  console.log('🔑 OPENROUTER_API_KEY not found. Skipping interactive setup in this build.');
+  console.log('   Set OPENROUTER_API_KEY in your .env if you intend to use OpenRouter.');
 }
 
 // TSX command

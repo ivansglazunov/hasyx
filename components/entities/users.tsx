@@ -9,6 +9,7 @@ import { Badge } from 'hasyx/components/ui/badge';
 import { X } from 'lucide-react';
 import { CytoNode as CytoNodeComponent } from 'hasyx/lib/cyto';
 import { cn } from 'hasyx/lib/utils';
+import { useTranslations } from 'hasyx';
 
 interface UserData {
   id?: string;
@@ -72,11 +73,13 @@ export function Card({ data, onClose, ...props }: {
   
   const userData = providedData || fetchedUser;
   
+  const tUsers = useTranslations('entities.users');
+
   if (loading) {
     return (
       <UICard className="w-80" {...props}>
         <CardContent className="p-4">
-          <div className="text-sm text-muted-foreground">Loading user...</div>
+          <div className="text-sm text-muted-foreground">{tUsers('loading')}</div>
         </CardContent>
       </UICard>
     );
@@ -86,7 +89,7 @@ export function Card({ data, onClose, ...props }: {
     return (
       <UICard className="w-80" {...props}>
         <CardContent className="p-4">
-          <div className="text-sm text-destructive">Failed to load user</div>
+          <div className="text-sm text-destructive">{tUsers('failed')}</div>
         </CardContent>
       </UICard>
     );
@@ -107,7 +110,7 @@ export function Card({ data, onClose, ...props }: {
               </AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle className="text-base">{userData.name || 'Unknown User'}</CardTitle>
+              <CardTitle className="text-base">{userData.name || tUsers('unknownUser')}</CardTitle>
               {userData.email && (
                 <p className="text-sm text-muted-foreground">{userData.email}</p>
               )}
@@ -128,16 +131,16 @@ export function Card({ data, onClose, ...props }: {
       <CardContent className="pt-0">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs">ID: {userData.id}</Badge>
+            <Badge variant="outline" className="text-xs">{tUsers('id')}: {userData.id}</Badge>
           </div>
           {userData.created_at && (
             <div className="text-xs text-muted-foreground">
-              Created: {new Date(userData.created_at).toLocaleDateString()}
+              {tUsers('created')}: {new Date(userData.created_at).toLocaleDateString()}
             </div>
           )}
           {userData.updated_at && (
             <div className="text-xs text-muted-foreground">
-              Updated: {new Date(userData.updated_at).toLocaleDateString()}
+              {tUsers('updated')}: {new Date(userData.updated_at).toLocaleDateString()}
             </div>
           )}
         </div>

@@ -103,7 +103,7 @@ export function generateDockerCompose(variant?: string): void {
     ...(aggregate.volumes && Object.keys(aggregate.volumes).length ? { volumes: aggregate.volumes } : {}),
   };
 
-  // Inject application service with public feature flags only
+  // Inject application service with environment from generated .env
   const projectName = getProjectName();
   if (!spec.services[projectName]) {
     spec.services[projectName] = {
@@ -112,12 +112,11 @@ export function generateDockerCompose(variant?: string): void {
     };
   }
 
-  // Parse generated env to extract only NEXT_PUBLIC_*_ENABLED flags
+  // Parse generated env and inject ALL variables into the app service environment
   try {
     const envContent = generateEnvFile(config, selectedVariant);
     const envLines = envContent.split('\n');
-    const enabledFlags: Record<string, string> = {};
-    const appEnv: Record<string, string> = {};
+    const allEnv: Record<string, string> = {};
     for (const line of envLines) {
       const trimmed = line.trim();
       if (!trimmed || trimmed.startsWith('#')) continue;
@@ -125,21 +124,11 @@ export function generateDockerCompose(variant?: string): void {
       if (eq <= 0) continue;
       const key = trimmed.slice(0, eq);
       const val = trimmed.slice(eq + 1);
-      if (/^NEXT_PUBLIC_.*_ENABLED$/.test(key)) {
-        enabledFlags[key] = val;
-        continue;
-      }
-      // Pass storage settings to storage service via compose meta; for app we only inject flags.
-      // However, some runtime envs may be needed by the app (e.g., GOOGLE_APPLICATION_CREDENTIALS for admin code if used in app container)
-      if (key === 'GOOGLE_APPLICATION_CREDENTIALS') {
-        appEnv[key] = val;
-      }
+      allEnv[key] = val;
     }
-    if (Object.keys(enabledFlags).length) {
-      const appSvc = spec.services[projectName] as any;
-      appSvc.environment = { ...(appSvc.environment || {}), ...enabledFlags, ...appEnv };
-      // ensure env_file is present (already set), keep others untouched
-    }
+    const appSvc = spec.services[projectName] as any;
+    appSvc.environment = { ...(appSvc.environment || {}), ...allEnv };
+    // ensure env_file is present (already set), keep others untouched
   } catch (e) {
     // If env generation fails, skip flags injection silently
   }

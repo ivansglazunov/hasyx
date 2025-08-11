@@ -426,14 +426,113 @@ hasyxConfig.variant = z.object({
     backLabel: '< back',
     descriptionTemplate: (data: any) => (data?.enabled ? 'enabled' : 'disabled')
   }),
+  // Email provider (Resend)
+  resend: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'resend',
+    referenceKey: 'resend',
+    title: 'Resend Configuration',
+    description: 'Select a Resend configuration (optional)',
+    emptyMessage: 'No Resend configurations available. Create Resend configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (_data: any) => 'Resend Email Service'
+  }),
+  // LLM provider (OpenRouter)
+  openrouter: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'openrouter',
+    referenceKey: 'openrouter',
+    title: 'OpenRouter Configuration',
+    description: 'Select an OpenRouter configuration (optional)',
+    emptyMessage: 'No OpenRouter configurations available. Create OpenRouter configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (_data: any) => 'OpenRouter AI Service'
+  }),
+  // Firebase Admin
+  firebase: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'firebase',
+    referenceKey: 'firebase',
+    title: 'Firebase (Admin) Configuration',
+    description: 'Select a Firebase Admin configuration (optional)',
+    emptyMessage: 'No Firebase configurations available. Create Firebase configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (data: any) => data?.projectId || 'no project id'
+  }),
+  // Firebase Public
+  firebasePublic: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'firebasePublic',
+    referenceKey: 'firebasePublic',
+    title: 'Firebase (Public) Configuration',
+    description: 'Select a Firebase Web SDK Public configuration (optional)',
+    emptyMessage: 'No Firebase Public configurations available. Create Firebase Public configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (data: any) => data?.projectId || 'no project id'
+  }),
+  // DNS
+  dns: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'dns',
+    referenceKey: 'dns',
+    title: 'DNS Configuration',
+    description: 'Select a DNS configuration (optional)',
+    emptyMessage: 'No DNS configurations available. Create DNS configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (data: any) => data?.domain || 'no domain'
+  }),
+  // Cloudflare
+  cloudflare: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'cloudflare',
+    referenceKey: 'cloudflare',
+    title: 'Cloudflare Configuration',
+    description: 'Select a Cloudflare configuration (optional)',
+    emptyMessage: 'No Cloudflare configurations available. Create Cloudflare configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (data: any) => data?.zoneId || 'no zone id'
+  }),
+  // Project User
+  projectUser: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'projectUser',
+    referenceKey: 'projectUser',
+    title: 'Project User Configuration',
+    description: 'Select a Project User configuration (optional)',
+    emptyMessage: 'No Project User configurations available. Create Project User configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (data: any) => data?.email || 'no email'
+  }),
+  // GitHub Webhooks
+  githubWebhooks: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'githubWebhooks',
+    referenceKey: 'githubWebhooks',
+    title: 'GitHub Webhooks Configuration',
+    description: 'Select a GitHub Webhooks configuration (optional)',
+    emptyMessage: 'No GitHub Webhooks configurations available. Create GitHub Webhooks configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (data: any) => data?.url || 'no webhook url'
+  }),
+  testing: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'testing',
+    referenceKey: 'testing',
+    title: 'Testing Configuration',
+    description: 'Select a testing configuration (optional)',
+    emptyMessage: 'No testing configurations available. Create testing configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (_data: any) => 'token'
+  }),
 }).meta({
   type: 'variant-editor',
   title: 'Variant Configuration',
   description: 'Configure variant settings',
   fields: [
-    'host', 'hasura', 'telegramBot', 'telegramChannel', 'environment',
+    'host', 'hasura', 'telegramBot', 'telegramChannel', 'environment', 'testing',
     'googleOAuth', 'yandexOAuth', 'githubOAuth', 'facebookOAuth', 'vkOAuth', 'telegramLoginOAuth', 'nextAuthSecrets',
-    'storage', 'pg', 'docker', 'dockerhub', 'github', 'vercel', 'githubTelegramBot'
+    'storage', 'pg', 'docker', 'dockerhub', 'github', 'vercel', 'githubTelegramBot',
+    'resend', 'openrouter', 'firebase', 'firebasePublic', 'dns', 'cloudflare', 'projectUser', 'githubWebhooks'
   ]
 });
 
@@ -898,6 +997,32 @@ hasyxConfig.global = z.object({
     jestLocal: 'JEST_LOCAL',
   },
 });
+
+  // Testing Schema (for test-data tokens)
+  hasyxConfig.testing = z.object({
+    token: z
+      .string()
+      .min(1, 'Please enter a valid Test Token')
+      .describe('Test token to be exposed as TEST_TOKEN for selected variant'),
+  }).meta({
+    type: 'testing-config',
+    title: 'Testing Configuration',
+    description: 'Provide a token used by tests. When a variant selects a testing config, its token is mapped to TEST_TOKEN.',
+    envMapping: {
+      token: 'TEST_TOKEN',
+    },
+  });
+
+  hasyxConfig.testings = z.record(
+    z.string(),
+    hasyxConfig.testing,
+  ).meta({
+    data: 'testing',
+    type: 'keys',
+    default: ['local', 'dev', 'prod'],
+    add: hasyxConfig.testing,
+    descriptionTemplate: (data: any) => (data?.token ? 'token set' : 'no token'),
+  });
 
 // DNS Schema
 hasyxConfig.dns = z.object({

@@ -83,6 +83,7 @@ export async function dropMetadata(hasura: Hasura) {
   await hasura.untrackTable({ schema: 'public', table: 'users' });
   await hasura.untrackTable({ schema: 'public', table: 'accounts' });
   await hasura.untrackTable({ schema: 'public', table: 'auth_jwt' });
+  await hasura.untrackTable({ schema: 'public', table: 'verification_codes' });
   debug('✅ Tables untracked.');
 }
 
@@ -100,7 +101,8 @@ export async function dropTables(hasura: Hasura) {
     name: 'accounts_user_id_fkey'
   });
   
-  // Drop tables
+  // Drop tables (including verification_codes and auth_jwt)
+  await hasura.deleteTable({ schema: 'public', table: 'verification_codes' });
   await hasura.deleteTable({ schema: 'public', table: 'users' });
   await hasura.deleteTable({ schema: 'public', table: 'accounts' });
   await hasura.deleteTable({ schema: 'public', table: 'auth_jwt' });

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { useTranslations } from 'hasyx';
 import { signIn } from 'next-auth/react';
 import Script from 'next/script';
 import Debug from 'hasyx/lib/debug';
@@ -39,6 +40,7 @@ const TelegramLoginButton: React.FC<TelegramLoginButtonProps> = ({
   redirectUrl = '/',
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const tAuth = useTranslations('auth');
 
   useEffect(() => {
     if (ref.current && botUsername) {
@@ -79,21 +81,21 @@ const TelegramLoginButton: React.FC<TelegramLoginButtonProps> = ({
               debug('❌ NextAuth signIn error:', result.error);
               console.error('❌ NextAuth signIn error:', result.error);
               // Handle error (e.g., show a notification)
-              alert(`Telegram authorization error: ${result.error}`);
+              alert(`${tAuth('accountDisconnectFailed')}: ${result.error}`);
             } else {
               debug('⚠️ NextAuth signIn unexpected result:', result);
               console.warn('⚠️ NextAuth signIn unexpected result:', result);
-              alert('Unexpected authorization result. Please try again.');
+              alert(tAuth('updateFailed'));
             }
           }).catch(err => {
             debug('❌ Error during signIn process:', err);
             console.error('❌ Error during signIn process:', err);
-            alert('An error occurred during Telegram login. Please try again.');
+            alert(tAuth('updateFailed'));
           });
         } catch (error) {
           debug('❌ Error in onTelegramAuth callback:', error);
           console.error('❌ Error in onTelegramAuth callback:', error);
-          alert('Error processing Telegram authorization data.');
+          alert(tAuth('updateFailed'));
         }
       };
 
@@ -101,7 +103,7 @@ const TelegramLoginButton: React.FC<TelegramLoginButtonProps> = ({
       (window as any).onTelegramError = (error: any) => {
         debug('❌ Telegram widget error:', error);
         console.error('❌ Telegram widget error:', error);
-        alert('Telegram widget error. Please check bot settings.');
+        alert(tAuth('updateFailed'));
       };
 
       // Dynamically create the script element for Telegram widget
@@ -121,7 +123,7 @@ const TelegramLoginButton: React.FC<TelegramLoginButtonProps> = ({
       script.onerror = () => {
         debug('❌ Failed to load Telegram widget script');
         console.error('❌ Failed to load Telegram widget script');
-        alert('Failed to load Telegram widget. Please check your internet connection.');
+        alert(tAuth('updateFailed'));
       };
 
       script.onload = () => {
@@ -176,7 +178,7 @@ const TelegramLoginButton: React.FC<TelegramLoginButtonProps> = ({
     return (
       <div className={className}>
         <div className="text-red-500 text-sm">
-          Telegram bot username not configured
+          {tAuth('accountDisconnectFailed')}
         </div>
       </div>
     );

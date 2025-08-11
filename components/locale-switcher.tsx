@@ -5,7 +5,6 @@ import { useTheme as useNextTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { create } from 'zustand';
 
-import { useTranslations } from "hasyx";
 import { cn } from "hasyx/lib/utils";
 
 export interface LocaleStore {
@@ -20,7 +19,6 @@ export const useLocaleStore = create<LocaleStore>((set, get) => ({
 
 export function LocaleSwitcher(props: any) {
   const { locale, setLocale } = useLocaleStore();
-  const t = useTranslations('hasyx');
 
   return (<div {...props}>
     <Button className="w-full" onClick={() => setLocale(locale === 'en' ? 'ru' : 'en')}>

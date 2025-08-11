@@ -24,12 +24,11 @@ export function ClientLayout({ defaultLocale, children }: ClientLayoutProps) {
     <HasyxProvider generate={generate}>
       <NextIntlClientProvider locale={locale} messages={i18nMessages(locale)} timeZone="UTC">
         {children}
+        {/* PWA Components - must be inside NextIntl provider to use translations */}
+        <PWAInstallPrompt />
+        <PWAStatus />
+        <Eruda />
       </NextIntlClientProvider>
-      
-      {/* PWA Components - available on all pages */}
-      <PWAInstallPrompt />
-      <PWAStatus />
-      <Eruda />
     </HasyxProvider>
   );
 } 

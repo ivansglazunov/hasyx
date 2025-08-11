@@ -6,6 +6,7 @@
  */
 
 import Debug from './debug';
+import { completePWAReset } from './pwa-cache-utils';
 
 const debug = Debug('pwa');
 
@@ -46,6 +47,12 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
   if (isDevelopment && !localStorage.getItem('pwa-dev-enabled')) {
     debug('Service worker disabled in development mode');
     debug('To enable PWA in development: localStorage.setItem("pwa-dev-enabled", "true")');
+    // Ensure no previously registered service workers or caches remain in development
+    try {
+      await completePWAReset();
+    } catch (resetError) {
+      debug('PWA reset in development failed or partially completed:', resetError);
+    }
     return null;
   }
 

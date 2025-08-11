@@ -8,6 +8,7 @@ import Debug from 'hasyx/lib/debug';
 import { AlertCircle, CheckCircle, Loader2, Smartphone } from 'lucide-react';
 import { signIn, useSession } from 'next-auth/react';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslations } from 'hasyx';
 
 const debug = Debug('auth:telegram-webapp');
 
@@ -58,6 +59,7 @@ export function TelegramWebAppAuth({
   className,
   autoAuth = true 
 }: TelegramWebAppAuthProps) {
+  const t = useTranslations('auth.telegramWebapp');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const { data: session, status } = useSession();
@@ -194,10 +196,10 @@ export function TelegramWebAppAuth({
         <CardHeader>
           <div className="flex items-center space-x-2">
             <Loader2 className="h-5 w-5 animate-spin" />
-            <CardTitle className="text-lg">Loading Telegram WebApp...</CardTitle>
+            <CardTitle className="text-lg">{t('loadingTitle')}</CardTitle>
           </div>
           <CardDescription>
-            Detecting Telegram environment...
+            {t('loadingDescription')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -262,21 +264,21 @@ export function TelegramWebAppAuth({
         <CardHeader>
           <div className="flex items-center space-x-2">
             <CheckCircle className="h-5 w-5 text-green-500" />
-            <CardTitle className="text-lg">Already Authenticated</CardTitle>
+            <CardTitle className="text-lg">{t('alreadyAuthenticatedTitle')}</CardTitle>
           </div>
           <CardDescription>
-            You are signed in as {session.user?.name || session.user?.email}
+            {t('alreadyAuthenticatedDescription', { user: session.user?.name || session.user?.email || '' })}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-2">
             <Badge variant="secondary">
-              Provider: {(session as any)?.provider || 'Unknown'}
+              {t('provider')}: {(session as any)?.provider || t('unknown')}
             </Badge>
             {isInTelegram && (
               <Badge variant="outline">
                 <Smartphone className="h-3 w-3 mr-1" />
-                Telegram WebApp
+                {t('telegramWebapp')}
               </Badge>
             )}
           </div>
@@ -292,15 +294,15 @@ export function TelegramWebAppAuth({
         <CardHeader>
           <div className="flex items-center space-x-2">
             <AlertCircle className="h-5 w-5 text-amber-500" />
-            <CardTitle className="text-lg">Not in Telegram</CardTitle>
+            <CardTitle className="text-lg">{t('notInTelegramTitle')}</CardTitle>
           </div>
           <CardDescription>
-            This component only works within Telegram WebApp environment
+            {t('notInTelegramDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Please open this app from within Telegram to use Telegram authentication.
+            {t('notInTelegramNote')}
           </p>
         </CardContent>
       </Card>
@@ -317,10 +319,10 @@ export function TelegramWebAppAuth({
               <path d="m12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
             </svg>
           </div>
-          <CardTitle className="text-lg">Telegram Authentication</CardTitle>
+          <CardTitle className="text-lg">{t('title')}</CardTitle>
         </div>
         <CardDescription>
-          Sign in securely using your Telegram account
+          {t('description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -346,7 +348,7 @@ export function TelegramWebAppAuth({
               </div>
               {user.is_premium && (
                 <Badge variant="secondary" className="ml-auto">
-                  Premium
+                  {t('premium')}
                 </Badge>
               )}
             </div>
@@ -371,27 +373,27 @@ export function TelegramWebAppAuth({
           {isAuthenticating ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Authenticating...
+              {t('authenticating')}
             </>
           ) : (
             <>
               <Smartphone className="mr-2 h-4 w-4" />
-              Sign in with Telegram
+              {t('signInWithTelegram')}
             </>
           )}
         </Button>
 
         <div className="flex items-center space-x-2 text-xs text-muted-foreground">
           <Badge variant="outline" className="px-2 py-1">
-            Platform: {platform || 'Unknown'}
+            {t('platform')}: {platform || t('unknown')}
           </Badge>
           {version && (
             <Badge variant="outline" className="px-2 py-1">
-              Version: {version}
+              {t('version')}: {version}
             </Badge>
           )}
           <Badge variant="outline" className="px-2 py-1">
-            Theme: {colorScheme}
+            {t('theme')}: {colorScheme}
           </Badge>
         </div>
       </CardContent>

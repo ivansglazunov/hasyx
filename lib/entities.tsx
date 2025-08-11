@@ -68,8 +68,8 @@ export function Button({ data, ...props }: EntityButtonProps) {
   const typename = entityData?.__typename;
   
   const EntityComponent = getEntityComponent(typename);
-  
-  return <EntityComponent.Button data={data as any} {...props} />;
+  const Comp: any = (EntityComponent as any).Button;
+  return <Comp data={data as any} {...props} />;
 }
 
 export function Card({ data, onClose, ...props }: EntityCardProps) {
@@ -77,8 +77,8 @@ export function Card({ data, onClose, ...props }: EntityCardProps) {
   const typename = entityData?.__typename;
   
   const EntityComponent = getEntityComponent(typename);
-  
-  return <EntityComponent.Card data={data as any} onClose={onClose} {...props} />;
+  const Comp: any = (EntityComponent as any).Card;
+  return <Comp data={data as any} onClose={onClose} {...props} />;
 } 
 
 export function CytoNode({ data, ...props }: EntityCytoNodeProps) {
@@ -86,5 +86,6 @@ export function CytoNode({ data, ...props }: EntityCytoNodeProps) {
   const typename = entityData?.__typename;
   
   const EntityComponent = getEntityComponent(typename);
-  return <EntityComponent.CytoNode data={data as any} {...props} />;
+  const Comp: any = (EntityComponent as any).CytoNode;
+  return <Comp data={data as any} {...props} />;
 } 

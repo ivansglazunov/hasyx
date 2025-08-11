@@ -5,9 +5,11 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Download, X, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslations } from 'hasyx';
 
 export function PWAInstallPrompt() {
   const [show, setShow] = useState(true);
+  const tPwa = useTranslations('pwa');
 
   const { 
     isSupported,
@@ -34,20 +36,20 @@ export function PWAInstallPrompt() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Download className="h-5 w-5" />
-                Install Hasyx
+                {tPwa('install.title')}
               </CardTitle>
             </div>
             <CardDescription>
-              Install this app on your device for a better experience.
+              {tPwa('install.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="flex gap-2">
               <Button onClick={install} className="flex-1">
-                Install
+                {tPwa('install.install')}
               </Button>
               <Button variant="outline" onClick={() => setShow(false)}>
-                Later
+                {tPwa('install.later')}
               </Button>
             </div>
           </CardContent>
@@ -61,7 +63,7 @@ export function PWAInstallPrompt() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2 text-orange-900">
                 <RefreshCw className="h-5 w-5" />
-                Update Available
+                {tPwa('update.title')}
               </CardTitle>
               <Button
                 variant="ghost"
@@ -73,16 +75,16 @@ export function PWAInstallPrompt() {
               </Button>
             </div>
             <CardDescription className="text-orange-700">
-              A new version of the app is available.
+              {tPwa('update.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="flex gap-2">
               <Button onClick={update} className="flex-1">
-                Update Now
+                {tPwa('update.updateNow')}
               </Button>
               <Button variant="outline" onClick={dismissUpdate}>
-                Later
+                {tPwa('update.later')}
               </Button>
             </div>
           </CardContent>

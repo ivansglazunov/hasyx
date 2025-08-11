@@ -223,8 +223,11 @@ let PasswordInput: any;
 
 // Инициализация импортов
 async function initializeInk() {
-  const ink = await import('ink');
-  const inkUI = await import('@inkjs/ui');
+  // Use dynamic eval-import to avoid TypeScript module resolution issues under current moduleResolution
+  // eslint-disable-next-line no-eval
+  const ink: any = await (eval('import("ink")'));
+  // eslint-disable-next-line no-eval
+  const inkUI: any = await (eval('import("@inkjs/ui")'));
   
   render = ink.render;
   Box = ink.Box;

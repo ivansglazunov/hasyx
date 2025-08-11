@@ -834,6 +834,47 @@ export class Hasyx {
   }
 
   /**
+   * Convenience helper to schedule a Hasura one-off event against this app's events endpoint.
+   * scheduleAtEpochSec: unix seconds; webhookPath: default '/api/events/one-off'
+   */
+  async scheduleOneOff(options: {
+    scheduleAtEpochSec: number;
+    webhookPath?: string;
+    payload?: any;
+    retry_conf?: {
+      num_retries?: number;
+      timeout_seconds?: number;
+      tolerance_seconds?: number;
+      retry_interval_seconds?: number;
+    };
+  }): Promise<any> {
+    if (!this.hasura) {
+      throw new Error('Hasura instance not initialized in Hasyx client');
+    }
+    const host = API_URL;
+    const webhookPath = options.webhookPath ?? '/api/events/one-off';
+    const normalizedHost = /^https?:\/\//i.test(host) ? host.replace(/\/$/, '') : `http://${host.replace(/\/$/, '')}`;
+    const normalizedPath = webhookPath.startsWith('/') ? webhookPath : `/${webhookPath}`;
+    const webhookUrl = `${normalizedHost}${normalizedPath}`;
+    const scheduleAtIso = new Date(options.scheduleAtEpochSec * 1000).toISOString();
+    const headers: { name: string; value?: string; value_from_env?: string }[] = [];
+    const sec = process.env.HASURA_EVENT_SECRET;
+    if (sec) {
+      headers.push({ name: 'X-Hasura-Event-Secret', value: sec });
+    } else {
+      headers.push({ name: 'X-Hasura-Event-Secret', value_from_env: 'HASURA_EVENT_SECRET' });
+    }
+
+    return this.hasura.defineOneOffEvent({
+      webhook: webhookUrl,
+      scheduleAtIso,
+      payload: options.payload ?? {},
+      retry_conf: options.retry_conf,
+      headers,
+    });
+  }
+
+  /**
    * Inserts a debug log entry if HASYX_DEBUG is enabled and admin secret is present.
    * This method is intended for server-side admin use only.
    * @param value - The JSONB value to log.

@@ -24,11 +24,11 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
   const hasyx = useHasyx();
   const tAuth = useTranslations('auth');
   const tCommon = useTranslations('common');
+  const tActions = useTranslations('actions');
+  const tErrors = useTranslations('errors');
   const { data: session, status } = useSession();
   const loading = status === 'loading';
   const userId = session?.user?.id;
-
-  console.log('AuthActionsCard', { hasyx, session, loading, userId });
 
   // --- Subscription for email verification status ---
   const { 
@@ -61,17 +61,17 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
     return (
       <Card {...props}>
         <CardHeader>
-          <CardTitle>Session & OAuth</CardTitle>
-          <CardDescription>View session status and sign in using OAuth providers.</CardDescription>
+          <CardTitle>{tAuth('connectedAccounts')}</CardTitle>
+          <CardDescription>{tAuth('signInToYourAccount')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid w-full items-center gap-2">
-            <Label>Client Session status (useSession().user.id())</Label>
+            <Label>{tAuth('signInToYourAccount')}</Label>
             {loading && <p className="flex items-center"><Loader2 className="mr-2 h-4 w-4 animate-spin" />{tCommon('loading')}</p>}
             {!session && !loading && <p>{tAuth('signIn')}</p>}
           </div>
           <div className="grid w-full items-center gap-2">
-            <Label>Sign In with OAuth</Label>
+            <Label>{tAuth('signIn')}</Label>
             <OAuthButtons />
           </div>
         </CardContent>
@@ -83,38 +83,38 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <Card {...props}>
         <CardHeader>
-          <CardTitle>Session & OAuth</CardTitle>
-          <CardDescription>View session status and manage your connected accounts.</CardDescription>
+          <CardTitle>{tAuth('connectedAccounts')}</CardTitle>
+          <CardDescription>{tAuth('addAccountDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="auth">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="auth">Auth</TabsTrigger>
-            <TabsTrigger value="accounts">Accounts</TabsTrigger>
+            <TabsTrigger value="accounts">{tAuth('connectedAccounts')}</TabsTrigger>
           </TabsList>
           <TabsContent value="auth" className="mt-4 space-y-4">
             <div className="grid w-full items-center gap-2">
-              <Label>Client Session Status (useSession().user.id)</Label>
+              <Label>Client Session Status</Label>
               <div className="flex items-center space-x-2 flex-wrap">
                 {/* Email Verification Status from Subscription */}
                 {userId && (
                   <span className="flex items-center">
                     {subLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {subError && <span className="text-xs text-red-500" title={subError.message}>Error loading status</span>}
+                     {subError && <span className="text-xs text-red-500" title={subError.message}>{tErrors('unknown')}</span>}
                     {!subLoading && !subError && emailVerified && (
                        <span 
                         title={`Email verified at ${new Date(emailVerified).toLocaleString()}`}
                         className="mr-2 px-2 py-0.5 rounded text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 flex items-center"
                       >
-                        <MailCheck className="mr-1 h-3 w-3" /> Verified
+                         <MailCheck className="mr-1 h-3 w-3" /> {tCommon('yes')}
                       </span>
                     )}
                      {!subLoading && !subError && !emailVerified && (
                        <span 
-                        title="Email not verified. Check your inbox or spam folder for the verification email."
+                         title={tErrors('unknown')}
                         className="mr-2 px-2 py-0.5 rounded text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 flex items-center"
                       >
-                         <MailWarning className="mr-1 h-3 w-3" /> Not Verified
+                         <MailWarning className="mr-1 h-3 w-3" /> {tCommon('no')}
                          {/* TODO: Add Resend Button Here */}
                       </span>
                     )}
@@ -131,7 +131,7 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
                   />
                 )}
                 {/* User Name/Email */}
-                <span>Signed in as {session?.user?.name || session?.user?.email} {session?.provider ? `(${session.provider})` : ''}</span>
+                 <span>{session?.user?.name || session?.user?.email} {session?.provider ? `(${session.provider})` : ''}</span>
               </div>
             </div>
 

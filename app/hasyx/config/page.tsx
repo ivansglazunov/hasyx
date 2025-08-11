@@ -3,8 +3,10 @@
 import sidebar from "@/app/sidebar";
 import pckg from "@/package.json";
 import { SidebarLayout } from "hasyx/components/sidebar/layout";
-import { HasyxConfigForm } from '@/lib/config/react-jsonschema-form';
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'hasyx';
+
+const HasyxConfigForm = dynamic(() => import('hasyx/lib/config/react-jsonschema-form').then(m => m.HasyxConfigForm), { ssr: false });
 
 export default function HasyxConfigPage() {
   const tPages = useTranslations('pages.config');

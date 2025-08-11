@@ -45,6 +45,7 @@
     "back": "Back",
     "next": "Next",
     "submit": "Submit",
+    "select": "Select",
     "disconnect": "Disconnect"
   },
   "nav": {
@@ -120,7 +121,57 @@
     "signOut": "Sign out",
     "signInToYourAccount": "Sign in to your account",
     "continueWith": "Continue with {provider}",
-    "connectedAccounts": "Connected Accounts"
+    "connectedAccounts": "Connected Accounts",
+    "oauth": {
+      "checkingOptions": "Checking authentication options..."
+    },
+    "telegramWebapp": {
+      "loadingTitle": "Loading Telegram WebApp...",
+      "loadingDescription": "Detecting Telegram environment...",
+      "alreadyAuthenticatedTitle": "Already Authenticated",
+      "alreadyAuthenticatedDescription": "You are signed in as {user}",
+      "provider": "Provider",
+      "unknown": "Unknown",
+      "telegramWebapp": "Telegram WebApp",
+      "notInTelegramTitle": "Not in Telegram",
+      "notInTelegramDescription": "This component only works within Telegram WebApp environment",
+      "notInTelegramNote": "Please open this app from within Telegram to use Telegram authentication.",
+      "title": "Telegram Authentication",
+      "description": "Sign in securely using your Telegram account",
+      "premium": "Premium",
+      "authenticating": "Authenticating...",
+      "signInWithTelegram": "Sign in with Telegram",
+      "platform": "Platform",
+      "version": "Version",
+      "theme": "Theme"
+    }
+  },
+  "entities": {
+    "users": {
+      "loading": "Loading user...",
+      "failed": "Failed to load user",
+      "unknownUser": "Unknown User",
+      "id": "ID",
+      "created": "Created",
+      "updated": "Updated"
+    },
+    "accounts": {
+      "loading": "Loading account...",
+      "failed": "Failed to load account",
+      "unknownProvider": "Unknown Provider",
+      "id": "ID",
+      "user": "User",
+      "created": "Created",
+      "updated": "Updated"
+    },
+    "default": {
+      "entityId": "Entity ID",
+      "noAdditional": "No additional data available",
+      "schema": "Schema",
+      "created": "Created",
+      "updated": "Updated",
+      "data": "Data"
+    }
   },
   "pages": {
     "config": {
@@ -195,12 +246,6 @@
   "files": {
     "empty": "No files yet",
     "items": "{count, plural, one {# file} other {# files}}",
-    "status": {
-      "uploading": "Uploading...",
-      "completed": "Completed",
-      "error": "Error",
-      "unknown": "Unknown"
-    },
     "removeFile": "Remove file",
     "loadingFiles": "Loading files...",
     "selected": "{count} selected",
@@ -292,5 +337,274 @@
     "titleRequired": "Issue title is required",
     "failedToCreate": "Failed to create issue: {message}",
     "failedToSync": "Failed to sync GitHub issues: {message}"
+  }
+  ,
+  "proxy": {
+    "title": "GraphQL Proxy",
+    "get": "GET /api/graphql",
+    "post": "POST /api/graphql",
+    "socket": "SOCKET /api/graphql"
+  }
+  ,
+  "usersList": {
+    "title": "Recent Users",
+    "description": "Displaying latest users via Query or Subscription.",
+    "tabs": {"query": "Query", "subscription": "Subscription"},
+    "subscription": {
+      "title": "Users via Subscription",
+      "description": "Fetched using WebSocket connection.",
+      "errorTitle": "Subscription Error!",
+      "errorDescription": "Failed to fetch users via subscription."
+    },
+    "query": {
+      "title": "Users via Query",
+      "description": "Fetched using standard HTTP GET request.",
+      "errorTitle": "Query Error!",
+      "errorDescription": "Failed to fetch users via query."
+    },
+    "loading": "Loading...",
+    "empty": "No users found.",
+    "name": "Name",
+    "email": "Email"
+  }
+  ,
+  "pwa": {
+    "install": {
+      "title": "Install Hasyx",
+      "description": "Install this app on your device for a better experience.",
+      "install": "Install",
+      "later": "Later"
+    },
+    "update": {
+      "title": "Update Available",
+      "description": "A new version of the app is available.",
+      "updateNow": "Update Now",
+      "later": "Later"
+    }
+  }
+  ,
+  "hasura": {
+    "title": "Hasura",
+    "requiredEnv": "Required .env variables",
+    "public": "Public",
+    "notSet": "Not Set"
+  }
+  ,
+  "jwt": {
+    "title": "JWT Debug",
+    "description": "Tools for working with JWT authentication",
+    "tabs": {"login": "Login", "generate": "Generate", "current": "Current"},
+    "jwtToken": "JWT Token",
+    "placeholder": "Enter JWT token...",
+    "loggingIn": "Logging in...",
+    "loginWithJwt": "Login with JWT",
+    "enterJwtToLogin": "Enter JWT token to login. Token will be saved to localStorage.",
+    "authStatus": "Authorization status:",
+    "authenticated": "Authenticated",
+    "notAuthenticated": "Not authenticated",
+    "user": "User:",
+    "notSpecified": "Not specified",
+    "generating": "Generating...",
+    "copyJwt": "Copy JWT to clipboard",
+    "copyDescription": "Creates JWT token for current authenticated user and copies it to clipboard.",
+    "jwtLocalStorage": "JWT in localStorage:",
+    "notFound": "Not found",
+    "clearJwt": "Clear JWT",
+    "updatedAutomatically": "Current JWT token in localStorage. Updates automatically.",
+    "enterToken": "Please enter JWT token",
+    "tokenSaved": "JWT token saved to localStorage",
+    "errorSaving": "Error saving JWT token",
+    "needAuth": "You need to be authenticated to get JWT token",
+    "failedGet": "Failed to get JWT token",
+    "copied": "JWT token copied to clipboard",
+    "errorGetting": "Error getting JWT token",
+    "removed": "JWT token removed from localStorage"
+  }
+  ,
+  "session": {
+    "title": "Session Data",
+    "description": "View session information from different sources.",
+    "tabs": {"ssr": "SSR", "get": "GET", "socket": "Socket", "hasyx": "Hasyx"},
+    "ssr": {
+      "title": "Server Session Data",
+      "description": "Session data available during Server-Side Rendering.",
+      "empty": "No session data available on the server."
+    },
+    "hasyx": {
+      "title": "Hasyx Session Data",
+      "description": "Session data available through Hasyx instance.",
+      "userId": "hasyx.userId:",
+      "user": "hasyx.user:"
+    }
+  }
+  ,
+  "validationDemo": {
+    "title": "Email Validation",
+    "description": "Enter an email address to test real-time validation",
+    "placeholder": "Enter your email address",
+    "status": "Validation Status:",
+    "valid": "Valid",
+    "invalid": "Invalid",
+    "emailValid": "Email is valid!",
+    "failed": "Validation failed",
+    "zodSchemaTitle": "Zod Schema",
+    "zodSchemaDescription": "The validation schema used for this form"
+  }
+  ,
+  "authStatus": {
+    "get": {
+      "title": "GET /api/auth Status",
+      "description": "Status fetched via standard HTTP GET request.",
+      "requestStatus": "Request Status:",
+      "successUnauth": "Success (Unauthenticated)",
+      "decodedJwt": "Decoded JWT Token:",
+      "fetchError": "Fetch Error:",
+      "unknownFetchError": "Unknown fetch error",
+      "notAuthenticated": "User is not authenticated according to GET request."
+    },
+    "ws": {
+      "title": "WebSocket /api/auth Status",
+      "description": "Status received via WebSocket connection.",
+      "connection": "WS Connection:",
+      "authStatus": "Authentication Status:",
+      "userData": "Received User Data:",
+      "connError": "Connection/Auth Error:",
+      "unknownWsError": "Unknown WebSocket error",
+      "idle": "WebSocket connection is idle/closed."
+    },
+    "authenticated": "Authenticated",
+    "notAuthenticated": "Not Authenticated"
+  }
+  ,
+  "entities": {
+    "default": {
+      "entityId": "Entity ID",
+      "noAdditional": "No additional data available",
+      "schema": "Schema",
+      "created": "Created",
+      "updated": "Updated",
+      "data": "Data"
+    }
+  }
+  ,
+  "payments": {
+    "title": "Payments",
+    "tabs": {
+      "providers": "Providers",
+      "methods": "Payment Methods",
+      "plans": "Plans",
+      "subscriptions": "Subscriptions",
+      "operations": "Operations"
+    },
+    "providers": {
+      "title": "Payment Providers",
+      "addTest": "Add TBank Test",
+      "addProd": "Add TBank Production",
+      "test": "Test",
+      "prod": "Production",
+      "created": "Created",
+      "empty": "No payment providers configured",
+      "addTitle": "Add {type} Provider",
+      "addDescription": "Configure your TBank payment provider credentials.",
+      "name": "Provider Name",
+      "terminal": "Terminal Key",
+      "secret": "Secret Key",
+      "addSubmit": "Add Provider"
+    },
+    "methods": {
+      "title": "Payment Methods",
+      "add": "Add Payment Method",
+      "badges": { "default": "Default", "recurrent": "Recurrent" },
+      "card": "Card",
+      "expires": "Expires",
+      "empty": "No payment methods added",
+      "addTitle": "Add Payment Method",
+      "addDescription": "Add a new payment method for subscriptions and payments.",
+      "customerKey": "Customer Key",
+      "customerKeyPlaceholder": "Unique customer identifier"
+    },
+    "plans": {
+      "title": "Subscription Plans",
+      "create": "Create Plan",
+      "every": "Every {interval}",
+      "trial": "{days} day trial",
+      "features": "Features:",
+      "subscribe": "Subscribe",
+      "empty": "No subscription plans available",
+      "createDescription": "Create a new subscription plan that users can subscribe to.",
+      "name": "Plan Name",
+      "price": "Price",
+      "description": "Description",
+      "currency": "Currency",
+      "interval": "Interval",
+      "count": "Count",
+      "trialLabel": "Trial Period (days)",
+      "featuresJSON": "Features (JSON)"
+    },
+    "subscriptions": {
+      "title": "My Subscriptions",
+      "nextBilling": "Next Billing",
+      "lastBilling": "Last Billing",
+      "missed": "Missed Cycles",
+      "retries": "Retry Count",
+      "empty": "No active subscriptions",
+      "create": "Create Subscription",
+      "createFor": "Subscribe to {name} plan."
+    },
+    "operations": {
+      "title": "Payment Operations",
+      "create": "Create Payment",
+      "createDescription": "Create a one-time payment.",
+      "subscription": "Subscription",
+      "oneTime": "One-time",
+      "empty": "No payment operations found",
+      "tracking": {
+        "title": "Payment Tracking",
+        "subtitle": "Real-time status for operation: {id}"
+      },
+      "externalId": "External ID",
+      "notAssigned": "Not assigned",
+      "lastUpdated": "Last Updated",
+      "paidAt": "Paid At"
+    },
+    "table": {
+      "id": "ID",
+      "amount": "Amount",
+      "status": "Status",
+      "description": "Description",
+      "type": "Type",
+      "date": "Date"
+    },
+    "amount": "Amount",
+    "billing": "Billing",
+    "status": "Status",
+    "toast": {
+      "paymentCompleted": "Payment completed successfully!",
+      "paymentFailed": "Payment failed: {message}",
+      "paymentCanceled": "Payment was canceled",
+      "paymentPendingUserAction": "Please complete payment in the opened window",
+      "paymentPendingConfirmation": "Payment is being processed...",
+      "fillAllFields": "Please fill in all fields",
+      "providerAdded": "Provider added successfully!",
+      "providerAddFailed": "Failed to add provider: {message}",
+      "methodAddCompleteVerification": "Please complete card verification in the opened window",
+      "methodAddFailed": "Failed to initiate card addition",
+      "methodAddFailedWithReason": "Failed to add payment method: {message}",
+      "methodRemoved": "Payment method removed successfully!",
+      "methodRemoveForbidden": "Cannot remove payment method: it's being used by an active subscription",
+      "methodRemoveFailed": "Failed to remove payment method: {message}",
+      "fillAllRequired": "Please fill in all required fields",
+      "planCreateSuccess": "Plan created successfully!",
+      "planCreateFailed": "Failed to create plan: {message}",
+      "planRemoveFailed": "Failed to remove plan: {message}",
+      "selectPlanAndMethod": "Please select both plan and payment method",
+      "subscriptionCreateOpenWindow": "Please complete initial payment in the opened window",
+      "subscriptionCreateSuccess": "Subscription created successfully!",
+      "subscriptionCreateFailed": "Failed to create subscription",
+      "subscriptionCreateFailedWithReason": "Failed to create subscription: {message}",
+      "paymentInitOpenWindow": "Please complete payment in the opened window",
+      "paymentInitFailed": "Failed to initiate payment",
+      "paymentInitFailedWithReason": "Failed to create payment: {message}"
+    }
   }
 }

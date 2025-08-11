@@ -6,6 +6,7 @@ import { Label } from 'hasyx/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'hasyx/components/ui/card';
 import { Badge } from 'hasyx/components/ui/badge';
 import { schema } from 'hasyx/schema';
+import { useTranslations } from 'hasyx';
 
 const emailSchema = schema.email;
 
@@ -14,6 +15,8 @@ interface ValidationFormProps {
 }
 
 export default function ValidationForm({ className }: ValidationFormProps) {
+  const t = useTranslations('validationDemo');
+  const tForms = useTranslations('forms');
   const [email, setEmail] = useState('');
   const [validationResult, setValidationResult] = useState<{
     success: boolean;
@@ -43,18 +46,18 @@ export default function ValidationForm({ className }: ValidationFormProps) {
     <div className={className}>
       <Card>
         <CardHeader>
-          <CardTitle>Email Validation</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
           <CardDescription>
-            Enter an email address to test real-time validation
+            {t('description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
+            <Label htmlFor="email">{tForms('labels.email')}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="Enter your email address"
+              placeholder={t('placeholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={validationResult && !validationResult.success ? 'border-red-500' : ''}
@@ -64,22 +67,22 @@ export default function ValidationForm({ className }: ValidationFormProps) {
           {validationResult && (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Validation Status:</span>
+                <span className="text-sm font-medium">{t('status')}</span>
                 <Badge variant={validationResult.success ? 'default' : 'destructive'}>
-                  {validationResult.success ? 'Valid' : 'Invalid'}
+                  {validationResult.success ? t('valid') : t('invalid')}
                 </Badge>
               </div>
               
               {validationResult.success ? (
                 <div className="space-y-2">
-                  <p className="text-green-600 text-sm">✅ Email is valid!</p>
+                  <p className="text-green-600 text-sm">✅ {t('emailValid')}</p>
                   <pre className="bg-muted p-3 rounded-lg text-xs overflow-auto">
                     {JSON.stringify(validationResult.data, null, 2)}
                   </pre>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-red-600 text-sm">❌ Validation failed</p>
+                  <p className="text-red-600 text-sm">❌ {t('failed')}</p>
                   <p className="text-red-500 text-sm">{validationResult.error}</p>
                 </div>
               )}
@@ -91,9 +94,9 @@ export default function ValidationForm({ className }: ValidationFormProps) {
       {/* Schema Display */}
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle>Zod Schema</CardTitle>
+          <CardTitle>{t('zodSchemaTitle')}</CardTitle>
           <CardDescription>
-            The validation schema used for this form
+            {t('zodSchemaDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import sidebar from "@/app/sidebar";
+import pckg from "../../../package.json";
 import { SidebarLayout } from "hasyx/components/sidebar/layout";
 import { useSubscription, useHasyx } from 'hasyx';
 import { toast } from 'sonner';

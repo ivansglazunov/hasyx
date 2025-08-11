@@ -29,7 +29,7 @@ type CustomText = {
 
 declare module "slate" {
   interface CustomTypes {
-    Editor: Editor;
+    Editor: ReactEditor;
     Element: CustomElement;
     Text: CustomText;
   }
@@ -131,7 +131,7 @@ export function MarkdownEditor({ value, onChange, placeholder, minHeight = 160, 
 
   const initialValue = useMemo<Descendant[]>(() => {
     try {
-      const slateValue = deserializeMd(value || "");
+      const slateValue = deserializeMd(editor as any, value || "");
       if (Array.isArray(slateValue) && slateValue.length > 0) return slateValue as Descendant[];
     } catch {}
     return [
@@ -148,7 +148,7 @@ export function MarkdownEditor({ value, onChange, placeholder, minHeight = 160, 
   useEffect(() => {
     if (value !== internalMd) {
       try {
-        const next = deserializeMd(value || "");
+        const next = deserializeMd(editor as any, value || "");
         setSlateValue(Array.isArray(next) && next.length > 0 ? (next as Descendant[]) : initialValue);
         setInternalMd(value || "");
       } catch {}
@@ -193,7 +193,7 @@ export function MarkdownEditor({ value, onChange, placeholder, minHeight = 160, 
           title="Insert link"
         />
       </div>
-      <Slate editor={editor} value={slateValue} onChange={handleChange}>
+      <Slate editor={editor as any} initialValue={slateValue as any} onChange={handleChange as any}>
         <Editable
           placeholder={placeholder}
           className="border rounded-b px-3 py-2 outline-none focus:ring-2 focus:ring-ring"

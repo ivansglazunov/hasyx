@@ -1006,6 +1006,15 @@ export function hasyxEvent(
       const body = await request.json();
       debug(`Raw request body for ${triggerName}:`, body);
 
+      // Scheduled event (one-off/cron) compatibility: accept and ACK even if payload shape differs
+      // Hasura scheduled events send keys like: scheduled_time, payload, name (for cron), id
+      if (body && typeof body === 'object' && !('event' in body) && (
+        'scheduled_time' in body || ('payload' in body && 'id' in body)
+      )) {
+        debug(`Detected scheduled event payload for ${triggerName}. Sending ACK 200.`);
+        return NextResponse.json({ success: true, scheduled: true, name: body.name || triggerName }, { status: 200 });
+      }
+
       let actualPayload: HasuraEventPayload | null = null;
 
       // <<< ADAPTIVE PAYLOAD EXTRACTION >>>

@@ -1,6 +1,5 @@
 import { SidebarData } from "hasyx/components/sidebar";
 import pckg from "@/package.json";
-import { getLocale } from "hasyx/lib/i18n";
 import en from "@/i18n/en.json";
 import ru from "@/i18n/ru.json";
 
@@ -12,11 +11,11 @@ try {
   console.warn("Documentation navigation not found, will be populated dynamically");
 }
 
-const t = (key: keyof typeof en.nav) => {
-  const locale = getLocale();
-  const messages = locale === 'ru' ? (ru as any) : (en as any);
-  return messages.nav[key];
-};
+// Read public locale at build-time so the value is inlined in the client bundle
+const LOCALE = process.env.NEXT_PUBLIC_LOCALE || 'en';
+const NAV_MESSAGES = (LOCALE === 'ru' ? (ru as any) : (en as any)).nav as typeof en.nav;
+
+const t = (key: keyof typeof en.nav) => NAV_MESSAGES[key];
 
 export const sidebar: SidebarData = {
   name: pckg.name,

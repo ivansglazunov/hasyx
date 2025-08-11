@@ -732,7 +732,7 @@ describe('Messaging module (skeleton)', () => {
         object: { id: msg1Id, value: 'Hello 1' },
         returning: ['i'],
       });
-      console.log('📝 Created msg1 with i:', msg1.i);
+      // console.log('📝 Created msg1 with i:', msg1.i);
       await userH.insert({
         table: 'replies',
         object: { id: uuidv4(), message_id: msg1Id, room_id: roomId },
@@ -772,7 +772,7 @@ describe('Messaging module (skeleton)', () => {
         
         subscription = sub$.subscribe({
           next: (data) => {
-            console.log('📨 Received message:', data.data.messages_stream[0]);
+            // console.log('📨 Received message:', data.data.messages_stream[0]);
             received.push(data.data.messages_stream[0]);
             if (received.length === 1) {
               clearTimeout(timeout);
@@ -796,7 +796,7 @@ describe('Messaging module (skeleton)', () => {
         object: { id: msg2Id, value: 'Hello 2' },
         returning: ['i'],
       });
-      console.log('📝 Created msg2 with i:', msg2.i);
+      // console.log('📝 Created msg2 with i:', msg2.i);
       await userH.insert({
         table: 'replies',
         object: { id: uuidv4(), message_id: msg2Id, room_id: roomId },

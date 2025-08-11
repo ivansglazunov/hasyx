@@ -7,6 +7,7 @@ import { Label } from "hasyx/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "hasyx/components/ui/tabs";
 import { CodeBlock } from 'hasyx/components/code-block';
 import { toast } from "sonner";
+import { useTranslations } from 'hasyx';
 import { useJwt } from "hasyx/components/jwt-auth";
 import { useState, useEffect } from "react";
 import { useHasyx , useSession } from "hasyx";
@@ -15,6 +16,8 @@ export function JwtDebugCard() {
   const hasyx = useHasyx();
   const { data: session } = useSession();
   const jwtClient = useJwt();
+  const tJwt = useTranslations('jwt');
+  const tCommon = useTranslations('common');
   const [jwtInput, setJwtInput] = useState('');
   const [currentJwt, setCurrentJwt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +46,7 @@ export function JwtDebugCard() {
   // Handle JWT login
   const handleJwtLogin = () => {
     if (!jwtInput.trim()) {
-      toast.error("Please enter JWT token");
+      toast.error(tJwt('enterToken'));
       return;
     }
 
@@ -51,17 +54,17 @@ export function JwtDebugCard() {
       // Save JWT to localStorage
       localStorage.setItem('nextauth_jwt', jwtInput.trim());
       setCurrentJwt(jwtInput.trim());
-      toast.success("JWT token saved to localStorage");
+      toast.success(tJwt('tokenSaved'));
       setJwtInput('');
     } catch (error) {
-      toast.error("Error saving JWT token");
+      toast.error(tJwt('errorSaving'));
     }
   };
 
   // Handle JWT copy
   const handleCopyJwt = async () => {
     if (!session) {
-      toast.error("You need to be authenticated to get JWT token");
+      toast.error(tJwt('needAuth'));
       return;
     }
 
@@ -75,19 +78,19 @@ export function JwtDebugCard() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get JWT token');
+        throw new Error(tJwt('failedGet'));
       }
 
       const data = await response.json();
       
       if (data.jwt) {
         await navigator.clipboard.writeText(data.jwt);
-        toast.success("JWT token copied to clipboard");
+        toast.success(tJwt('copied'));
       } else {
-        toast.error("Failed to get JWT token");
+        toast.error(tJwt('failedGet'));
       }
     } catch (error) {
-      toast.error("Error getting JWT token");
+      toast.error(tJwt('errorGetting'));
     } finally {
       setCopyLoading(false);
     }
@@ -97,31 +100,31 @@ export function JwtDebugCard() {
   const handleClearJwt = () => {
     localStorage.removeItem('nextauth_jwt');
     setCurrentJwt(null);
-    toast.success("JWT token removed from localStorage");
+    toast.success(tJwt('removed'));
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>JWT Debug</CardTitle>
-        <CardDescription>Tools for working with JWT authentication</CardDescription>
+        <CardTitle>{tJwt('title')}</CardTitle>
+        <CardDescription>{tJwt('description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="login">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="generate">Generate</TabsTrigger>
-            <TabsTrigger value="current">Current</TabsTrigger>
+            <TabsTrigger value="login">{tJwt('tabs.login')}</TabsTrigger>
+            <TabsTrigger value="generate">{tJwt('tabs.generate')}</TabsTrigger>
+            <TabsTrigger value="current">{tJwt('tabs.current')}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="login" className="mt-4">
             <div className="space-y-4">
               <div>
-                <Label htmlFor="jwt-input">JWT Token</Label>
+                <Label htmlFor="jwt-input">{tJwt('jwtToken')}</Label>
                 <Input
                   id="jwt-input"
                   type="text"
-                  placeholder="Enter JWT token..."
+                  placeholder={tJwt('placeholder')}
                   value={jwtInput}
                   onChange={(e) => setJwtInput(e.target.value)}
                   className="mt-2"
@@ -132,10 +135,10 @@ export function JwtDebugCard() {
                 disabled={isLoading || !jwtInput.trim()}
                 className="w-full"
               >
-                {isLoading ? 'Logging in...' : 'Login with JWT'}
+                {isLoading ? tJwt('loggingIn') : tJwt('loginWithJwt')}
               </Button>
               <p className="text-sm text-muted-foreground">
-                Enter JWT token to login. Token will be saved to localStorage.
+                {tJwt('enterJwtToLogin')}
               </p>
             </div>
           </TabsContent>
@@ -143,13 +146,13 @@ export function JwtDebugCard() {
           <TabsContent value="generate" className="mt-4">
             <div className="space-y-4">
               <div>
-                <p className="text-sm font-medium mb-2">Authorization status:</p>
-                <CodeBlock value={session ? 'Authenticated' : 'Not authenticated'} />
+                <p className="text-sm font-medium mb-2">{tJwt('authStatus')}</p>
+                <CodeBlock value={session ? tJwt('authenticated') : tJwt('notAuthenticated')} />
               </div>
               {session && (
                 <div>
-                  <p className="text-sm font-medium mb-2">User:</p>
-                  <CodeBlock value={session.user?.email || 'Not specified'} />
+                  <p className="text-sm font-medium mb-2">{tJwt('user')}</p>
+                  <CodeBlock value={session.user?.email || tJwt('notSpecified')} />
                 </div>
               )}
               <Button 
@@ -157,10 +160,10 @@ export function JwtDebugCard() {
                 disabled={copyLoading || !session}
                 className="w-full"
               >
-                {copyLoading ? 'Generating...' : 'Copy JWT to clipboard'}
+                {copyLoading ? tJwt('generating') : tJwt('copyJwt')}
               </Button>
               <p className="text-sm text-muted-foreground">
-                Creates JWT token for current authenticated user and copies it to clipboard.
+                {tJwt('copyDescription')}
               </p>
             </div>
           </TabsContent>
@@ -168,8 +171,8 @@ export function JwtDebugCard() {
           <TabsContent value="current" className="mt-4">
             <div className="space-y-4">
               <div>
-                <p className="text-sm font-medium mb-2">JWT in localStorage:</p>
-                <CodeBlock value={currentJwt || 'Not found'} />
+                <p className="text-sm font-medium mb-2">{tJwt('jwtLocalStorage')}</p>
+                <CodeBlock value={currentJwt || tJwt('notFound')} />
               </div>
               {currentJwt && (
                 <Button 
@@ -177,11 +180,11 @@ export function JwtDebugCard() {
                   variant="destructive"
                   className="w-full"
                 >
-                  Clear JWT
+                  {tJwt('clearJwt')}
                 </Button>
               )}
               <p className="text-sm text-muted-foreground">
-                Current JWT token in localStorage. Updates automatically.
+                {tJwt('updatedAutomatically')}
               </p>
             </div>
           </TabsContent>

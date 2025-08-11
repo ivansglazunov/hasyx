@@ -1,8 +1,6 @@
-import { Hasyx } from './hasyx/hasyx'; // Import from generated package
+import { Hasyx } from './hasyx/hasyx';
 import { comparePassword, hashPassword } from './users/auth-server';
 import Debug from './debug';
-import { sendVerificationEmail } from './email';
-import { generateVerificationToken } from './tokenUtils';
 import type { User as NextAuthUser } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
@@ -12,8 +10,10 @@ const debug = Debug('auth:credentials');
 export const AppCredentialsProvider = ({
   hasyx,
   credentials = {
-    email: { label: "Email", type: "email", placeholder: "user@example.com" },
-    password: { label: "Password", type: "password" }
+    userId: { label: 'User ID', type: 'text' }, // Preferred path after OTP verify
+    providerType: { label: 'Provider', type: 'text' }, // 'email' | 'phone'
+    identifier: { label: 'Identifier', type: 'text' }, // email or phone
+    password: { label: 'Password', type: 'password' },
   },
 }: {
   hasyx: Hasyx;
@@ -22,140 +22,57 @@ export const AppCredentialsProvider = ({
   name: 'Credentials',
   credentials,
   async authorize(credentials, req): Promise<NextAuthUser | null> {
-    debug('Authorize attempt for email:', credentials?.email);
-    if (!credentials?.email || !credentials?.password) {
-      debug('Missing email or password');
-      throw new Error('Missing email or password.');
+    debug('Authorize attempt with payload:', Object.keys(credentials || {}));
+
+    // 0) Fast path: login by userId after OTP verification
+    if (credentials?.userId) {
+      const user = await hasyx.select<any>({
+        table: 'users',
+        pk_columns: { id: credentials.userId },
+        returning: ['id', 'name', 'email', 'image', 'email_verified']
+      });
+      if (!user?.id) throw new Error('User not found.');
+      return { id: user.id, name: user.name, email: user.email, image: user.image, emailVerified: user.email_verified } as any;
     }
 
-    const email = credentials.email;
-    const password = credentials.password;
+    // 1) Accounts-based auth with providerType/identifier/password (fallback)
+    if (!credentials?.providerType || !credentials?.identifier || !credentials?.password) {
+      throw new Error('Missing provider, identifier or password.');
+    }
+
+    const providerType = credentials.providerType as 'email' | 'phone';
+    const identifier = credentials.identifier as string;
+    const password = credentials.password as string;
 
     try {
-      // 1. Find user by email
-      debug(`Searching for user with email: ${email}`);
-      const userResult = await hasyx.select({
-        table: 'users',
-        where: { email: { _eq: email } },
-        returning: ['id', 'name', 'email', 'email_verified', 'image', 'password', 'is_admin', 'hasura_role']
+      // Find account by provider+identifier, join user
+      const account = await hasyx.select<any>({
+        table: 'accounts',
+        where: { provider: { _eq: providerType }, provider_account_id: { _eq: identifier } },
+        returning: [
+          'credential_hash',
+          { user: ['id', 'name', 'email', 'image', 'email_verified'] }
+        ],
+        limit: 1,
       });
 
-      // --- Scenario 1: User FOUND --- 
-      if (userResult?.length > 0) {
-        const user = userResult?.[0];
-        debug(`User found: ${user?.id}`);
+      if (!account?.length) throw new Error('Account not found');
+      const a = account[0];
+      const ok = a.credential_hash ? await comparePassword(password, a.credential_hash) : false;
+      if (!ok) throw new Error('Invalid password');
 
-        if (!user.password) {
-          debug('User found but has no password hash:', email);
-          throw new Error('Invalid login method. Try signing in with your original provider.');
-        }
-
-        const passwordMatch = await comparePassword(password, user.password);
-        if (!passwordMatch) {
-          debug('Password mismatch for email:', email);
-          throw new Error('Invalid email or password.');
-        }
-        debug('Password matched for email:', email);
-
-        // Check if email is verified for existing user
-        if (!user.email_verified) {
-          debug('Logging in user with unverified email:', email);
-        } else {
-          debug('Email is verified for existing user:', email);
-        }
-
-        // Return user object for successful login (including email_verified status)
-        debug('Existing user authorization successful:', email);
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          image: user.image,
-          emailVerified: user.email_verified,
-        } as any; // Temporarily cast to any to allow emailVerified
-      }
-      // --- End Scenario 1 ---
-
-      // --- Scenario 2: User NOT FOUND -> Create User & Account --- 
-      else {
-        debug(`User not found with email: ${email}. Creating user...`);
-
-        const hashedPassword = await hashPassword(password);
-        const name = email.split('@')[0]; // Use name from email part
-
-        // Create User
-        const newUserResult = await hasyx.insert({
-          table: 'users',
-          object: {
-            email: email,
-            password: hashedPassword,
-            name: name,
-            hasura_role: 'user',
-            email_verified: null, // Explicitly null
-          },
-          returning: ['id'],
-        });
-        const userId = newUserResult?.id;
-        if (!userId) throw new Error('Failed to create new user.');
-        debug(`New user created with ID: ${userId}`);
-
-        // Create Account Link
-        await hasyx.insert({
-          table: 'accounts',
-          object: {
-            user_id: userId,
-            provider: 'credentials',
-            provider_account_id: email,
-            type: 'credentials',
-          },
-        });
-        debug(`Credentials account linked for user: ${userId}`);
-
-        // Generate verification token and trigger email sending
-        try {
-          const verificationToken = await generateVerificationToken(userId);
-          // We don't necessarily need to wait for the email to be sent
-          sendVerificationEmail(email, verificationToken)
-            .then(sent => {
-              if (sent) {
-                debug('Verification email dispatch initiated for: %s', email);
-              } else {
-                debug('Verification email dispatch failed for: %s', email);
-                // TODO: How to handle email sending failure? Retry? Log critical?
-              }
-            });
-        } catch (tokenError: any) {
-          debug('Error generating verification token for new user %s: %s', email, tokenError?.message);
-          // If token fails, we probably shouldn't let registration proceed easily
-          throw new Error('Failed to initiate verification process.');
-        }
-
-        // Return the newly created user object to allow immediate login
-        debug('New user authorization successful, logging in immediately:', email);
-        return {
-          id: userId,
-          name: name,
-          email: email,
-          image: null, // No image for credentials users initially
-          emailVerified: null, // Email is not verified yet
-        } as any; // Temporarily cast to any
-      }
-      // --- End Scenario 2 ---
+      const user = a.user;
+      if (!user?.id) throw new Error('Linked user not found');
+      return { id: user.id, name: user.name, email: user.email, image: user.image, emailVerified: user.email_verified } as any;
 
     } catch (error) {
       debug('Error during authorize step:', error);
       if (error instanceof Error) {
         // Check for specific known errors we threw
-        if (error.message.includes('Email not verified') ||
-          error.message.includes('Invalid email or password') ||
-          error.message.includes('Invalid login method') ||
-          error.message.includes('Registration successful')) {
+        if (error.message.includes('Invalid password') ||
+          error.message.includes('Account not found') ||
+          error.message.includes('User not found')) {
           throw error; // Rethrow specific user-facing errors
-        }
-        // Handle potential DB conflict during user creation (if needed, though less likely now)
-        if (error.message.includes('Uniqueness violation') && error.message.includes('users_email_key')) {
-          debug('Conflict during user creation (likely race condition).');
-          throw new Error('An account with this email already exists.');
         }
         // Throw a generic error for other unexpected issues
         throw new Error('An unexpected error occurred during login/registration.');

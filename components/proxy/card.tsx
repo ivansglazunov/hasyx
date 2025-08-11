@@ -11,6 +11,7 @@ import Debug from 'hasyx/lib/debug';
 import { gql, useQuery, useSubscription } from '@apollo/client';
 import { useEffect, useState } from "react";
 import { Status } from "../hasyx/status";
+import { useTranslations } from 'hasyx';
 
 const debug = Debug('proxy-card');
 
@@ -29,6 +30,7 @@ subscription CheckConnection {
 type StatusType = 'connecting' | 'connected' | 'error'
 
 export function ProxyCard(props: any) {
+  const t = useTranslations('proxy');
   const [getStatus, setGetStatus] = useState<StatusType>("connecting")
   const [postStatus, setPostStatus] = useState<StatusType>("connecting")
   const [socketStatus, setSocketStatus] = useState<StatusType>("connecting")
@@ -89,13 +91,13 @@ export function ProxyCard(props: any) {
   return (
     <Card {...props}>
       <CardHeader>
-        <CardTitle>GraphQL Proxy</CardTitle>
+        <CardTitle>{t('title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid w-full items-center gap-4 mt-4">
-          <Label>GET /api/graphql <Status status={getStatus} /></Label>
-          <Label>POST /api/graphql <Status status={postStatus} /></Label>
-          <Label>SOCKET /api/graphql <Status status={socketStatus} /></Label>
+          <Label>{t('get')} <Status status={getStatus} /></Label>
+          <Label>{t('post')} <Status status={postStatus} /></Label>
+          <Label>{t('socket')} <Status status={socketStatus} /></Label>
         </div>
       </CardContent>
     </Card>

@@ -108,9 +108,9 @@ export async function getOrCreateUserAndAccount(
     const accountResult = await hasyx.select({
       table: 'accounts',
       where: whereCondition,
-      returning: [
-        { user: ['id', 'name', 'email', 'email_verified', 'image', 'password', 'created_at', 'updated_at', 'is_admin', 'hasura_role'] } 
-      ],
+       returning: [
+         { user: ['id', 'name', 'email', 'email_verified', 'image', 'created_at', 'updated_at', 'is_admin', 'hasura_role'] } 
+       ],
       limit: 1, 
     });
 
@@ -165,7 +165,7 @@ export async function getOrCreateUserAndAccount(
       const userByIdResult = await hasyx.select({
         table: 'users',
         pk_columns: { id: linkToUserId },
-        returning: ['id', 'name', 'email', 'email_verified', 'image', 'password', 'created_at', 'updated_at', 'is_admin', 'hasura_role'],
+        returning: ['id', 'name', 'email', 'email_verified', 'image', 'created_at', 'updated_at', 'is_admin', 'hasura_role'],
       });
 
       if (userByIdResult) {
@@ -239,7 +239,7 @@ export async function getOrCreateUserAndAccount(
       const userByEmailResult = await hasyx.select({
         table: 'users',
         where: { email: { _eq: profile.email } },
-        returning: ['id', 'name', 'email', 'email_verified', 'image', 'password', 'created_at', 'updated_at', 'is_admin', 'hasura_role'], // Removed extra backslashes
+        returning: ['id', 'name', 'email', 'email_verified', 'image', 'created_at', 'updated_at', 'is_admin', 'hasura_role'], // Removed extra backslashes
         limit: 1,
       });
 
@@ -315,7 +315,7 @@ export async function getOrCreateUserAndAccount(
       table: 'users',
       object: newUserInput,
       // Return all fields needed for the session/JWT
-      returning: ['id', 'name', 'email', 'email_verified', 'image', 'password', 'created_at', 'updated_at', 'is_admin', 'hasura_role'], // Removed extra backslashes
+      returning: ['id', 'name', 'email', 'email_verified', 'image', 'created_at', 'updated_at', 'is_admin', 'hasura_role'], // Removed extra backslashes
     });
 
     if (!newUserResult?.id) {

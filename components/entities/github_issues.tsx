@@ -192,6 +192,10 @@ export function Card({ data, onClose, ...props }: {
   [key: string]: any;
 }) {
   const issueData = data;
+  const tActions = useTranslations('actions');
+  const tSuccess = useTranslations('success');
+  const tErrors = useTranslations('errors');
+  const tCommon = useTranslations('common');
   const { startDrawing, onDrawingComplete, currentRelationType } = useDependencyDrawingStore();
   const graphContext = useGraph();
   const toggleDrawMode = graphContext?.toggleDrawMode;
