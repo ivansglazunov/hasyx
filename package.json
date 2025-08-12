@@ -17,7 +17,7 @@
     "build:templates": "tsx lib/build-templates.ts",
     "build:css": "tailwindcss -i ./app/globals.css -o ./lib/styles.css",
     "doc:build": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/doc-public.ts",
-    "unbuild": "find lib components hooks -type f \\( -name '*.js' -o -name '*.d.ts' \\) -not -path \"*/types/*\" -print -delete; rm -rf tsconfig.lib.tsbuildinfo; echo '✅ Cleaned compiled files (types directory preserved)'",
+    "unbuild": "find lib components hooks -type f -name '*.js' -o -name '*.d.ts' -not -path '*/types/*' -print -delete; rm -rf tsconfig.lib.tsbuildinfo _lib _components; echo '✅ Cleaned compiled files (types directory preserved)'",
     "build:next": "next build --turbopack",
     "client": "tsx lib/build-client.ts",
     "build:android": "npm run client && npm run cli -- assets && npx cap sync android",

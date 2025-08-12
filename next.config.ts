@@ -100,6 +100,16 @@ const config: NextConfig = {
   experimental: {
     serverComponentsExternalPackages: [],
   },
+  webpack: (cfg) => {
+    // Ignore staged templates and temp dirs in watcher to avoid build churn
+    const ignored = ['**/_lib/**', '**/_components/**', '**/*.temp/**'];
+    if (!cfg.watchOptions) (cfg as any).watchOptions = {};
+    const current = (cfg.watchOptions as any).ignored;
+    (cfg.watchOptions as any).ignored = Array.isArray(current)
+      ? [...current, ...ignored]
+      : ignored;
+    return cfg;
+  },
   
   // Increase body size limit for file uploads
   api: {

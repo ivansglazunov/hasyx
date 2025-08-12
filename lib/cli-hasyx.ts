@@ -11,7 +11,7 @@ import { buildClient } from './build-client';
 import { migrate } from './migrate';
 import { unmigrate } from './unmigrate';
 import { generateHasuraSchema } from './hasura-schema';
-import { runJsEnvironment } from './js';
+// import moved to dynamic inside jsCommand to avoid loading heavy client code during unrelated commands
 // Minimal .env parser (local replacement for assist-common)
 function parseEnvFile(filePath: string): Record<string, string> {
   const fs = require('fs');
@@ -33,8 +33,8 @@ function parseEnvFile(filePath: string): Record<string, string> {
 import * as gh from './github';
 import * as vercelApi from './vercel/index';
 import { setWebhook as tgSetWebhook, removeWebhook as tgRemoveWebhook, calibrate as tgCalibrate } from './telegram';
-import { askCommand, askCommandDescribe } from './ask';
-import { runTsxEnvironment } from './tsx';
+// ask command will be registered with lazy import to avoid resolving 'hasyx/*' in child projects during other commands
+// import moved to dynamic inside tsxCommand to avoid loading heavy client code during unrelated commands
 import { assetsCommand } from './assets';
 import { eventsCommand } from './events-cli';
 import { unbuildCommand } from './unbuild';
@@ -970,6 +970,7 @@ export const jsCommand = async (filePath: string | undefined, options: any) => {
   debug('Executing "js" command with filePath:', filePath, 'and options:', options);
   
   try {
+    const { runJsEnvironment } = await import('./js');
     await runJsEnvironment(filePath, options.eval);
   } catch (error) {
     console.error('❌ Error executing JS environment:', error);
@@ -994,6 +995,7 @@ export const tsxCommand = async (filePath: string | undefined, options: any) => 
   debug('Executing "tsx" command with filePath:', filePath, 'and options:', options);
   
   try {
+    const { runTsxEnvironment } = await import('./tsx');
     await runTsxEnvironment(filePath, options.eval);
   } catch (error) {
     console.error('❌ Error executing TSX environment:', error);
@@ -1718,8 +1720,14 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
   // JS command
   jsCommandDescribe(program.command('js [filePath]')).action(jsCommand);
 
-  // Ask command
-  askCommandDescribe(program.command('ask')).action(askCommand);
+  // Ask command (lazy import to avoid pulling heavy AI deps unless used)
+  program
+    .command('ask')
+    .description('Interactive AI ask CLI')
+    .action(async () => {
+      const mod = await import('./ask');
+      await mod.askCommand({});
+    });
 
   // TSX command
   tsxCommandDescribe(program.command('tsx [filePath]')).action(tsxCommand);

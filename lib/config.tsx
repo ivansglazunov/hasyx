@@ -1,15 +1,15 @@
 import React from 'react';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
-import { telegramSchema as telegramBotConfigSchema, telegramLoginOAuthSchema as telegramLoginSchema, telegrams, telegramLoginOAuths } from './telegram/config';
-import { githubOAuthSchema as githubOAuthConfigSchema, githubOAuths, githubTelegramBotSchema, githubTelegramBots } from './github/config';
-import { googleOAuthSchema as googleOAuthConfigSchema, googleOAuths } from './google/config';
-import { yandexOAuthSchema as yandexOAuthConfigSchema, yandexOAuths } from './yandex/config';
-import { facebookOAuthSchema as facebookOAuthConfigSchema, facebookOAuths } from './facebook/config';
-import { firebaseAdminSchema, firebasePublicSchema } from './firebase/config';
-import { vkOAuthSchema as vkOAuthConfigSchema, vkOAuths } from './vk/config';
-import { nextAuthSecretsSchema as nextAuthConfigSchema, nextAuthVariantSelector, nextAuthSecretsList } from './users/config';
-import { dockerHubSchema, dockerHubs } from './dockerhub/config';
+import { telegramSchema as telegramBotConfigSchema, telegramLoginOAuthSchema as telegramLoginSchema, telegrams, telegramLoginOAuths } from 'hasyx/lib/telegram/config';
+import { githubOAuthSchema as githubOAuthConfigSchema, githubOAuths, githubTelegramBotSchema, githubTelegramBots } from 'hasyx/lib/github/config';
+import { googleOAuthSchema as googleOAuthConfigSchema, googleOAuths } from 'hasyx/lib/google/config';
+import { yandexOAuthSchema as yandexOAuthConfigSchema, yandexOAuths } from 'hasyx/lib/yandex/config';
+import { facebookOAuthSchema as facebookOAuthConfigSchema, facebookOAuths } from 'hasyx/lib/facebook/config';
+import { firebaseAdminSchema, firebasePublicSchema } from 'hasyx/lib/firebase/config';
+import { vkOAuthSchema as vkOAuthConfigSchema, vkOAuths } from 'hasyx/lib/vk/config';
+import { nextAuthSecretsSchema as nextAuthConfigSchema, nextAuthVariantSelector, nextAuthSecretsList } from 'hasyx/lib/users/config';
+import { dockerHubSchema, dockerHubs } from 'hasyx/lib/dockerhub/config';
 
 export const hasyxConfig: any = {};
 
