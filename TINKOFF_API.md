@@ -87,4 +87,7 @@ All API responses have a common structure:
 - [Official Tinkoff Documentation](https://www.tinkoff.ru/kassa/dev/payments/)
 
 ## Note
-This documentation is based on available open-source information and may not be complete. Always refer to the official Tinkoff documentation for the most up-to-date information. 
+This documentation is based on available open-source information and may not be complete. Always refer to the official Tinkoff documentation for the most up-to-date information.
+
+Configuration note:
+- Any environment variables used by your Hasyx project for TBank/Tinkoff integration are configured via `npx hasyx config` and written to the generated `.env`. Do not edit `.env` manually.

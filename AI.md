@@ -3,6 +3,8 @@
 This document outlines the architecture of the Hasyx AI module, which is designed for robust, event-driven, and tool-augmented interactions with Large Language Models (LLMs).
 
 ## Core Components
+Configuration note:
+- All provider tokens and base URLs used by the AI subsystem (e.g., `OPENROUTER_API_KEY`) are configured via `npx hasyx config` and written to the generated `.env`. Do not edit `.env` manually; use the configurator to change settings.
 
 The AI module is built around three core components:
 

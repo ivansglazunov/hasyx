@@ -44,15 +44,13 @@ Telegram Bot API → User
 
 ## Quick Start
 
-### 1. Environment Setup
+### 1. Environment Setup (via configurator)
 
-```env
-# Required environment variables
-TELEGRAM_BOT_TOKEN="your_telegram_bot_token"
-OPENROUTER_API_KEY="your_openrouter_api_key"
-NEXT_PUBLIC_HASURA_GRAPHQL_URL="your_hasura_url"
-HASURA_ADMIN_SECRET="your_hasura_secret"
-```
+Переменные окружения настраиваются через `npx hasyx config`. Файл `.env` автогенерируется и не должен редактироваться вручную. Убедитесь, что заданы:
+- `TELEGRAM_BOT_TOKEN`
+- `OPENROUTER_API_KEY`
+- `NEXT_PUBLIC_HASURA_GRAPHQL_URL`
+- `HASURA_ADMIN_SECRET`
 
 ### 2. Basic Integration in route.ts
 

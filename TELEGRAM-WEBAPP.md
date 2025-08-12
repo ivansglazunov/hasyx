@@ -46,6 +46,8 @@
 
 #### 1. Переменные окружения
 
+Управляйте переменными через конфигуратор `npx hasyx config`. Файл `.env` автогенерируется и не должен редактироваться вручную.
+
 ```bash
 # Токен бота для валидации Telegram данных
 TELEGRAM_LOGIN_BOT_TOKEN=your_bot_token_here
@@ -219,6 +221,8 @@ DEBUG="telegram-webapp*" npm test -- lib/telegram-webapp.test.ts
 ### Развертывание
 
 #### 1. Production настройка
+
+Рекомендуется задавать значения через `npx hasyx config`. Генерируемый `.env` обновится автоматически; не редактируйте его вручную.
 
 ```bash
 # .env.production

@@ -46,7 +46,7 @@ CREATE TABLE logs.states (
 
 ## Configuration
 
-### hasyx.config.json
+### hasyx.config.json (authoritative)
 
 ```json
 {
@@ -70,6 +70,9 @@ CREATE TABLE logs.states (
   }
 }
 ```
+
+Configuration note:
+- Логи и триггеры настраиваются через `hasyx.config.json` и применяются CLI‑командами. Связанные с логами переменные окружения попадают в автогенерируемый `.env` — не редактируйте его вручную, используйте `npx hasyx config`.
 
 ## CLI Commands
 

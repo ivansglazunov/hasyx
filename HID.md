@@ -157,6 +157,9 @@ Generates an HID string from its components.
 If the `defaultNamespace` argument is not provided to the `Hid()` factory function, the system will look for the `NEXT_PUBLIC_HID_NAMESPACE` environment variable. If found, its value will be used as the default namespace. This allows for a project-wide default namespace configuration.
 If neither `defaultNamespace` argument nor the environment variable is set, `'hasyx'` will be used as the ultimate fallback default namespace.
 
+Configuration note:
+- `NEXT_PUBLIC_HID_NAMESPACE` is generated from `hasyx.config.json` via the configurator. Do not edit `.env` manually; use `npx hasyx config` to change settings.
+
 ## Use Cases
 
 *   Uniquely identifying database records in logs, events, or API responses.

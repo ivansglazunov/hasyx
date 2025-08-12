@@ -45,6 +45,10 @@ const hasura = new Hasura({
   secret: process.env.HASURA_ADMIN_SECRET!,
 });
 
+// Configuration note:
+// These environment variables are generated from hasyx.config.json by the configurator.
+// Do not edit .env manually; run `npx hasyx config` to update values.
+
 // Create a simple plv8 function
 await hasura.defineFunction({
   schema: 'public',

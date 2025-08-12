@@ -15,8 +15,8 @@ This document explains how to set up GitHub webhooks to automatically sync issue
 
 1. **GitHub Repository**: You need access to the repository where you want to track issues
 2. **Public URL**: Your API must be accessible from the internet (for GitHub to send webhooks)
-3. **Environment Variables**: Ensure the following are set:
-   - `GITHUB_WEBHOOK_SECRET`: A secret key for webhook verification
+3. **Environment Variables**: These are configured via the Hasyx configurator and written to `.env` (auto-generated; do not edit manually):
+   - `GITHUB_WEBHOOK_SECRET`: Secret key for webhook verification
    - `NEXT_PUBLIC_GITHUB_OWNER`: Repository owner
    - `NEXT_PUBLIC_GITHUB_REPO`: Repository name
 
@@ -24,9 +24,7 @@ This document explains how to set up GitHub webhooks to automatically sync issue
 
 ### 1. Verify Webhook Secret
 
-Your webhook secret is: `ff6564c83f88612849a02b15f5161dea4e3ebcdb4a6d4d5c8f71bcc277c97db0`
-
-This secret is used to verify that webhook requests come from GitHub.
+Your webhook secret is managed by `npx hasyx config` and stored in `.env` as `GITHUB_WEBHOOK_SECRET` (auto-generated; do not edit manually). Use that value when creating the webhook in GitHub.
 
 ### 2. Configure GitHub Webhook
 
@@ -47,7 +45,7 @@ This secret is used to verify that webhook requests come from GitHub.
 
    **Secret:**
    ```
-   ff6564c83f88612849a02b15f5161dea4e3ebcdb4a6d4d5c8f71bcc277c97db0
+   <your GITHUB_WEBHOOK_SECRET from .env>
    ```
 
    **Events:**
@@ -154,17 +152,17 @@ Monitor webhook delivery in GitHub:
 Required environment variables:
 
 ```bash
-# GitHub Repository Configuration
-NEXT_PUBLIC_GITHUB_OWNER=ivansglazunov
-NEXT_PUBLIC_GITHUB_REPO=hasyx
+# GitHub Repository Configuration (auto-generated; do not edit .env manually)
+NEXT_PUBLIC_GITHUB_OWNER=<repo owner>
+NEXT_PUBLIC_GITHUB_REPO=<repo name>
 
-# Webhook Security
-GITHUB_WEBHOOK_SECRET=ff6564c83f88612849a02b15f5161dea4e3ebcdb4a6d4d5c8f71bcc277c97db0
+# Webhook Security (configured via npx hasyx config)
+GITHUB_WEBHOOK_SECRET=<webhook secret>
 
 # GitHub API Access (for user operations)
-GITHUB_ID=your-github-oauth-app-id
-GITHUB_SECRET=your-github-oauth-app-secret
-GITHUB_TOKEN=your-github-personal-access-token
+GITHUB_ID=<your-github-oauth-app-id>
+GITHUB_SECRET=<your-github-oauth-app-secret>
+GITHUB_TOKEN=<your-github-personal-access-token>
 ```
 
 ### 9. API Endpoints

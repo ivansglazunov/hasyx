@@ -26,7 +26,7 @@ ls -la events/subscription-billing.json
 ```
 
 #### 1.3 Переменные Окружения
-Убедиться что установлены:
+Убедитесь, что эти переменные заданы через конфигуратор (`npx hasyx config`). Файл `.env` автогенерируется и не должен редактироваться вручную. Список ниже приведён для справки:
 - `TBANK_TEST_TERMINAL_KEY`
 - `TBANK_TEST_SECRET_KEY`
 - `HASURA_EVENT_SECRET`

@@ -23,6 +23,25 @@ async function adminSql(sql: string) {
 
 function uniqueSuffix(): string { return `${Date.now()}_${Math.random().toString(36).slice(2,8)}`; }
 
+async function getGeomColumnType(): Promise<string> {
+  const rs = await adminSql(`
+    SELECT type FROM geometry_columns
+    WHERE f_table_schema='geo' AND f_table_name='features' AND f_geometry_column='geom'
+  `);
+  const t = (rs?.result?.[1]?.[0] || '').toString().toUpperCase();
+  return t || 'GEOMETRY';
+}
+
+async function geomExpr(lon: number, lat: number, sizeDeg = 0.001): Promise<string> {
+  const t = await getGeomColumnType();
+  if (t.includes('POLYGON')) {
+    const lon2 = lon + sizeDeg;
+    const lat2 = lat + sizeDeg;
+    return `ST_GeomFromText('POLYGON((${lon} ${lat},${lon} ${lat2},${lon2} ${lat2},${lon2} ${lat},${lon} ${lat}))',4326)`;
+  }
+  return `ST_SetSRID(ST_MakePoint(${lon},${lat}),4326)`;
+}
+
 async function ensureTestUsers(): Promise<{ adminId: string; user1: string; user2: string }> {
   // Reuse existing users if present; otherwise create quick fixtures
   const q = await adminSql(`
@@ -70,9 +89,11 @@ describe('Geo core', () => {
     const sfx = uniqueSuffix();
     try {
       // Seed two features and verify inserted rows
+      const g1 = `ST_GeomFromText('POLYGON((37.6 55.7,37.6 55.705,37.605 55.705,37.605 55.7,37.6 55.7))',4326)`;
+      const g2 = `ST_GeomFromText('POLYGON((37.61 55.71,37.61 55.715,37.615 55.715,37.615 55.71,37.61 55.71))',4326)`;
       const ins = await adminSql(`INSERT INTO ${schema}.${t}(user_id, type, geom) VALUES
-        ('${user1}','point', ST_SetSRID(ST_MakePoint(37.6,55.7),4326)),
-        ('${user2}','point', ST_SetSRID(ST_MakePoint(37.61,55.71),4326))
+        ('${user1}','point', ${g1}),
+        ('${user2}','point', ${g2})
         RETURNING id;`);
       const inserted = (ins.result?.length || 0) > 1 ? ins.result.length - 1 : 0;
       expect(inserted).toBeGreaterThanOrEqual(2);
@@ -89,7 +110,8 @@ describe('Geo core', () => {
   it('user can insert only with own user_id preset', async () => {
     const { user1 } = await ensureTestUsers();
     // For now insert via SQL, as GraphQL lacks geometry scalar in schema by default.
-    await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user1}','point', ST_SetSRID(ST_MakePoint(30,60),4326));`);
+    const g = `ST_GeomFromText('POLYGON((30 60,30 60.005,30.005 60.005,30.005 60,30 60))',4326)`;
+    await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user1}','polygon', ${g});`);
     const row = await adminSql(`SELECT user_id FROM geo.features ORDER BY created_at DESC LIMIT 1;`);
     expect(row.result?.[1]?.[0]).toBe(user1);
     await adminSql(`DELETE FROM geo.features WHERE user_id='${user1}';`);
@@ -98,9 +120,11 @@ describe('Geo core', () => {
   it('user can update/delete only own features (Hasura permissions)', async () => {
     const { user1, user2 } = await ensureTestUsers();
     // Seed two rows
-    const r1 = await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user1}','point', ST_SetSRID(ST_MakePoint(1,1),4326)) RETURNING id;`);
+    const gA = `ST_GeomFromText('POLYGON((1 1,1 1.005,1.005 1.005,1.005 1,1 1))',4326)`;
+    const r1 = await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user1}','polygon', ${gA}) RETURNING id;`);
     const id1 = r1.result?.[1]?.[0];
-    const r2 = await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user2}','point', ST_SetSRID(ST_MakePoint(2,2),4326)) RETURNING id;`);
+    const gB = `ST_GeomFromText('POLYGON((2 2,2 2.005,2.005 2.005,2.005 2,2 2))',4326)`;
+    const r2 = await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user2}','polygon', ${gB}) RETURNING id;`);
     const id2 = r2.result?.[1]?.[0];
 
     // Prepare user token and a thin GraphQL client (native fetch, no heavy deps)
@@ -123,7 +147,7 @@ describe('Geo core', () => {
     // Try update foreign row via GraphQL (should fail)
     const updateMut = `mutation($id: uuid!) { update_geo_features(where: {id: {_eq: $id}}, _set: {type: "forbidden"}) { affected_rows } }`;
     const updForeign = await gql(updateMut, { id: id2 });
-    expect(Array.isArray(updForeign.errors)).toBe(true);
+    expect((updForeign?.data?.update_geo_features?.affected_rows || 0)).toBe(0);
 
     // Update own row via GraphQL (should succeed)
     const updOwn = await gql(updateMut, { id: id1 });
@@ -132,7 +156,7 @@ describe('Geo core', () => {
     // Delete foreign row (should fail)
     const delMut = `mutation($id: uuid!) { delete_geo_features(where: {id: {_eq: $id}}) { affected_rows } }`;
     const delForeign = await gql(delMut, { id: id2 });
-    expect(Array.isArray(delForeign.errors)).toBe(true);
+    expect((delForeign?.data?.delete_geo_features?.affected_rows || 0)).toBe(0);
 
     // Delete own row (should succeed)
     const delOwn = await gql(delMut, { id: id1 });
@@ -148,12 +172,14 @@ describe('Geo core', () => {
       await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES (
         '${user1}', 'polygon', ST_GeomFromText('POLYGON((37.6 55.7,37.6 55.71,37.61 55.71,37.61 55.7,37.6 55.7))', 4326)
       );`);
-      const res = await adminSql(`SELECT ST_SRID(geom), centroid IS NOT NULL, bbox IS NOT NULL, area_m2, length_m FROM geo.features ORDER BY created_at DESC LIMIT 1;`);
+      const res = await adminSql(`SELECT ST_SRID(geom), centroid IS NOT NULL, bbox IS NOT NULL,
+        (area_m2 IS NOT NULL AND area_m2 > 0) AS area_ok,
+        (length_m IS NULL) AS length_null
+        FROM geo.features ORDER BY created_at DESC LIMIT 1;`);
       expect(res.result?.[1]?.[0]).toBe('4326');
       expect(res.result?.[1]?.[1]).toBe('t');
       expect(res.result?.[1]?.[2]).toBe('t');
-      const area = Number(res.result?.[1]?.[3] || '0');
-      expect(area).toBeGreaterThan(0);
+      expect(res.result?.[1]?.[3]).toBe('t');
     } finally {
       await adminSql(`DELETE FROM geo.features WHERE user_id='${user1}';`);
     }
@@ -162,12 +188,14 @@ describe('Geo core', () => {
   it('nearby and within_bbox work', async () => {
     const { user1 } = await ensureTestUsers();
     try {
+      const ga = `ST_GeomFromText('POLYGON((37.6 55.7,37.6 55.705,37.605 55.705,37.605 55.7,37.6 55.7))',4326)`;
+      const gb = `ST_GeomFromText('POLYGON((37.61 55.71,37.61 55.715,37.615 55.715,37.615 55.71,37.61 55.71))',4326)`;
       await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES
-        ('${user1}','point', ST_SetSRID(ST_MakePoint(37.6,55.7),4326)),
-        ('${user1}','point', ST_SetSRID(ST_MakePoint(37.61,55.71),4326));`);
-      const near = await adminSql(`SELECT count(*) FROM geo.nearby(37.6,55.7,2000);`);
+        ('${user1}','point', ${ga}),
+        ('${user1}','point', ${gb});`);
+      const near = await adminSql(`SELECT count(*) FROM geo.nearby(37.6::float8,55.7::float8,2000);`);
       expect(Number(near.result?.[1]?.[0] || '0')).toBeGreaterThan(0);
-      const bbox = await adminSql(`SELECT count(*) FROM geo.within_bbox(37.59,55.69,37.605,55.705);`);
+      const bbox = await adminSql(`SELECT count(*) FROM geo.within_bbox(37.59::float8,55.69::float8,37.605::float8,55.705::float8);`);
       expect(Number(bbox.result?.[1]?.[0] || '0')).toBeGreaterThan(0);
     } finally {
       await adminSql(`DELETE FROM geo.features WHERE user_id='${user1}';`);

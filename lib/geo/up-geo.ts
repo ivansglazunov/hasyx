@@ -50,16 +50,24 @@ BEGIN
     NEW.geom := ST_MakeValid(NEW.geom);
     NEW.centroid := ST_Centroid(NEW.geom);
     NEW.bbox := ST_Envelope(NEW.geom);
-    IF GeometryType(NEW.geom) IN ('ST_Polygon','ST_MultiPolygon') THEN
-      NEW.area_m2 := ST_Area(NEW.geom::geography);
-      NEW.length_m := NULL;
-    ELSIF GeometryType(NEW.geom) IN ('ST_LineString','ST_MultiLineString') THEN
-      NEW.length_m := ST_Length(NEW.geom::geography);
-      NEW.area_m2 := NULL;
-    ELSE
-      NEW.area_m2 := NULL;
-      NEW.length_m := NULL;
-    END IF;
+    -- Use ST_GeometryType for consistent type names
+    CASE ST_GeometryType(NEW.geom)
+      WHEN 'ST_Polygon' THEN
+        NEW.area_m2 := ST_Area(NEW.geom::geography);
+        NEW.length_m := NULL;
+      WHEN 'ST_MultiPolygon' THEN
+        NEW.area_m2 := ST_Area(NEW.geom::geography);
+        NEW.length_m := NULL;
+      WHEN 'ST_LineString' THEN
+        NEW.length_m := ST_Length(NEW.geom::geography);
+        NEW.area_m2 := NULL;
+      WHEN 'ST_MultiLineString' THEN
+        NEW.length_m := ST_Length(NEW.geom::geography);
+        NEW.area_m2 := NULL;
+      ELSE
+        NEW.area_m2 := NULL;
+        NEW.length_m := NULL;
+    END CASE;
   END IF;
   NEW.updated_at := now();
   RETURN NEW;
@@ -77,6 +85,7 @@ $$`,
   await hasura.defineFunction({
     schema: 'geo',
     name: 'nearby',
+    language: 'sql',
     definition: `(
       lon double precision,
       lat double precision,
@@ -94,6 +103,7 @@ $$`,
   await hasura.defineFunction({
     schema: 'geo',
     name: 'within_bbox',
+    language: 'sql',
     definition: `(
       min_lon double precision,
       min_lat double precision,

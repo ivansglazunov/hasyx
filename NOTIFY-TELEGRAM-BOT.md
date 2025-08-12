@@ -216,18 +216,11 @@ This document outlines how Hasyx integrates with Telegram Bots for user interact
     *   Send `/newbot` and follow the prompts to choose a name (e.g., "My Project Bot") and a username (e.g., `myproject_bot`).
     *   BotFather will provide you with an **API Token**. Keep this token secure.
 
-2.  **Configure Environment Variables**:
-    Add the following to your `.env` file:
-    ```env
-    # Required for Telegram Bot functionality
-    TELEGRAM_BOT_TOKEN="YOUR_TELEGRAM_BOT_API_TOKEN"
-
-    # Optional: For AI responses via OpenRouter
-    OPENROUTER_API_KEY="YOUR_OPENROUTER_API_KEY"
-    # Optional: Custom pre-prompt for the AI for Telegram interactions
-    TELEGRAM_AI_PREPROMPT="You are a very helpful assistant."
+2.  **Configure Environment Variables (via configurator)**:
+    Задайте `TELEGRAM_BOT_TOKEN` (и опционально `OPENROUTER_API_KEY`, `TELEGRAM_AI_PREPROMPT`) через `npx hasyx config`. Файл `.env` автогенерируется и не должен редактироваться вручную.
+    ```bash
+    npx hasyx config
     ```
-    Set `TELEGRAM_BOT_TOKEN` via `hasyx.config.json` and regenerate `.env`.
 
 3.  **Set Webhook**:
     *   Hasyx relies on a webhook to receive updates from Telegram. The API route `app/api/telegram_bot/route.ts` handles these updates.
