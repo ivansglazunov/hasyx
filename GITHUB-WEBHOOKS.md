@@ -8,7 +8,7 @@ This document explains how to set up GitHub webhooks to automatically sync issue
 
 - **Repository**: ivansglazunov/hasyx
 - **Webhook URL**: https://hasyx-dev.deep.foundation/api/github/issues
-- **Events**: issues, pull_request, push, release
+- **Events**: issues (only)
 - **Base URL**: https://hasyx-dev.deep.foundation
 
 ## Prerequisites
@@ -171,7 +171,7 @@ GITHUB_TOKEN=your-github-personal-access-token
 
 The webhook handler is available at:
 - **URL**: `/api/github/issues`
-- **Method**: `PATCH`
+- **Method**: `POST`
 - **Content-Type**: `application/json`
 - **Headers**: 
   - `x-hub-signature-256`: GitHub webhook signature

@@ -7,16 +7,18 @@ const config = {
   testMatch: ['**/*.test.ts'],
   setupFilesAfterEnv: ['./jest.setup.js'],
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  testTimeout: 60000, // 60 seconds timeout for all tests
+  testTimeout: 1800000, // 30 minutes for instance test performing real installs
   moduleNameMapper: {
     '^jose$': 'jose',
     '^@/(.*)$': '<rootDir>/$1',
     '^react$': '<rootDir>/node_modules/react',
     '^react-dom$': '<rootDir>/node_modules/react-dom',
   },
-  testPathIgnorePatterns: ['/node_modules/', '/.next/', '.temp'],
+  testPathIgnorePatterns: ['/node_modules/', '/.next/', '.temp', '/_lib/', '/_components/'],
   collectCoverageFrom: [
     '**/*.{js,jsx,ts,tsx}',
+    '!_lib/**',
+    '!_components/**',
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!**/.next/**',

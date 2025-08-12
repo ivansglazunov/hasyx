@@ -116,7 +116,7 @@ function MyComponent() {
 
 ### Environment Variables
 
-PWA works with your existing Hasyx environment variables. No additional configuration needed for basic functionality.
+PWA works with your existing Hasyx environment variables which are generated from `hasyx.config.json`. No additional configuration needed for basic functionality. Do not edit `.env` manually; use `npx hasyx config`.
 
 For Firebase push notifications, ensure you have:
 

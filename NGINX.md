@@ -13,7 +13,7 @@ The `Nginx` class provides comprehensive nginx configuration management that:
 - Implements define/undefine patterns for idempotent operations
 - Supports both sites-available/sites-enabled and direct configuration patterns
 
-⚠️ **Important**: This module works with existing nginx installations and does not require additional assist configuration beyond having nginx installed and proper system permissions.
+⚠️ **Important**: This module works with existing nginx installations and does not require additional assist configuration beyond having nginx installed and proper system permissions. Any environment variables this module relies on are generated via the Hasyx configurator; do not edit `.env` manually.
 
 <details>
 <summary>Core Exports (`lib/nginx.ts`)</summary>

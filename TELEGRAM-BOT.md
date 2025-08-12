@@ -25,10 +25,10 @@ This document outlines how to use and extend the Telegram Bot integration in Has
    - Send `/newbot` and follow the prompts to create a bot
    - BotFather will provide you with an API Token
 
-2. **Configure Environment Variables**:
-   ```env
-   # Required for Telegram Bot functionality
-   TELEGRAM_BOT_TOKEN="YOUR_TELEGRAM_BOT_API_TOKEN"
+2. **Configure Environment Variables (via configurator)**:
+   Set `TELEGRAM_BOT_TOKEN` using `npx hasyx config`. The `.env` file is auto-generated; do not edit it manually.
+   ```bash
+   npx hasyx config
    ```
 
 3. **Set Webhook**:

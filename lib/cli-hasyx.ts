@@ -57,6 +57,24 @@ import {
 export { 
   assetsCommand, eventsCommand, unbuildCommand, localCommand, vercelCommand, processLogs, processConfiguredDiffs, processConfiguredStates, envCommand };
 
+// Exported lists used by build-templates.ts to stage raw TS/TSX for publishing
+export const LIB_SCAFFOLD_FILES: string[] = [
+  'lib/entities.tsx',
+  'lib/ask.ts',
+  'lib/debug.ts',
+  'lib/cli.ts',
+  'lib/github-telegram-bot.ts',
+  'lib/config.tsx',
+  'lib/config/env.tsx',
+  'lib/config/docker-compose.tsx',
+  'lib/url.ts',
+];
+
+export const COMPONENTS_SCAFFOLD_FILES: string[] = [
+  'components/sidebar/layout.tsx',
+  'components/entities/default.tsx',
+];
+
 // Config command: runs the interactive or silent configuration tool
 export const configCommand = async (options: { silent?: boolean } = {}) => {
   debug('Executing "config" command.', options);
@@ -190,6 +208,17 @@ export const getTemplateContent = (fileName: string, templatesDir?: string): str
     throw new Error(`Template file not found: ${fileName}`);
   }
 };
+
+// Helper: recursively copy directory with optional overwrite
+async function copyDirectoryRecursive(sourceDir: string, targetDir: string, options: { overwrite: boolean }) {
+  debug(`copyDirectoryRecursive source=${sourceDir} target=${targetDir} overwrite=${options.overwrite}`);
+  if (!fs.existsSync(sourceDir)) {
+    console.warn(`⚠️ Source directory not found: ${sourceDir}`);
+    return;
+  }
+  await fs.ensureDir(targetDir);
+  await fs.copy(sourceDir, targetDir, { overwrite: options.overwrite, errorOnExist: false });
+}
 
 // Helper function to ensure WebSocket support in the project
 export const ensureWebSocketSupport = (projectRoot: string): void => {
@@ -356,62 +385,21 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     process.exit(1);
   }
 
-  // Files to create or replace (always overwrite)
+  // Files to create or replace (always overwrite) — keep only non-app items, app copied as a whole below
   const filesToCreateOrReplace = {
     '.github/workflows/npm-publish.yml': '.github/workflows/npm-publish.yml',
     '.github/workflows/test.yml': '.github/workflows/test.yml',
     '.github/workflows/nextjs.yml': '.github/workflows/nextjs.yml',
     '.github/workflows/telegram-notifications.yml': '.github/workflows/telegram-notifications.yml',
     '.github/workflows/docker-publish.yml': '.github/workflows/docker-publish.yml',
-    'app/api/auth/[...nextauth]/route.ts': 'app/api/auth/[...nextauth]/route.ts',
-    'app/options.ts': 'app/options.ts',
-    'app/api/auth/verify/route.ts': 'app/api/auth/verify/route.ts',
-    'app/api/auth/verify-telegram-webapp/route.ts': 'app/api/auth/verify-telegram-webapp/route.ts',
-    'app/api/auth/get-jwt/route.ts': 'app/api/auth/get-jwt/route.ts',
-    'app/api/auth/route.ts': 'app/api/auth/route.ts',
-    'app/api/graphql/route.ts': 'app/api/graphql/route.ts',
-    'app/api/events/[name]/route.ts': 'app/api/events/[name]/route.ts',
-    'app/api/events/github-issues/route.ts': 'app/api/events/github-issues/route.ts',
-    'app/api/github/issues/route.ts': 'app/api/github/issues/route.ts',
-    'app/api/telegram_bot/route.ts': 'app/api/telegram_bot/route.ts',
-    'app/api/health/route.ts': 'app/api/health/route.ts',
-    'app/auth/callback/page.tsx': 'app/auth/callback/page.tsx',
-  };
+  } as Record<string, string>;
 
   // Files to create if not exists (or force replace if --reinit)
-  const filesToCreateIfNotExists = {
-    'app/sidebar.ts': 'app/sidebar.ts',
-    'app/layout.tsx': 'app/layout.tsx',
-    'app/page.tsx': 'app/page.tsx',
-    'app/globals.css': 'app/globals.css',
-    'app/hasyx/diagnostics/page.tsx': 'app/hasyx/diagnostics/page.tsx',
-    'app/hasyx/aframe/page.tsx': 'app/hasyx/aframe/page.tsx',
-    'app/hasyx/aframe/client.tsx': 'app/hasyx/aframe/client.tsx',
-    'app/hasyx/payments/page.tsx': 'app/hasyx/payments/page.tsx',
-    'app/hasyx/cyto/page.tsx': 'app/hasyx/cyto/page.tsx',
-    'app/hasyx/cyto/client.tsx': 'app/hasyx/cyto/client.tsx',
-    'app/hasyx/pwa/page.tsx': 'app/hasyx/pwa/page.tsx',
-    'app/hasyx/pwa/client.tsx': 'app/hasyx/pwa/client.tsx',
-    'app/hasyx/constructor/page.tsx': 'app/hasyx/constructor/page.tsx',
-    'app/hasyx/validation/page.tsx': 'app/hasyx/validation/page.tsx',
-    'app/hasyx/files/page.tsx': 'app/hasyx/files/page.tsx',
-    'app/hasyx/messaging/page.tsx': 'app/hasyx/messaging/page.tsx',
-    'app/hasyx/roadmap/page.tsx': 'app/hasyx/roadmap/page.tsx',
-    'app/hasyx/roadmap/client.tsx': 'app/hasyx/roadmap/client.tsx',
-    'app/hasyx/telegram-miniapp/page.tsx': 'app/hasyx/telegram-miniapp/page.tsx',
-    'app/hasyx/doc/page.tsx': 'app/hasyx/doc/page.tsx',
-    'app/hasyx/doc/[filename]/page.tsx': 'app/hasyx/doc/[filename]/page.tsx',
-    'app/hasyx/doc/[filename]/client.tsx': 'app/hasyx/doc/[filename]/client.tsx',
-    'components/sidebar/layout.tsx': 'components/sidebar/layout.tsx',
-    'components/entities/default.tsx': 'components/entities/default.tsx',
-    'lib/entities.tsx': 'lib/entities.template',
-    'lib/ask.ts': 'lib/ask.template',
+  const filesToCreateIfNotExists: Record<string, string> = {
+    // Non-app files that we still want to seed when missing
     'schema.tsx': 'schema.tsx',
     'public/favicon.ico': 'public/favicon.ico',
     'public/logo.svg': 'public/logo.svg',
-    '.gitignore': '.gitignore.template',
-    '.npmignore': '.npmignore.template',
-    '.npmrc': '.npmrc.template',
     'Dockerfile': 'Dockerfile',
     '.dockerignore': '.dockerignore',
     'vercel.json': 'vercel.json',
@@ -419,11 +407,13 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'jest.config.mjs': 'jest.config.mjs',
     'jest.setup.js': 'jest.setup.js',
     'next.config.ts': 'next.config.ts',
+    'lib/i18n/config.ts': 'lib/i18n/config.ts',
     'postcss.config.mjs': 'postcss.config.mjs',
     'components.json': 'components.json',
     'tsconfig.json': 'tsconfig.json',
     'tsconfig.lib.json': 'tsconfig.lib.json',
     '.vscode/extensions.json': '.vscode/extensions.json',
+    // Events and migrations still created if missing
     'migrations/1746660891582-hasyx-users/up.ts': 'migrations/1746660891582-hasyx-users/up.ts',
     'migrations/1746660891582-hasyx-users/down.ts': 'migrations/1746660891582-hasyx-users/down.ts',
     'migrations/1746670608552-hasyx-notify/up.ts': 'migrations/1746670608552-hasyx-notify/up.ts',
@@ -441,57 +431,15 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'events/subscription-billing.json': 'events/subscription-billing.json',
     'events/logs-diffs.json': 'events/logs-diffs.json',
     'events/github-issues.json': 'events/github-issues.json',
-    'lib/debug.ts': 'lib/debug.template',
-    'lib/cli.ts': 'lib/cli.template',
-    'lib/github-telegram-bot.ts': 'lib/github-telegram-bot.template',
-    'env.template': 'env.template',
-    'app/api/events/subscription-billing/route.ts': 'app/api/events/subscription-billing/route.ts',
-    'app/api/events/notify/route.ts': 'app/api/events/notify/route.ts',
-    'app/api/events/logs-diffs/route.ts': 'app/api/events/logs-diffs/route.ts',
   };
 
   // Ensure directories exist
   const ensureDirs = [
     '.github/workflows',
     '.vscode',
-    'app/auth/callback',
-    'app/api/auth/[...nextauth]',
-    'app/api/auth/verify',
-    'app/api/auth/verify-telegram-webapp',
-    'app/api/graphql',
-    'app/api/events/[name]',
-    'app/api/events/github-issues',
-    'app/api/events/schedule-cron',
-    'app/api/events/subscription-billing',
-    'app/api/events/schedule',
-    'app/api/events/notify',
-    'app/api/events/logs-diffs',
-    'app/api/github/issues',
-    'app/api/telegram_bot',
-    'app/api/health',
-    'migrations/1746660891582-hasyx-users',
-    'migrations/1746670608552-hasyx-notify',
-    'migrations/1746837333136-hasyx-debug',
-    'migrations/1748511896530-hasyx-payments',
-    'migrations/1750929424636-schedule',
-    'migrations/1746999999999-hasyx-logs',
-    'migrations/29991231235959999-hasyx',
+    'public',
     'events',
     'lib',
-    'app/hasyx/diagnostics',
-    'app/hasyx/aframe',
-    'app/hasyx/payments',
-    'app/hasyx/cyto',
-    'app/hasyx/pwa',
-    'app/hasyx/constructor',
-    'app/hasyx/files',
-    'app/hasyx/messaging',
-    'app/hasyx/roadmap',
-    'app/hasyx/telegram-miniapp',
-    'app/hasyx/doc',
-    'app/hasyx/doc/[filename]',
-    'components/sidebar',
-    'components/entities',
   ];
 
   debug('Ensuring directories exist:', ensureDirs);
@@ -502,42 +450,31 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     console.log(`✅ Ensured directory exists: ${dir}`);
   }
 
-  // Create/Replace files
-  debug('Processing files to create or replace...');
+  // Copy entire app directory from hasyx package into target project
+  try {
+    const hasyxRoot = path.resolve(__dirname, '../');
+    const appSrc = path.join(hasyxRoot, 'app');
+    const appDest = path.join(targetDir, 'app');
+    await copyDirectoryRecursive(appSrc, appDest, { overwrite: forceReinit });
+    console.log(`✅ ${forceReinit ? 'Replaced' : 'Created'}: app (copied entire directory)`);
+  } catch (error) {
+    console.warn(`⚠️ Failed to copy app directory: ${error}`);
+  }
+
+  // Create/Replace files (non-app)
+  debug('Processing files to create or replace (non-app)...');
   for (const [targetPath, templateName] of Object.entries(filesToCreateOrReplace)) {
     const fullTargetPath = path.join(targetDir, targetPath);
-    debug(`Processing ${targetPath} -> ${templateName} (Replace)`);
     try {
+      await fs.ensureDir(path.dirname(fullTargetPath));
       const templateContent = getTemplateContent(templateName);
       await fs.writeFile(fullTargetPath, templateContent);
       console.log(`✅ Created/Replaced: ${targetPath}`);
-      debug(`Successfully wrote file: ${fullTargetPath}`);
     } catch (error) {
-       console.error(`❌ Failed to process ${targetPath} from template ${templateName}: ${error}`);
-       debug(`Error writing file ${fullTargetPath}: ${error}`);
+      console.error(`❌ Failed to process ${targetPath} from template ${templateName}: ${error}`);
     }
   }
-
-  // Special handling for .env file
-  debug('Special handling for .env file');
-  try {
-    const envPath = path.join(targetDir, '.env');
-    const hasEnv = fs.existsSync(envPath);
-    
-    if (!hasEnv) {
-      const envTemplateContent = getTemplateContent('env.template');
-      fs.writeFileSync(envPath, envTemplateContent);
-      console.log('✅ Created .env file from template');
-      console.log('📝 Please edit .env file and fill in your configuration values');
-      debug('Created .env file from template');
-    } else {
-      console.log('⏩ .env file already exists, skipping creation');
-      debug('.env file already exists, skipping creation');
-    }
-  } catch (error) {
-    console.error(`❌ Failed to create .env file: ${error}`);
-    debug(`Error creating .env file: ${error}`);
-  }
+  // Do not auto-create .env here; it must be generated by `npm run config -- --silent`
 
   // Special handling for CONTRIBUTING.md
   debug('Special handling for CONTRIBUTING.md');
@@ -587,14 +524,15 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
       try {
         let templateContent = getTemplateContent(configFile);
         
+        // Replace package name mapping but preserve hasyx/* mapping for internal self-imports
         templateContent = templateContent.replace(
-          /"hasyx":\s*\[\s*"\.\/lib\/index\.ts"\s*\]/g, 
-          `"${projectName}": ["./lib/index.ts"]`
+          /"hasyx":\s*\[\s*"\.\/lib\/index\.ts"\s*\]/g,
+          `"${projectName}": ["./lib/index.ts"],\n      "hasyx": ["./lib/index.ts"]`
         );
-        
+        // Leave original "hasyx/*": ["./*"] mapping intact and also add projectName/*
         templateContent = templateContent.replace(
-          /"hasyx\/\*":\s*\[\s*"\.\/\*"\s*\]/g, 
-          `"${projectName}/*": ["./*"]`
+          /"hasyx\/\*":\s*\[\s*"\.\/\*"\s*\]/g,
+          `"hasyx/*": ["./*"],\n      "${projectName}/*": ["./*"]`
         );
         
         await fs.writeFile(fullTargetPath, templateContent);
@@ -624,6 +562,7 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
            const templatePath = path.join(path.resolve(__dirname, '../'), templateName);
            debug(`Copying binary file from template: ${templatePath}`);
            try {
+              await fs.ensureDir(path.dirname(fullTargetPath));
               await fs.copyFile(templatePath, fullTargetPath);
               console.log(`✅ ${exists && forceReinit ? 'Replaced' : 'Created'}: ${targetPath}`);
               debug(`Successfully copied binary file: ${fullTargetPath}`);
@@ -633,6 +572,7 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
            }
         } else {
           try {
+              await fs.ensureDir(path.dirname(fullTargetPath));
               const templateContent = getTemplateContent(templateName);
               await fs.writeFile(fullTargetPath, templateContent);
               console.log(`✅ ${exists && forceReinit ? 'Replaced' : 'Created'}: ${targetPath}`);
@@ -646,6 +586,42 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
       console.log(`⏩ Skipped (already exists): ${targetPath}`);
       debug(`File already exists, skipped: ${fullTargetPath}`);
     }
+  }
+
+  // Copy staged scaffolds (_lib and _components) if present in package
+  try {
+    const pkgRoot = path.resolve(__dirname, '../');
+    const stagedLib = path.join(pkgRoot, '_lib');
+    const stagedComponents = path.join(pkgRoot, '_components');
+    if (fs.existsSync(stagedLib)) {
+      await copyDirectoryRecursive(stagedLib, path.join(targetDir, 'lib'), { overwrite: forceReinit });
+      console.log(`✅ ${forceReinit ? 'Replaced' : 'Created'}: lib (from _lib)`);
+      // copy staged dotfiles from _lib root to project root if exist
+      for (const name of ['.gitignore', '.npmignore', '.npmrc']) {
+        const src = path.join(stagedLib, name);
+        const dst = path.join(targetDir, name);
+        if (fs.existsSync(src) && (!fs.existsSync(dst) || forceReinit)) {
+          await fs.copy(src, dst, { overwrite: true });
+          console.log(`✅ ${forceReinit ? 'Replaced' : 'Created'}: ${name}`);
+        }
+      }
+    }
+    if (fs.existsSync(stagedComponents)) {
+      // Copy only whitelisted subpaths from _components
+      const whitelist = [
+        'sidebar',
+        'entities',
+      ];
+      for (const sub of whitelist) {
+        const src = path.join(stagedComponents, sub);
+        if (!fs.existsSync(src)) continue;
+        const dst = path.join(targetDir, 'components', sub);
+        await copyDirectoryRecursive(src, dst, { overwrite: forceReinit });
+      }
+      console.log(`✅ ${forceReinit ? 'Replaced' : 'Created'}: components/sidebar, components/entities (from _components)`);
+    }
+  } catch (e) {
+    console.warn(`⚠️ Failed to copy staged templates (_lib/_components): ${e}`);
   }
 
   // Check for hasyx dependency
@@ -710,6 +686,7 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
         "logs": `npx ${packageName} logs`,
         "logs-diffs": `npx ${packageName} logs-diffs`,
         "logs-states": `npx ${packageName} logs-states`,
+        "config": `npx ${packageName} config`,
         "env": `npx ${packageName} env`
       };
       
@@ -736,10 +713,19 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     debug(`Error updating npm scripts in package.json: ${error}`);
   }
 
-  // Install/Update hasyx itself
-  console.log(`📦 Ensuring the latest version of ${packageName} is installed...`);
-  debug(`Running command: npm install ${packageName}@latest --save`);
-  const installHasyxResult = spawn.sync('npm', ['install', `${packageName}@latest`, '--save'], {
+  // Do not auto-install dependencies here; use npm ci in the child project
+
+  // Install/Update hasyx itself (allow override source via env)
+  const localTgz = process.env.HASYX_INSTALL_TGZ;
+  const localDir = process.env.HASYX_INSTALL_DIR;
+  const installArg = localTgz && fs.existsSync(path.resolve(targetDir, localTgz))
+    ? path.resolve(targetDir, localTgz)
+    : (localDir && fs.existsSync(path.resolve(targetDir, localDir))
+      ? path.resolve(targetDir, localDir)
+      : `${packageName}@latest`);
+  console.log(`📦 Ensuring ${packageName} is installed (${installArg === `${packageName}@latest` ? 'registry' : 'local'})...`);
+  debug(`Running command: npm install ${installArg} --save`);
+  const installHasyxResult = spawn.sync('npm', ['install', installArg, '--save'], {
     stdio: 'inherit',
     cwd: projectRoot,
   });
@@ -811,7 +797,6 @@ export const devCommand = () => {
 export const buildCommand = () => {
   debug('Executing "build" command.');
   const cwd = process.cwd();
-  
   ensureWebSocketSupport(cwd);
   
   // Build documentation before building Next.js app

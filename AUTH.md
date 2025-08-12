@@ -8,6 +8,9 @@ This document describes the authentication helper utilities provided in `lib/aut
 
 These utilities integrate with `next-auth` sessions to simplify authenticating users, especially in WebSocket scenarios where standard HTTP header mechanisms aren't directly applicable, and provide a consistent way to get the decoded user token from incoming HTTP requests.
 
+Configuration note:
+- Required environment variables (`NEXTAUTH_SECRET`, `HASURA_JWT_SECRET`, etc.) are auto-generated from `hasyx.config.json`. Use `npx hasyx config` to edit configuration. Do not edit `.env` manually.
+
 <details>
 <summary>Core Exports (`lib/auth.tsx`)</summary>
 
@@ -33,79 +36,20 @@ This is particularly useful when setting up a WebSocket server (e.g., using `nex
 *   `NEXTAUTH_SECRET` environment variable is set.
 *   A WebSocket server endpoint is set up.
 
-**Example (using `next-ws`):**
+**Example (GraphQL WS via `/api/graphql`):**
 
 ```typescript
-// app/api/ws/route.ts (or similar WebSocket server setup)
-import { NextRequest } from 'next/server';
-import { WsClientsManager } from 'hasyx'; // Adjust path as needed
-import { WebSocket } from 'ws'; // or from your WebSocket library
+// app/api/graphql/route.ts
+import http from 'http';
+import { NextRequest, NextResponse } from 'next/server';
+import { WebSocket, WebSocketServer } from 'ws';
+import { proxyGET, proxyPOST, proxySOCKET, proxyOPTIONS } from 'hasyx/lib/graphql-proxy';
 
-// Initialize the manager (can be done globally or per route)
-const wsManager = WsClientsManager('main-ws');
-
-export async function GET(request: NextRequest) {
-  // This is the standard entry for next-ws
-  // It handles the WebSocket upgrade
-  return new Response(null, { status: 101 }); 
-}
-
-export async function SOCKET(client: WebSocket, request: Request, server: any) {
-  // Add client to the manager and get a unique ID
-  const clientId = wsManager.Client(client);
-  console.log(`Client ${clientId} connected.`);
-
-  try {
-    // Attempt to parse user from the connection request cookies
-    // This uses getToken internally with the cookies from the upgrade request
-    const user = await wsManager.parseUser(request as any, clientId);
-
-    if (user) {
-      console.log(`Client ${clientId} authenticated as user:`, user.id);
-      // Store user data associated with the client if needed
-      // const clientData = wsManager.getClient(clientId);
-      // console.log('Retrieved client data:', clientData);
-
-      // Send confirmation or initial data to the authenticated client
-      client.send(JSON.stringify({ type: 'authenticated', userId: user.id }));
-    } else {
-      console.log(`Client ${clientId} connection is anonymous.`);
-      // Handle anonymous connection or send an authentication required message
-      client.send(JSON.stringify({ type: 'unauthenticated' }));
-      // Optionally close the connection for anonymous users
-      // client.close(1008, 'Authentication required');
-      // wsManager.delete(clientId); // Clean up if closing
-      // return;
-    }
-
-  } catch (error) {
-    console.error(`Error during authentication for client ${clientId}:`, error);
-    client.close(1011, 'Internal server error during authentication');
-    wsManager.delete(clientId); // Clean up on error
-    return;
-  }
-
-  client.on('message', (message) => {
-    console.log(`Received message from ${clientId}: ${message}`);
-    // Handle incoming messages...
-    // You can retrieve the associated user data via wsManager.getClient(clientId).user
-    const clientData = wsManager.getClient(clientId);
-    if (clientData?.user) {
-        console.log(`Message from authenticated user: ${clientData.user.id}`);
-    }
-  });
-
-  client.on('close', () => {
-    console.log(`Client ${clientId} disconnected.`);
-    // Remove client from the manager on disconnect
-    wsManager.delete(clientId);
-  });
-
-  client.on('error', (error) => {
-    console.error(`WebSocket error for client ${clientId}:`, error);
-    // Clean up on error
-    wsManager.delete(clientId);
-  });
+export async function GET(request: NextRequest) { return proxyGET(request); }
+export async function POST(request: NextRequest) { return proxyPOST(request); }
+export async function OPTIONS(request: NextRequest) { return proxyOPTIONS(request); }
+export function SOCKET(client: WebSocket, request: http.IncomingMessage, server: WebSocketServer) {
+  return proxySOCKET(client, request, server);
 }
 ```
 

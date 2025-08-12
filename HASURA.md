@@ -68,7 +68,7 @@ await hasyx.scheduleOneOff({
 });
 ```
 
-This builds the webhook using `NEXT_PUBLIC_API_URL` (or `NEXT_PUBLIC_MAIN_URL`/`NEXT_PUBLIC_BASE_URL`) and passes `X-Hasura-Event-Secret` from env when available.
+This builds the webhook using base URL variables (`NEXT_PUBLIC_MAIN_URL`/`NEXT_PUBLIC_BASE_URL`) and passes `X-Hasura-Event-Secret` from env when available. These variables are auto-generated from `hasyx.config.json` via `npx hasyx config`. Do not edit `.env` manually; change settings through the configurator.
 
 ## Constructor
 

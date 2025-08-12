@@ -5,6 +5,8 @@ Push Notification System in Hasyx
 Hasyx aims to provide a unified and extensible system for delivering push notifications across various platforms. The core idea is to manage notification permissions, message content, and delivery status centrally, while allowing different providers (like Firebase Cloud Messaging, Apple Push Notification service, Telegram, etc.) to handle the actual delivery to specific devices or services.
 
 ## Core Concepts
+Configuration note:
+- Providers and related environment variables (Firebase, Telegram, etc.) are configured via `npx hasyx config` and written to `hasyx.config.json`. The resulting `.env` is auto-generated; do not edit it manually.
 
 1.  **`Notification Permissions`**: Represents a user's consent to receive notifications on a specific device/platform. It stores:
     *   `user_id`: The user who granted permission.

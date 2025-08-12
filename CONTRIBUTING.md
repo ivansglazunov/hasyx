@@ -105,7 +105,7 @@ All tests MUST follow these strict guidelines:
 
 1. **No Mocks for Database Operations**: Tests must use real database connections, not mocks. This ensures we test actual functionality and catch real-world issues.
 
-2. **No `beforeAll` or `beforeEach`**: Each test (`it`) must create its own test environment from scratch and clean up after itself. This ensures complete test isolation and prevents test interdependencies.
+2. **No `beforeAll` or `beforeEach`**: Each test (`it`) must create its own test environment from scratch and clean up after itself. This ensures complete test isolation and prevents test interdependencies. Prefer `try/finally` inside each `it`.
 
 3. **Test Structure Pattern**:
    ```typescript

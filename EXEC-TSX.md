@@ -589,5 +589,5 @@ DEBUG=hasyx:exec-ts npm run tsx -- -e "your code here"
 ## See Also
 
 - [Exec Documentation](./EXEC.md) - Base execution engine
-- [CLI Documentation](./CLI.md) - Command line interface
+- [ASK CLI](./ASK.md) - AI assistant and code execution CLI
 - [TypeScript Documentation](https://www.typescriptlang.org/) - Official TypeScript docs 

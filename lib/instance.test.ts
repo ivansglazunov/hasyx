@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
+import * as nodeFs from 'node:fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
@@ -20,23 +21,93 @@ function generateTempProjectDir(): string {
 
 function runInitInDirectory(targetDir: string) {
   const cliTsPath = path.resolve(__dirname, './cli.ts');
+  // Hint init to install hasyx from the local repository directory instead of npm registry
+  const hasyxRepoRoot = path.resolve(__dirname, '..');
+  // Prefer tarball install to ensure prepack/build outputs are present
+  const pack = spawnSync('npm', ['pack', '--silent'], { cwd: hasyxRepoRoot, encoding: 'utf-8' });
+  if (pack.error || typeof pack.stdout !== 'string' || pack.stdout.trim().length === 0) {
+    throw pack.error || new Error('Failed to create npm pack tarball');
+  }
+  const tgzName = pack.stdout.trim().split(/\s+/).pop()!;
+  const tgzPath = path.resolve(hasyxRepoRoot, tgzName);
+
   const result = spawnSync('npx', ['tsx', cliTsPath, 'init', '--reinit'], {
     cwd: targetDir,
     encoding: 'utf-8',
-    stdio: 'pipe',
+    stdio: 'inherit',
     env: {
       ...process.env,
-      // Ensure non-interactive environment
-      CI: '1',
+      HASYX_INSTALL_TGZ: tgzPath,
+      HASYX_INSTALL_DIR: '',
     },
   });
-  debug(`stdout (truncated): ${String(result.stdout || '').slice(0, 5000)}`);
-  debug(`stderr (truncated): ${String(result.stderr || '').slice(0, 5000)}`);
+  // stdout/stderr are streamed via 'inherit'
   if (result.error) {
     throw result.error;
   }
   if (typeof result.status === 'number' && result.status !== 0) {
     throw new Error(`Init process exited with code ${result.status}`);
+  }
+  // Remove created tarball after successful init
+  try { nodeFs.existsSync(tgzPath) && nodeFs.unlinkSync(tgzPath); } catch {}
+}
+
+function runConfigSilentInDirectory(targetDir: string) {
+  debug('Running npm run config -- --silent in temp project...');
+  const cliTsPath = path.resolve(__dirname, './cli.ts');
+  const result = spawnSync('npx', ['tsx', cliTsPath, 'config', '--silent'], {
+    cwd: targetDir,
+    encoding: 'utf-8',
+    stdio: 'inherit',
+  });
+  // logs streamed
+  if (result.error) throw result.error;
+  if (typeof result.status === 'number' && result.status !== 0) {
+    throw new Error(`Config process exited with code ${result.status}`);
+  }
+}
+
+function npmCiInDirectory(targetDir: string) {
+  debug('Running npm ci in temp project...');
+  const result = spawnSync('npm', ['ci'], {
+    cwd: targetDir,
+    encoding: 'utf-8',
+    stdio: 'inherit',
+  });
+  // logs streamed
+  if (result.error) throw result.error;
+  if (typeof result.status === 'number' && result.status !== 0) {
+    throw new Error(`npm ci exited with code ${result.status}`);
+  }
+}
+
+function buildInDirectory(targetDir: string) {
+  debug('Attempting to build temp project...');
+  const result = spawnSync('npm', ['run', 'build'], {
+    cwd: targetDir,
+    encoding: 'utf-8',
+    stdio: 'pipe',
+  });
+  debug(`build stdout (truncated): ${String(result.stdout || '').slice(0, 5000)}`);
+  debug(`build stderr (truncated): ${String(result.stderr || '').slice(0, 5000)}`);
+  if (result.error) {
+    // Print logs to help diagnose
+    // eslint-disable-next-line no-console
+    console.error('Build error:', result.error);
+    // eslint-disable-next-line no-console
+    console.error('Build stdout (tail):', String(result.stdout || '').slice(-2000));
+    // eslint-disable-next-line no-console
+    console.error('Build stderr (tail):', String(result.stderr || '').slice(-2000));
+    throw result.error;
+  }
+  if (typeof result.status === 'number' && result.status !== 0) {
+    // eslint-disable-next-line no-console
+    console.error('Build failed with non-zero exit code');
+    // eslint-disable-next-line no-console
+    console.error('Build stdout (tail):', String(result.stdout || '').slice(-2000));
+    // eslint-disable-next-line no-console
+    console.error('Build stderr (tail):', String(result.stderr || '').slice(-2000));
+    throw new Error(`Build process exited with code ${result.status}`);
   }
 }
 
@@ -52,7 +123,7 @@ describe('Child project instance initialization (local tsx)', () => {
 
       // Ensure its name matches *.temp ignore pattern and repo root .gitignore contains it
       expect(tempProjectDir.endsWith('.temp')).toBe(true);
-      const repoGitignore = fs.readFileSync(path.resolve(__dirname, '../.gitignore'), 'utf-8');
+      const repoGitignore = nodeFs.readFileSync(path.resolve(__dirname, '../.gitignore'), 'utf-8');
       expect(repoGitignore.includes('*.temp')).toBe(true);
 
       // 2) Seed a minimal package.json so init can tailor config (name must not be "hasyx")
@@ -69,7 +140,6 @@ describe('Child project instance initialization (local tsx)', () => {
 
       // 4) Verify key artifacts were created by init
       const mustExistRelativePaths: string[] = [
-        '.env',
         '.github/workflows/npm-publish.yml',
         'app/api/auth/[...nextauth]/route.ts',
         'app/api/auth/verify/route.ts',
@@ -97,16 +167,20 @@ describe('Child project instance initialization (local tsx)', () => {
       expect(tsconfigContent.includes(`"${tempProjectName}": ["./lib/index.ts"]`)).toBe(true);
       expect(tsconfigContent.includes(`"${tempProjectName}/*": ["./*"]`)).toBe(true);
 
-      // 6) Sanity check of .env existence and not empty
-      const envContent = fs.readFileSync(path.join(tempProjectDir, '.env'), 'utf-8');
+      // 6) Generate env and compose, then check .env exists and not empty
+      runConfigSilentInDirectory(tempProjectDir);
+      const envContent = nodeFs.readFileSync(path.join(tempProjectDir, '.env'), 'utf-8');
       expect(envContent.length).toBeGreaterThan(0);
+
+      // 7) Install dependencies (must succeed)
+      npmCiInDirectory(tempProjectDir);
     } finally {
       // Cleanup the temp project directory created by this test
       if (await fs.pathExists(tempProjectDir)) {
         await fs.remove(tempProjectDir);
       }
     }
-  }, 300000); // Allow up to 5 minutes due to real installs/patches
+  }, 1800000); // Allow up to 30 minutes due to real installs/patches
 });
 
 

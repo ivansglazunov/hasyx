@@ -58,7 +58,7 @@ Before using the CloudFlare module, you must configure the environment:
 3. **Zone ID**: Get Zone ID from CloudFlare dashboard
 4. **Domain Configuration**: Set primary domain for subdomain management
 
-### Configuration via hasyx.config.json
+### Configuration via hasyx.config.json (recommended)
 
 Set parameters in the config:
 ```json
@@ -76,9 +76,9 @@ Set parameters in the config:
 }
 ```
 
-### Manual Environment Configuration
+### Manual Environment Configuration (not recommended)
 
-Alternatively, set environment variables manually:
+You can set environment variables manually, but in typical projects you should use the configurator. The generated `.env` is authoritative and is marked as auto-generated; do not edit it manually.
 
 ```bash
 # Required for CloudFlare DNS management

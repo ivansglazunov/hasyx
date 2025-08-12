@@ -61,7 +61,7 @@ npx hasyx schema
 
 ### Local Storage (MinIO)
 
-For development or self-hosted environments, configure storage via `hasyx.config.json` (see Quick Start), then regenerate `.env` and compose using the config tool. This sets up MinIO and hasura-storage for local use.
+For development or self-hosted environments, edit storage settings via the Hasyx configurator (`npx hasyx config`). The tool writes to `hasyx.config.json` and auto-generates `.env` and `docker-compose.yml`. Do not edit these generated files manually.
 
 ### Cloud Storage
 
@@ -74,7 +74,7 @@ Supported cloud providers:
 
 ## Environment Variables
 
-The file storage configuration adds these environment variables:
+The file storage configuration adds these environment variables automatically to `.env` (auto-generated). They are listed here for reference only; do not set them manually — use `npx hasyx config`.
 
 ```env
 # Storage configuration
@@ -296,7 +296,7 @@ const result = await response.json();
 console.log('Upload result:', result);
 ```
 
-### Download File
+### Download File (public or authorized)
 ```javascript
 const response = await fetch('/api/files/file-id-123', {
   headers: {
@@ -311,7 +311,7 @@ if (response.ok) {
 }
 ```
 
-### Delete File
+### Delete File (authorized)
 ```javascript
 const response = await fetch('/api/files/file-id-123', {
   method: 'DELETE',
@@ -442,11 +442,8 @@ mutation DeleteFile($id: uuid!) {
 
 ### Health Checks
 ```bash
-# Check files API
-curl http://localhost:3000/api/files
-
 # Check hasura-storage
-curl http://localhost:3001/healthz
+curl $NEXT_PUBLIC_HASURA_STORAGE_URL/healthz
 
 # Check MinIO
 curl http://localhost:9000/minio/health/live

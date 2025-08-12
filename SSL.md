@@ -14,7 +14,7 @@ The `SSL` class provides comprehensive SSL certificate management that:
 - Supports both define/undefine patterns for idempotent operations
 - Integrates seamlessly with nginx and CloudFlare DNS management
 
-⚠️ **Important**: This module requires proper environment configuration. Configure via `hasyx.config.json` and regenerate `.env` using the config tool.
+⚠️ **Important**: This module requires proper environment configuration. Configure via `npx hasyx config` (writes `hasyx.config.json`) and it will regenerate `.env` automatically. Do not edit `.env` manually.
 
 <details>
 <summary>Core Exports (`lib/ssl.ts`)</summary>
@@ -74,13 +74,17 @@ sudo yum install certbot python3-certbot-dns-cloudflare
 pip install certbot-dns-cloudflare
 ```
 
-### Configuration via hasyx.config.json
+### Configuration via hasyx.config.json (recommended)
 
-Define `dns` and `cloudflare` sections and set `LETSENCRYPT_EMAIL` in `hasyx.config.json`, then regenerate `.env`.
+Define `dns` and `cloudflare` sections and set `LETSENCRYPT_EMAIL` in `hasyx.config.json` via the configurator:
+```bash
+npx hasyx config
+```
+This regenerates `.env` automatically. Do not edit `.env` manually.
 
-### Manual Environment Configuration
+### Manual Environment Configuration (not recommended)
 
-Alternatively, set environment variables manually:
+You can set environment variables manually, but typical workflow is to use the configurator. The generated `.env` is authoritative and should not be edited by hand.
 
 ```bash
 # Required for SSL certificate creation

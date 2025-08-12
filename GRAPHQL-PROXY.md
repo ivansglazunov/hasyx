@@ -52,7 +52,7 @@ The proxy handles different types of requests:
 
 ## 🔧 Configuration
 
-The proxy requires the following environment variables to function correctly:
+The proxy requires the following environment variables to function correctly. These are generated from `hasyx.config.json` by the configurator; do not edit `.env` manually. Use `npx hasyx config` to change values.
 
 *   `NEXT_PUBLIC_HASURA_GRAPHQL_URL`: The main HTTP URL of your Hasura instance.
 *   `HASURA_ADMIN_SECRET`: The Hasura admin secret (used by `proxyPOST`).

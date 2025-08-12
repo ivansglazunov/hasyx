@@ -13,7 +13,7 @@ The `SubdomainManager` class provides comprehensive subdomain management that:
 - Implements define/undefine patterns for idempotent operations
 - Handles error scenarios with automatic cleanup
 
-⚠️ **Important**: This module requires proper environment configuration for CloudFlare API, SSL email, and domain settings. All variables are configured via `hasyx.config.json` (sections `dns` and `cloudflare`) followed by `.env` generation.
+⚠️ **Important**: Configure CloudFlare API, SSL email, and domain settings via `npx hasyx config` (writes `hasyx.config.json` and auto-generates `.env`). Do not edit generated `.env` manually.
 
 <details>
 <summary>Core Exports (`lib/subdomain.ts`)</summary>

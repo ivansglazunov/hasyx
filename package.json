@@ -1,6 +1,6 @@
 {
   "name": "hasyx",
-  "version": "2.0.0-alpha.1",
+  "version": "0.2.0-alpha.1",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.deep.foundation/",
   "engines": {
@@ -12,8 +12,9 @@
   },
   "scripts": {
     "dev": "npm run doc:build && npm run unbuild && NODE_OPTIONS=\"--experimental-vm-modules\" next dev",
-    "build": "npm run build:lib && npm run build:css && npm run doc:build && npm run ws && NODE_ENV=production next build",
+    "build": "npm run build:lib && npm run build:css && npm run doc:build && npm run build:templates && npm run ws && NODE_ENV=production next build",
     "build:lib": "tsc -p tsconfig.lib.json",
+    "build:templates": "tsx lib/build-templates.ts",
     "build:css": "tailwindcss -i ./app/globals.css -o ./lib/styles.css",
     "doc:build": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/doc-public.ts",
     "unbuild": "find lib components hooks -type f \\( -name '*.js' -o -name '*.d.ts' \\) -not -path \"*/types/*\" -print -delete; rm -rf tsconfig.lib.tsbuildinfo; echo '✅ Cleaned compiled files (types directory preserved)'",
@@ -25,7 +26,7 @@
     "open:ios": "npx cap open ios",
     "start": "NODE_ENV=production NODE_OPTIONS=\"--experimental-vm-modules\" npx -y hasyx start",
     "lint": "next lint --turbopack",
-    "test": "npm run unbuild; NODE_OPTIONS=\"--experimental-vm-modules\" jest --verbose --runInBand",
+    "test": "npm run unbuild; NODE_OPTIONS=\"--experimental-vm-modules --max-old-space-size=4096\" jest --verbose --runInBand",
     "test:build": "jest build.test.ts",
     "postinstall": "npm run ws -- -y",
     "ws": "npx --yes next-ws-cli@latest patch -y",
@@ -36,6 +37,7 @@
     "hasura:schema": "tsx ./lib/hasura-schema.ts",
     "hasura:types": "graphql-codegen --config ./lib/hasura-types.ts",
     "npm-publish": "npm run build && npm publish",
+    "prepack": "npm run build:lib && npm run build:css && npm run doc:build && npm run build:templates",
     "cli": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx ./lib/cli.ts",
     "ask": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/ask.ts",
     "js": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/js.ts",

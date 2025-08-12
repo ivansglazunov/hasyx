@@ -11,7 +11,10 @@ RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
       ca-certificates \
-      libstdc++6; \
+      libstdc++6 \
+      postgis \
+      postgresql-15-postgis-3 \
+      postgresql-15-postgis-3-scripts; \
     apt-get install -y --no-install-recommends /tmp/plv8.deb; \
     rm -rf /var/lib/apt/lists/* /tmp/plv8.deb
 

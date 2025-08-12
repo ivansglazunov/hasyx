@@ -36,10 +36,12 @@ Cron Schedule → Hasura Cron Trigger → Webhook → Next.js API Route → Your
 
 ```
 /events/
-├── users.json           # User table events (Event Trigger)
-├── accounts.json        # Account table events (Event Trigger)
-├── notify.json          # Notification events (Event Trigger)
-└── subscription-billing.json # Billing cron task (Cron Trigger)
+├── users.json                  # User table events (Event Trigger)
+├── accounts.json               # Account table events (Event Trigger)
+├── notify.json                 # Notification events (Event Trigger)
+├── github-issues.json          # GitHub issues table triggers (Event Trigger)
+├── logs-diffs.json             # Logging trigger (Event Trigger)
+└── subscription-billing.json   # Billing cron task (Cron Trigger)
 ```
 
 ### Event Trigger Configuration Format
@@ -156,6 +158,7 @@ npx hasyx events
 3. Creates/updates triggers in Hasura
 4. Adds security headers automatically
 5. Removes triggers that exist in Hasura but not locally
+6. Resolves `webhook_path` against your public base URL from config (e.g. `NEXT_PUBLIC_MAIN_URL`) — configured via `npx hasyx config`
 
 ### `npx hasyx events --init`
 
@@ -181,7 +184,12 @@ npx hasyx events --clean
 
 ## API Route Handlers
 
-### Default Handler: `/app/api/events/[name]/route.ts`
+### Default Handler and Dynamic Routing
+
+The recommended pattern is to define triggers with `webhook_path` that maps directly to your API routes. You can:
+
+- Use dedicated handlers per trigger, e.g. `/app/api/events/users/route.ts` for `webhook_path: "/api/events/users"`.
+- Or implement a generic dynamic handler at `/app/api/events/[name]/route.ts` and route by `payload.trigger.name`.
 
 The system provides a default handler that processes all events:
 
@@ -206,6 +214,18 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
   };
 });
 ```
+
+### Trigger-to-Route Mapping
+
+All `webhook_path` values in `/events/*.json` point to concrete API routes. The full webhook URL is constructed from your configured base URL (e.g. `NEXT_PUBLIC_MAIN_URL`) plus the `webhook_path`. Configure base URLs via `npx hasyx config`. Examples from this project:
+
+- `events/users.json` → `/api/events/users`
+- `events/accounts.json` → `/api/events/accounts`
+- `events/notify.json` → `/api/events/notify`
+- `events/logs-diffs.json` → `/api/events/logs-diffs`
+- `events/subscription-billing.json` (cron) → `/api/events/subscription-billing`
+
+Create matching files under `app/api/events/<name>/route.ts` (POST) with `hasyxEvent`.
 
 ### Custom Handlers
 

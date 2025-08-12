@@ -55,6 +55,7 @@ ollama rm gemma2:2b
 ## 2. Usage with Hasyx `ask` CLI
 
 Once Ollama is running and you have downloaded models, you can use them with the `ask` command by specifying `ollama` as the provider.
+Configuration note: Provider/model defaults and API URLs are managed via `npx hasyx config` (writes to `hasyx.config.json`) and the `.env` is auto-generated. Do not edit `.env` manually.
 
 ### Non-Interactive Mode
 

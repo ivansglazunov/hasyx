@@ -26,6 +26,9 @@ function MyComponent() {
 
 This hook simplifies the setup of an Apollo Client tailored for Hasura environments, handling both HTTP and WebSocket connections, authentication headers, and role management.
 
+Configuration note:
+- All URLs and secrets used by the client/proxy (`NEXT_PUBLIC_HASURA_GRAPHQL_URL`, etc.) are generated from `hasyx.config.json` via the configurator. Do not edit `.env` manually; run `npx hasyx config` to change settings.
+
 ### Arguments
 
 -   `options` (object):

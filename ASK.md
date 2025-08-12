@@ -789,13 +789,13 @@ The Ask system is built with a modular architecture:
 
 - **`AskHasyx`** (in `lib/ask-hasyx.ts`) - Base class with full AI functionality and execution engines
 - **`Ask`** (in `lib/ask.ts`) - Project-specific extension with custom prompting
-- **`ask.template`** - Template for child projects to create their own Ask classes
+  
 
 ### Key Files
 
 - **`lib/ask-hasyx.ts`** - Core Ask functionality with configurable execution engines
 - **`lib/ask.ts`** - Minimal project-specific Ask implementation  
-- **`ask.template`** - Template for child projects (copied during npm publish)
+  
 
 ### AskOptions Configuration
 
@@ -811,7 +811,7 @@ interface AskOptions {
 
 ### Example Usage in Child Projects
 
-Child projects can create their own `ask.ts` by copying `ask.template` and customizing:
+Child projects могут создать свой `ask.ts`, скопировав его из `_lib/ask.ts` (готового источника), и кастомизировать:
 
 ```typescript
 import { AskHasyx, AskOptions } from 'hasyx/lib/ask-hasyx';
