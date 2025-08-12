@@ -88,6 +88,24 @@ export const unbuildCommand = async () => {
     
     // Note: .next directory is preserved to avoid conflicts with running dev server
     
+    // Remove staged template directories if present
+    const stagedDirs = ['_lib', '_components'];
+    for (const dir of stagedDirs) {
+      const dirPath = path.join(projectRoot, dir);
+      if (fs.existsSync(dirPath)) {
+        try {
+          await fs.remove(dirPath);
+          console.log(`🗑️  Removed: ${dir}`);
+          debug(`Removed staged directory: ${dirPath}`);
+        } catch (error) {
+          console.warn(`⚠️ Failed to remove staged directory ${dir}:`, error);
+          debug(`Failed to remove staged directory ${dirPath}: ${error}`);
+        }
+      } else {
+        debug(`Staged directory not present: ${dirPath}`);
+      }
+    }
+    
     console.log(`✅ Cleaned ${totalFilesRemoved} compiled files (types directory preserved)`);
     console.log('✨ Unbuild completed successfully!');
     debug(`Finished "unbuild" command. Total files removed: ${totalFilesRemoved}`);
@@ -95,3 +113,11 @@ export const unbuildCommand = async () => {
     console.error('Unbuild failed with:', error);
   }
 }; 
+
+// Also provide a small helper when invoked directly
+if (require.main === module) {
+  unbuildCommand().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

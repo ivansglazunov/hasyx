@@ -23,6 +23,24 @@ function runInitInDirectory(targetDir: string) {
   const cliTsPath = path.resolve(__dirname, './cli.ts');
   // Hint init to install hasyx from the local repository directory instead of npm registry
   const hasyxRepoRoot = path.resolve(__dirname, '..');
+  // Ensure staged templates (_lib and _components) are present for init
+  try {
+    const stagedLib = path.join(hasyxRepoRoot, '_lib');
+    const stagedComponents = path.join(hasyxRepoRoot, '_components');
+    if (!nodeFs.existsSync(stagedLib) || !nodeFs.existsSync(stagedComponents)) {
+      debug('Staged templates not found, running build-templates...');
+      const stage = spawnSync('npx', ['tsx', path.join(hasyxRepoRoot, 'lib', 'build-templates.ts')], {
+        cwd: hasyxRepoRoot,
+        encoding: 'utf-8',
+        stdio: 'inherit',
+      });
+      if (stage.error || (typeof stage.status === 'number' && stage.status !== 0)) {
+        throw stage.error || new Error(`build-templates exited with code ${stage.status}`);
+      }
+    }
+  } catch (e) {
+    throw e instanceof Error ? e : new Error(String(e));
+  }
   // Prefer tarball install to ensure prepack/build outputs are present
   const pack = spawnSync('npm', ['pack', '--silent'], { cwd: hasyxRepoRoot, encoding: 'utf-8' });
   if (pack.error || typeof pack.stdout !== 'string' || pack.stdout.trim().length === 0) {
@@ -79,6 +97,12 @@ function npmCiInDirectory(targetDir: string) {
   if (typeof result.status === 'number' && result.status !== 0) {
     throw new Error(`npm ci exited with code ${result.status}`);
   }
+    // After install, ensure temp artifacts are cleaned from repo root (_lib, _components)
+    try {
+      debug('Running repo-level unbuild (cleanup staged artifacts)...');
+      const hasyxRepoRoot = path.resolve(__dirname, '..');
+      spawnSync('npm', ['run', 'unbuild'], { cwd: hasyxRepoRoot, encoding: 'utf-8', stdio: 'inherit' });
+    } catch {}
 }
 
 function buildInDirectory(targetDir: string) {
