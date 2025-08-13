@@ -59,6 +59,8 @@ migrations/**/*.d.ts
 /client
 android/**/*.png
 ios/**/*.png
+_components
+_lib
 
 # Capacitor
 

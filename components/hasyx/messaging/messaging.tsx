@@ -38,6 +38,7 @@ interface CreateRoomForm {
 export function Messaging() {
   const hasyx = useHasyx();
   const t = useTranslations('messaging');
+  const tActions = useTranslations('actions');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [formData, setFormData] = useState<CreateRoomForm>({
@@ -235,10 +236,10 @@ export function Messaging() {
                   variant="outline"
                   onClick={() => setCreateDialogOpen(false)}
                 >
-                  {useTranslations('actions')('cancel')}
+                  {tActions('cancel')}
                 </Button>
                 <Button onClick={handleCreateRoom} disabled={isCreating}>
-                  {isCreating ? t('creating') : useTranslations('actions')('create')}
+                  {isCreating ? t('creating') : tActions('create')}
                 </Button>
               </div>
             </DialogContent>

@@ -23,23 +23,25 @@ async function adminSql(sql: string) {
 
 function uniqueSuffix(): string { return `${Date.now()}_${Math.random().toString(36).slice(2,8)}`; }
 
-async function getGeomColumnType(): Promise<string> {
+// Helpers for WKT literals and dynamic adaptation to column subtype
+const wktPoint = (lon: number, lat: number) => `SRID=4326;POINT(${lon} ${lat})`;
+const wktPoly = (lon: number, lat: number, size = 0.005) => `SRID=4326;POLYGON((${lon} ${lat},${lon} ${lat+size},${lon+size} ${lat+size},${lon+size} ${lat},${lon} ${lat}))`;
+
+async function geomSubtype(): Promise<string> {
   const rs = await adminSql(`
     SELECT type FROM geometry_columns
     WHERE f_table_schema='geo' AND f_table_name='features' AND f_geometry_column='geom'
   `);
-  const t = (rs?.result?.[1]?.[0] || '').toString().toUpperCase();
-  return t || 'GEOMETRY';
+  return ((rs?.result?.[1]?.[0] || '') as string).toUpperCase();
 }
 
-async function geomExpr(lon: number, lat: number, sizeDeg = 0.001): Promise<string> {
-  const t = await getGeomColumnType();
-  if (t.includes('POLYGON')) {
-    const lon2 = lon + sizeDeg;
-    const lat2 = lat + sizeDeg;
-    return `ST_GeomFromText('POLYGON((${lon} ${lat},${lon} ${lat2},${lon2} ${lat2},${lon2} ${lat},${lon} ${lat}))',4326)`;
+async function insertExprForMark(lon: number, lat: number): Promise<string> {
+  const t = await geomSubtype();
+  if (t.includes('POINT') || t.includes('GEOMETRY') || !t) {
+    return `ST_GeomFromText('POINT(${lon} ${lat})',4326)`;
   }
-  return `ST_SetSRID(ST_MakePoint(${lon},${lat}),4326)`;
+  // fallback to small polygon
+  return `ST_GeomFromText('POLYGON((${lon} ${lat},${lon} ${lat+0.002},${lon+0.002} ${lat+0.002},${lon+0.002} ${lat},${lon} ${lat}))',4326)`;
 }
 
 async function ensureTestUsers(): Promise<{ adminId: string; user1: string; user2: string }> {
@@ -92,8 +94,8 @@ describe('Geo core', () => {
       const g1 = `ST_GeomFromText('POLYGON((37.6 55.7,37.6 55.705,37.605 55.705,37.605 55.7,37.6 55.7))',4326)`;
       const g2 = `ST_GeomFromText('POLYGON((37.61 55.71,37.61 55.715,37.615 55.715,37.615 55.71,37.61 55.71))',4326)`;
       const ins = await adminSql(`INSERT INTO ${schema}.${t}(user_id, type, geom) VALUES
-        ('${user1}','point', ${g1}),
-        ('${user2}','point', ${g2})
+        ('${user1}','zone', ${g1}),
+        ('${user2}','zone', ${g2})
         RETURNING id;`);
       const inserted = (ins.result?.length || 0) > 1 ? ins.result.length - 1 : 0;
       expect(inserted).toBeGreaterThanOrEqual(2);
@@ -111,7 +113,7 @@ describe('Geo core', () => {
     const { user1 } = await ensureTestUsers();
     // For now insert via SQL, as GraphQL lacks geometry scalar in schema by default.
     const g = `ST_GeomFromText('POLYGON((30 60,30 60.005,30.005 60.005,30.005 60,30 60))',4326)`;
-    await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user1}','polygon', ${g});`);
+    await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user1}','zone', ${g});`);
     const row = await adminSql(`SELECT user_id FROM geo.features ORDER BY created_at DESC LIMIT 1;`);
     expect(row.result?.[1]?.[0]).toBe(user1);
     await adminSql(`DELETE FROM geo.features WHERE user_id='${user1}';`);
@@ -121,10 +123,10 @@ describe('Geo core', () => {
     const { user1, user2 } = await ensureTestUsers();
     // Seed two rows
     const gA = `ST_GeomFromText('POLYGON((1 1,1 1.005,1.005 1.005,1.005 1,1 1))',4326)`;
-    const r1 = await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user1}','polygon', ${gA}) RETURNING id;`);
+    const r1 = await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user1}','zone', ${gA}) RETURNING id;`);
     const id1 = r1.result?.[1]?.[0];
     const gB = `ST_GeomFromText('POLYGON((2 2,2 2.005,2.005 2.005,2.005 2,2 2))',4326)`;
-    const r2 = await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user2}','polygon', ${gB}) RETURNING id;`);
+    const r2 = await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES ('${user2}','zone', ${gB}) RETURNING id;`);
     const id2 = r2.result?.[1]?.[0];
 
     // Prepare user token and a thin GraphQL client (native fetch, no heavy deps)
@@ -170,7 +172,7 @@ describe('Geo core', () => {
     const { user1 } = await ensureTestUsers();
     try {
       await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES (
-        '${user1}', 'polygon', ST_GeomFromText('POLYGON((37.6 55.7,37.6 55.71,37.61 55.71,37.61 55.7,37.6 55.7))', 4326)
+        '${user1}', 'zone', ST_GeomFromText('${wktPoly(37.6,55.7).replace('SRID=4326;','')}', 4326)
       );`);
       const res = await adminSql(`SELECT ST_SRID(geom), centroid IS NOT NULL, bbox IS NOT NULL,
         (area_m2 IS NOT NULL AND area_m2 > 0) AS area_ok,
@@ -191,8 +193,8 @@ describe('Geo core', () => {
       const ga = `ST_GeomFromText('POLYGON((37.6 55.7,37.6 55.705,37.605 55.705,37.605 55.7,37.6 55.7))',4326)`;
       const gb = `ST_GeomFromText('POLYGON((37.61 55.71,37.61 55.715,37.615 55.715,37.615 55.71,37.61 55.71))',4326)`;
       await adminSql(`INSERT INTO geo.features(user_id, type, geom) VALUES
-        ('${user1}','point', ${ga}),
-        ('${user1}','point', ${gb});`);
+        ('${user1}','zone', ${ga}),
+        ('${user1}','zone', ${gb});`);
       const near = await adminSql(`SELECT count(*) FROM geo.nearby(37.6::float8,55.7::float8,2000);`);
       expect(Number(near.result?.[1]?.[0] || '0')).toBeGreaterThan(0);
       const bbox = await adminSql(`SELECT count(*) FROM geo.within_bbox(37.59::float8,55.69::float8,37.605::float8,55.705::float8);`);

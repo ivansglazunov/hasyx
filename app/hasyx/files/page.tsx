@@ -32,6 +32,8 @@ export default function FilesPage() {
   const tNav = useTranslations('nav');
   const tPages = useTranslations('pages.files');
   const tFiles = useTranslations('files');
+  const tActions = useTranslations('actions');
+  const tCommon = useTranslations('common');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const { handleFilesSelected, handleUploadComplete, handleUploadError } = useFilesUpload();
   const { choose, setChoose, toggleChoose, clearChoose, isChosen } = useChoose();
@@ -173,7 +175,6 @@ export default function FilesPage() {
               <p className="text-muted-foreground">{tFiles('example.orClick')}</p>
             </div>
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2 mx-auto">
-              <span>📤</span>
               <span>{tFiles('example.uploadFiles')}</span>
             </Button>
           </div>
@@ -201,7 +202,7 @@ export default function FilesPage() {
           <div className="text-sm text-muted-foreground bg-muted px-4 py-2 rounded-lg">
             {loading ? (
               <div className="flex items-center space-x-2">
-                <Status status="connecting" label={useTranslations('common')('loading')} />
+                <Status status="connecting" label={tCommon('loading')} />
               </div>
             ) : (
               tFiles('items', { count: files.length })
@@ -217,14 +218,14 @@ export default function FilesPage() {
                   size="sm"
                   onClick={handleDeleteSelected}
                 >
-                  {useTranslations('actions')('delete')}
+                  {tActions('delete')}
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={handleSelectAll}
                 >
-                  {useTranslations('common')('yes')}
+                  {tCommon('yes')}
                 </Button>
                 <span className="text-sm font-medium text-primary">
                   {tFiles('selected', { count: choose.length })}
@@ -234,7 +235,7 @@ export default function FilesPage() {
                   size="sm"
                   onClick={clearChoose}
                 >
-                  {useTranslations('actions')('cancel')}
+                  {tActions('cancel')}
                 </Button>
               </div>
             ) : (
@@ -243,7 +244,7 @@ export default function FilesPage() {
                 size="sm"
                 onClick={() => setChoose([])}
               >
-                {useTranslations('actions')('select') || 'Choose'}
+                {tActions('select') || 'Choose'}
               </Button>
             )}
             
@@ -352,13 +353,13 @@ export default function FilesPage() {
                       download={file.name}
                       className="text-primary hover:text-primary/80 text-sm font-medium"
                     >
-                      📥 {useTranslations('actions')('download')}
+                      📥 {tActions('download')}
                     </a>
                     <button
                       onClick={() => handleDelete(file.id)}
                       className="text-destructive hover:text-destructive/80 text-sm font-medium"
                     >
-                      🗑️ {useTranslations('actions')('delete')}
+                      🗑️ {tActions('delete')}
                     </button>
                   </div>
                 </div>
@@ -419,13 +420,13 @@ export default function FilesPage() {
                       download={file.name}
                       className="text-primary hover:text-primary/80 text-sm font-medium"
                     >
-                    📥 {useTranslations('actions')('download')}
+                    📥 {tActions('download')}
                     </a>
                     <button
                       onClick={() => handleDelete(file.id)}
                       className="text-destructive hover:text-destructive/80 text-sm font-medium"
                     >
-                    🗑️ {useTranslations('actions')('delete')}
+                    🗑️ {tActions('delete')}
                     </button>
                   </div>
               </div>

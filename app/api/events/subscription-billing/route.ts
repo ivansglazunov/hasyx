@@ -288,6 +288,37 @@ export async function POST(request: NextRequest) {
           } else {
             throw new Error(chargeResult.Message || 'TBank charge failed');
           }
+        } else if (subscription.provider.type === 'vtb') {
+          const { VtbPaymentProcessor } = await import('hasyx/lib/payments/vtb');
+          const vtb = new VtbPaymentProcessor({ providerDBConfig: subscription.provider.config, appBaseUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000' });
+          const orderId = `sub_${subscription.id}_${Date.now()}`;
+          const bindingId = subscription.method.recurrent_details?.bindingId || subscription.method.recurrent_details?.binding_id;
+          if (!bindingId) throw new Error('VTB bindingId is missing for recurrent charge');
+          const chargeResult: any = await vtb.chargeRecurrent({ bindingId, orderId, amount: totalAmount, description: `${subscription.plan.name} - ${cyclesToCharge} billing cycle(s)` });
+          if (chargeResult.errorCode === '0') {
+            await hasyx.insert({
+              table: 'payments_operations',
+              object: {
+                user_id: subscription.user_id,
+                method_id: subscription.method_id,
+                provider_id: subscription.provider_id,
+                subscription_id: subscription.id,
+                external_operation_id: chargeResult.orderId,
+                amount: totalAmount,
+                currency: subscription.plan.currency,
+                status: 'succeeded',
+                description: `${subscription.plan.name} - automatic billing`,
+                provider_request_details: { bindingId, orderId, amount: totalAmount, cycles: cyclesToCharge },
+                provider_response_details: chargeResult,
+                paid_at: now,
+              }
+            });
+            await hasyx.update({ table: 'payments_subscriptions', pk_columns: { id: subscription.id }, _set: { billing_retry_count: 0, current_period_start: now, current_period_end: calculateNextBillingDate(subscription.plan.interval, subscription.plan.interval_count, now) } });
+            successCount++;
+            await hasyx.debug({ event: 'subscription_billing_success', subscription_id: subscription.id, operation_id: chargeResult.orderId, amount: totalAmount, cycles_charged: cyclesToCharge, message: 'VTB payment successful' });
+          } else {
+            throw new Error(chargeResult.errorMessage || `VTB charge failed: code ${chargeResult.errorCode}`);
+          }
         } else {
           throw new Error(`Unsupported provider type: ${subscription.provider.type}`);
         }

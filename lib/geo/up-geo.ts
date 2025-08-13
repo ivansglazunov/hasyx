@@ -31,6 +31,13 @@ export async function up(customHasura?: Hasura) {
     );
   `);
 
+  // Enforce generic Geometry(4326) for legacy specific-type columns
+  await hasura.sql(`
+    ALTER TABLE geo.features
+    ALTER COLUMN geom TYPE geometry(Geometry,4326)
+    USING ST_SetSRID(geom,4326);
+  `);
+
   await hasura.sql(`CREATE INDEX IF NOT EXISTS geo_features_geom_gix ON geo.features USING GIST (geom);`);
   await hasura.sql(`CREATE INDEX IF NOT EXISTS geo_features_props_gin ON geo.features USING GIN (props jsonb_path_ops);`);
   await hasura.sql(`CREATE INDEX IF NOT EXISTS geo_features_type_idx ON geo.features (type);`);
