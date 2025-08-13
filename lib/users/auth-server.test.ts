@@ -9,7 +9,7 @@ import schema from '../../public/hasura-schema.json';
 // Load environment variables from .env file
 dotenv.config();
 
-describe('GitHub Token Management', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('GitHub Token Management', () => {
   let hasyx: Hasyx;
 
   beforeAll(() => {

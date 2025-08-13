@@ -16,7 +16,7 @@ dotenv.config();
 const debug = Debug('test:validation');
 
 // Skip when not local
-describe('Validation generator and DB runtime', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Validation generator and DB runtime', () => {
   it('generator should produce json schema map containing schema and/or config', async () => {
     const schemas = await generateProjectJsonSchemas();
     expect(typeof schemas).toBe('object');

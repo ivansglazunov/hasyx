@@ -29,7 +29,7 @@ async function createTestUser(adminH: Hasyx, suffix: string) {
   return inserted;
 }
 
-describe('Schedule permissions', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Schedule permissions', () => {
   it('user can create and delete own schedule', async () => {
     const adminH = createAdminHasyx();
     const user = await createTestUser(adminH, 'owner');
