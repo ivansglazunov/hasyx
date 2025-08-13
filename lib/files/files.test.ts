@@ -5,9 +5,7 @@ import path from 'path';
 import { createTestUser } from '../create-test-user';
 import { generateJWT } from '../jwt';
 
-const isLocal = !!+process.env.JEST_LOCAL!;
-
-(!isLocal ? describe : describe.skip)('Files API Integration (full cycle)', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Files API Integration (full cycle)', () => {
   let uploadedFileId: string | undefined;
   let testJwt: string;
   const apiUrl = process.env.API_URL || 'http://localhost:3004/api/files';

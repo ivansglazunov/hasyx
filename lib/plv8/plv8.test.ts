@@ -9,7 +9,7 @@ dotenv.config();
 // Initialize debug
 const debug = Debug('test:plv8');
 
-describe('plv8 Extension Tests', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('plv8 Extension Tests', () => {
   let hasura: Hasura;
   let testSchema: string;
   let plv8Available: boolean = false;
