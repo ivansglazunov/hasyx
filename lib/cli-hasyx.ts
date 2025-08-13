@@ -461,6 +461,17 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     console.warn(`⚠️ Failed to copy app directory: ${error}`);
   }
 
+  // Copy entire migrations directory from hasyx package into target project
+  try {
+    const hasyxRoot = path.resolve(__dirname, '../');
+    const migrationsSrc = path.join(hasyxRoot, 'migrations');
+    const migrationsDest = path.join(targetDir, 'migrations');
+    await copyDirectoryRecursive(migrationsSrc, migrationsDest, { overwrite: forceReinit });
+    console.log(`✅ ${forceReinit ? 'Replaced' : 'Created'}: migrations (copied entire directory)`);
+  } catch (error) {
+    console.warn(`⚠️ Failed to copy migrations directory: ${error}`);
+  }
+
   // Create/Replace files (non-app)
   debug('Processing files to create or replace (non-app)...');
   for (const [targetPath, templateName] of Object.entries(filesToCreateOrReplace)) {
