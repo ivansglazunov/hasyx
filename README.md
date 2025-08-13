@@ -17,7 +17,7 @@ Hasyx provides a robust starting point and a set of tools for building applicati
 [![Constructor Documentation](https://img.shields.io/badge/Constructor%20Docs-MD-teal)](CONSTRUCTOR.md)
 [![Apollo Client Documentation](https://img.shields.io/badge/Apollo%20Client%20Docs-MD-orange)](APOLLO.md)
 [![Authentication Helpers Documentation](https://img.shields.io/badge/Auth%20Helpers%20Docs-MD-green)](AUTH.md) [![Hasura Admin Client Documentation](https://img.shields.io/badge/Hasura%20Client%20Docs-MD-purple)](HASURA.md)
-[![Generated Client Documentation](https://img.shields.io/badge/Generated%20Hasyx%20Docs-MD-cyan)](HASYX.md)
+[![Generated Client Documentation](https://img.shields.io/badge/Generated%20Hasyx%20Docs-MD-cyan)](HASYX.md) [![Geo Module Documentation](https://img.shields.io/badge/Geo%20Module-MD-green)](GEO.md)
 [![GraphQL Proxy Documentation](https://img.shields.io/badge/GraphQL%20Proxy%20Docs-MD-yellow)](GRAPHQL-PROXY.md)
 [![Code Execution Engine Documentation](https://img.shields.io/badge/Exec%20Engine-MD-darkgreen)](EXEC.md)
 [![TypeScript Execution Engine Documentation](https://img.shields.io/badge/ExecTs%20Engine-MD-darkblue)](EXEC-TS.md)
@@ -29,6 +29,7 @@ Hasyx provides a robust starting point and a set of tools for building applicati
 [![PWA Support Documentation](https://img.shields.io/badge/PWA%20Support-MD-9cf)](PWA.md)
 [![Schedule System Documentation](https://img.shields.io/badge/Schedule%20System-MD-purple)](SCHEDULE.md)
 [![Logs System Documentation](https://img.shields.io/badge/Logs%20System-MD-brown)](LOGS.md)
+[![Messaging System Documentation](https://img.shields.io/badge/Messaging%20System-MD-darkslateblue)](MESSAGING.md)
 [![TBank Payments Documentation](https://img.shields.io/badge/TBank%20Payments-MD-ff69b4)](TBANK.md)
 [![Tinkoff API Base Documentation](https://img.shields.io/badge/Tinkoff%20API-MD-lightpink)](TINKOFF_API.md)
 [![CloudFlare DNS Management Documentation](https://img.shields.io/badge/CloudFlare%20DNS-MD-orange)](CLOUDFLARE.md)
@@ -159,6 +160,7 @@ Explore the different modules and functionalities of Hasyx:
 *   **[SCHEDULE.md](SCHEDULE.md):** Comprehensive documentation for the Schedule system with cron-based event planning, real-time processing, and database integration.
 *   **[PWA.md](PWA.md):** Progressive Web App support with offline functionality, installability, and push notifications.
 *   **[LOGS.md](LOGS.md):** Comprehensive audit trail system with granular diff tracking and complete state snapshots for your Hasura database.
+*   **[MESSAGING.md](MESSAGING.md):** Messaging schema and permission model (rooms, messages, replies) with streaming subscriptions and read cursors.
 *   **[NOTIFY.md](NOTIFY.md):** Overview of the notifications system.
 *   **[NOTIFY-FIREBASE.md](NOTIFY-FIREBASE.md):** Specifics on Firebase Cloud Messaging for push notifications.
 *   **[NOTIFY-TELEGRAM-BOT.md](NOTIFY-TELEGRAM-BOT.md):** Details on Telegram Bot integration for notifications.
@@ -173,6 +175,7 @@ Explore the different modules and functionalities of Hasyx:
 *   **[USE-QUERY.md](USE-QUERY.md):** Complete guide to URL query state management with the `use-query` hook for synchronizing state between multiple components through URL parameters.
 *   **[FILES.md](FILES.md):** Complete guide to Hasyx Files Storage system with S3-compatible storage, file upload/download, metadata management, and REST API integration.
 *   **[PLV8.md](PLV8.md):** Complete guide to plv8 (PostgreSQL JavaScript) extension support for creating JavaScript functions and triggers in PostgreSQL with cross-platform compatibility.
+*   **[GEO.md](GEO.md):** PostGIS-powered geospatial layer (schema `geo`, `features` table, spatial helpers, permissions) with Hasyx client usage examples.
 
 ## 🚀 Quick Start
 
