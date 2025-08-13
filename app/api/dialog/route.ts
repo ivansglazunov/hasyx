@@ -1,6 +1,6 @@
-import { generateDialogHandler } from '../../../lib/ai/handlers/api-dialog';
-import { ExecJSTool } from '../../../lib/ai/tools/exec-js-tool';
-import { createSystemPrompt } from '../../../lib/ai/core-prompts';
+import { generateDialogHandler } from 'hasyx/lib/ai/handlers/api-dialog';
+import { ExecJSTool } from 'hasyx/lib/ai/tools/exec-js-tool';
+import { createSystemPrompt } from 'hasyx/lib/ai/core-prompts';
 
 const appContext = `You are a helpful AI assistant. Your goal is to help users by answering questions and executing tasks when needed.
 

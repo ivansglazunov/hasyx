@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import authOptions from '@/app/options';
-import { createApolloClient } from '@/lib/apollo/apollo';
-import { Hasyx } from '@/lib/hasyx/hasyx';
+import { createApolloClient } from 'hasyx/lib/apollo/apollo';
+import { Hasyx } from 'hasyx/lib/hasyx/hasyx';
 import hasuraSchema from '@/app/hasyx/hasura-schema.json';
 import { Generator } from 'hasyx/lib/generator';
 import fs from 'fs';
 import path from 'path';
 import { z } from 'zod';
-import { hasyxConfig } from '@/lib/config';
-import { generateEnv } from '@/lib/config/env';
-import { generateDockerCompose } from '@/lib/config/docker-compose';
+import { hasyxConfig } from 'hasyx/lib/config';
+import { generateEnv } from 'hasyx/lib/config/env';
+import { generateDockerCompose } from 'hasyx/lib/config/docker-compose';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 
 export const runtime = 'nodejs';

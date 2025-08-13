@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Hasura } from '@/lib/hasura/hasura';
+import { Hasura } from 'hasyx/lib/hasura/hasura';
 import { VtbPaymentProcessor, VtbProviderDBConfig } from 'hasyx/lib/payments/vtb';
 import Debug from 'hasyx/lib/debug';
 

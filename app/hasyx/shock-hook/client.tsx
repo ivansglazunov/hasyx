@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useDeviceMotion } from '../../../hooks/device-motion';
+import { useDeviceMotion } from 'hasyx/hooks/device-motion';
 
 export function ShockHookClient() {
   const [isGlowing, setIsGlowing] = useState(false);

@@ -1,6 +1,6 @@
 "use client"
 
-import Debug from '@/lib/debug';
+import Debug from 'hasyx/lib/debug';
 import { Cyto, CytoStyle } from "hasyx/lib/cyto";
 import { Card as EntityCard, Button as EntityButton } from '../../../lib/entities';
 import { QueriesManager, QueriesRenderer } from 'hasyx/lib/renderer';

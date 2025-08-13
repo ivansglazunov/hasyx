@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Debug from 'hasyx/lib/debug';
-import { corsHeaders } from '../../../lib/graphql-proxy';
+import { corsHeaders } from 'hasyx/lib/graphql-proxy';
 
 const debug = Debug('api:cors-debug');
 

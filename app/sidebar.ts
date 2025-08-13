@@ -1,7 +1,7 @@
 import { SidebarData } from "hasyx/components/sidebar";
 import pckg from "@/package.json";
-import en from "@/i18n/en.json";
-import ru from "@/i18n/ru.json";
+import en from "hasyx/i18n/en.json";
+import ru from "hasyx/i18n/ru.json";
 
 // Import static documentation navigation
 let docNavigation: any = null;

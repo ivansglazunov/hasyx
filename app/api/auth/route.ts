@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTokenFromRequest, WsClientsManager } from '@/lib/users/auth-next';
+import { getTokenFromRequest, WsClientsManager } from 'hasyx/lib/users/auth-next';
 import Debug from 'hasyx/lib/debug';
 import http from 'http';
 import WebSocket, { WebSocketServer } from 'ws';

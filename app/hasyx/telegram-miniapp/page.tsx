@@ -3,7 +3,7 @@
 import sidebar from "@/app/sidebar";
 import pckg from "@/package.json";
 import { SidebarLayout } from "hasyx/components/sidebar/layout";
-import TelegramMiniAppPage from "@/lib/telegram/telegram-miniapp-page";
+import TelegramMiniAppPage from "hasyx/lib/telegram/telegram-miniapp-page";
 
 export default function Page() {
   return (

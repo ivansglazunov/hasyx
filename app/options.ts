@@ -4,9 +4,9 @@ import { NextAuthOptions } from 'next-auth';
 import 'next-auth';
 import 'next-auth/jwt';
 
-import { createAuthOptions } from '@/lib/users/auth-options';
+import { createAuthOptions } from 'hasyx/lib/users/auth-options';
 import { AppCredentialsProvider } from 'hasyx/lib/credentials';
-import { TelegramMiniappCredentialsProvider } from '@/lib/telegram/telegram-miniapp-server';
+import { TelegramMiniappCredentialsProvider } from 'hasyx/lib/telegram/telegram-miniapp-server';
 
 import schema from '../public/hasura-schema.json';
 

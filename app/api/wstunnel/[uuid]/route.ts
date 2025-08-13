@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { handleWstunnel, WstunnelOptions } from 'hasyx/lib/wstunnel';
 import Debug from 'hasyx/lib/debug';
-import { getTokenFromRequest } from '@/lib/users/auth-next';
-import { Hasyx } from '@/lib/hasyx/hasyx';
-import { createApolloClient } from '@/lib/apollo/apollo';
+import { getTokenFromRequest } from 'hasyx/lib/users/auth-next';
+import { Hasyx } from 'hasyx/lib/hasyx/hasyx';
+import { createApolloClient } from 'hasyx/lib/apollo/apollo';
 import { Generator } from 'hasyx/lib/generator';
 import schema from '../../../../public/hasura-schema.json';
 

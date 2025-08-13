@@ -1,4 +1,4 @@
-import { TBankProcessorOptions, TBankReceipt, TBankReceiptItem, GenerateReceiptArgs, ReceiptOperationType } from '@/lib/payments/tbank';
+import { TBankProcessorOptions, TBankReceipt, TBankReceiptItem, GenerateReceiptArgs, ReceiptOperationType } from 'hasyx/lib/payments/tbank';
 
 // Args: { items: TBankReceiptItem[], paymentDetails: any, operationType: 'payment' | 'refund' }
 // Returns: TBankReceipt object or null

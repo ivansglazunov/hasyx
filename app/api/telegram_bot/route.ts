@@ -3,8 +3,8 @@ import { ExecJSTool } from 'hasyx/lib/ai/tools/exec-js-tool';
 import { TerminalTool } from 'hasyx/lib/ai/tools/terminal-tool';
 import { Tool } from 'hasyx/lib/ai/tool';
 import { createSystemPrompt } from 'hasyx/lib/ai/core-prompts';
-import { Hasyx } from '@/lib/hasyx/hasyx';
-import { createApolloClient } from '@/lib/apollo/apollo';
+import { Hasyx } from 'hasyx/lib/hasyx/hasyx';
+import { createApolloClient } from 'hasyx/lib/apollo/apollo';
 import { Generator } from 'hasyx/lib/generator';
 import schema from '../../../public/hasura-schema.json';
 

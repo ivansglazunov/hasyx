@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { down } from '../../lib/down-messaging';
+import { down } from 'hasyx/lib/down-messaging';
 
 dotenv.config();
  

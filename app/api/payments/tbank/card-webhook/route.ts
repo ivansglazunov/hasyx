@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TBankPaymentProcessor, TBankCardInfo, TBankProviderDBConfig } from '@/lib/payments/tbank';
+import { TBankPaymentProcessor, TBankCardInfo, TBankProviderDBConfig } from 'hasyx/lib/payments/tbank';
 import { tbankAppOptions } from '@/app/payments/tbank/options';
 import { Hasyx } from 'hasyx';
-import { createApolloClient } from '@/lib/apollo/apollo';
+import { createApolloClient } from 'hasyx/lib/apollo/apollo';
 import { Generator } from 'hasyx/lib/generator';
 import schema from '@/public/hasura-schema.json';
 import Debug from 'hasyx/lib/debug';
-import { PaymentMethodStatus } from '@/lib/payments/base';
+import { PaymentMethodStatus } from 'hasyx/lib/payments/base';
 
 const debug = Debug('api:payments:tbank:card-webhook');
 

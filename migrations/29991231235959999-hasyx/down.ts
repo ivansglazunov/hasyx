@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs-extra';
 import { spawn } from 'child_process';
-import { down } from '@/lib/hasyx/down-hasyx';
+import { down } from 'hasyx/lib/hasyx/down-hasyx';
 
 // Determine project root to load .env from there
 const projectRoot = process.cwd();

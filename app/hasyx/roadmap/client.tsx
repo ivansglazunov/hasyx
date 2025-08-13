@@ -1,12 +1,12 @@
 "use client"
 
-import Debug from '@/lib/debug';
+import Debug from 'hasyx/lib/debug';
 import { Cyto, CytoStyle, CytoNode, CytoEdge, useGraph } from "hasyx/lib/cyto";
 import { Card as EntityCard, Button as EntityButton, CytoNode as EntityCytoNode } from '../../../lib/entities';
 import { QueriesManager, QueriesRenderer } from 'hasyx/lib/renderer';
 import React, { useCallback, useMemo, useState, useRef } from "react";
 import projectSchema from '../hasura-schema.json';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from 'hasyx/components/ui/card';
 import { Button } from 'hasyx/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from 'hasyx/components/ui/dialog';
 import { Input } from 'hasyx/components/ui/input';
@@ -17,9 +17,9 @@ import { toast } from 'sonner';
 import { useToastHandleLoadingError } from 'hasyx/hooks/toasts';
 import { parseIssue, generateIssue } from 'hasyx/lib/issues';
 import { Tag } from 'lucide-react';
-import { MultiSelect } from '@/components/ui/multi-select';
+import { MultiSelect } from 'hasyx/components/ui/multi-select';
 import { useTranslations } from 'hasyx';
-import { useDependencyDrawingStore } from '@/hooks/dependency-drawing-store';
+import { useDependencyDrawingStore } from 'hasyx/hooks/dependency-drawing-store';
 
 const debug = Debug('cyto');
 

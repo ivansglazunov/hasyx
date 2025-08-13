@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Octokit } from 'octokit';
-import { createApolloClient } from '@/lib/apollo/apollo';
+import { createApolloClient } from 'hasyx/lib/apollo/apollo';
 import { Generator } from 'hasyx/lib/generator';
-import { Hasyx } from '@/lib/hasyx/hasyx';
-import { getGitHubAccessToken, hasGitHubScope } from '@/lib/github/auth';
+import { Hasyx } from 'hasyx/lib/hasyx/hasyx';
+import { getGitHubAccessToken, hasGitHubScope } from 'hasyx/lib/github/auth';
 import { getServerSession } from 'next-auth';
 import authOptions from 'hasyx/app/options';
-import { validateGitHubWebhook } from '@/lib/github/github-webhook';
+import { validateGitHubWebhook } from 'hasyx/lib/github/github-webhook';
 import schema from '../../../../public/hasura-schema.json';
 import Debug from 'hasyx/lib/debug';
 

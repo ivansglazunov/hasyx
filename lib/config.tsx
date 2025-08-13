@@ -1421,7 +1421,7 @@ if (require.main === module) {
     (async () => {
       // Avoid static import analysis to keep ink out of Next.js bundles
       const dynamicImport = new Function('p', 'return import(p)');
-      const inkModule = await (dynamicImport('./ink') as Promise<any>);
+      const inkModule = await (dynamicImport('hasyx/lib/ink') as Promise<any>);
       const renderConfigWith = inkModule.renderConfigWith || inkModule.default?.renderConfigWith;
       if (typeof renderConfigWith !== 'function') {
         throw new TypeError('renderConfigWith is not a function');

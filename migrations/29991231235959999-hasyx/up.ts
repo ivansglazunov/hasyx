@@ -2,8 +2,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs-extra';
 import { spawn } from 'child_process';
-import { up } from '@/lib/hasyx/up-hasyx';
-import Debug from '@/lib/debug';
+import { up } from 'hasyx/lib/hasyx/up-hasyx';
+import Debug from 'hasyx/lib/debug';
 const debug = Debug('migration:2999-hasyx');
 
 // Determine project root to load .env from there

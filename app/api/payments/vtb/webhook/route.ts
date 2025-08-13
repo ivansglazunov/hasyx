@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Hasyx } from 'hasyx';
-import { createApolloClient } from '@/lib/apollo/apollo';
+import { createApolloClient } from 'hasyx/lib/apollo/apollo';
 import { Generator } from 'hasyx/lib/generator';
 import schema from '@/public/hasura-schema.json';
 import Debug from 'hasyx/lib/debug';
 import { VtbPaymentProcessor, VtbProviderDBConfig } from 'hasyx/lib/payments/vtb';
-import { PaymentStatus } from '@/lib/payments/base';
+import { PaymentStatus } from 'hasyx/lib/payments/base';
 
 const debug = Debug('api:payments:vtb:webhook');
 

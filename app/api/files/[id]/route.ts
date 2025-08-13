@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { downloadFile, deleteFile } from '@/lib/files/files';
-import { getTokenFromRequest } from '@/lib/users/auth-next';
+import { downloadFile, deleteFile } from 'hasyx/lib/files/files';
+import { getTokenFromRequest } from 'hasyx/lib/users/auth-next';
 import Debug from 'hasyx/lib/debug';
 
 const debug = Debug('api:files:id');

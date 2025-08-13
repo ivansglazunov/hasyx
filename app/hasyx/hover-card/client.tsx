@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { HoverCard } from '../../../components/hover-card';
-import { useDeviceOrientationPermissions } from '../../../hooks/device-permissions';
+import { HoverCard } from 'hasyx/components/hover-card';
+import { useDeviceOrientationPermissions } from 'hasyx/hooks/device-permissions';
 
 type ForceLevel = 'low' | 'medium' | 'high';
 

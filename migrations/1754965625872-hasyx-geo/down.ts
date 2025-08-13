@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { down } from '@/lib/geo/down-geo';
+import { down } from 'hasyx/lib/geo/down-geo';
 
 dotenv.config();
 

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { hasyxEvent, HasuraEventPayload } from 'hasyx/lib/events';
-import { Hasura } from '@/lib/hasura/hasura';
+import { Hasura } from 'hasyx/lib/hasura/hasura';
 import Debug from 'hasyx/lib/debug';
 import { GoogleAuth } from 'google-auth-library';
 

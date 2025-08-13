@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { down } from '@/lib/postgis/down-postgis';
+import { down } from 'hasyx/lib/postgis/down-postgis';
 
 dotenv.config();
 

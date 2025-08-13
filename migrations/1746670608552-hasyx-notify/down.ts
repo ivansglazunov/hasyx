@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { down } from '@/lib/notify/down-notify';
+import { down } from 'hasyx/lib/notify/down-notify';
 
 // Load environment variables from root .env file
 dotenv.config();

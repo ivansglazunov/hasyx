@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { createApolloClient } from '@/lib/apollo/apollo';
-import { Hasyx } from '@/lib/hasyx/hasyx';
+import { createApolloClient } from 'hasyx/lib/apollo/apollo';
+import { Hasyx } from 'hasyx/lib/hasyx/hasyx';
 import { Generator } from 'hasyx/lib/generator';
 import schema from '../../../../public/hasura-schema.json';
 import { corsHeaders } from 'hasyx/lib/graphql-proxy';
