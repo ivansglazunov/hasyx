@@ -83,7 +83,7 @@ async function ensureTestUsers(): Promise<{ adminId: string; user1: string; user
   return { adminId, user1, user2 };
 }
 
-describe('Geo core', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Geo core', () => {
   it('anonymous can select all features', async () => {
     const { user1, user2 } = await ensureTestUsers();
     const schema = 'geo';

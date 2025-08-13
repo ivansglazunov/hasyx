@@ -42,7 +42,7 @@ function wktPolygonAround(lon: number, lat: number, sizeDeg = 0.001): string {
   return `SRID=4326;${wkt}`;
 }
 
-describe('Geo client via Hasyx (mark/path/zone)', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Geo client via Hasyx (mark/path/zone)', () => {
   it('mark: insert/select/update/delete via GraphQL client', async () => {
     const userId = await ensureUser('geo-client-mark@test.local', 'GeoClientMark');
     const { hasyx, apollo } = await _authorize(userId);
