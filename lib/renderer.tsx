@@ -7,7 +7,7 @@ import {
 } from "hasyx/lib/constructor";
 import { CytoEdge } from "hasyx/lib/cyto";
 import { Button as EntityButton, CytoNode as EntityCytoNode } from 'hasyx/lib/entities';
-import { useSubscription } from "@/lib/hasyx/hasyx-client";
+import { useSubscription } from "hasyx/lib/hasyx/hasyx-client";
 import hasyxSchema from 'hasyx/public/hasura-schema.json';
 import { Plus, X } from 'lucide-react';
 import React, { useCallback, useMemo } from "react";

@@ -1,7 +1,7 @@
 'use client';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Session } from '@/lib/users/auth';
-import { Hasyx } from '@/lib/hasyx/hasyx';
+import { Session } from 'hasyx/lib/users/auth';
+import { Hasyx } from 'hasyx/lib/hasyx/hasyx';
 import Debug from '../debug';
 
 const debug = Debug('telegram-miniapp');

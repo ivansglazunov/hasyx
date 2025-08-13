@@ -5,7 +5,7 @@ import schema from '../../public/hasura-schema.json';
 import Debug from '../debug';
 import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
-import { getTokenFromRequest } from '@/lib/users/auth-next';
+import { getTokenFromRequest } from 'hasyx/lib/users/auth-next';
 import { generateJWT } from 'hasyx/lib/jwt';
 
 const debug = Debug('files');

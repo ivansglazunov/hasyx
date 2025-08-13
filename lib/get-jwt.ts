@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { getTokenFromRequest } from '@/lib/users/auth-next';
+import { getTokenFromRequest } from 'hasyx/lib/users/auth-next';
 import { generateJWT } from 'hasyx/lib/jwt';
-import { createApolloClient } from '@/lib/apollo/apollo';
+import { createApolloClient } from 'hasyx/lib/apollo/apollo';
 import { Generator } from 'hasyx/lib/generator';
-import { Hasyx } from '@/lib/hasyx/hasyx';
+import { Hasyx } from 'hasyx/lib/hasyx/hasyx';
 import hasyxSchema from '../public/hasura-schema.json';
 
 export async function getJwtHandler(request: NextRequest, authOptions: any): Promise<NextResponse> {

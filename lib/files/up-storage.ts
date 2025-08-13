@@ -1,5 +1,5 @@
 import Debug from 'debug';
-import { Hasura } from '@/lib/hasura/hasura';
+import { Hasura } from 'hasyx/lib/hasura/hasura';
 
 const debug = Debug('hasyx:migration:up-storage');
 

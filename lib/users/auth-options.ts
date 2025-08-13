@@ -1,4 +1,4 @@
-import { getOrCreateUserAndAccount, HasuraUser } from '@/lib/users/auth-server';
+import { getOrCreateUserAndAccount, HasuraUser } from 'hasyx/lib/users/auth-server';
 import Debug from 'hasyx/lib/debug';
 import { Session as DefaultSession, NextAuthOptions, User as NextAuthUser } from 'next-auth';
 import { JWT as DefaultJWT } from 'next-auth/jwt';

@@ -2,8 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo, ReactNode } from 'react';
 import { useHasyx, useSubscription } from '../lib';
-import { getDeviceInfo, NotificationPermission } from '@/lib/notify/notify';
-import { getFirebaseConfig } from '@/lib/notify/notify-firebase';
+import { getDeviceInfo, NotificationPermission } from 'hasyx/lib/notify/notify';
+import { getFirebaseConfig } from 'hasyx/lib/notify/notify-firebase';
 import { useSession } from '../lib';
 import { v4 as uuidv4 } from 'uuid';
 import Debug from 'hasyx/lib/debug';
