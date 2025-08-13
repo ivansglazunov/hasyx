@@ -198,6 +198,9 @@ describe('Child project instance initialization (local tsx)', () => {
 
       // 7) Install dependencies (must succeed)
       npmCiInDirectory(tempProjectDir);
+
+      // 8) Build the child project to ensure it compiles after generation
+      buildInDirectory(tempProjectDir);
     } finally {
       // Cleanup the temp project directory created by this test
       if (await fs.pathExists(tempProjectDir)) {

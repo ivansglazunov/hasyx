@@ -40,3 +40,4 @@ export {
 } from './hasyx/hasyx-client';
 
 export * from './i18n/hook';
+export * from './i18n/index';

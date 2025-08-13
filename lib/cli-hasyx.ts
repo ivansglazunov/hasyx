@@ -68,6 +68,7 @@ export const LIB_SCAFFOLD_FILES: string[] = [
   'lib/config/env.tsx',
   'lib/config/docker-compose.tsx',
   'lib/url.ts',
+  'lib/i18n/config.ts',
 ];
 
 export const COMPONENTS_SCAFFOLD_FILES: string[] = [
@@ -408,6 +409,8 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'jest.setup.js': 'jest.setup.js',
     'next.config.ts': 'next.config.ts',
     'lib/i18n/config.ts': 'lib/i18n/config.ts',
+    'i18n/en.json': 'i18n/en.json',
+    'i18n/ru.json': 'i18n/ru.json',
     'postcss.config.mjs': 'postcss.config.mjs',
     'components.json': 'components.json',
     'tsconfig.json': 'tsconfig.json',
@@ -535,15 +538,15 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
       try {
         let templateContent = getTemplateContent(configFile);
         
-        // Replace package name mapping but preserve hasyx/* mapping for internal self-imports
+        // Replace package name mapping for the child project; do not shadow 'hasyx' package imports in child tsconfig
         templateContent = templateContent.replace(
           /"hasyx":\s*\[\s*"\.\/lib\/index\.ts"\s*\]/g,
-          `"${projectName}": ["./lib/index.ts"],\n      "hasyx": ["./lib/index.ts"]`
+          `"${projectName}": ["./lib/index.ts"]`
         );
-        // Leave original "hasyx/*": ["./*"] mapping intact and also add projectName/*
+        // Add projectName/* mapping; do not inject local hasyx/* mapping in child project
         templateContent = templateContent.replace(
           /"hasyx\/\*":\s*\[\s*"\.\/\*"\s*\]/g,
-          `"hasyx/*": ["./*"],\n      "${projectName}/*": ["./*"]`
+          `"${projectName}/*": ["./*"]`
         );
         
         await fs.writeFile(fullTargetPath, templateContent);
