@@ -30,12 +30,10 @@ export async function createTestUser() {
       return { id: existing.id, email: existing.email };
     }
       // Create test user
-      const hashedPassword = await hashPassword(testPassword);
       const newUser = await adminClient.insert({
         table: 'users',
         objects: [{
           email: testEmail,
-          password: hashedPassword,
           name: 'Test User',
           is_admin: false,
           hasura_role: 'user'

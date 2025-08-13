@@ -21,10 +21,9 @@ function createAdminHasyx(): Hasyx {
 
 async function createTestUser(adminH: Hasyx, suffix: string) {
   const email = `schedule-test-${uuidv4()}-${suffix}@example.com`;
-  const password = await hashPassword('password123');
   const inserted = await adminH.insert({
     table: 'users',
-    object: { email, password, name: `Schedule Test ${suffix}`, hasura_role: 'user' },
+    object: { email, name: `Schedule Test ${suffix}`, hasura_role: 'user' },
     returning: ['id', 'email'],
   });
   return inserted;

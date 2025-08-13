@@ -7,7 +7,6 @@ import { Generator } from './generator';
 import { Hasyx } from './hasyx/hasyx';
 import schema from '../public/hasura-schema.json';
 import Debug from './debug';
-import { hashPassword } from './users/auth-server';
 import { gql } from '@apollo/client/core';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -27,10 +26,9 @@ function createAdminHasyx(): Hasyx {
 
 async function createTestUser(adminH: Hasyx, suffix: string) {
   const email = `msg-test-${uuidv4()}${suffix}@example.com`;
-  const password = await hashPassword('password123');
   const inserted = await adminH.insert({
     table: 'users',
-    object: { email, password, name: `Msg Test User ${suffix}`, hasura_role: 'user' },
+    object: { email, name: `Msg Test User ${suffix}`, hasura_role: 'user' },
     returning: ['id', 'name'],
   });
   return inserted;

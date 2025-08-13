@@ -172,8 +172,8 @@
           "level": 3
         },
         {
-          "title": "3. Configure Environment",
-          "url": "/hasyx/doc/ASK#3-configure-environment",
+          "title": "3. Configure via Hasyx Config (do not edit `.env` manually)",
+          "url": "/hasyx/doc/ASK#3-configure-via-hasyx-config-do-not-edit-env-manually",
           "level": 3
         },
         {
@@ -3061,8 +3061,8 @@
           "level": 2
         },
         {
-          "title": "hasyx.config.json",
-          "url": "/hasyx/doc/LOGS#hasyxconfigjson",
+          "title": "hasyx.config.json (authoritative)",
+          "url": "/hasyx/doc/LOGS#hasyxconfigjson-authoritative",
           "level": 3
         },
         {
@@ -5126,6 +5126,11 @@
       "collapse": true,
       "items": [
         {
+          "title": "Конфигурация",
+          "url": "/hasyx/doc/TBANK#",
+          "level": 2
+        },
+        {
           "title": "Хранение конфигурации",
           "url": "/hasyx/doc/TBANK#",
           "level": 2
@@ -5470,8 +5475,8 @@
           "level": 2
         },
         {
-          "title": "1. Environment Setup",
-          "url": "/hasyx/doc/TELEGRAM-ASK#1-environment-setup",
+          "title": "1. Environment Setup (via configurator)",
+          "url": "/hasyx/doc/TELEGRAM-ASK#1-environment-setup-via-configurator",
           "level": 3
         },
         {
@@ -12732,5 +12737,5 @@
       "level": 3
     }
   ],
-  "lastUpdated": "2025-08-12T22:57:42.652Z"
+  "lastUpdated": "2025-08-13T02:08:48.207Z"
 }

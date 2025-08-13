@@ -41,13 +41,11 @@ interface UpdateUserData {
 // Helper function to create a test user
 async function createTestUser(adminClient: ApolloClient<any>) {
   const testUserEmail = `test-proxy-${uuidv4()}@example.com`;
-  const testUserPassword = 'password123';
   const testUserName = 'Proxy Test User';
   
-  const hashedPassword = await hashPassword(testUserPassword);
   const INSERT_USER = gql`
-    mutation InsertTestUser($email: String!, $password: String!, $name: String!) {
-      insert_users_one(object: {email: $email, password: $password, name: $name, hasura_role: "user"}) {
+    mutation InsertTestUser($email: String!, $name: String!) {
+      insert_users_one(object: {email: $email, name: $name, hasura_role: "user"}) {
         id
         email
       }
@@ -56,7 +54,7 @@ async function createTestUser(adminClient: ApolloClient<any>) {
 
   const { data } = await adminClient.mutate({
     mutation: INSERT_USER,
-    variables: { email: testUserEmail, password: hashedPassword, name: testUserName },
+    variables: { email: testUserEmail, name: testUserName },
   });
   
   const testUserId = data?.insert_users_one?.id;

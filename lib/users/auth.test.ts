@@ -56,16 +56,12 @@ function createAdminHasyx(): Hasyx {
 // Helper function to create test user
 async function createTestUser(adminHasyx: Hasyx, suffix: string = ''): Promise<TestUser> {
   const email = `auth-test-${uuidv4()}@example.com`;
-  const password = 'password123';
   const name = `Auth Test User ${suffix}`;
-  
-  const hashedPassword = await hashPassword(password);
   
   const createdUser = await adminHasyx.insert<TestUser>({
     table: 'users',
     object: { 
       email, 
-      password: hashedPassword, 
       name, 
       hasura_role: 'user',
       is_admin: false 

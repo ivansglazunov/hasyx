@@ -45,11 +45,9 @@ async function createTestUser(adminHasyx: Hasyx, suffix: string = ''): Promise<T
   const password = 'password123';
   const name = `Hasyx Test User ${suffix}`;
   
-  const hashedPassword = await hashPassword(password);
-  
   const createdUser = await adminHasyx.insert<TestUser>({
     table: 'users',
-    object: { email, password: hashedPassword, name, hasura_role: 'user' },
+    object: { email, name, hasura_role: 'user' },
     returning: ['id', 'name']
   });
   
@@ -524,19 +522,18 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
     let userId: string | null = null;
 
     try {
-      // 1. UPSERT (acting as INSERT for a new user)
+        // 1. UPSERT (acting as INSERT for a new user)
       debug(`[test:hasyx:full-upsert] 1. Upserting (insert) new user with email: ${uniqueEmail}`);
       const insertedUser = await adminHasyx.upsert<{ id: string; name: string; email: string }>({
         table: 'users',
         object: {
           email: uniqueEmail,
           name: initialName,
-          password: await hashPassword('password123'),
           hasura_role: 'user',
         },
         on_conflict: {
           constraint: 'users_email_key', // Using email key for the initial insert via upsert
-          update_columns: ['name', 'password', 'updated_at', 'hasura_role'] // Should not be hit on first insert
+            update_columns: ['name', 'updated_at', 'hasura_role'] // Should not be hit on first insert
         },
         returning: ['id', 'name', 'email']
       });
@@ -560,7 +557,7 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
       expect(selectedUser!.email).toBe(uniqueEmail);
       debug(`[test:hasyx:full-upsert]   User selected post-insert. Name: ${selectedUser!.name}`);
 
-      // 3. UPSERT (acting as UPDATE for the existing user)
+        // 3. UPSERT (acting as UPDATE for the existing user)
       debug(`[test:hasyx:full-upsert] 3. Upserting (update) user ID: ${userId} to change name to: ${updatedName}`);
       const updatedUser = await adminHasyx.upsert<{ id: string; name: string; email: string }>({
         table: 'users',
@@ -568,12 +565,11 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
           id: userId, // Important to target the existing user by PK for constraint to hit
           email: uniqueEmail, 
           name: updatedName,
-          password: await hashPassword('newpassword123'), 
           hasura_role: 'user_updated', 
         },
         on_conflict: {
           constraint: 'users_pkey', // Using primary key for the update part of upsert
-          update_columns: ['name', 'password', 'updated_at', 'hasura_role']
+            update_columns: ['name', 'updated_at', 'hasura_role']
         },
         returning: ['id', 'name', 'email']
       });
