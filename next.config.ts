@@ -17,8 +17,8 @@ console.log('[diagnostic] next-intl cfg abs:', path.resolve('./lib/i18n/config.t
 try { console.log('[diagnostic] resolve ./lib/i18n/config.ts:', requireResolve('./lib/i18n/config.ts')); } catch (e) { console.error('[diagnostic] resolve local config FAILED', e); }
 try { console.log('[diagnostic] resolve hasyx/lib/i18n/index:', requireResolve('hasyx/lib/i18n/index')); } catch (e) { console.error('[diagnostic] resolve self-ref hasyx/lib/i18n/index FAILED', e); }
 
-const nextIntlConfigPath = path.resolve('./lib/i18n/config.ts');
-const withNextIntl = createNextIntlPlugin(nextIntlConfigPath);
+// IMPORTANT: keep string literal path here; some plugins expect a literal
+const withNextIntl = createNextIntlPlugin('./lib/i18n/config.ts');
 
 // Removed fs, path imports as they are no longer needed here
 

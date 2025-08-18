@@ -17,7 +17,7 @@ import {
   SidebarTrigger,
 } from "hasyx/components/ui/sidebar";
 import { SidebarData } from "hasyx/components/sidebar";
-import { UserProfileDropdown } from "./user-profile-dropdown";
+import { UserProfileDropdown } from "hasyx/components/sidebar/user-profile-dropdown";
 
 interface SidebarLayoutProps {
   children: React.ReactNode;

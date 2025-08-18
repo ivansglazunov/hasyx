@@ -14,7 +14,7 @@ import {
   SidebarMenuSubButton,
   SidebarRail,
 } from "hasyx/components/ui/sidebar";
-import { ProjectAndVersion } from "@/components/project-title-button";
+import { ProjectAndVersion } from "./project-title-button";
 import { ThemeSwitcher } from "./theme-switcher";
 import { LocaleSwitcher } from "./locale-switcher";
 import { usePathname } from 'next/navigation';

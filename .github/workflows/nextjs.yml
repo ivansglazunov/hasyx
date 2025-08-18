@@ -47,20 +47,20 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           static_site_generator: next
-      - name: Restore cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            .next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
+      - name: Clear Next.js cache
+        run: |
+          echo "Temporarily disabling .next/cache to debug next-intl config issue"
+          rm -rf .next || true
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         id: build
         run: |
           echo "Preflight next-intl resolution"
+          echo "--- next.config.ts (head) ---"; sed -n '1,80p' next.config.ts || true; echo "---"
+          echo "--- Check if configure-pages modified our config ---"
+          grep -n "diagnostic" next.config.ts || echo "No diagnostic lines found in next.config.ts"
+          node -e "try{console.log('resolve next-intl/plugin',require.resolve('next-intl/plugin'))}catch(e){console.error('resolve next-intl/plugin FAIL',e)}"
           node -e "console.log('cwd',process.cwd()); try{console.log('resolve local',require.resolve('./lib/i18n/config.ts'))}catch(e){console.error('resolve local FAIL',e)}; try{console.log('resolve self hasyx/lib/i18n/index',require.resolve('hasyx/lib/i18n/index'))}catch(e){console.error('resolve self FAIL',e)}"
           ${{ steps.detect-package-manager.outputs.runner }} npm run client
         env:

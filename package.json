@@ -1,6 +1,6 @@
 {
   "name": "hasyx",
-  "version": "0.2.0-alpha.18",
+  "version": "0.2.0-alpha.19",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.deep.foundation/",
   "engines": {
@@ -233,14 +233,12 @@
     "ws": "8.18.2",
     "yaml": "^2.8.0",
     "zod": "^4.0.15",
-    "zustand": "^5.0.6"
-  },
-  "bin": {
-    "hasyx": "./lib/cli.js"
-  },
-  "devDependencies": {
+    "zustand": "^5.0.6",
     "eruda": "^3.4.3",
     "typedoc": "^0.28.9",
     "zod-to-json-schema": "^3.24.6"
+  },
+  "bin": {
+    "hasyx": "./lib/cli.js"
   }
 }

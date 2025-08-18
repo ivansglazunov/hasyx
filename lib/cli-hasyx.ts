@@ -662,9 +662,10 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
   // Apply the WebSocket patch
   ensureWebSocketSupport(projectRoot);
 
-  // Ensure required npm scripts are set in package.json
+  // Ensure required npm scripts and overrides are set in package.json
+  // Overrides ensure Zod 4.x is used instead of Zod 3.x that some dependencies require
   try {
-    console.log('📝 Checking and updating npm scripts in package.json...');
+    console.log('📝 Checking and updating npm scripts and overrides in package.json...');
     const pkgJsonPath = path.join(projectRoot, 'package.json');
     if (fs.existsSync(pkgJsonPath)) {
       const pkgJson = await fs.readJson(pkgJsonPath);
@@ -678,6 +679,12 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
       if (!pkgJson.scripts) {
         pkgJson.scripts = {};
       }
+
+      // Add overrides to ensure Zod 4.x is used (required for hasyx functionality)
+      if (!pkgJson.overrides) {
+        pkgJson.overrides = {};
+      }
+      pkgJson.overrides.zod = "^4.0.15";
       
       const requiredScripts = {
         "test": "npm run unbuild; NODE_OPTIONS=\"--experimental-vm-modules\" jest --verbose --runInBand",
@@ -705,6 +712,7 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
       };
       
       let scriptsModified = false;
+      let overridesModified = false;
       
       for (const [scriptName, scriptValue] of Object.entries(requiredScripts)) {
         if (!pkgJson.scripts[scriptName] || pkgJson.scripts[scriptName] !== scriptValue) {
@@ -712,12 +720,27 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
           scriptsModified = true;
         }
       }
+
+      // Check if overrides need to be updated
+      if (!pkgJson.overrides?.zod || pkgJson.overrides.zod !== "^4.0.15") {
+        if (!pkgJson.overrides) {
+          pkgJson.overrides = {};
+        }
+        pkgJson.overrides.zod = "^4.0.15";
+        overridesModified = true;
+      }
       
-      if (scriptsModified) {
+      if (scriptsModified || overridesModified) {
         await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
-        console.log('✅ Required npm scripts updated in package.json.');
+        if (scriptsModified && overridesModified) {
+          console.log('✅ Required npm scripts and overrides updated in package.json.');
+        } else if (scriptsModified) {
+          console.log('✅ Required npm scripts updated in package.json.');
+        } else if (overridesModified) {
+          console.log('✅ Required overrides updated in package.json.');
+        }
       } else {
-        console.log('ℹ️ Required npm scripts already present in package.json.');
+        console.log('ℹ️ Required npm scripts and overrides already present in package.json.');
       }
     } else {
       console.warn('⚠️ package.json not found in project root. Unable to update npm scripts.');
