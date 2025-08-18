@@ -41,7 +41,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -67,6 +67,7 @@ jobs:
           HASURA_JWT_SECRET: ${{secrets.HASURA_JWT_SECRET}}
           NEXT_PUBLIC_MAIN_URL: ${{secrets.NEXT_PUBLIC_MAIN_URL}}
           NEXT_PUBLIC_BASE_URL: ${{secrets.NEXT_PUBLIC_BASE_URL}}
+          NEXT_PUBLIC_LOCALE: en
           NEXTAUTH_SECRET: ${{secrets.NEXTAUTH_SECRET}}
           GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
           GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}

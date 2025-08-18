@@ -11,9 +11,14 @@ const config = {
   moduleNameMapper: {
     '^jose$': 'jose',
     '^@/(.*)$': '<rootDir>/$1',
+    '^hasyx$': '<rootDir>/lib/index.ts',
+    '^hasyx/(.*)$': '<rootDir>/$1',
     '^react$': '<rootDir>/node_modules/react',
     '^react-dom$': '<rootDir>/node_modules/react-dom',
   },
+  modulePathIgnorePatterns: [
+    '/\\.next/'
+  ],
   testPathIgnorePatterns: ['/node_modules/', '/.next/', '.temp', '/_lib/', '/_components/'],
   collectCoverageFrom: [
     '**/*.{js,jsx,ts,tsx}',
