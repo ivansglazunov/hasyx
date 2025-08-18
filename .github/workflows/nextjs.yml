@@ -59,7 +59,10 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         id: build
-        run: ${{ steps.detect-package-manager.outputs.runner }} npm run client
+        run: |
+          echo "Preflight next-intl resolution"
+          node -e "console.log('cwd',process.cwd()); try{console.log('resolve local',require.resolve('./lib/i18n/config.ts'))}catch(e){console.error('resolve local FAIL',e)}; try{console.log('resolve self hasyx/lib/i18n/index',require.resolve('hasyx/lib/i18n/index'))}catch(e){console.error('resolve self FAIL',e)}"
+          ${{ steps.detect-package-manager.outputs.runner }} npm run client
         env:
           TEST_TOKEN: ${{secrets.TEST_TOKEN}}
           NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${{secrets.NEXT_PUBLIC_HASURA_GRAPHQL_URL}}
