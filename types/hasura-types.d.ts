@@ -26,6 +26,8 @@ export type Scalars = {
   Int: { input: number; output: number };
   Float: { input: number; output: number };
   bigint: { input: number; output: number };
+  geography: { input: any; output: any };
+  geometry: { input: any; output: any };
   jsonb: { input: any; output: any };
   numeric: { input: number; output: number };
   timestamptz: { input: number; output: number };
@@ -2734,6 +2736,411 @@ export type Files_Variance_Order_By = {
   size?: InputMaybe<Order_By>;
 };
 
+/** columns and relationships of "geo.features" */
+export type Geo_Features = {
+  __typename?: "geo_features";
+  area_m2?: Maybe<Scalars["numeric"]["output"]>;
+  bbox?: Maybe<Scalars["geometry"]["output"]>;
+  centroid?: Maybe<Scalars["geometry"]["output"]>;
+  created_at: Scalars["timestamptz"]["output"];
+  geom: Scalars["geometry"]["output"];
+  id: Scalars["uuid"]["output"];
+  length_m?: Maybe<Scalars["numeric"]["output"]>;
+  props: Scalars["jsonb"]["output"];
+  type: Scalars["String"]["output"];
+  updated_at: Scalars["timestamptz"]["output"];
+  user_id: Scalars["uuid"]["output"];
+};
+
+/** columns and relationships of "geo.features" */
+export type Geo_FeaturesPropsArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** aggregated selection of "geo.features" */
+export type Geo_Features_Aggregate = {
+  __typename?: "geo_features_aggregate";
+  aggregate?: Maybe<Geo_Features_Aggregate_Fields>;
+  nodes: Array<Geo_Features>;
+};
+
+/** aggregate fields of "geo.features" */
+export type Geo_Features_Aggregate_Fields = {
+  __typename?: "geo_features_aggregate_fields";
+  avg?: Maybe<Geo_Features_Avg_Fields>;
+  count: Scalars["Int"]["output"];
+  max?: Maybe<Geo_Features_Max_Fields>;
+  min?: Maybe<Geo_Features_Min_Fields>;
+  stddev?: Maybe<Geo_Features_Stddev_Fields>;
+  stddev_pop?: Maybe<Geo_Features_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Geo_Features_Stddev_Samp_Fields>;
+  sum?: Maybe<Geo_Features_Sum_Fields>;
+  var_pop?: Maybe<Geo_Features_Var_Pop_Fields>;
+  var_samp?: Maybe<Geo_Features_Var_Samp_Fields>;
+  variance?: Maybe<Geo_Features_Variance_Fields>;
+};
+
+/** aggregate fields of "geo.features" */
+export type Geo_Features_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Geo_Features_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Geo_Features_Append_Input = {
+  props?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** aggregate avg on columns */
+export type Geo_Features_Avg_Fields = {
+  __typename?: "geo_features_avg_fields";
+  area_m2?: Maybe<Scalars["Float"]["output"]>;
+  length_m?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** Boolean expression to filter rows from the table "geo.features". All fields are combined with a logical 'AND'. */
+export type Geo_Features_Bool_Exp = {
+  _and?: InputMaybe<Array<Geo_Features_Bool_Exp>>;
+  _not?: InputMaybe<Geo_Features_Bool_Exp>;
+  _or?: InputMaybe<Array<Geo_Features_Bool_Exp>>;
+  area_m2?: InputMaybe<Numeric_Comparison_Exp>;
+  bbox?: InputMaybe<Geometry_Comparison_Exp>;
+  centroid?: InputMaybe<Geometry_Comparison_Exp>;
+  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  geom?: InputMaybe<Geometry_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  length_m?: InputMaybe<Numeric_Comparison_Exp>;
+  props?: InputMaybe<Jsonb_Comparison_Exp>;
+  type?: InputMaybe<String_Comparison_Exp>;
+  updated_at?: InputMaybe<Timestamptz_Comparison_Exp>;
+  user_id?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "geo.features" */
+export enum Geo_Features_Constraint {
+  /** unique or primary key constraint on columns "id" */
+  FeaturesPkey = "features_pkey",
+}
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Geo_Features_Delete_At_Path_Input = {
+  props?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Geo_Features_Delete_Elem_Input = {
+  props?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Geo_Features_Delete_Key_Input = {
+  props?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** input type for incrementing numeric columns in table "geo.features" */
+export type Geo_Features_Inc_Input = {
+  area_m2?: InputMaybe<Scalars["numeric"]["input"]>;
+  length_m?: InputMaybe<Scalars["numeric"]["input"]>;
+};
+
+/** input type for inserting data into table "geo.features" */
+export type Geo_Features_Insert_Input = {
+  area_m2?: InputMaybe<Scalars["numeric"]["input"]>;
+  bbox?: InputMaybe<Scalars["geometry"]["input"]>;
+  centroid?: InputMaybe<Scalars["geometry"]["input"]>;
+  created_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  geom?: InputMaybe<Scalars["geometry"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  length_m?: InputMaybe<Scalars["numeric"]["input"]>;
+  props?: InputMaybe<Scalars["jsonb"]["input"]>;
+  type?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** aggregate max on columns */
+export type Geo_Features_Max_Fields = {
+  __typename?: "geo_features_max_fields";
+  area_m2?: Maybe<Scalars["numeric"]["output"]>;
+  created_at?: Maybe<Scalars["timestamptz"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  length_m?: Maybe<Scalars["numeric"]["output"]>;
+  type?: Maybe<Scalars["String"]["output"]>;
+  updated_at?: Maybe<Scalars["timestamptz"]["output"]>;
+  user_id?: Maybe<Scalars["uuid"]["output"]>;
+};
+
+/** aggregate min on columns */
+export type Geo_Features_Min_Fields = {
+  __typename?: "geo_features_min_fields";
+  area_m2?: Maybe<Scalars["numeric"]["output"]>;
+  created_at?: Maybe<Scalars["timestamptz"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  length_m?: Maybe<Scalars["numeric"]["output"]>;
+  type?: Maybe<Scalars["String"]["output"]>;
+  updated_at?: Maybe<Scalars["timestamptz"]["output"]>;
+  user_id?: Maybe<Scalars["uuid"]["output"]>;
+};
+
+/** response of any mutation on the table "geo.features" */
+export type Geo_Features_Mutation_Response = {
+  __typename?: "geo_features_mutation_response";
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars["Int"]["output"];
+  /** data from the rows affected by the mutation */
+  returning: Array<Geo_Features>;
+};
+
+/** on_conflict condition type for table "geo.features" */
+export type Geo_Features_On_Conflict = {
+  constraint: Geo_Features_Constraint;
+  update_columns?: Array<Geo_Features_Update_Column>;
+  where?: InputMaybe<Geo_Features_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "geo.features". */
+export type Geo_Features_Order_By = {
+  area_m2?: InputMaybe<Order_By>;
+  bbox?: InputMaybe<Order_By>;
+  centroid?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  geom?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  length_m?: InputMaybe<Order_By>;
+  props?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  user_id?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: geo.features */
+export type Geo_Features_Pk_Columns_Input = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Geo_Features_Prepend_Input = {
+  props?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** select columns of table "geo.features" */
+export enum Geo_Features_Select_Column {
+  /** column name */
+  AreaM2 = "area_m2",
+  /** column name */
+  Bbox = "bbox",
+  /** column name */
+  Centroid = "centroid",
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Geom = "geom",
+  /** column name */
+  Id = "id",
+  /** column name */
+  LengthM = "length_m",
+  /** column name */
+  Props = "props",
+  /** column name */
+  Type = "type",
+  /** column name */
+  UpdatedAt = "updated_at",
+  /** column name */
+  UserId = "user_id",
+}
+
+/** input type for updating data in table "geo.features" */
+export type Geo_Features_Set_Input = {
+  area_m2?: InputMaybe<Scalars["numeric"]["input"]>;
+  bbox?: InputMaybe<Scalars["geometry"]["input"]>;
+  centroid?: InputMaybe<Scalars["geometry"]["input"]>;
+  created_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  geom?: InputMaybe<Scalars["geometry"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  length_m?: InputMaybe<Scalars["numeric"]["input"]>;
+  props?: InputMaybe<Scalars["jsonb"]["input"]>;
+  type?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** aggregate stddev on columns */
+export type Geo_Features_Stddev_Fields = {
+  __typename?: "geo_features_stddev_fields";
+  area_m2?: Maybe<Scalars["Float"]["output"]>;
+  length_m?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Geo_Features_Stddev_Pop_Fields = {
+  __typename?: "geo_features_stddev_pop_fields";
+  area_m2?: Maybe<Scalars["Float"]["output"]>;
+  length_m?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Geo_Features_Stddev_Samp_Fields = {
+  __typename?: "geo_features_stddev_samp_fields";
+  area_m2?: Maybe<Scalars["Float"]["output"]>;
+  length_m?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** Streaming cursor of the table "geo_features" */
+export type Geo_Features_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Geo_Features_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Geo_Features_Stream_Cursor_Value_Input = {
+  area_m2?: InputMaybe<Scalars["numeric"]["input"]>;
+  bbox?: InputMaybe<Scalars["geometry"]["input"]>;
+  centroid?: InputMaybe<Scalars["geometry"]["input"]>;
+  created_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  geom?: InputMaybe<Scalars["geometry"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  length_m?: InputMaybe<Scalars["numeric"]["input"]>;
+  props?: InputMaybe<Scalars["jsonb"]["input"]>;
+  type?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** aggregate sum on columns */
+export type Geo_Features_Sum_Fields = {
+  __typename?: "geo_features_sum_fields";
+  area_m2?: Maybe<Scalars["numeric"]["output"]>;
+  length_m?: Maybe<Scalars["numeric"]["output"]>;
+};
+
+/** update columns of table "geo.features" */
+export enum Geo_Features_Update_Column {
+  /** column name */
+  AreaM2 = "area_m2",
+  /** column name */
+  Bbox = "bbox",
+  /** column name */
+  Centroid = "centroid",
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Geom = "geom",
+  /** column name */
+  Id = "id",
+  /** column name */
+  LengthM = "length_m",
+  /** column name */
+  Props = "props",
+  /** column name */
+  Type = "type",
+  /** column name */
+  UpdatedAt = "updated_at",
+  /** column name */
+  UserId = "user_id",
+}
+
+export type Geo_Features_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Geo_Features_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Geo_Features_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Geo_Features_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Geo_Features_Delete_Key_Input>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<Geo_Features_Inc_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Geo_Features_Prepend_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Geo_Features_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Geo_Features_Bool_Exp;
+};
+
+/** aggregate var_pop on columns */
+export type Geo_Features_Var_Pop_Fields = {
+  __typename?: "geo_features_var_pop_fields";
+  area_m2?: Maybe<Scalars["Float"]["output"]>;
+  length_m?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate var_samp on columns */
+export type Geo_Features_Var_Samp_Fields = {
+  __typename?: "geo_features_var_samp_fields";
+  area_m2?: Maybe<Scalars["Float"]["output"]>;
+  length_m?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** aggregate variance on columns */
+export type Geo_Features_Variance_Fields = {
+  __typename?: "geo_features_variance_fields";
+  area_m2?: Maybe<Scalars["Float"]["output"]>;
+  length_m?: Maybe<Scalars["Float"]["output"]>;
+};
+
+export type Geography_Cast_Exp = {
+  geometry?: InputMaybe<Geometry_Comparison_Exp>;
+};
+
+/** Boolean expression to compare columns of type "geography". All fields are combined with logical 'AND'. */
+export type Geography_Comparison_Exp = {
+  _cast?: InputMaybe<Geography_Cast_Exp>;
+  _eq?: InputMaybe<Scalars["geography"]["input"]>;
+  _gt?: InputMaybe<Scalars["geography"]["input"]>;
+  _gte?: InputMaybe<Scalars["geography"]["input"]>;
+  _in?: InputMaybe<Array<Scalars["geography"]["input"]>>;
+  _is_null?: InputMaybe<Scalars["Boolean"]["input"]>;
+  _lt?: InputMaybe<Scalars["geography"]["input"]>;
+  _lte?: InputMaybe<Scalars["geography"]["input"]>;
+  _neq?: InputMaybe<Scalars["geography"]["input"]>;
+  _nin?: InputMaybe<Array<Scalars["geography"]["input"]>>;
+  /** is the column within a given distance from the given geography value */
+  _st_d_within?: InputMaybe<St_D_Within_Geography_Input>;
+  /** does the column spatially intersect the given geography value */
+  _st_intersects?: InputMaybe<Scalars["geography"]["input"]>;
+};
+
+export type Geometry_Cast_Exp = {
+  geography?: InputMaybe<Geography_Comparison_Exp>;
+};
+
+/** Boolean expression to compare columns of type "geometry". All fields are combined with logical 'AND'. */
+export type Geometry_Comparison_Exp = {
+  _cast?: InputMaybe<Geometry_Cast_Exp>;
+  _eq?: InputMaybe<Scalars["geometry"]["input"]>;
+  _gt?: InputMaybe<Scalars["geometry"]["input"]>;
+  _gte?: InputMaybe<Scalars["geometry"]["input"]>;
+  _in?: InputMaybe<Array<Scalars["geometry"]["input"]>>;
+  _is_null?: InputMaybe<Scalars["Boolean"]["input"]>;
+  _lt?: InputMaybe<Scalars["geometry"]["input"]>;
+  _lte?: InputMaybe<Scalars["geometry"]["input"]>;
+  _neq?: InputMaybe<Scalars["geometry"]["input"]>;
+  _nin?: InputMaybe<Array<Scalars["geometry"]["input"]>>;
+  /** is the column within a given 3D distance from the given geometry value */
+  _st_3d_d_within?: InputMaybe<St_D_Within_Input>;
+  /** does the column spatially intersect the given geometry value in 3D */
+  _st_3d_intersects?: InputMaybe<Scalars["geometry"]["input"]>;
+  /** does the column contain the given geometry value */
+  _st_contains?: InputMaybe<Scalars["geometry"]["input"]>;
+  /** does the column cross the given geometry value */
+  _st_crosses?: InputMaybe<Scalars["geometry"]["input"]>;
+  /** is the column within a given distance from the given geometry value */
+  _st_d_within?: InputMaybe<St_D_Within_Input>;
+  /** is the column equal to given geometry value (directionality is ignored) */
+  _st_equals?: InputMaybe<Scalars["geometry"]["input"]>;
+  /** does the column spatially intersect the given geometry value */
+  _st_intersects?: InputMaybe<Scalars["geometry"]["input"]>;
+  /** does the column 'spatially overlap' (intersect but not completely contain) the given geometry value */
+  _st_overlaps?: InputMaybe<Scalars["geometry"]["input"]>;
+  /** does the column have atleast one point in common with the given geometry value */
+  _st_touches?: InputMaybe<Scalars["geometry"]["input"]>;
+  /** is the column contained in the given geometry value */
+  _st_within?: InputMaybe<Scalars["geometry"]["input"]>;
+};
+
 /** columns and relationships of "github_issues" */
 export type Github_Issues = {
   __typename?: "github_issues";
@@ -4901,6 +5308,10 @@ export type Mutation_Root = {
   delete_events?: Maybe<Events_Mutation_Response>;
   /** delete single row from the table: "events" */
   delete_events_by_pk?: Maybe<Events>;
+  /** delete data from the table: "geo.features" */
+  delete_geo_features?: Maybe<Geo_Features_Mutation_Response>;
+  /** delete single row from the table: "geo.features" */
+  delete_geo_features_by_pk?: Maybe<Geo_Features>;
   /** delete data from the table: "github_issues" */
   delete_github_issues?: Maybe<Github_Issues_Mutation_Response>;
   /** delete single row from the table: "github_issues" */
@@ -5005,6 +5416,10 @@ export type Mutation_Root = {
   insert_events?: Maybe<Events_Mutation_Response>;
   /** insert a single row into the table: "events" */
   insert_events_one?: Maybe<Events>;
+  /** insert data into the table: "geo.features" */
+  insert_geo_features?: Maybe<Geo_Features_Mutation_Response>;
+  /** insert a single row into the table: "geo.features" */
+  insert_geo_features_one?: Maybe<Geo_Features>;
   /** insert data into the table: "github_issues" */
   insert_github_issues?: Maybe<Github_Issues_Mutation_Response>;
   /** insert a single row into the table: "github_issues" */
@@ -5121,6 +5536,14 @@ export type Mutation_Root = {
   update_events_many?: Maybe<Array<Maybe<Events_Mutation_Response>>>;
   /** update multiples rows of table: "storage.files" */
   update_files_many?: Maybe<Array<Maybe<Files_Mutation_Response>>>;
+  /** update data of the table: "geo.features" */
+  update_geo_features?: Maybe<Geo_Features_Mutation_Response>;
+  /** update single row of the table: "geo.features" */
+  update_geo_features_by_pk?: Maybe<Geo_Features>;
+  /** update multiples rows of table: "geo.features" */
+  update_geo_features_many?: Maybe<
+    Array<Maybe<Geo_Features_Mutation_Response>>
+  >;
   /** update data of the table: "github_issues" */
   update_github_issues?: Maybe<Github_Issues_Mutation_Response>;
   /** update single row of the table: "github_issues" */
@@ -5330,6 +5753,16 @@ export type Mutation_RootDelete_EventsArgs = {
 
 /** mutation root */
 export type Mutation_RootDelete_Events_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** mutation root */
+export type Mutation_RootDelete_Geo_FeaturesArgs = {
+  where: Geo_Features_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootDelete_Geo_Features_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -5606,6 +6039,18 @@ export type Mutation_RootInsert_EventsArgs = {
 export type Mutation_RootInsert_Events_OneArgs = {
   object: Events_Insert_Input;
   on_conflict?: InputMaybe<Events_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsert_Geo_FeaturesArgs = {
+  objects: Array<Geo_Features_Insert_Input>;
+  on_conflict?: InputMaybe<Geo_Features_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsert_Geo_Features_OneArgs = {
+  object: Geo_Features_Insert_Input;
+  on_conflict?: InputMaybe<Geo_Features_On_Conflict>;
 };
 
 /** mutation root */
@@ -6011,6 +6456,35 @@ export type Mutation_RootUpdate_Events_ManyArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Files_ManyArgs = {
   updates: Array<Files_Updates>;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Geo_FeaturesArgs = {
+  _append?: InputMaybe<Geo_Features_Append_Input>;
+  _delete_at_path?: InputMaybe<Geo_Features_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Geo_Features_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Geo_Features_Delete_Key_Input>;
+  _inc?: InputMaybe<Geo_Features_Inc_Input>;
+  _prepend?: InputMaybe<Geo_Features_Prepend_Input>;
+  _set?: InputMaybe<Geo_Features_Set_Input>;
+  where: Geo_Features_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Geo_Features_By_PkArgs = {
+  _append?: InputMaybe<Geo_Features_Append_Input>;
+  _delete_at_path?: InputMaybe<Geo_Features_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Geo_Features_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Geo_Features_Delete_Key_Input>;
+  _inc?: InputMaybe<Geo_Features_Inc_Input>;
+  _prepend?: InputMaybe<Geo_Features_Prepend_Input>;
+  _set?: InputMaybe<Geo_Features_Set_Input>;
+  pk_columns: Geo_Features_Pk_Columns_Input;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Geo_Features_ManyArgs = {
+  updates: Array<Geo_Features_Updates>;
 };
 
 /** mutation root */
@@ -12257,6 +12731,12 @@ export type Query_Root = {
   files: Array<Files>;
   /** fetch aggregated fields from the table: "storage.files" */
   filesAggregate: Files_Aggregate;
+  /** fetch data from the table: "geo.features" */
+  geo_features: Array<Geo_Features>;
+  /** fetch aggregated fields from the table: "geo.features" */
+  geo_features_aggregate: Geo_Features_Aggregate;
+  /** fetch data from the table: "geo.features" using primary key columns */
+  geo_features_by_pk?: Maybe<Geo_Features>;
   /** fetch data from the table: "github_issues" */
   github_issues: Array<Github_Issues>;
   /** fetch aggregated fields from the table: "github_issues" */
@@ -12497,6 +12977,26 @@ export type Query_RootFilesAggregateArgs = {
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   order_by?: InputMaybe<Array<Files_Order_By>>;
   where?: InputMaybe<Files_Bool_Exp>;
+};
+
+export type Query_RootGeo_FeaturesArgs = {
+  distinct_on?: InputMaybe<Array<Geo_Features_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Geo_Features_Order_By>>;
+  where?: InputMaybe<Geo_Features_Bool_Exp>;
+};
+
+export type Query_RootGeo_Features_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Geo_Features_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Geo_Features_Order_By>>;
+  where?: InputMaybe<Geo_Features_Bool_Exp>;
+};
+
+export type Query_RootGeo_Features_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
 };
 
 export type Query_RootGithub_IssuesArgs = {
@@ -14086,6 +14586,17 @@ export type Schedule_Variance_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+export type St_D_Within_Geography_Input = {
+  distance: Scalars["Float"]["input"];
+  from: Scalars["geography"]["input"];
+  use_spheroid?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type St_D_Within_Input = {
+  distance: Scalars["Float"]["input"];
+  from: Scalars["geometry"]["input"];
+};
+
 export type Subscription_Root = {
   __typename?: "subscription_root";
   /** An array relationship */
@@ -14136,6 +14647,14 @@ export type Subscription_Root = {
   filesAggregate: Files_Aggregate;
   /** fetch data from the table in a streaming manner: "storage.files" */
   files_stream: Array<Files>;
+  /** fetch data from the table: "geo.features" */
+  geo_features: Array<Geo_Features>;
+  /** fetch aggregated fields from the table: "geo.features" */
+  geo_features_aggregate: Geo_Features_Aggregate;
+  /** fetch data from the table: "geo.features" using primary key columns */
+  geo_features_by_pk?: Maybe<Geo_Features>;
+  /** fetch data from the table in a streaming manner: "geo.features" */
+  geo_features_stream: Array<Geo_Features>;
   /** fetch data from the table: "github_issues" */
   github_issues: Array<Github_Issues>;
   /** fetch aggregated fields from the table: "github_issues" */
@@ -14452,6 +14971,32 @@ export type Subscription_RootFiles_StreamArgs = {
   batch_size: Scalars["Int"]["input"];
   cursor: Array<InputMaybe<Files_Stream_Cursor_Input>>;
   where?: InputMaybe<Files_Bool_Exp>;
+};
+
+export type Subscription_RootGeo_FeaturesArgs = {
+  distinct_on?: InputMaybe<Array<Geo_Features_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Geo_Features_Order_By>>;
+  where?: InputMaybe<Geo_Features_Bool_Exp>;
+};
+
+export type Subscription_RootGeo_Features_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Geo_Features_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Geo_Features_Order_By>>;
+  where?: InputMaybe<Geo_Features_Bool_Exp>;
+};
+
+export type Subscription_RootGeo_Features_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+export type Subscription_RootGeo_Features_StreamArgs = {
+  batch_size: Scalars["Int"]["input"];
+  cursor: Array<InputMaybe<Geo_Features_Stream_Cursor_Input>>;
+  where?: InputMaybe<Geo_Features_Bool_Exp>;
 };
 
 export type Subscription_RootGithub_IssuesArgs = {

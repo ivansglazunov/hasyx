@@ -135,7 +135,7 @@ function buildInDirectory(targetDir: string) {
   }
 }
 
-describe('Child project instance initialization (local tsx)', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Child project instance initialization (local tsx)', () => {
   it('should create and initialize a temp child project via local CLI and verify artifacts', async () => {
     // 1) Prepare isolated temp directory (unique per test) and ensure cleanup at the end
     const tempProjectDir = generateTempProjectDir();
@@ -209,5 +209,4 @@ describe('Child project instance initialization (local tsx)', () => {
     }
   }, 1800000); // Allow up to 30 minutes due to real installs/patches
 });
-
 

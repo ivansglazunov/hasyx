@@ -4,7 +4,7 @@ import { createApolloClient } from '../../apollo/apollo';
 import { Generator } from '../../generator';
 import schema from '../../../public/hasura-schema.json';
 import Debug from '../../debug';
-import { VtbPaymentProcessor, VtbProviderDBConfig } from './vtb';
+import { VtbPaymentProcessor, VtbProviderDBConfig } from '../vtb';
 import { PaymentStatus } from '../base';
 
 const debug = Debug('api:payments:vtb:webhook');

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TBankPaymentProcessor, TBankProviderDBConfig } from './tbank';
+import { TBankPaymentProcessor, TBankProviderDBConfig } from '../tbank';
 import { Hasyx } from '../..';
 import { createApolloClient } from '../../apollo/apollo';
 import { Generator } from '../../generator';

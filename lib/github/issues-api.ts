@@ -44,7 +44,7 @@ export async function handleIssuesPUT(request: NextRequest, authOptions?: any) {
   }
 
   try {
-    const session = await getServerSession(authOptions as any);
+    const session = await getServerSession(authOptions as any) as any;
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -190,7 +190,7 @@ export async function handleIssuesGET() {
 
 async function handleUserSync(request: NextRequest, authOptions?: any) {
   try {
-    const session = await getServerSession(authOptions as any);
+    const session = await getServerSession(authOptions as any) as any;
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'Unauthorized' },

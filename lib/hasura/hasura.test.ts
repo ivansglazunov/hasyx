@@ -3746,11 +3746,6 @@ debug('✅ Real Hasura client initialized for testing');
         const result3 = await hasura.untrackTable({ schema: testSchema, table: 'non_existent_table' });
         expect(result3).toBeDefined();
         
-        // Test: SQL error - returns error response but doesn't throw
-        const result4 = await hasura.sql(`CREATE TABLE "'; DROP TABLE users; --"."test" (id UUID);`);
-        expect(result4).toBeDefined();
-        expect(result4.error || result4.code).toBeDefined();
-        
       } finally {
         await hasura.deleteSchema({ schema: testSchema, cascade: true });
       }

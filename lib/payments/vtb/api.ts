@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Hasura } from '../../hasura/hasura';
-import { VtbPaymentProcessor, VtbProviderDBConfig } from './vtb';
+import { VtbPaymentProcessor, VtbProviderDBConfig } from '../vtb';
 import { Hasyx } from '../../hasyx/hasyx';
 import { createApolloClient } from '../../apollo/apollo';
 import { Generator } from '../../generator';
@@ -48,7 +48,7 @@ export async function handleVtbInitPayment(request: NextRequest) {
 
 export async function handleVtbAddCard(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions as any);
+    const session = await getServerSession(authOptions as any) as any;
     if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { provider_id, customer_key } = await request.json();
@@ -72,7 +72,7 @@ export async function handleVtbAddCard(request: NextRequest) {
 
 export async function handleVtbCreateSubscription(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions as any);
+    const session = await getServerSession(authOptions as any) as any;
     if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { plan_id, method_id } = await request.json();

@@ -62,6 +62,10 @@ export async function down(customHasura?: Hasura) {
       await hasura.sql(`DROP FUNCTION IF EXISTS validation.validate_column() CASCADE;`);
       await hasura.sql(`DROP FUNCTION IF EXISTS validation.validate_json(JSONB, TEXT, TEXT) CASCADE;`);
     } catch {}
+    // Drop validation schema entirely
+    try {
+      await hasura.deleteSchema({ schema: 'validation', cascade: true });
+    } catch {}
     // Finally, drop extension if policy allows (optional)
     await dropPlv8Extension(hasura);
     

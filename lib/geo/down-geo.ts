@@ -13,12 +13,13 @@ export async function down(customHasura?: Hasura) {
   await hasura.ensureDefaultSource();
 
   try { await hasura.untrackTable({ schema: 'geo', table: 'features' }); } catch {}
-  try { await hasura.sql(`DROP TRIGGER IF EXISTS trg_geo_features_before_write ON geo.features;`); } catch {}
+  try { await hasura.deleteTrigger({ schema: 'geo', table: 'features', name: 'trg_geo_features_before_write' }); } catch {}
   try { await hasura.deleteFunction({ schema: 'geo', name: 'features_before_write' }); } catch {}
   try { await hasura.deleteFunction({ schema: 'geo', name: 'nearby' }); } catch {}
   try { await hasura.deleteFunction({ schema: 'geo', name: 'within_bbox' }); } catch {}
-  try { await hasura.sql(`DROP TABLE IF EXISTS geo.features CASCADE;`); } catch {}
-  // Keep schema for possible future use; if needed: DROP SCHEMA geo CASCADE;
+  try { await hasura.deleteTable({ schema: 'geo', table: 'features', cascade: true }); } catch {}
+  // Drop schema to ensure full cleanup after unmigrate using Hasura helper
+  try { await hasura.deleteSchema({ schema: 'geo', cascade: true }); } catch {}
 
   debug('✨ Hasura geo migration DOWN completed successfully!');
   return true;

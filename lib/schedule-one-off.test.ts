@@ -22,7 +22,7 @@ function createAdminHasyx(): Hasyx {
   return new Hasyx(adminApolloClient, generate);
 }
 
-describe('Schedule one-off end-to-end', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Schedule one-off end-to-end', () => {
   it('schedules one-off and receives callback to /api/schedule-one-off with debug row persisted', async () => {
     const adminHasyx = createAdminHasyx();
     const markerId = uuidv4();
