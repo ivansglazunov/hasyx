@@ -43,10 +43,11 @@ jobs:
         with:
           node-version: "22"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-        with:
-          static_site_generator: next
+      # DISABLED: creates conflicting next.config.js that overrides our next.config.ts with next-intl
+      # - name: Setup Pages
+      #   uses: actions/configure-pages@v5
+      #   with:
+      #     static_site_generator: next
       - name: Clear Next.js cache
         run: |
           echo "Temporarily disabling .next/cache to debug next-intl config issue"
@@ -79,6 +80,8 @@ jobs:
           NODE_ENV: production
           NEXT_PUBLIC_BUILD_TARGET: client
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+          # Manual GitHub Pages setup since we disabled configure-pages
+          GITHUB_PAGES: true
       - name: Verify Build Output Directory
         run: |
           echo "Listing directory contents:"
