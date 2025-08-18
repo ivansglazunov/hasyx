@@ -1,5 +1,5 @@
 import { getRequestConfig } from 'next-intl/server';
-import { getLocale } from 'hasyx';
+import { getLocale } from 'hasyx/lib/i18n/index';
 
 export default getRequestConfig(async () => {
   // Provide a static locale, fetch a user setting,
