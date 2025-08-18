@@ -43,11 +43,10 @@ jobs:
         with:
           node-version: "22"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
-      # TEMPORARILY DISABLED: may interfere with next-intl config resolution
-      # - name: Setup Pages
-      #   uses: actions/configure-pages@v5
-      #   with:
-      #     static_site_generator: next
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        with:
+          static_site_generator: next
       - name: Clear Next.js cache
         run: |
           echo "Temporarily disabling .next/cache to debug next-intl config issue"
@@ -56,17 +55,7 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         id: build
-        run: |
-          echo "Preflight next-intl resolution"
-          echo "--- Checking for config files ---"
-          ls -la next.config.* || echo "No next.config files found"
-          echo "--- next.config.ts (head) ---"; sed -n '1,80p' next.config.ts || true; echo "---"
-          echo "--- next.config.js (if exists) ---"; sed -n '1,80p' next.config.js 2>/dev/null || echo "No next.config.js found"
-          echo "--- Check if configure-pages modified our config ---"
-          grep -n "diagnostic" next.config.ts || echo "No diagnostic lines found in next.config.ts"
-          node -e "try{console.log('resolve next-intl/plugin',require.resolve('next-intl/plugin'))}catch(e){console.error('resolve next-intl/plugin FAIL',e)}"
-          node -e "console.log('cwd',process.cwd()); try{console.log('resolve local',require.resolve('./lib/i18n/config.ts'))}catch(e){console.error('resolve local FAIL',e)}; try{console.log('resolve self hasyx/lib/i18n/index',require.resolve('hasyx/lib/i18n/index'))}catch(e){console.error('resolve self FAIL',e)}"
-          ${{ steps.detect-package-manager.outputs.runner }} npm run client
+        run: ${{ steps.detect-package-manager.outputs.runner }} npm run client
         env:
           TEST_TOKEN: ${{secrets.TEST_TOKEN}}
           NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${{secrets.NEXT_PUBLIC_HASURA_GRAPHQL_URL}}
@@ -100,7 +89,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: ./client
 
   check-pages:
     runs-on: ubuntu-latest

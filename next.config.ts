@@ -1,21 +1,5 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from 'next-intl/plugin';
-import path from 'node:path';
-import { createRequire } from 'node:module';
-
-// Diagnostics for CI vs local resolution
-const requireResolve = (() => {
-  try {
-    // @ts-ignore
-    if (typeof require !== 'undefined' && require.resolve) return require.resolve;
-  } catch {}
-  return createRequire(import.meta.url).resolve;
-})();
-
-console.log('[diagnostic] node', process.version, 'platform', process.platform, 'cwd', process.cwd());
-console.log('[diagnostic] next-intl cfg abs:', path.resolve('./lib/i18n/config.ts'));
-try { console.log('[diagnostic] resolve ./lib/i18n/config.ts:', requireResolve('./lib/i18n/config.ts')); } catch (e) { console.error('[diagnostic] resolve local config FAILED', e); }
-try { console.log('[diagnostic] resolve hasyx/lib/i18n/index:', requireResolve('hasyx/lib/i18n/index')); } catch (e) { console.error('[diagnostic] resolve self-ref hasyx/lib/i18n/index FAILED', e); }
 
 // IMPORTANT: keep string literal path here; some plugins expect a literal
 const withNextIntl = createNextIntlPlugin('./lib/i18n/config.ts');
