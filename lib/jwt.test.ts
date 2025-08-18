@@ -3,7 +3,7 @@ import { _authorize } from 'hasyx/lib/users/auth';
 import { createApolloClient } from 'hasyx/lib/apollo/apollo';
 import { Generator } from 'hasyx/lib/generator';
 import { Hasyx } from 'hasyx/lib/hasyx/hasyx';
-import hasyxSchema from '../../../../public/hasura-schema.json';
+import hasyxSchema from '../public/hasura-schema.json';
 import dotenv from 'dotenv';
 import axios from 'axios';
 

@@ -17,7 +17,7 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 // basePath and distDir are now removed, relying on actions/configure-pages@v5 or defaults
 console.log(`Building config: isClient=${isBuildingForClient}, basePath=${basePath}`);
 
-const config: NextConfig = {
+let config: NextConfig = {
   // Conditionally set output to 'export' for client, 'standalone' for server/Docker
   output: isBuildingForClient ? 'export' : 'standalone',
   // Explicitly set distDir again
@@ -51,11 +51,23 @@ const config: NextConfig = {
     ignoreDuringBuilds: isBuildingForClient,
   },
   
+
+  // Prevent double mount unmount
+  reactStrictMode: false,
+  
+  // Configure API routes for file uploads
+  serverExternalPackages: [],
+  
+  // Increase body size limit for file uploads
+  // Note: `api` config is not supported in Next 15 app router config. Keep limits in individual routes if needed.
+};
+
+// Attach CORS headers only for non-client builds (server/standalone)
+if (!isBuildingForClient) {
   // Add CORS headers to all API routes
-  async headers() {
+  (config as any).headers = async () => {
     const headers = [
       {
-        // Apply CORS headers to all API routes - used for regular requests
         source: '/api/:path*',
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
@@ -67,10 +79,8 @@ const config: NextConfig = {
       },
     ];
     
-    // Development specific headers to prevent aggressive caching
     if (process.env.NODE_ENV === 'development') {
       headers.push({
-        // Apply no-cache headers to all non-static resources in development
         source: '/((?!_next/static|icons/|favicon.ico|manifest.webmanifest).*)',
         headers: [
           { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
@@ -79,7 +89,6 @@ const config: NextConfig = {
         ],
       });
       
-      // Special handling for service worker files
       headers.push({
         source: '/(sw.js|firebase-messaging-sw.js)',
         headers: [
@@ -91,23 +100,7 @@ const config: NextConfig = {
     }
     
     return headers;
-  },
-
-  // Prevent double mount unmount
-  reactStrictMode: false,
-  
-  // Configure API routes for file uploads
-  experimental: {
-    serverComponentsExternalPackages: [],
-  },
-  
-  // Increase body size limit for file uploads
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb',
-    },
-    responseLimit: '50mb',
-  },
-};
+  };
+}
 
 export default withNextIntl(config);

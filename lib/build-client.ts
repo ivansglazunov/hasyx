@@ -15,12 +15,14 @@ const ssrActivePath = path.join(projectRoot, 'lib', 'ssr.tsx');
 
 // Keep track of modified files
 const modifiedCallsites = new Set<string>();
+const modifiedAsyncSignatureFiles = new Set<string>();
+const FORCE_STATIC_MARK = '// __HASYX_FORCE_STATIC__';
 
 // --- Helper: Find and modify useSsr calls using string replacement ---
 async function modifyUseSsrCalls(restore: boolean) {
   const action = restore ? 'Restoring' : 'Modifying (removing await)';
   const filePattern = 'app/**/*.{ts,tsx}';
-  const ignorePatterns = ['node_modules/**', '.next/**', 'client/**', 'app/api/**'];
+  const ignorePatterns = ['node_modules/**', '.next/**', 'client/**', 'app/api/**', '**/*.d.ts'];
   console.log(`🛠️ ${action} 'useSsr' string patterns in ${filePattern}...`);
 
   const filePaths = glob.sync(filePattern, { cwd: projectRoot, ignore: ignorePatterns, absolute: true });
@@ -51,18 +53,53 @@ async function modifyUseSsrCalls(restore: boolean) {
             fileModified = true;
             return originalString;
           });
+
+          // Remove force-static marker block if present
+          if (content.includes(FORCE_STATIC_MARK)) {
+            const before = content;
+            content = content.replace(new RegExp(`^${FORCE_STATIC_MARK}\\nexport const dynamic = \\"force-static\\";\\n`, 'm'), '');
+            if (before !== content) {
+              console.log('      Removed force-static marker');
+              fileModified = true;
+            }
+          }
+
+          // Ensure default export function is async again when awaiting useSsr is restored
+          if (content.includes(originalString)) {
+            const asyncSig = /export\s+default\s+async\s+function\s+([A-Za-z0-9_]+)\s*\(/m;
+            const nonAsyncSig = /export\s+default\s+function\s+([A-Za-z0-9_]+)\s*\(/m;
+            if (!asyncSig.test(content) && nonAsyncSig.test(content)) {
+              content = content.replace(nonAsyncSig, 'export default async function $1(');
+              console.log('      Restored async to default export function');
+              fileModified = true;
+            }
+          }
         }
       } else {
         // Remove await
         console.log(`   ✂️ Attempting to remove await in: ${relativePath}`);
+        let replacedUseSsr = false;
         content = content.replace(stringToRemoveAwait, (match) => {
           console.log(`      [Remove Match] Found: "${match}"`);
           console.log(`         -> Removing await, replacing with: "${replacementString}"`);
           modifiedCallsites.add(filePath); // Track that we modified this file
           count++;
           fileModified = true;
+          replacedUseSsr = true;
           return replacementString;
         });
+        if (replacedUseSsr) {
+          // Also drop async from default export function signature to avoid dynamic rendering
+          const asyncSignature = /export\s+default\s+async\s+function\s+([A-Za-z0-9_]+)\s*\(/m;
+          if (asyncSignature.test(content)) {
+            content = content.replace(asyncSignature, 'export default function $1(');
+            modifiedAsyncSignatureFiles.add(filePath);
+            console.log('      Dropped async from default export function');
+            fileModified = true;
+          }
+
+          // Do not inject force-static to avoid directive order issues
+        }
       }
 
       // Write file only if content actually changed
@@ -75,6 +112,27 @@ async function modifyUseSsrCalls(restore: boolean) {
     }
   }
   console.log(`✅ ${action} complete. Processed ${count} occurrences.`);
+}
+
+// Clean up force-static markers from any previous runs
+async function restoreForceStaticOnly() {
+  const filePattern = 'app/**/*.{ts,tsx}';
+  const ignorePatterns = ['node_modules/**', '.next/**', 'client/**', 'app/api/**', '**/*.d.ts'];
+  const filePaths = glob.sync(filePattern, { cwd: projectRoot, ignore: ignorePatterns, absolute: true });
+  for (const filePath of filePaths) {
+    const relativePath = path.relative(projectRoot, filePath);
+    try {
+      let content = await fs.promises.readFile(filePath, 'utf8');
+      const before = content;
+      content = content.replace(new RegExp(`^${FORCE_STATIC_MARK}\\nexport const dynamic = \\"force-static\\";\\n`, 'm'), '');
+      if (before !== content) {
+        console.log(`   ♻️ Removing force-static from: ${relativePath}`);
+        await fs.promises.writeFile(filePath, content, 'utf8');
+      }
+    } catch (err: any) {
+      console.warn(`   ⚠️ Error restoring force-static in ${relativePath}: ${err.message}`);
+    }
+  }
 }
 
 
@@ -108,6 +166,8 @@ export async function buildClient() {
   let apiWasMoved = false; // Flag to track if we moved the directory
 
   try {
+    // Pre-clean any leftover force-static markers from previous runs
+    await restoreForceStaticOnly();
     // --- Pre-build steps ---
     // 1. Swap ssr.tsx to client version
     console.log('🛠️ Swapping ssr.tsx to client version...');
@@ -161,6 +221,9 @@ export async function buildClient() {
     
     // 6. Restore useSsr callsites (add await back)
     await modifyUseSsrCalls(true); 
+
+    // 6.1. Clean up force-static markers that were added for files without useSsr pattern
+    await restoreForceStaticOnly();
 
     // 7. Restore API directory if it was moved
     if (apiWasMoved) {

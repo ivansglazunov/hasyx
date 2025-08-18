@@ -8715,6 +8715,334 @@
       "level": 1
     },
     {
+      "title": "Hasyx Files Storage",
+      "url": "/hasyx/doc/FILES",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/FILES#overview",
+          "level": 2
+        },
+        {
+          "title": "Quick Start",
+          "url": "/hasyx/doc/FILES#quick-start",
+          "level": 2
+        },
+        {
+          "title": "1. Configure File Storage",
+          "url": "/hasyx/doc/FILES#1-configure-file-storage",
+          "level": 3
+        },
+        {
+          "title": "2. Apply Migrations",
+          "url": "/hasyx/doc/FILES#2-apply-migrations",
+          "level": 3
+        },
+        {
+          "title": "3. Generate Types",
+          "url": "/hasyx/doc/FILES#3-generate-types",
+          "level": 3
+        },
+        {
+          "title": "Configuration",
+          "url": "/hasyx/doc/FILES#configuration",
+          "level": 2
+        },
+        {
+          "title": "Local Storage (MinIO)",
+          "url": "/hasyx/doc/FILES#local-storage-minio",
+          "level": 3
+        },
+        {
+          "title": "Cloud Storage",
+          "url": "/hasyx/doc/FILES#cloud-storage",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/FILES#environment-variables",
+          "level": 2
+        },
+        {
+          "title": "Database Schema",
+          "url": "/hasyx/doc/FILES#database-schema",
+          "level": 2
+        },
+        {
+          "title": "files",
+          "url": "/hasyx/doc/FILES#files",
+          "level": 3
+        },
+        {
+          "title": "Permissions",
+          "url": "/hasyx/doc/FILES#permissions",
+          "level": 2
+        },
+        {
+          "title": "User Permissions",
+          "url": "/hasyx/doc/FILES#user-permissions",
+          "level": 3
+        },
+        {
+          "title": "Admin Permissions",
+          "url": "/hasyx/doc/FILES#admin-permissions",
+          "level": 3
+        },
+        {
+          "title": "API Endpoints",
+          "url": "/hasyx/doc/FILES#api-endpoints",
+          "level": 2
+        },
+        {
+          "title": "Upload File",
+          "url": "/hasyx/doc/FILES#upload-file",
+          "level": 3
+        },
+        {
+          "title": "Download File",
+          "url": "/hasyx/doc/FILES#download-file",
+          "level": 3
+        },
+        {
+          "title": "Delete File",
+          "url": "/hasyx/doc/FILES#delete-file",
+          "level": 3
+        },
+        {
+          "title": "Usage Examples",
+          "url": "/hasyx/doc/FILES#usage-examples",
+          "level": 2
+        },
+        {
+          "title": "Upload File",
+          "url": "/hasyx/doc/FILES#upload-file",
+          "level": 3
+        },
+        {
+          "title": "Download File",
+          "url": "/hasyx/doc/FILES#download-file",
+          "level": 3
+        },
+        {
+          "title": "Delete File",
+          "url": "/hasyx/doc/FILES#delete-file",
+          "level": 3
+        },
+        {
+          "title": "Get File Info",
+          "url": "/hasyx/doc/FILES#get-file-info",
+          "level": 3
+        },
+        {
+          "title": "List Files",
+          "url": "/hasyx/doc/FILES#list-files",
+          "level": 3
+        },
+        {
+          "title": "Update File",
+          "url": "/hasyx/doc/FILES#update-file",
+          "level": 3
+        },
+        {
+          "title": "Using REST API",
+          "url": "/hasyx/doc/FILES#using-rest-api",
+          "level": 2
+        },
+        {
+          "title": "Upload File via API",
+          "url": "/hasyx/doc/FILES#upload-file-via-api",
+          "level": 3
+        },
+        {
+          "title": "Download File (public or authorized)",
+          "url": "/hasyx/doc/FILES#download-file-public-or-authorized",
+          "level": 3
+        },
+        {
+          "title": "Delete File (authorized)",
+          "url": "/hasyx/doc/FILES#delete-file-authorized",
+          "level": 3
+        },
+        {
+          "title": "Authentication",
+          "url": "/hasyx/doc/FILES#authentication",
+          "level": 2
+        },
+        {
+          "title": "JWT Token Authentication",
+          "url": "/hasyx/doc/FILES#jwt-token-authentication",
+          "level": 3
+        },
+        {
+          "title": "NextAuth Session Authentication",
+          "url": "/hasyx/doc/FILES#nextauth-session-authentication",
+          "level": 3
+        },
+        {
+          "title": "Anonymous Access",
+          "url": "/hasyx/doc/FILES#anonymous-access",
+          "level": 3
+        },
+        {
+          "title": "Hasura Integration",
+          "url": "/hasyx/doc/FILES#hasura-integration",
+          "level": 2
+        },
+        {
+          "title": "GraphQL Queries",
+          "url": "/hasyx/doc/FILES#graphql-queries",
+          "level": 3
+        },
+        {
+          "title": "GraphQL Mutations",
+          "url": "/hasyx/doc/FILES#graphql-mutations",
+          "level": 3
+        },
+        {
+          "title": "Security",
+          "url": "/hasyx/doc/FILES#security",
+          "level": 2
+        },
+        {
+          "title": "File Validation",
+          "url": "/hasyx/doc/FILES#file-validation",
+          "level": 3
+        },
+        {
+          "title": "Access Control",
+          "url": "/hasyx/doc/FILES#access-control",
+          "level": 3
+        },
+        {
+          "title": "API Security",
+          "url": "/hasyx/doc/FILES#api-security",
+          "level": 3
+        },
+        {
+          "title": "Performance",
+          "url": "/hasyx/doc/FILES#performance",
+          "level": 2
+        },
+        {
+          "title": "Caching",
+          "url": "/hasyx/doc/FILES#caching",
+          "level": 3
+        },
+        {
+          "title": "Optimization",
+          "url": "/hasyx/doc/FILES#optimization",
+          "level": 3
+        },
+        {
+          "title": "Monitoring",
+          "url": "/hasyx/doc/FILES#monitoring",
+          "level": 2
+        },
+        {
+          "title": "Health Checks",
+          "url": "/hasyx/doc/FILES#health-checks",
+          "level": 3
+        },
+        {
+          "title": "Logs",
+          "url": "/hasyx/doc/FILES#logs",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/FILES#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/FILES#common-issues",
+          "level": 3
+        },
+        {
+          "title": "Debug Mode",
+          "url": "/hasyx/doc/FILES#debug-mode",
+          "level": 3
+        },
+        {
+          "title": "Migrations",
+          "url": "/hasyx/doc/FILES#migrations",
+          "level": 2
+        },
+        {
+          "title": "Apply Migrations",
+          "url": "/hasyx/doc/FILES#apply-migrations",
+          "level": 3
+        },
+        {
+          "title": "Rollback Migrations",
+          "url": "/hasyx/doc/FILES#rollback-migrations",
+          "level": 3
+        },
+        {
+          "title": "Custom Migrations",
+          "url": "/hasyx/doc/FILES#custom-migrations",
+          "level": 3
+        },
+        {
+          "title": "Backup and Recovery",
+          "url": "/hasyx/doc/FILES#backup-and-recovery",
+          "level": 2
+        },
+        {
+          "title": "Database Backup",
+          "url": "/hasyx/doc/FILES#database-backup",
+          "level": 3
+        },
+        {
+          "title": "File Backup",
+          "url": "/hasyx/doc/FILES#file-backup",
+          "level": 3
+        },
+        {
+          "title": "Restore",
+          "url": "/hasyx/doc/FILES#restore",
+          "level": 3
+        },
+        {
+          "title": "Development",
+          "url": "/hasyx/doc/FILES#development",
+          "level": 2
+        },
+        {
+          "title": "Local Development",
+          "url": "/hasyx/doc/FILES#local-development",
+          "level": 3
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/FILES#testing",
+          "level": 3
+        },
+        {
+          "title": "Production Deployment",
+          "url": "/hasyx/doc/FILES#production-deployment",
+          "level": 2
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/FILES#environment-variables",
+          "level": 3
+        },
+        {
+          "title": "Security",
+          "url": "/hasyx/doc/FILES#security",
+          "level": 3
+        },
+        {
+          "title": "Monitoring",
+          "url": "/hasyx/doc/FILES#monitoring",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Query Generator",
       "url": "/hasyx/doc/GENERATOR",
       "collapse": true,
@@ -8873,6 +9201,172 @@
       "level": 1
     },
     {
+      "title": "Geo Module",
+      "url": "/hasyx/doc/GEO",
+      "collapse": true,
+      "items": [
+        {
+          "title": "What’s Included",
+          "url": "/hasyx/doc/GEO#whats-included",
+          "level": 2
+        },
+        {
+          "title": "Quick Start",
+          "url": "/hasyx/doc/GEO#quick-start",
+          "level": 2
+        },
+        {
+          "title": "Using Hasyx Client (GraphQL)",
+          "url": "/hasyx/doc/GEO#using-hasyx-client-graphql",
+          "level": 2
+        },
+        {
+          "title": "Select rows",
+          "url": "/hasyx/doc/GEO#select-rows",
+          "level": 3
+        },
+        {
+          "title": "Select by primary key",
+          "url": "/hasyx/doc/GEO#select-by-primary-key",
+          "level": 3
+        },
+        {
+          "title": "Update non-geometry fields",
+          "url": "/hasyx/doc/GEO#update-non-geometry-fields",
+          "level": 3
+        },
+        {
+          "title": "Delete",
+          "url": "/hasyx/doc/GEO#delete",
+          "level": 3
+        },
+        {
+          "title": "Geometry Writes via SQL",
+          "url": "/hasyx/doc/GEO#geometry-writes-via-sql",
+          "level": 2
+        },
+        {
+          "title": "Spatial Queries",
+          "url": "/hasyx/doc/GEO#spatial-queries",
+          "level": 2
+        },
+        {
+          "title": "Nearby",
+          "url": "/hasyx/doc/GEO#nearby",
+          "level": 3
+        },
+        {
+          "title": "Within BBox",
+          "url": "/hasyx/doc/GEO#within-bbox",
+          "level": 3
+        },
+        {
+          "title": "Permissions Model",
+          "url": "/hasyx/doc/GEO#permissions-model",
+          "level": 2
+        },
+        {
+          "title": "Trigger Logic (Derived Columns)",
+          "url": "/hasyx/doc/GEO#trigger-logic-derived-columns",
+          "level": 2
+        },
+        {
+          "title": "Under the Hood",
+          "url": "/hasyx/doc/GEO#under-the-hood",
+          "level": 2
+        },
+        {
+          "title": "Testing Notes",
+          "url": "/hasyx/doc/GEO#testing-notes",
+          "level": 2
+        },
+        {
+          "title": "Migration Commands",
+          "url": "/hasyx/doc/GEO#migration-commands",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "GitHub Webhooks Setup",
+      "url": "/hasyx/doc/GITHUB-WEBHOOKS",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#overview",
+          "level": 2
+        },
+        {
+          "title": "Current Configuration",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#current-configuration",
+          "level": 2
+        },
+        {
+          "title": "Prerequisites",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#prerequisites",
+          "level": 2
+        },
+        {
+          "title": "Setup Steps",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#setup-steps",
+          "level": 2
+        },
+        {
+          "title": "1. Verify Webhook Secret",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#1-verify-webhook-secret",
+          "level": 3
+        },
+        {
+          "title": "2. Configure GitHub Webhook",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#2-configure-github-webhook",
+          "level": 3
+        },
+        {
+          "title": "3. Webhook Events Handled",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#3-webhook-events-handled",
+          "level": 3
+        },
+        {
+          "title": "4. Testing Webhooks",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#4-testing-webhooks",
+          "level": 3
+        },
+        {
+          "title": "5. Security Considerations",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#5-security-considerations",
+          "level": 3
+        },
+        {
+          "title": "6. Troubleshooting",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#6-troubleshooting",
+          "level": 3
+        },
+        {
+          "title": "7. Monitoring",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#7-monitoring",
+          "level": 3
+        },
+        {
+          "title": "8. Environment Variables",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#8-environment-variables",
+          "level": 3
+        },
+        {
+          "title": "9. API Endpoints",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#9-api-endpoints",
+          "level": 3
+        },
+        {
+          "title": "Integration with Events System",
+          "url": "/hasyx/doc/GITHUB-WEBHOOKS#integration-with-events-system",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "GraphQL Proxy",
       "url": "/hasyx/doc/GRAPHQL-PROXY",
       "collapse": true,
@@ -8921,6 +9415,149 @@
           "title": "✅ Summary",
           "url": "/hasyx/doc/GRAPHQL-PROXY#summary",
           "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Hasyx — план статьи для Хабра и контент‑чеклисты",
+      "url": "/hasyx/doc/GUIDE",
+      "collapse": true,
+      "items": [
+        {
+          "title": "1) TL;DR: что такое Hasyx",
+          "url": "/hasyx/doc/GUIDE#1-tldr-hasyx",
+          "level": 2
+        },
+        {
+          "title": "2) Для кого и зачем",
+          "url": "/hasyx/doc/GUIDE#2",
+          "level": 2
+        },
+        {
+          "title": "3) Архитектура одним взглядом",
+          "url": "/hasyx/doc/GUIDE#3",
+          "level": 2
+        },
+        {
+          "title": "4) Быстрый старт: с нуля до «Hello»",
+          "url": "/hasyx/doc/GUIDE#4-hello",
+          "level": 2
+        },
+        {
+          "title": "5) Конфигурация и CLI",
+          "url": "/hasyx/doc/GUIDE#5-cli",
+          "level": 2
+        },
+        {
+          "title": "6) Аутентификация и роли",
+          "url": "/hasyx/doc/GUIDE#6",
+          "level": 2
+        },
+        {
+          "title": "7) GraphQL через Hasura (и proxy)",
+          "url": "/hasyx/doc/GUIDE#7-graphql-hasura-proxy",
+          "level": 2
+        },
+        {
+          "title": "8) База данных и генератор сущностей",
+          "url": "/hasyx/doc/GUIDE#8",
+          "level": 2
+        },
+        {
+          "title": "9) Файлы и хранилище",
+          "url": "/hasyx/doc/GUIDE#9",
+          "level": 2
+        },
+        {
+          "title": "10) События, Cron и фоновые задачи",
+          "url": "/hasyx/doc/GUIDE#10-cron",
+          "level": 2
+        },
+        {
+          "title": "11) Уведомления (Telegram/Firebase/проч.)",
+          "url": "/hasyx/doc/GUIDE#11-telegramfirebase",
+          "level": 2
+        },
+        {
+          "title": "12) Платежи (Т‑Банк, Тинькофф)",
+          "url": "/hasyx/doc/GUIDE#12",
+          "level": 2
+        },
+        {
+          "title": "13) AI‑интеграции (OpenRouter/Ollama)",
+          "url": "/hasyx/doc/GUIDE#13-ai-openrouterollama",
+          "level": 2
+        },
+        {
+          "title": "14) Telegram: бот, Web App, вебхуки",
+          "url": "/hasyx/doc/GUIDE#14-telegram-web-app",
+          "level": 2
+        },
+        {
+          "title": "15) PWA: офлайн и установка на рабочий стол",
+          "url": "/hasyx/doc/GUIDE#15-pwa",
+          "level": 2
+        },
+        {
+          "title": "16) Логи и мониторинг",
+          "url": "/hasyx/doc/GUIDE#16",
+          "level": 2
+        },
+        {
+          "title": "17) Docker, Nginx, SSL, Subdomain",
+          "url": "/hasyx/doc/GUIDE#17-docker-nginx-ssl-subdomain",
+          "level": 2
+        },
+        {
+          "title": "18) Шаги деплоя в продакшен",
+          "url": "/hasyx/doc/GUIDE#18",
+          "level": 2
+        },
+        {
+          "title": "19) Real‑time и туннели (WebSocket/WSTunnel)",
+          "url": "/hasyx/doc/GUIDE#19-realtime-websocketwstunnel",
+          "level": 2
+        },
+        {
+          "title": "20) Диаграммы/редакторы (Cytoscape/Renderer)",
+          "url": "/hasyx/doc/GUIDE#20-cytoscaperenderer",
+          "level": 2
+        },
+        {
+          "title": "21) Локализация и i18n",
+          "url": "/hasyx/doc/GUIDE#21-i18n",
+          "level": 2
+        },
+        {
+          "title": "22) Тесты и качество",
+          "url": "/hasyx/doc/GUIDE#22",
+          "level": 2
+        },
+        {
+          "title": "23) FAQ и разбор типичных проблем",
+          "url": "/hasyx/doc/GUIDE#23-faq",
+          "level": 2
+        },
+        {
+          "title": "24) Roadmap и как помочь проекту",
+          "url": "/hasyx/doc/GUIDE#24-roadmap",
+          "level": 2
+        },
+        {
+          "title": "25) Заключение и Call‑to‑Action",
+          "url": "/hasyx/doc/GUIDE#25-calltoaction",
+          "level": 2
+        },
+        {
+          "title": "Рецепт артефактов (как складывать материалы)",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 3
+        },
+        {
+          "title": "Мини чеклист готовности статьи к публикации",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 3
         }
       ],
       "level": 1
@@ -9541,6 +10178,119 @@
       "level": 1
     },
     {
+      "title": "Hasyx Messaging",
+      "url": "/hasyx/doc/MESSAGING",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/MESSAGING#overview",
+          "level": 2
+        },
+        {
+          "title": "Database Schema",
+          "url": "/hasyx/doc/MESSAGING#database-schema",
+          "level": 2
+        },
+        {
+          "title": "rooms",
+          "url": "/hasyx/doc/MESSAGING#rooms",
+          "level": 3
+        },
+        {
+          "title": "messages",
+          "url": "/hasyx/doc/MESSAGING#messages",
+          "level": 3
+        },
+        {
+          "title": "replies",
+          "url": "/hasyx/doc/MESSAGING#replies",
+          "level": 3
+        },
+        {
+          "title": "message_reads",
+          "url": "/hasyx/doc/MESSAGING#message-reads",
+          "level": 3
+        },
+        {
+          "title": "Permission Model",
+          "url": "/hasyx/doc/MESSAGING#permission-model",
+          "level": 2
+        },
+        {
+          "title": "Allow-list tokens",
+          "url": "/hasyx/doc/MESSAGING#allow-list-tokens",
+          "level": 3
+        },
+        {
+          "title": "Rooms",
+          "url": "/hasyx/doc/MESSAGING#rooms",
+          "level": 3
+        },
+        {
+          "title": "Messages",
+          "url": "/hasyx/doc/MESSAGING#messages",
+          "level": 3
+        },
+        {
+          "title": "Replies",
+          "url": "/hasyx/doc/MESSAGING#replies",
+          "level": 3
+        },
+        {
+          "title": "message_reads",
+          "url": "/hasyx/doc/MESSAGING#message-reads",
+          "level": 3
+        },
+        {
+          "title": "Typical Flows",
+          "url": "/hasyx/doc/MESSAGING#typical-flows",
+          "level": 2
+        },
+        {
+          "title": "Create a room (authenticated user)",
+          "url": "/hasyx/doc/MESSAGING#create-a-room-authenticated-user",
+          "level": 3
+        },
+        {
+          "title": "Post a message and link it to a room",
+          "url": "/hasyx/doc/MESSAGING#post-a-message-and-link-it-to-a-room",
+          "level": 3
+        },
+        {
+          "title": "Update a message (requires author AND all linked rooms allow change)",
+          "url": "/hasyx/doc/MESSAGING#update-a-message-requires-author-and-all-linked-rooms-allow-change",
+          "level": 3
+        },
+        {
+          "title": "Delete a reply (author or allowed by room)",
+          "url": "/hasyx/doc/MESSAGING#delete-a-reply-author-or-allowed-by-room",
+          "level": 3
+        },
+        {
+          "title": "Real-time Streaming",
+          "url": "/hasyx/doc/MESSAGING#real-time-streaming",
+          "level": 2
+        },
+        {
+          "title": "Migrations",
+          "url": "/hasyx/doc/MESSAGING#migrations",
+          "level": 2
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/MESSAGING#testing",
+          "level": 2
+        },
+        {
+          "title": "Tips",
+          "url": "/hasyx/doc/MESSAGING#tips",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Nginx Configuration Management",
       "url": "/hasyx/doc/NGINX",
       "collapse": true,
@@ -10098,6 +10848,124 @@
         {
           "title": "Class: OpenRouter",
           "url": "/hasyx/doc/OPENROUTER#class-openrouter",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "plv8 Extension Support",
+      "url": "/hasyx/doc/PLV8",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/PLV8#overview",
+          "level": 2
+        },
+        {
+          "title": "Migration",
+          "url": "/hasyx/doc/PLV8#migration",
+          "level": 2
+        },
+        {
+          "title": "Running the Migration",
+          "url": "/hasyx/doc/PLV8#running-the-migration",
+          "level": 3
+        },
+        {
+          "title": "Environment Support",
+          "url": "/hasyx/doc/PLV8#environment-support",
+          "level": 2
+        },
+        {
+          "title": "Local Development (Docker Compose)",
+          "url": "/hasyx/doc/PLV8#local-development-docker-compose",
+          "level": 3
+        },
+        {
+          "title": "Hasura Cloud",
+          "url": "/hasyx/doc/PLV8#hasura-cloud",
+          "level": 3
+        },
+        {
+          "title": "Usage",
+          "url": "/hasyx/doc/PLV8#usage",
+          "level": 2
+        },
+        {
+          "title": "Creating plv8 Functions",
+          "url": "/hasyx/doc/PLV8#creating-plv8-functions",
+          "level": 3
+        },
+        {
+          "title": "Creating plv8 Triggers",
+          "url": "/hasyx/doc/PLV8#creating-plv8-triggers",
+          "level": 3
+        },
+        {
+          "title": "JSON Processing with plv8",
+          "url": "/hasyx/doc/PLV8#json-processing-with-plv8",
+          "level": 3
+        },
+        {
+          "title": "Array Operations with plv8",
+          "url": "/hasyx/doc/PLV8#array-operations-with-plv8",
+          "level": 3
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/PLV8#testing",
+          "level": 2
+        },
+        {
+          "title": "Running Tests",
+          "url": "/hasyx/doc/PLV8#running-tests",
+          "level": 3
+        },
+        {
+          "title": "Limitations",
+          "url": "/hasyx/doc/PLV8#limitations",
+          "level": 2
+        },
+        {
+          "title": "Hasura Cloud",
+          "url": "/hasyx/doc/PLV8#hasura-cloud",
+          "level": 3
+        },
+        {
+          "title": "Local Development",
+          "url": "/hasyx/doc/PLV8#local-development",
+          "level": 3
+        },
+        {
+          "title": "Best Practices",
+          "url": "/hasyx/doc/PLV8#best-practices",
+          "level": 2
+        },
+        {
+          "title": "Migration Commands",
+          "url": "/hasyx/doc/PLV8#migration-commands",
+          "level": 2
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/PLV8#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "plv8 Not Available",
+          "url": "/hasyx/doc/PLV8#plv8-not-available",
+          "level": 3
+        },
+        {
+          "title": "Function Creation Fails",
+          "url": "/hasyx/doc/PLV8#function-creation-fails",
+          "level": 3
+        },
+        {
+          "title": "Trigger Issues",
+          "url": "/hasyx/doc/PLV8#trigger-issues",
           "level": 3
         }
       ],
@@ -12826,6 +13694,77 @@
       "level": 1
     },
     {
+      "title": "VTB Payments",
+      "url": "/hasyx/doc/VTB",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Хранение конфигурации",
+          "url": "/hasyx/doc/VTB#",
+          "level": 2
+        },
+        {
+          "title": "Реализованные методы",
+          "url": "/hasyx/doc/VTB#",
+          "level": 2
+        },
+        {
+          "title": "Статусы",
+          "url": "/hasyx/doc/VTB#",
+          "level": 2
+        },
+        {
+          "title": "URL",
+          "url": "/hasyx/doc/VTB#url",
+          "level": 2
+        },
+        {
+          "title": "Безопасность",
+          "url": "/hasyx/doc/VTB#",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "VTB Payment Testing Guide",
+      "url": "/hasyx/doc/VTB_TESTING",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Подготовка",
+          "url": "/hasyx/doc/VTB_TESTING#",
+          "level": 2
+        },
+        {
+          "title": "Разовый платёж",
+          "url": "/hasyx/doc/VTB_TESTING#",
+          "level": 2
+        },
+        {
+          "title": "Привязка карты",
+          "url": "/hasyx/doc/VTB_TESTING#",
+          "level": 2
+        },
+        {
+          "title": "Подписка",
+          "url": "/hasyx/doc/VTB_TESTING#",
+          "level": 2
+        },
+        {
+          "title": "Рекуррент",
+          "url": "/hasyx/doc/VTB_TESTING#",
+          "level": 2
+        },
+        {
+          "title": "Диагностика",
+          "url": "/hasyx/doc/VTB_TESTING#",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Wstunnel Integration",
       "url": "/hasyx/doc/WSTUNNEL",
       "collapse": true,
@@ -13408,7 +14347,413 @@
         }
       ],
       "level": 1
+    },
+    {
+      "title": "i18n checklist for browser TSX components",
+      "url": "/hasyx/doc/translations",
+      "level": 3
+    },
+    {
+      "title": "Программный интерфейс (API)",
+      "url": "/hasyx/doc/vtb_api",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Требования к ресурсу продавца",
+          "url": "/hasyx/doc/vtb_api#",
+          "level": 2
+        },
+        {
+          "title": "Доступные интерфейсы",
+          "url": "/hasyx/doc/vtb_api#",
+          "level": 2
+        },
+        {
+          "title": "Интерфейс REST",
+          "url": "/hasyx/doc/vtb_api#rest",
+          "level": 2
+        },
+        {
+          "title": "Введение",
+          "url": "/hasyx/doc/vtb_api#",
+          "level": 3
+        },
+        {
+          "title": "Аутентификация продавца",
+          "url": "/hasyx/doc/vtb_api#",
+          "level": 3
+        },
+        {
+          "title": "Запросы",
+          "url": "/hasyx/doc/vtb_api#",
+          "level": 3
+        },
+        {
+          "title": "Особенности тестирования запросов REST в браузере",
+          "url": "/hasyx/doc/vtb_api#rest",
+          "level": 3
+        },
+        {
+          "title": "Интерфейс WSDL (SOAP)",
+          "url": "/hasyx/doc/vtb_api#wsdl-soap",
+          "level": 2
+        },
+        {
+          "title": "Введение",
+          "url": "/hasyx/doc/vtb_api#",
+          "level": 3
+        },
+        {
+          "title": "Координаты подключения",
+          "url": "/hasyx/doc/vtb_api#",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Инструкция по API",
+      "url": "/hasyx/doc/vtb_inst",
+      "collapse": true,
+      "items": [
+        {
+          "title": "платёжного шлюза",
+          "url": "/hasyx/doc/vtb_inst#",
+          "level": 1
+        },
+        {
+          "title": "для мерчанта",
+          "url": "/hasyx/doc/vtb_inst#",
+          "level": 1
+        },
+        {
+          "title": "Содержание",
+          "url": "/hasyx/doc/vtb_inst#",
+          "level": 2
+        },
+        {
+          "title": "\u0003\u000e История изменений",
+          "url": "/hasyx/doc/vtb_inst#",
+          "level": 2
+        },
+        {
+          "title": "01.09.",
+          "url": "/hasyx/doc/vtb_inst#0109",
+          "level": 3
+        },
+        {
+          "title": "23.09.",
+          "url": "/hasyx/doc/vtb_inst#2309",
+          "level": 3
+        },
+        {
+          "title": "20.12.",
+          "url": "/hasyx/doc/vtb_inst#2012",
+          "level": 3
+        },
+        {
+          "title": "26 .01.",
+          "url": "/hasyx/doc/vtb_inst#26-01",
+          "level": 3
+        },
+        {
+          "title": "\u0003\u000e История изменений",
+          "url": "/hasyx/doc/vtb_inst#",
+          "level": 2
+        },
+        {
+          "title": "10.03.",
+          "url": "/hasyx/doc/vtb_inst#1003",
+          "level": 3
+        },
+        {
+          "title": "20.06.",
+          "url": "/hasyx/doc/vtb_inst#2006",
+          "level": 3
+        },
+        {
+          "title": "04.07.",
+          "url": "/hasyx/doc/vtb_inst#0407",
+          "level": 3
+        },
+        {
+          "title": "15 .03.",
+          "url": "/hasyx/doc/vtb_inst#15-03",
+          "level": 3
+        },
+        {
+          "title": "29.03.202 4",
+          "url": "/hasyx/doc/vtb_inst#2903202-4",
+          "level": 3
+        },
+        {
+          "title": "2. Введение",
+          "url": "/hasyx/doc/vtb_inst#2",
+          "level": 2
+        },
+        {
+          "title": "3. Определения и термины",
+          "url": "/hasyx/doc/vtb_inst#3",
+          "level": 2
+        },
+        {
+          "title": "4.1 Общие принципы работы API",
+          "url": "/hasyx/doc/vtb_inst#41-api",
+          "level": 2
+        },
+        {
+          "title": "4.2 Требования к Интернет-сайту мерчанта",
+          "url": "/hasyx/doc/vtb_inst#42",
+          "level": 2
+        },
+        {
+          "title": "4. Описание API",
+          "url": "/hasyx/doc/vtb_inst#4-api",
+          "level": 2
+        },
+        {
+          "title": "4.3 Подключение к API",
+          "url": "/hasyx/doc/vtb_inst#43-api",
+          "level": 2
+        },
+        {
+          "title": "4.4 Безопасность использования API",
+          "url": "/hasyx/doc/vtb_inst#44-api",
+          "level": 2
+        },
+        {
+          "title": "4.5 Доступные валюты для операций",
+          "url": "/hasyx/doc/vtb_inst#45",
+          "level": 2
+        },
+        {
+          "title": "4.6 Типы операций",
+          "url": "/hasyx/doc/vtb_inst#46",
+          "level": 2
+        },
+        {
+          "title": "4.7 Типы оплат",
+          "url": "/hasyx/doc/vtb_inst#47",
+          "level": 2
+        },
+        {
+          "title": "4.8 Статусы ордера",
+          "url": "/hasyx/doc/vtb_inst#48",
+          "level": 2
+        },
+        {
+          "title": "—",
+          "url": "/hasyx/doc/vtb_inst#",
+          "level": 3
+        },
+        {
+          "title": "—",
+          "url": "/hasyx/doc/vtb_inst#",
+          "level": 3
+        },
+        {
+          "title": "—",
+          "url": "/hasyx/doc/vtb_inst#",
+          "level": 3
+        },
+        {
+          "title": "4.9 Статусы транзакций для типа оплаты SBP",
+          "url": "/hasyx/doc/vtb_inst#49-sbp",
+          "level": 2
+        },
+        {
+          "title": "4.10 Статусы транзакций для типа оплаты CARD (Одностадийный платёж)",
+          "url": "/hasyx/doc/vtb_inst#410-card",
+          "level": 2
+        },
+        {
+          "title": "—",
+          "url": "/hasyx/doc/vtb_inst#",
+          "level": 3
+        },
+        {
+          "title": "—",
+          "url": "/hasyx/doc/vtb_inst#",
+          "level": 3
+        },
+        {
+          "title": "4.11 Статусы транзакций для типа оплаты CARD (Двухстадийный платёж)",
+          "url": "/hasyx/doc/vtb_inst#411-card",
+          "level": 2
+        },
+        {
+          "title": "—",
+          "url": "/hasyx/doc/vtb_inst#",
+          "level": 3
+        },
+        {
+          "title": "4.12 Операции с ордерами",
+          "url": "/hasyx/doc/vtb_inst#412",
+          "level": 2
+        },
+        {
+          "title": "4.12.1 POST v 1 /orders",
+          "url": "/hasyx/doc/vtb_inst#4121-post-v-1-orders",
+          "level": 2
+        },
+        {
+          "title": "4.12.3 POST v 1 /orders/preauth",
+          "url": "/hasyx/doc/vtb_inst#4123-post-v-1-orderspreauth",
+          "level": 2
+        },
+        {
+          "title": "4.12.4 POST v 1 /orders/complete/{orderId}",
+          "url": "/hasyx/doc/vtb_inst#4124-post-v-1-orderscompleteorderid",
+          "level": 2
+        },
+        {
+          "title": "4.12.5 POST /orders/{orderId}/cancel",
+          "url": "/hasyx/doc/vtb_inst#4125-post-ordersorderidcancel",
+          "level": 2
+        },
+        {
+          "title": "4.12.6 Создание ордера (заказа) с CoF",
+          "url": "/hasyx/doc/vtb_inst#4126-cof",
+          "level": 2
+        },
+        {
+          "title": "4.13 Операции с возвратами",
+          "url": "/hasyx/doc/vtb_inst#413",
+          "level": 2
+        },
+        {
+          "title": "4.13.1 POST v 1 /refunds",
+          "url": "/hasyx/doc/vtb_inst#4131-post-v-1-refunds",
+          "level": 2
+        },
+        {
+          "title": "4.13.2 GET v 1 /refunds/{refundId}",
+          "url": "/hasyx/doc/vtb_inst#4132-get-v-1-refundsrefundid",
+          "level": 2
+        },
+        {
+          "title": "4.14 Уведомления (callback) от Платежного шлюза",
+          "url": "/hasyx/doc/vtb_inst#414-callback",
+          "level": 2
+        },
+        {
+          "title": "4.15 Типы отправляемых уведомлений (callback) от Платежного шлюза",
+          "url": "/hasyx/doc/vtb_inst#415-callback",
+          "level": 2
+        },
+        {
+          "title": "4.15.1 PaymentResponse Содержание",
+          "url": "/hasyx/doc/vtb_inst#4151-paymentresponse",
+          "level": 2
+        },
+        {
+          "title": "4.16 Интеграция с тестовой средой Платежного шлюза",
+          "url": "/hasyx/doc/vtb_inst#416",
+          "level": 2
+        },
+        {
+          "title": "4.16.1 Настройки для подключения к тестовой среде (Песочница)",
+          "url": "/hasyx/doc/vtb_inst#4161",
+          "level": 2
+        },
+        {
+          "title": "4.16.2 Отправка запросов к API Платежного шлюза (Песочница)",
+          "url": "/hasyx/doc/vtb_inst#4162-api",
+          "level": 2
+        },
+        {
+          "title": "4.17 Тестирование API",
+          "url": "/hasyx/doc/vtb_inst#417-api",
+          "level": 2
+        },
+        {
+          "title": "4.17.1 Тестовые кейсы",
+          "url": "/hasyx/doc/vtb_inst#4171",
+          "level": 2
+        },
+        {
+          "title": "GET /",
+          "url": "/hasyx/doc/vtb_inst#get",
+          "level": 3
+        },
+        {
+          "title": "4.18 Интеграция с PRODUCTION средой Платежного шлюза",
+          "url": "/hasyx/doc/vtb_inst#418-production",
+          "level": 2
+        },
+        {
+          "title": "4.18.1 Настройки для подключения к PRODUCTION среде Платежного шлюза",
+          "url": "/hasyx/doc/vtb_inst#4181-production",
+          "level": 2
+        },
+        {
+          "title": "4.17.2 Реквизиты тестовой банковской карты",
+          "url": "/hasyx/doc/vtb_inst#4172",
+          "level": 2
+        },
+        {
+          "title": "4.18.2 Отправка запросов к API Платежного шлюза (PRODUCTION)",
+          "url": "/hasyx/doc/vtb_inst#4182-api-production",
+          "level": 2
+        },
+        {
+          "title": "5.1 Общее описание функциональности фискализация в соответствии с 54-ФЗ",
+          "url": "/hasyx/doc/vtb_inst#51-54",
+          "level": 2
+        },
+        {
+          "title": "5.2 Создание ордера с товарной корзиной",
+          "url": "/hasyx/doc/vtb_inst#52",
+          "level": 2
+        },
+        {
+          "title": "5 Фискализация в соответствии с 54-ФЗ",
+          "url": "/hasyx/doc/vtb_inst#5-54",
+          "level": 2
+        },
+        {
+          "title": "5. 3 Создание возврата с товарной корзиной",
+          "url": "/hasyx/doc/vtb_inst#5-3",
+          "level": 2
+        },
+        {
+          "title": "5.4 Операции с фискальными чеками",
+          "url": "/hasyx/doc/vtb_inst#54",
+          "level": 2
+        },
+        {
+          "title": "5.4.1 GET /receipts/{orderId}/status",
+          "url": "/hasyx/doc/vtb_inst#541-get-receiptsorderidstatus",
+          "level": 2
+        },
+        {
+          "title": "Приложение 1. Описание объекта ошибки Платежного шлюза, возвращаемого",
+          "url": "/hasyx/doc/vtb_inst#1",
+          "level": 2
+        },
+        {
+          "title": "Платежного шлюза, возвращаемого через API",
+          "url": "/hasyx/doc/vtb_inst#api",
+          "level": 2
+        },
+        {
+          "title": "Приложение 2. Расшифровка кодов ответов по ошибкам от Платежного шлюза",
+          "url": "/hasyx/doc/vtb_inst#2",
+          "level": 2
+        },
+        {
+          "title": "10100001 500 INCORRECT_JEXL_PARAMETERS_",
+          "url": "/hasyx/doc/vtb_inst#10100001-500-incorrect-jexl-parameters",
+          "level": 3
+        },
+        {
+          "title": "EXCEPTION",
+          "url": "/hasyx/doc/vtb_inst#exception",
+          "level": 3
+        }
+      ],
+      "level": 1
     }
   ],
-  "lastUpdated": "2025-08-18T02:14:47.035Z"
+  "lastUpdated": "2025-08-18T04:20:04.727Z"
 }
