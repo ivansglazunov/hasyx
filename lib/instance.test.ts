@@ -165,7 +165,7 @@ jestSkip(!!+(process.env.JEST_INSTANCE || ''))('Child project instance initializ
 
       // 4) Verify key artifacts were created by init
       const mustExistRelativePaths: string[] = [
-        '.github/workflows/npm-publish.yml',
+        '.github/workflows/workflow.yml',
         'app/api/auth/[...nextauth]/route.ts',
         'app/api/auth/verify/route.ts',
         'app/api/graphql/route.ts',

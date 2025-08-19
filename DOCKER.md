@@ -91,7 +91,7 @@ Hasyx automatically creates optimized Dockerfile with multi-stage build.
 
 ## 🔧 CI/CD with GitHub Actions
 
-Hasyx creates `.github/workflows/docker-publish.yml` for automatic image publishing:
+Hasyx creates `.github/workflows/workflow.yml` for automatic image publishing:
 
 ### Architecture Support
 - **Multi-platform builds**: Supports both AMD64 and ARM64 architectures

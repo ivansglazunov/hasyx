@@ -182,7 +182,7 @@ fastlane clean
 
 ### Android Build Workflow
 
-The `android-build.yml` workflow supports fastlane integration:
+The unified `workflow.yml` workflow supports fastlane integration:
 
 ```yaml
 - name: Build with fastlane (if enabled)
@@ -404,7 +404,7 @@ echo "📁 Check artifacts directory for output files"
 ## Related Documentation
 
 - [Android Build System](../README.md#android-build-system)
-- [GitHub Actions Workflows](../.github/workflows/)
+- [GitHub Actions Workflow](../.github/workflows/workflow.yml)
 - [Capacitor Integration](../README.md#capacitor-integration)
 - [Mobile App Development](../README.md#mobile-development)
 

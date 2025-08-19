@@ -490,7 +490,7 @@ ${workflowStatus.details.releaseResults ?
 **MANDATORY LINKS AT THE END**:
 🔗 Repository: ${repositoryUrl}
 📚 Documentation: ${projectHomepage || 'https://hasyx.deep.foundation/'}
-📱 Android Build: ${repositoryUrl}/actions/workflows/android-build.yml
+📱 Android Build: ${repositoryUrl}/actions/workflows/workflow.yml
 🎯 GitHub Release: ${repositoryUrl}/releases
 `;
 

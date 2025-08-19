@@ -658,11 +658,7 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
 
   // Files to create or replace (always overwrite) — keep only non-app items, app copied as a whole below
   const filesToCreateOrReplace = {
-    '.github/workflows/npm-publish.yml': '.github/workflows/npm-publish.yml',
-    '.github/workflows/test.yml': '.github/workflows/test.yml',
-    '.github/workflows/nextjs.yml': '.github/workflows/nextjs.yml',
-    '.github/workflows/telegram-notifications.yml': '.github/workflows/telegram-notifications.yml',
-    '.github/workflows/docker-publish.yml': '.github/workflows/docker-publish.yml',
+            '.github/workflows/workflow.yml': '.github/workflows/workflow.yml',
   } as Record<string, string>;
 
   // Files to create if not exists (or force replace if --reinit)

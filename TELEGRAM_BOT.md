@@ -16,9 +16,9 @@ The integration provides:
 ## 🏗️ Architecture
 
 ### Components:
-1. **GitHub Actions Workflow** (`.github/workflows/telegram-notifications.yml`)
-   - Waits for target workflows to complete
-   - Triggers notification script
+1. **GitHub Actions Workflow** (`.github/workflows/workflow.yml`)
+   - Unified workflow that handles all CI/CD tasks
+   - Automatically triggers Telegram notifications after completion
 
 2. **Notification Script** (`lib/github-telegram-bot.ts`)
    - Fetches commit and workflow data from GitHub API
@@ -33,7 +33,7 @@ The integration provides:
 
 ### 1. Enable in Your Project
 
-When you run `npx hasyx init`, the GitHub Actions workflow is automatically created in your project.
+When you run `npx hasyx init`, the unified GitHub Actions workflow is automatically created in your project.
 
 ### 2. Configure Environment Variables
 
@@ -75,18 +75,22 @@ Configure these secrets in your GitHub repository settings:
 - **Unset** - Disabled: no notifications sent
 
 ### Target Workflows:
-The system waits for these workflows to complete:
+The unified workflow automatically handles all CI/CD tasks in sequence:
 - `test` - Test suite
 - `npm-publish` - NPM package publication
-- `Deploy Next.js site to Pages` - GitHub Pages deployment
+- `deploy-nextjs` - GitHub Pages deployment
+- `docker-build` - Docker image building and publishing
+- `android-build` - Android APK building
+- `create-release` - GitHub Release creation with APK attachment
+- `telegram-notification` - Telegram notifications
 
-You can modify the target workflows in the `.github/workflows/telegram-notifications.yml` file.
+All tasks are handled by the single `.github/workflows/workflow.yml` file.
 
 ## 🔄 How It Works
 
 ### Workflow Sequence:
 1. **Trigger**: Push to main branch
-2. **Wait**: Monitor target workflows until completion (max 30 minutes)
+2. **Execute**: All CI/CD tasks run sequentially in the unified workflow
 3. **Collect**: Gather commit info, workflow results, file changes
 4. **Generate**: Create AI-powered message with full context
 5. **Send**: Notify all registered Telegram bot users
@@ -147,19 +151,8 @@ Edit the AI prompt in `lib/github-telegram-bot.ts` to customize:
 - Information emphasis
 - Tone and style
 
-### Workflow Timing:
-Modify timeout and check intervals in the workflow file:
-```yaml
-# Wait up to 30 minutes (1800 seconds)
-const maxWaitTime = 1800;
-const checkInterval = 30;
-```
-
-### Target Workflows:
-Update the target workflow list:
-```yaml
-const targetWorkflows = ['test', 'npm-publish', 'Deploy Next.js site to Pages'];
-```
+### Workflow Configuration:
+The unified workflow automatically handles all timing and sequencing. No need to modify individual workflow configurations.
 
 ## 🔍 Troubleshooting
 
@@ -175,9 +168,9 @@ const targetWorkflows = ['test', 'npm-publish', 'Deploy Next.js site to Pages'];
 - The script includes rate limiting protection
 - Failed requests are logged for debugging
 
-**Workflow timeout:**
-- Increase `maxWaitTime` if your workflows take longer
-- Check that target workflow names match exactly
+**Workflow issues:**
+- Check GitHub Actions logs for the unified workflow
+- Verify all required secrets are configured
 
 **Bot permissions:**
 - Bot must be added to the channel as administrator

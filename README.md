@@ -459,9 +459,7 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 |-- 🔄 CONTRIBUTING.md
 ├── .github/
 │   └── workflows/
-│       ├── 🔄 npm-publish.yml  # Example CI/CD for publishing (if you fork Hasyx)
-│       └── 🔄 test.yml          # Example CI for running tests (if you fork Hasyx)
-│       └── 🔄 nextjs.yml        # Example CI/CD for building and deploying to GitHub Pages (if you fork Hasyx)
+│       └── 🔄 workflow.yml      # Unified CI/CD workflow for tests, builds, deployments, and releases
 ├── app/
 │   ├── ✨ sidebar.ts
 │   ├── ✨ layout.tsx
