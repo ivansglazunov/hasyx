@@ -91,15 +91,51 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-android-
 
+    - name: Cache Next.js build
+      uses: actions/cache@v4
+      with:
+        path: |
+          .next/cache
+          node_modules/.cache
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nextjs-
+
     - name: Install dependencies
       run: npm ci
+
+    - name: Clear Next.js cache
+      run: |
+        echo "Clearing Next.js cache for Android build..."
+        rm -rf .next || true
 
     - name: Build client for Android
       run: npm run client
       env:
-        NEXT_PUBLIC_BUILD_TARGET: client
+        # Required for Next.js client build to work properly
+        # These variables are essential for static generation and prevent "window is not defined" errors
+        TEST_TOKEN: ${{secrets.TEST_TOKEN}}
+        NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${{secrets.NEXT_PUBLIC_HASURA_GRAPHQL_URL}}
+        HASURA_ADMIN_SECRET: ${{secrets.HASURA_ADMIN_SECRET}}
+        HASURA_JWT_SECRET: ${{secrets.HASURA_JWT_SECRET}}
+        NEXT_PUBLIC_MAIN_URL: ${{secrets.NEXT_PUBLIC_MAIN_URL}}
+        NEXT_PUBLIC_BASE_URL: ${{secrets.NEXT_PUBLIC_BASE_URL}}
+        NEXT_PUBLIC_LOCALE: en
+        NEXTAUTH_SECRET: ${{secrets.NEXTAUTH_SECRET}}
+        GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+        GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+        YANDEX_CLIENT_ID: ${{secrets.YANDEX_CLIENT_ID}}
+        YANDEX_CLIENT_SECRET: ${{secrets.YANDEX_CLIENT_SECRET}}
+        GITHUB_ID: ${{secrets.GITHUB_ID}}
+        GITHUB_SECRET: ${{secrets.GITHUB_SECRET}}
+        FACEBOOK_CLIENT_ID: ${{secrets.FACEBOOK_CLIENT_ID}}
+        FACEBOOK_CLIENT_SECRET: ${{secrets.FACEBOOK_CLIENT_SECRET}}
+        VK_CLIENT_ID: ${{secrets.VK_CLIENT_ID}}
+        VK_CLIENT_SECRET: ${{secrets.VK_CLIENT_SECRET}}
+        RESEND_API_KEY: ${{secrets.RESEND_API_KEY}}
         NODE_ENV: production
-        # Добавьте другие необходимые переменные окружения
+        NEXT_PUBLIC_BUILD_TARGET: client
+        NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
 
     - name: Generate Android assets
       run: npm run cli -- assets
