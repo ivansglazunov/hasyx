@@ -10,16 +10,16 @@ import {
   WandSparkles,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { cn } from "hasyx/lib/utils";
+import { Separator } from "hasyx/components/ui/separator";
+import { Button } from "hasyx/components/ui/button";
+import { Badge } from "hasyx/components/ui/badge";
 import { useTranslations } from "hasyx";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "hasyx/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -28,7 +28,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command";
+} from "hasyx/components/ui/command";
 
 /**
  * Variants for the multi-select component to handle different styles.

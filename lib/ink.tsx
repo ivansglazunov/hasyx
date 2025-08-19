@@ -2,6 +2,15 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { z } from 'zod';
 
+// Initialize debug logging
+let debug: any;
+try {
+  const Debug = require('./debug').default;
+  debug = Debug('hasyx:ink');
+} catch (e) {
+  debug = () => {};
+}
+
 // Компонент для редактирования варианта - показывает список полей с текущими значениями
 function VariantEditor({ 
   schema, 
@@ -173,24 +182,28 @@ function CustomBooleanInput({ label, description, value, error, onChange, onSubm
   useInput((input, key) => {
     const lower = (input || '').toLowerCase();
     if (lower === 'y') {
+      debug(`CustomBooleanInput - setting value to true for ${label}`);
       setLocalValue(true);
       onChange(true);
-      setTimeout(onSubmit, 100);
+      debug(`CustomBooleanInput - value set to true, waiting for useEffect auto-submit`);
       return;
     }
     if (lower === 'n') {
+      debug(`CustomBooleanInput - setting value to false for ${label}`);
       setLocalValue(false);
       onChange(false);
-      setTimeout(onSubmit, 100);
+      debug(`CustomBooleanInput - value set to false, waiting for useEffect auto-submit`);
       return;
     }
     if (key.space || key.left || key.right) {
       const next = !localValue;
+      debug(`CustomBooleanInput - toggling value to ${next} for ${label}`);
       setLocalValue(next);
       onChange(next);
       return;
     }
     if (key.return) {
+      debug(`CustomBooleanInput - Enter pressed for ${label}`);
       onSubmit();
     }
   });
@@ -367,19 +380,6 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
 
   const currentField = fields[currentFieldIndex];
   const currentFieldState = formData[currentField?.key];
-  
-  // Убираем автоматический переход - переход только по Enter
-  // useEffect(() => {
-  //   if (currentField && currentFieldState && !currentFieldState.error && currentFieldState.touched) {
-  //     const timeoutId = setTimeout(() => {
-  //       if (!isProcessingField.current) {
-  //         handleFieldSubmit();
-  //       }
-  //     }, 100);
-  //     
-  //     return () => clearTimeout(timeoutId);
-  //   }
-  // }, [currentFieldState?.value, currentFieldState?.touched, currentFieldState?.error]);
 
   const validateField = useCallback((key: string, value: any): string | undefined => {
     try {
@@ -397,36 +397,39 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
   }, [schema]);
 
   const handleFieldChange = useCallback((value: any) => {
-    console.log(`Form handleFieldChange START:`, { 
+    const logData = { 
       field: currentField?.key, 
       value, 
       isProcessing: isProcessingField.current,
       hasCurrentField: !!currentField
-    });
+    };
+    debug(`Form handleFieldChange START:`, logData);
     
     if (!currentField || isProcessingField.current) {
-      console.log(`Form handleFieldChange BLOCKED:`, { 
+      const blockData = { 
         noField: !currentField, 
         isProcessing: isProcessingField.current 
-      });
+      };
+      debug(`Form handleFieldChange BLOCKED:`, blockData);
       return;
     }
     
-    console.log(`Form handleFieldChange - currentField:`, currentField);
-    console.log(`Form handleFieldChange - lastFieldValue:`, lastFieldValue.current);
+    debug(`Form handleFieldChange - currentField:`, currentField);
+    debug(`Form handleFieldChange - lastFieldValue:`, lastFieldValue.current);
     
     // Предотвращаем повторные вызовы с тем же значением
     if (lastFieldValue.current === value) {
-      console.log(`Form handleFieldChange - skipping duplicate value`);
+      debug(`Form handleFieldChange - skipping duplicate value`);
       return;
     }
     lastFieldValue.current = value;
     
     const error = validateField(currentField.key, value);
-    console.log(`Form validation result:`, { field: currentField.key, value, error });
+    const validationData = { field: currentField.key, value, error };
+    debug(`Form validation result:`, validationData);
     
     setFormData(prev => {
-      console.log(`Form setFormData - prev:`, prev);
+      debug(`Form setFormData - prev:`, prev);
       const newData = {
       ...prev,
       [currentField.key]: {
@@ -435,13 +438,13 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
         touched: true,
       },
       };
-      console.log(`Form setFormData - newData:`, newData);
+      debug(`Form setFormData - newData:`, newData);
       return newData;
     });
   }, [currentField, validateField]);
 
   const handleFieldSubmit = useCallback(() => {
-    console.log(`Form handleFieldSubmit START:`, { 
+    debug(`Form handleFieldSubmit START:`, { 
       currentField: currentField?.key, 
       error: currentFieldState?.error, 
       isProcessing: isProcessingField.current,
@@ -450,7 +453,7 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
     });
     
     if (!currentField || currentFieldState?.error || isProcessingField.current) {
-      console.log(`Form handleFieldSubmit BLOCKED:`, { 
+      debug(`Form handleFieldSubmit BLOCKED:`, { 
         noField: !currentField, 
         hasError: !!currentFieldState?.error, 
         isProcessing: isProcessingField.current 
@@ -458,30 +461,30 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
       return;
     }
 
-    console.log(`Form handleFieldSubmit - proceeding with submit`);
+    debug(`Form handleFieldSubmit - proceeding with submit`);
     isProcessingField.current = true;
     
     if (currentFieldIndex < fields.length - 1) {
-      console.log(`Form handleFieldSubmit - moving to next field`);
+      debug(`Form handleFieldSubmit - moving to next field`);
       setCurrentFieldIndex(prev => {
-        console.log(`Form setCurrentFieldIndex - from ${prev} to ${prev + 1}`);
+        debug(`Form setCurrentFieldIndex - from ${prev} to ${prev + 1}`);
         return prev + 1;
       });
       // Сбрасываем ref для следующего поля
       setTimeout(() => {
-        console.log(`Form handleFieldSubmit - resetting refs`);
+        debug(`Form handleFieldSubmit - resetting refs`);
         lastFieldValue.current = null;
         isProcessingField.current = false;
       }, 100);
     } else {
-      console.log(`Form handleFieldSubmit - all fields complete, calling handleSubmit`);
+      debug(`Form handleFieldSubmit - all fields complete, calling handleSubmit`);
       // Все поля заполнены, показываем финальное подтверждение
       handleSubmit();
     }
   }, [currentField, currentFieldState?.error, currentFieldIndex, fields.length]);
 
   const handleSubmit = useCallback(async () => {
-    console.log(`Form handleSubmit called with formData:`, formData);
+    debug(`Form handleSubmit called with formData:`, formData);
     if (isSubmitting) return;
     
     setIsSubmitting(true);
@@ -491,7 +494,7 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
         finalData[key] = state.value;
       });
       
-      console.log(`Form submitting finalData:`, finalData);
+      debug(`Form submitting finalData:`, finalData);
       await onSubmit(finalData);
     } catch (error) {
       console.error('Form submission error:', error);
@@ -499,6 +502,20 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
       setIsSubmitting(false);
     }
   }, [formData, onSubmit, isSubmitting]);
+
+  // Автоматический переход после обновления состояния
+  useEffect(() => {
+    if (currentField && currentFieldState && !currentFieldState.error && currentFieldState.touched) {
+      const timeoutId = setTimeout(() => {
+        if (!isProcessingField.current) {
+          debug(`Form useEffect - auto-submitting field ${currentField.key}`);
+          handleFieldSubmit();
+        }
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [currentFieldState?.value, currentFieldState?.touched, currentFieldState?.error, currentField, handleFieldSubmit]);
 
   const renderField = useCallback(() => {
     if (!currentField || !isInitialized) return null;
@@ -522,11 +539,7 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
             console.log(`ReferenceSelector onConfig - setting value and moving to next field`);
             handleFieldChange(value);
             // После выбора в ReferenceSelector ВСЕГДА переходим к следующему полю
-            console.log(`ReferenceSelector onConfig - calling handleFieldSubmit in 100ms`);
-            setTimeout(() => {
-              console.log(`ReferenceSelector timeout - calling handleFieldSubmit now`);
-              handleFieldSubmit();
-            }, 100);
+            debug(`ReferenceSelector onConfig - waiting for useEffect auto-submit`);
           }}
           meta={meta}
           onBack={() => {

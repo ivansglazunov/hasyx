@@ -80,6 +80,8 @@ function getEnvEnabledNameForType(typeKey: string): string | undefined {
   return listMeta?.envEnabledName as string | undefined;
 }
 
+
+
 // Функция для генерации .env файла на основе статического маппинга
 function generateEnvFile(config: any, variant: string): string {
   const resolvedConfig = resolveVariant(variant, config);
@@ -103,7 +105,12 @@ function generateEnvFile(config: any, variant: string): string {
       let value: any = (configData as any)[configKey];
       if (value !== undefined && value !== null && value !== '') {
         const pushVar = (envKey: string, v: any) => {
-          // Special-case booleans for specific flags
+          // Check if it's a Jest boolean variable that should be numeric
+          if (envKey.startsWith('JEST_') && typeof v === 'boolean') {
+            envVars.push(`${envKey}=${v ? '1' : '0'}`);
+            return;
+          }
+          // Special-case booleans for specific flags (legacy support)
           if (envKey === 'JEST_LOCAL') {
             if (typeof v === 'boolean') {
               envVars.push(`${envKey}=${v ? '1' : '0'}`);
@@ -132,6 +139,12 @@ function generateEnvFile(config: any, variant: string): string {
         const value: any = (globalConfig as any)[configKey];
         if (value === undefined || value === null || value === '') continue;
         const pushVar = (envKey: string, v: any) => {
+          // Check if it's a Jest boolean variable that should be numeric
+          if (envKey.startsWith('JEST_') && typeof v === 'boolean') {
+            envVars.push(`${envKey}=${v ? '1' : '0'}`);
+            return;
+          }
+          // Special-case booleans for specific flags (legacy support)
           if (envKey === 'JEST_LOCAL') {
             envVars.push(`${envKey}=${v ? '1' : '0'}`);
             return;

@@ -1,0 +1,43 @@
+# Gitpod configuration for Hasyx
+# This file enables automatic Hasyx setup in Gitpod environment
+
+tasks:
+  - name: Setup Hasyx
+    command: |
+      echo "🚀 Setting up Hasyx in Gitpod..."
+      npm install
+      npm run gitpod
+      echo "✅ Hasyx setup completed!"
+      echo "🚀 Starting services..."
+      docker compose up -d
+      echo "📋 Applying database migrations..."
+      npm run migrate
+      echo "🎉 Setup complete! Run 'npm run dev' to start development server"
+    init: |
+      npm install
+      npm run gitpod
+
+ports:
+  - port: 3000
+    onOpen: open-preview
+    name: "Hasyx App"
+  - port: 8080
+    onOpen: open-preview
+    name: "Hasura GraphQL"
+  - port: 9000
+    onOpen: open-preview
+    name: "MinIO Storage"
+  - port: 9001
+    onOpen: open-preview
+    name: "MinIO Console"
+
+vscode:
+  extensions:
+    - ms-vscode.vscode-typescript-next
+    - bradlc.vscode-tailwindcss
+    - esbenp.prettier-vscode
+    - ms-vscode.vscode-json
+    - ms-vscode.vscode-docker
+    - ms-vscode.vscode-git
+    - ms-vscode.vscode-eslint
+    - ms-vscode.vscode-prettier

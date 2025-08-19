@@ -3,11 +3,11 @@ import { hasyxEvent, HasuraEventPayload } from 'hasyx/lib/events';
 import { createApolloClient, HasyxApolloClient } from 'hasyx/lib/apollo/apollo';
 import { Hasyx } from 'hasyx/lib/hasyx/hasyx';
 import { Generator } from 'hasyx/lib/generator';
-import { onScheduleRowChange } from 'hasyx/lib/schedule';
+import { onEventRowChange } from 'hasyx/lib/schedule';
 import Debug from 'hasyx/lib/debug';
 import schema from '@/public/hasura-schema.json';
 
-const debug = Debug('api:events:schedule');
+const debug = Debug('api:events:events');
 const generate = Generator(schema as any);
 
 export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
@@ -28,16 +28,34 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
   const hasyx = new Hasyx(apolloClient, generate);
 
   try {
+    // Callback для записи в debug (в реальных условиях заменяется на бизнес логику)
+    const debugCallback = async (event: any, schedule?: any) => {
+      try {
+        await hasyx.insert({
+          table: 'debug',
+          object: {
+            value: {
+              action: 'event_executed',
+              timestamp: new Date().toISOString(),
+              event: event,
+              schedule: schedule,
+              source: 'api/events/events'
+            }
+          }
+        });
+      } catch (error) {
+        debug('Error writing to debug:', error);
+      }
+    };
+
     // Делегируем основную логику в библиотеку
-    await onScheduleRowChange(hasyx, payload);
+    await onEventRowChange(hasyx, payload, debugCallback);
 
     return { success: true };
   } catch (error: any) {
-    debug('Error processing schedule row change:', error);
+    debug('Error processing event row change:', error);
     return { success: false, error: error?.message || 'unknown error' };
   } finally {
     (apolloClient as any)?.terminate?.();
   }
 });
-
-

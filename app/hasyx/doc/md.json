@@ -1029,11 +1029,6 @@
           "level": 2
         },
         {
-          "title": "Quick Testing with `npx hasyx js`",
-          "url": "/hasyx/doc/CONTRIBUTING#quick-testing-with-npx-hasyx-js",
-          "level": 3
-        },
-        {
           "title": "Testing Aggregation Features",
           "url": "/hasyx/doc/CONTRIBUTING#testing-aggregation-features",
           "level": 2
@@ -1046,16 +1041,6 @@
         {
           "title": "Aggregation Testing Guidelines",
           "url": "/hasyx/doc/CONTRIBUTING#aggregation-testing-guidelines",
-          "level": 3
-        },
-        {
-          "title": "Common Aggregation Patterns to Test",
-          "url": "/hasyx/doc/CONTRIBUTING#common-aggregation-patterns-to-test",
-          "level": 3
-        },
-        {
-          "title": "Debugging Aggregation Issues",
-          "url": "/hasyx/doc/CONTRIBUTING#debugging-aggregation-issues",
           "level": 3
         },
         {
@@ -1079,14 +1064,29 @@
           "level": 3
         },
         {
-          "title": "Contribution Guidelines",
-          "url": "/hasyx/doc/CONTRIBUTING#contribution-guidelines",
-          "level": 2
-        },
-        {
           "title": "Project Structure Philosophy",
           "url": "/hasyx/doc/CONTRIBUTING#project-structure-philosophy",
           "level": 2
+        },
+        {
+          "title": "⚠️ CRITICAL: API Architecture Principle",
+          "url": "/hasyx/doc/CONTRIBUTING#critical-api-architecture-principle",
+          "level": 2
+        },
+        {
+          "title": "Why This Matters",
+          "url": "/hasyx/doc/CONTRIBUTING#why-this-matters",
+          "level": 3
+        },
+        {
+          "title": "Example Implementation",
+          "url": "/hasyx/doc/CONTRIBUTING#example-implementation",
+          "level": 3
+        },
+        {
+          "title": "Benefits of This Approach",
+          "url": "/hasyx/doc/CONTRIBUTING#benefits-of-this-approach",
+          "level": 3
         },
         {
           "title": "Specific Guidance for `app/payments/tbank/options.ts`",
@@ -1104,28 +1104,8 @@
           "level": 2
         },
         {
-          "title": "CloudFlare DNS Management (`lib/cloudflare.ts`)",
-          "url": "/hasyx/doc/CONTRIBUTING#cloudflare-dns-management-libcloudflarets",
-          "level": 3
-        },
-        {
-          "title": "SSL Certificate Management (`lib/ssl.ts`)",
-          "url": "/hasyx/doc/CONTRIBUTING#ssl-certificate-management-libsslts",
-          "level": 3
-        },
-        {
-          "title": "Nginx Configuration (`lib/nginx.ts`)",
-          "url": "/hasyx/doc/CONTRIBUTING#nginx-configuration-libnginxts",
-          "level": 3
-        },
-        {
-          "title": "Integrated Subdomain Management (`lib/subdomain.ts`)",
-          "url": "/hasyx/doc/CONTRIBUTING#integrated-subdomain-management-libsubdomaints",
-          "level": 3
-        },
-        {
-          "title": "Configuration and Usage",
-          "url": "/hasyx/doc/CONTRIBUTING#configuration-and-usage",
+          "title": "Quick Setup",
+          "url": "/hasyx/doc/CONTRIBUTING#quick-setup",
           "level": 3
         },
         {
@@ -6497,6 +6477,44 @@
           "title": "Note",
           "url": "/hasyx/doc/TINKOFF_API#note",
           "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "TODO",
+      "url": "/hasyx/doc/TODO",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Тестирование",
+          "url": "/hasyx/doc/TODO#",
+          "level": 2
+        },
+        {
+          "title": "1. Промаркировать тесты, требующие запущенного приложения",
+          "url": "/hasyx/doc/TODO#1",
+          "level": 3
+        },
+        {
+          "title": "2. Применить jest-skip во всех тестах проекта",
+          "url": "/hasyx/doc/TODO#2-jest-skip",
+          "level": 3
+        },
+        {
+          "title": "3. Ручное тестирование VTB интеграции",
+          "url": "/hasyx/doc/TODO#3-vtb",
+          "level": 3
+        },
+        {
+          "title": "4. Тестирование API endpoints",
+          "url": "/hasyx/doc/TODO#4-api-endpoints",
+          "level": 3
+        },
+        {
+          "title": "5. Реализация системы бенчмаркинга и мониторинга",
+          "url": "/hasyx/doc/TODO#5",
+          "level": 3
         }
       ],
       "level": 1
@@ -14349,6 +14367,179 @@
       "level": 1
     },
     {
+      "title": "Contributing",
+      "url": "/hasyx/doc/CONTRIBUTING",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Contributing",
+          "url": "/hasyx/doc/CONTRIBUTING#contributing",
+          "level": 1
+        },
+        {
+          "title": "Development Setup",
+          "url": "/hasyx/doc/CONTRIBUTING#development-setup",
+          "level": 2
+        },
+        {
+          "title": "Debug Information",
+          "url": "/hasyx/doc/CONTRIBUTING#debug-information",
+          "level": 2
+        },
+        {
+          "title": "Database Debug Logging",
+          "url": "/hasyx/doc/CONTRIBUTING#database-debug-logging",
+          "level": 3
+        },
+        {
+          "title": "Running Tests",
+          "url": "/hasyx/doc/CONTRIBUTING#running-tests",
+          "level": 2
+        },
+        {
+          "title": "Test Environment Guidelines",
+          "url": "/hasyx/doc/CONTRIBUTING#test-environment-guidelines",
+          "level": 3
+        },
+        {
+          "title": "Code Style",
+          "url": "/hasyx/doc/CONTRIBUTING#code-style",
+          "level": 2
+        },
+        {
+          "title": "⚠️ CRITICAL: Table Naming in Hasyx",
+          "url": "/hasyx/doc/CONTRIBUTING#critical-table-naming-in-hasyx",
+          "level": 2
+        },
+        {
+          "title": "✅ CORRECT - Use underscores:",
+          "url": "/hasyx/doc/CONTRIBUTING#correct-use-underscores",
+          "level": 3
+        },
+        {
+          "title": "❌ INCORRECT - Do NOT use dots:",
+          "url": "/hasyx/doc/CONTRIBUTING#incorrect-do-not-use-dots",
+          "level": 3
+        },
+        {
+          "title": "Schema to Table Name Mapping:",
+          "url": "/hasyx/doc/CONTRIBUTING#schema-to-table-name-mapping",
+          "level": 3
+        },
+        {
+          "title": "Commit Messages",
+          "url": "/hasyx/doc/CONTRIBUTING#commit-messages",
+          "level": 2
+        },
+        {
+          "title": "Pull Requests",
+          "url": "/hasyx/doc/CONTRIBUTING#pull-requests",
+          "level": 2
+        },
+        {
+          "title": "Debugging Data Issues",
+          "url": "/hasyx/doc/CONTRIBUTING#debugging-data-issues",
+          "level": 2
+        },
+        {
+          "title": "Testing Aggregation Features",
+          "url": "/hasyx/doc/CONTRIBUTING#testing-aggregation-features",
+          "level": 2
+        },
+        {
+          "title": "Quick Aggregation Tests",
+          "url": "/hasyx/doc/CONTRIBUTING#quick-aggregation-tests",
+          "level": 3
+        },
+        {
+          "title": "Aggregation Testing Guidelines",
+          "url": "/hasyx/doc/CONTRIBUTING#aggregation-testing-guidelines",
+          "level": 3
+        },
+        {
+          "title": "Writing Database Migrations",
+          "url": "/hasyx/doc/CONTRIBUTING#writing-database-migrations",
+          "level": 2
+        },
+        {
+          "title": "Migration File Structure",
+          "url": "/hasyx/doc/CONTRIBUTING#migration-file-structure",
+          "level": 3
+        },
+        {
+          "title": "Running Migrations with Filters",
+          "url": "/hasyx/doc/CONTRIBUTING#running-migrations-with-filters",
+          "level": 3
+        },
+        {
+          "title": "Core Migration Principles",
+          "url": "/hasyx/doc/CONTRIBUTING#core-migration-principles",
+          "level": 3
+        },
+        {
+          "title": "Project Structure Philosophy",
+          "url": "/hasyx/doc/CONTRIBUTING#project-structure-philosophy",
+          "level": 2
+        },
+        {
+          "title": "⚠️ CRITICAL: API Architecture Principle",
+          "url": "/hasyx/doc/CONTRIBUTING#critical-api-architecture-principle",
+          "level": 2
+        },
+        {
+          "title": "Why This Matters",
+          "url": "/hasyx/doc/CONTRIBUTING#why-this-matters",
+          "level": 3
+        },
+        {
+          "title": "Example Implementation",
+          "url": "/hasyx/doc/CONTRIBUTING#example-implementation",
+          "level": 3
+        },
+        {
+          "title": "Benefits of This Approach",
+          "url": "/hasyx/doc/CONTRIBUTING#benefits-of-this-approach",
+          "level": 3
+        },
+        {
+          "title": "Specific Guidance for `app/payments/tbank/options.ts`",
+          "url": "/hasyx/doc/CONTRIBUTING#specific-guidance-for-apppaymentstbankoptionsts",
+          "level": 2
+        },
+        {
+          "title": "`generateReceipt` Function Stub",
+          "url": "/hasyx/doc/CONTRIBUTING#generatereceipt-function-stub",
+          "level": 3
+        },
+        {
+          "title": "DNS and SSL Management",
+          "url": "/hasyx/doc/CONTRIBUTING#dns-and-ssl-management",
+          "level": 2
+        },
+        {
+          "title": "Quick Setup",
+          "url": "/hasyx/doc/CONTRIBUTING#quick-setup",
+          "level": 3
+        },
+        {
+          "title": "Testing Philosophy",
+          "url": "/hasyx/doc/CONTRIBUTING#testing-philosophy",
+          "level": 3
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/CONTRIBUTING#testing",
+          "level": 2
+        },
+        {
+          "title": "Adding Tests for New Features (e.g., Database Operators)",
+          "url": "/hasyx/doc/CONTRIBUTING#adding-tests-for-new-features-eg-database-operators",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "i18n checklist for browser TSX components",
       "url": "/hasyx/doc/translations",
       "level": 3
@@ -14755,5 +14946,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-08-18T04:20:04.727Z"
+  "lastUpdated": "2025-08-19T09:37:12.719Z"
 }

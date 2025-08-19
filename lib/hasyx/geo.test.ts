@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
-import { _authorize } from '@/lib/users/auth';
+import { _authorize } from 'hasyx/lib/users/auth';
 import { gql } from '@apollo/client/core';
 
 const HASURA_GRAPHQL_URL = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!;
@@ -42,7 +42,7 @@ function wktPolygonAround(lon: number, lat: number, sizeDeg = 0.001): string {
   return `SRID=4326;${wkt}`;
 }
 
-(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Geo client via Hasyx (mark/path/zone)', () => {
+(!!+(process.env?.JEST_LOCAL || '') ? describe.skip : describe)('Geo client via Hasyx (mark/path/zone)', () => {
   it('mark: insert/select/update/delete via GraphQL client', async () => {
     const userId = await ensureUser('geo-client-mark@test.local', 'GeoClientMark');
     const { hasyx, apollo } = await _authorize(userId);

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery } from 'hasyx';
-import { MultiSelect } from '@/components/ui/multi-select';
+import { MultiSelect } from 'hasyx/components/ui/multi-select';
 import { User, Users } from 'lucide-react';
 
 interface MultiSelectHasyxProps {

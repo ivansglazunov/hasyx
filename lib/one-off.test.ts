@@ -22,8 +22,8 @@ function createAdminHasyx(): Hasyx {
   return new Hasyx(adminApolloClient, generate);
 }
 
-(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Schedule one-off end-to-end', () => {
-  it('schedules one-off and receives callback to /api/schedule-one-off with debug row persisted', async () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('One-off API integration', () => {
+  it('schedules one-off and receives callback to /api/one-off with debug row persisted', async () => {
     const adminHasyx = createAdminHasyx();
     const markerId = uuidv4();
 
@@ -31,7 +31,7 @@ function createAdminHasyx(): Hasyx {
       const scheduleAtEpochSec = Math.floor(Date.now() / 1000) + 60; // +1 minute
       await adminHasyx.scheduleOneOff({
         scheduleAtEpochSec,
-        webhookPath: '/api/schedule-one-off',
+        webhookPath: '/api/one-off',
         payload: {
           client_event_id: markerId,
           source: 'schedule-one-off.test',

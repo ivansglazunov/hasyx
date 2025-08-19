@@ -55,7 +55,7 @@ import {
 } from './validation';
 
 export { 
-  assetsCommand, eventsCommand, unbuildCommand, localCommand, vercelCommand, processLogs, processConfiguredDiffs, processConfiguredStates, envCommand };
+  assetsCommand, eventsCommand, unbuildCommand, localCommand, vercelCommand, processLogs, processConfiguredDiffs, processConfiguredStates, envCommand, gitpodCommand };
 
 // Exported lists used by build-templates.ts to stage raw TS/TSX for publishing
 export const LIB_SCAFFOLD_FILES: string[] = [
@@ -97,6 +97,191 @@ export const configCommand = async (options: { silent?: boolean } = {}) => {
     process.exit(result.status ?? 1);
   }
 };
+
+// Gitpod command: automatically configure Hasyx for Gitpod environment
+export const gitpodCommand = async () => {
+  debug('Executing "gitpod" command');
+  
+  // Check if running in Gitpod environment
+  if (!process.env.GITPOD_WORKSPACE_ID) {
+    console.error('❌ This command must be run in Gitpod environment');
+    console.error('💡 Gitpod environment variables not detected');
+    process.exit(1);
+  }
+
+  console.log('🚀 Setting up Hasyx for Gitpod environment...');
+  
+  try {
+    // Get Gitpod-specific configuration
+    const gitpodConfig = await generateGitpodConfig();
+    
+    // Update or create hasyx.config.json
+    await updateHasyxConfig(gitpodConfig);
+    
+    // Generate .env and docker-compose.yml using existing functions
+    console.log('📝 Generating .env and docker-compose.yml...');
+    await generateEnvAndDockerCompose();
+    
+    console.log('✅ Gitpod configuration completed successfully!');
+    console.log('🚀 Next steps:');
+    console.log('   1. Run "docker compose up -d" to start services');
+    console.log('   2. Run "npm run migrate" to apply database migrations');
+    console.log('   3. Run "npm run dev" to start development server');
+    
+  } catch (error) {
+    console.error('❌ Gitpod setup failed:', error);
+    debug('Gitpod command error:', error);
+    process.exit(1);
+  }
+};
+
+// Generate Gitpod-specific configuration
+async function generateGitpodConfig() {
+  const workspaceId = process.env.GITPOD_WORKSPACE_ID;
+  const workspaceUrl = process.env.GITPOD_WORKSPACE_URL || 'gitpod.io';
+  
+  // Generate secure random secrets
+  const crypto = await import('crypto');
+  const generateSecret = (length: number = 32) => crypto.randomBytes(length).toString('hex');
+  
+  return {
+    variant: 'gitpod',
+    variants: {
+      gitpod: {
+        host: 'gitpod',
+        hasura: 'gitpod',
+        pg: 'gitpod',
+        storage: 'gitpod',
+        nextAuthSecrets: 'gitpod'
+      }
+    },
+    hosts: {
+      gitpod: {
+        port: 3000,
+        url: `https://3000-${workspaceId}.ws-${workspaceUrl}`,
+        clientOnly: false,
+        watchtower: false
+      }
+    },
+    hasura: {
+      gitpod: {
+        url: 'http://localhost:8080/v1/graphql',
+        secret: generateSecret(32),
+        jwtSecret: JSON.stringify({
+          type: 'HS256',
+          key: generateSecret(32)
+        }),
+        eventSecret: generateSecret(32)
+      }
+    },
+    pg: {
+      gitpod: {
+        url: 'postgres://postgres:postgrespassword@localhost:5432/hasyx?sslmode=disable'
+      }
+    },
+    storage: {
+      gitpod: {
+        provider: 'minio',
+        bucket: 'hasyx',
+        region: 'us-east-1',
+        useLocal: true,
+        endpoint: 'http://localhost:9000',
+        accessKeyId: 'minioadmin',
+        secretAccessKey: 'minioadmin',
+        forcePathStyle: true,
+        useAntivirus: false,
+        useImageManipulation: false
+      }
+    },
+    nextAuthSecrets: {
+      gitpod: {
+        secret: generateSecret(32),
+        url: `https://3000-${workspaceId}.ws-${workspaceUrl}`
+      }
+    }
+  };
+}
+
+// Update or create hasyx.config.json
+async function updateHasyxConfig(gitpodConfig: any) {
+  const fs = await import('fs-extra');
+  const path = await import('path');
+  
+  const configPath = path.join(process.cwd(), 'hasyx.config.json');
+  let currentConfig: any = {};
+  
+  try {
+    if (fs.existsSync(configPath)) {
+      const content = fs.readFileSync(configPath, 'utf8');
+      currentConfig = JSON.parse(content);
+      console.log('📖 Found existing hasyx.config.json, updating...');
+    } else {
+      console.log('📝 Creating new hasyx.config.json...');
+    }
+  } catch (error) {
+    console.warn('⚠️ Could not read existing config, creating new one');
+    debug('Error reading existing config:', error);
+  }
+  
+  // Merge Gitpod configuration with existing config
+  const updatedConfig = {
+    ...currentConfig,
+    ...gitpodConfig,
+    // Ensure variants object is properly merged
+    variants: {
+      ...currentConfig.variants,
+      ...gitpodConfig.variants
+    },
+    // Ensure other objects are properly merged
+    hosts: {
+      ...currentConfig.hosts,
+      ...gitpodConfig.hosts
+    },
+    hasura: {
+      ...currentConfig.hasura,
+      ...gitpodConfig.hasura
+    },
+    pg: {
+      ...currentConfig.pg,
+      ...gitpodConfig.pg
+    },
+    storage: {
+      ...currentConfig.storage,
+      ...gitpodConfig.storage
+    },
+    nextAuthSecrets: {
+      ...currentConfig.nextAuthSecrets,
+      ...gitpodConfig.nextAuthSecrets
+    }
+  };
+  
+  // Write updated configuration
+  await fs.writeJson(configPath, updatedConfig, { spaces: 2 });
+  console.log('✅ hasyx.config.json updated successfully');
+}
+
+// Generate .env and docker-compose.yml using existing functions
+async function generateEnvAndDockerCompose() {
+  try {
+    // Import and call generateEnv
+    const { generateEnv } = await import('./config/env');
+    await generateEnv();
+    console.log('✅ .env file generated');
+  } catch (error) {
+    console.error('❌ Failed to generate .env:', error);
+    throw error;
+  }
+  
+  try {
+    // Import and call generateDockerCompose
+    const { generateDockerCompose } = await import('./config/docker-compose');
+    await generateDockerCompose();
+    console.log('✅ docker-compose.yml generated');
+  } catch (error) {
+    console.error('❌ Failed to generate docker-compose.yml:', error);
+    throw error;
+  }
+}
 
 /**
  * GitHub sync command: purge all repo secrets and sync from .env
@@ -489,7 +674,43 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
       console.error(`❌ Failed to process ${targetPath} from template ${templateName}: ${error}`);
     }
   }
-  // Do not auto-create .env here; it must be generated by `npm run config -- --silent`
+  // Create a minimal .env file to avoid errors during initialization
+  try {
+    const envPath = path.join(targetDir, '.env');
+    if (!fs.existsSync(envPath) || forceReinit) {
+      const minimalEnvContent = `# Environment variables for ${projectName}
+# This file was auto-generated by hasyx init
+# Please configure your environment variables here
+
+# Database
+# DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+
+# NextAuth
+# NEXTAUTH_SECRET=your-secret-here
+# NEXTAUTH_URL=http://localhost:3000
+
+# Hasura
+# HASURA_GRAPHQL_ENDPOINT=http://localhost:8080/v1/graphql
+# HASURA_GRAPHQL_ADMIN_SECRET=your-admin-secret
+
+# OAuth Providers (configure as needed)
+# GITHUB_ID=your-github-client-id
+# GITHUB_SECRET=your-github-client-secret
+
+# Other services
+# TELEGRAM_BOT_TOKEN=your-telegram-bot-token
+`;
+      await fs.writeFile(envPath, minimalEnvContent);
+      console.log('✅ Created: .env (with template variables)');
+      debug('Created minimal .env file with template variables');
+    } else {
+      console.log('⏩ Skipped (already exists): .env');
+      debug('.env file already exists, skipped creation');
+    }
+  } catch (error) {
+    console.warn(`⚠️ Failed to create .env file: ${error}`);
+    debug(`Error creating .env file: ${error}`);
+  }
 
   // Special handling for CONTRIBUTING.md
   debug('Special handling for CONTRIBUTING.md');
@@ -522,6 +743,56 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
   } catch (error) {
     console.error(`❌ Failed to process CONTRIBUTING.md: ${error}`);
     debug(`Error processing CONTRIBUTING.md: ${error}`);
+  }
+
+  // Create .gitpod.yml for Gitpod integration
+  debug('Creating .gitpod.yml for Gitpod integration');
+  try {
+    const gitpodPath = path.join(targetDir, '.gitpod.yml');
+    const gitpodContent = `# Gitpod configuration for ${projectName}
+# This file was auto-generated by hasyx init
+
+tasks:
+  - name: Setup Hasyx
+    command: |
+      echo "🚀 Setting up Hasyx in Gitpod..."
+      npm install
+      npm run gitpod
+      echo "✅ Hasyx setup completed!"
+      echo "🚀 Starting services..."
+      docker compose up -d
+      echo "📋 Applying database migrations..."
+      npm run migrate
+      echo "🎉 Setup complete! Run 'npm run dev' to start development server"
+    init: |
+      npm install
+      npm run gitpod
+
+ports:
+  - port: 3000
+    onOpen: open-preview
+  - port: 8080
+    onOpen: open-preview
+  - port: 9000
+    onOpen: open-preview
+  - port: 9001
+    onOpen: open-preview
+
+vscode:
+  extensions:
+    - ms-vscode.vscode-typescript-next
+    - bradlc.vscode-tailwindcss
+    - esbenp.prettier-vscode
+    - ms-vscode.vscode-json
+    - ms-vscode.vscode-docker
+`;
+    
+    await fs.writeFile(gitpodPath, gitpodContent);
+    console.log('✅ Created: .gitpod.yml (for Gitpod integration)');
+    debug('Created .gitpod.yml for Gitpod integration');
+  } catch (error) {
+    console.warn(`⚠️ Failed to create .gitpod.yml: ${error}`);
+    debug(`Error creating .gitpod.yml: ${error}`);
   }
 
   // Special handling for tsconfig files to replace 'hasyx' with project name
@@ -709,7 +980,8 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
         "logs-diffs": `npx ${packageName} logs-diffs`,
         "logs-states": `npx ${packageName} logs-states`,
         "config": `npx ${packageName} config`,
-        "env": `npx ${packageName} env`
+        "env": `npx ${packageName} env`,
+        "gitpod": `npx ${packageName} gitpod`
       };
       
       let scriptsModified = false;
@@ -1807,6 +2079,14 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
     .option('--silent', 'Run in silent mode: only generate .env and docker-compose.yml and exit')
     .action(async (opts: { silent?: boolean }) => {
       await configCommand({ silent: !!opts?.silent });
+    });
+
+  // Gitpod command
+  program
+    .command('gitpod')
+    .description('Automatically configure Hasyx for Gitpod environment')
+    .action(async () => {
+      await gitpodCommand();
     });
 
   // Docker command

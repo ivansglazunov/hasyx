@@ -9,9 +9,9 @@ import { Textarea } from 'hasyx/components/ui/textarea';
 import { Label } from 'hasyx/components/ui/label';
 import { ScrollArea } from 'hasyx/components/ui/scroll-area';
 import { Plus, MessageSquare } from 'lucide-react';
-import { MultiSelectHasyx } from '@/components/multi-select-hasyx';
+import { MultiSelectHasyx } from 'hasyx/components/multi-select-hasyx';
 import { useTranslations } from 'hasyx';
-import Room from '@/components/room';
+import Room from 'hasyx/components/room';
 
 interface Room {
   id: string;

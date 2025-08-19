@@ -1,6 +1,6 @@
 {
   "name": "hasyx",
-  "version": "0.2.0-alpha.21",
+  "version": "0.2.0-alpha.22",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.deep.foundation/",
   "engines": {
@@ -48,6 +48,7 @@
     "logs-states": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli-hasyx.ts logs-states",
     "env": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli.ts env",
     "config": "npx tsx lib/config.tsx",
+    "gitpod": "npx hasyx gitpod",
     "typedoc": "npx typedoc --out public/typedoc --entryPointStrategy expand --exclude '**/node_modules/**' --exclude '**/.next/**' lib components hooks"
   },
   "main": "lib/index.js",
@@ -162,6 +163,7 @@
     "dotenv": "16.5.0",
     "echarts": "5.6.0",
     "embla-carousel-react": "8.6.0",
+    "eruda": "^3.4.3",
     "firebase": "11.7.1",
     "form-data": "^4.0.4",
     "fs-extra": "11.3.0",
@@ -223,6 +225,7 @@
     "ts-node": "10.9.2",
     "tsx": "4.19.4",
     "tw-animate-css": "1.2.5",
+    "typedoc": "^0.28.9",
     "typescript": "5",
     "use-m": "8.10.25",
     "utf-8-validate": "6.0.5",
@@ -233,12 +236,12 @@
     "ws": "8.18.2",
     "yaml": "^2.8.0",
     "zod": "^4.0.15",
-    "zustand": "^5.0.6",
-    "eruda": "^3.4.3",
-    "typedoc": "^0.28.9",
-    "zod-to-json-schema": "^3.24.6"
+    "zustand": "^5.0.6"
   },
   "bin": {
     "hasyx": "./lib/cli.js"
+  },
+  "devDependencies": {
+    "zod-to-json-schema": "^3.24.6"
   }
 }

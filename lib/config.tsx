@@ -1016,12 +1016,32 @@ hasyxConfig.global = z.object({
       .string()
       .min(1, 'Please enter a valid Test Token')
       .describe('Test token to be exposed as TEST_TOKEN for selected variant'),
+    app: z
+      .boolean()
+      .describe('Enable app-dependent tests (JEST_APP). Tests that need running app or Hasura events/cron triggers will check this flag.')
+      .meta({ numericBoolean: true }),
+    hasura: z
+      .boolean()
+      .describe('Enable Hasura-dependent tests (JEST_HASURA). Tests that need direct Hasura connection will check this flag.')
+      .meta({ numericBoolean: true }),
+    files: z
+      .boolean()
+      .describe('Enable files-dependent tests (JEST_FILES). Tests that need file storage or file operations will check this flag.')
+      .meta({ numericBoolean: true }),
+    instance: z
+      .boolean()
+      .describe('Enable instance tests (JEST_INSTANCE). Tests that create temporary project instances and run CLI commands will check this flag.')
+      .meta({ numericBoolean: true }),
   }).meta({
     type: 'testing-config',
     title: 'Testing Configuration',
-    description: 'Provide a token used by tests. When a variant selects a testing config, its token is mapped to TEST_TOKEN.',
+    description: 'Configure test behavior for different components. App: running application, Hasura: database connection, Files: file storage operations, Instance: CLI and project generation.',
     envMapping: {
       token: 'TEST_TOKEN',
+      app: 'JEST_APP',
+      hasura: 'JEST_HASURA',
+      files: 'JEST_FILES',
+      instance: 'JEST_INSTANCE',
     },
   });
 
@@ -1033,7 +1053,7 @@ hasyxConfig.global = z.object({
     type: 'keys',
     default: ['local', 'dev', 'prod'],
     add: hasyxConfig.testing,
-    descriptionTemplate: (data: any) => (data?.token ? 'token set' : 'no token'),
+    descriptionTemplate: (data: any) => `${data?.token ? 'token set' : 'no token'}${data?.app ? ' + app' : ''}${data?.hasura ? ' + hasura' : ''}${data?.files ? ' + files' : ''}${data?.instance ? ' + instance' : ''}`,
   });
 
 // DNS Schema
@@ -1412,6 +1432,8 @@ hasyxConfig.file = z.object({
 if (require.main === module) {
   const args = process.argv.slice(2);
   const isSilent = args.includes('--silent') || args.includes('-s');
+  
+  // Initialize debug logging
   if (isSilent) {
     (async () => {
       try {
@@ -1469,6 +1491,7 @@ if (require.main === module) {
 
       const onChange = async (newConfig: any) => {
         fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 2));
+        
         // Generate side artifacts separately to keep UI isolated from mechanics
         try {
           const { generateEnv } = await import('./config/env');
@@ -1485,6 +1508,12 @@ if (require.main === module) {
           console.error('❌ Failed to update docker-compose.yml:', error);
         }
       };
+
+      if (process.env.DEBUG) {
+        console.log('🎭 Starting config UI with schema and config');
+        console.log('🔧 Schema keys:', Object.keys(hasyxConfig.file.shape));
+        console.log('📋 Current config keys:', Object.keys(currentConfig));
+      }
 
       await renderConfigWith({ fileSchema: hasyxConfig.file, config: currentConfig, onChange });
     })();

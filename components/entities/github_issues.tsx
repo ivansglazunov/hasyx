@@ -11,7 +11,7 @@ import { X, GitBranch, MessageCircle, Calendar, User, Tag, ExternalLink, Link, A
 import { CytoNode as CytoNodeComponent, CytoEdge } from 'hasyx/lib/cyto';
 import { cn } from 'hasyx/lib/utils';
 import { parseIssue } from 'hasyx/lib/issues';
-import { useDependencyDrawingStore } from '@/hooks/dependency-drawing-store';
+import { useDependencyDrawingStore } from 'hasyx/hooks/dependency-drawing-store';
 import { updateIssueRelations } from 'hasyx/lib/issue-relations';
 import { useGraph } from 'hasyx/lib/cyto';
 import { useHasyx } from 'hasyx';

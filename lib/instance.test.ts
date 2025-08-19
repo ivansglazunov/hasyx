@@ -1,10 +1,11 @@
-import { describe, it, expect } from '@jest/globals';
+import { it, expect } from '@jest/globals';
 import fs from 'fs-extra';
 import * as nodeFs from 'node:fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
 import Debug from './debug';
+import { jestSkip } from './jest-skip';
 
 const debug = Debug('test:instance');
 
@@ -135,7 +136,7 @@ function buildInDirectory(targetDir: string) {
   }
 }
 
-(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Child project instance initialization (local tsx)', () => {
+jestSkip(!!+(process.env.JEST_INSTANCE || ''))('Child project instance initialization (local tsx)', () => {
   it('should create and initialize a temp child project via local CLI and verify artifacts', async () => {
     // 1) Prepare isolated temp directory (unique per test) and ensure cleanup at the end
     const tempProjectDir = generateTempProjectDir();
@@ -191,10 +192,11 @@ function buildInDirectory(targetDir: string) {
       expect(tsconfigContent.includes(`"${tempProjectName}": ["./lib/index.ts"]`)).toBe(true);
       expect(tsconfigContent.includes(`"${tempProjectName}/*": ["./*"]`)).toBe(true);
 
-      // 6) Generate env and compose, then check .env exists and not empty
-      runConfigSilentInDirectory(tempProjectDir);
+      // 6) Check that .env was created by init and contains template content
       const envContent = nodeFs.readFileSync(path.join(tempProjectDir, '.env'), 'utf-8');
       expect(envContent.length).toBeGreaterThan(0);
+      expect(envContent.includes('# Environment variables for')).toBe(true);
+      expect(envContent.includes(tempProjectName)).toBe(true);
 
       // 7) Install dependencies (must succeed)
       npmCiInDirectory(tempProjectDir);
