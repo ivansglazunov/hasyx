@@ -238,13 +238,10 @@ jobs:
             NEXT_PUBLIC_APP_NAME=${{ secrets.NEXT_PUBLIC_APP_NAME }}
             NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=${{ secrets.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME }}
 
-  mobile-build:
+  android-build:
     runs-on: ubuntu-latest
     needs: [test, npm-publish, deploy-nextjs]
     if: success()
-    strategy:
-      matrix:
-        platform: [android, ios]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -255,32 +252,24 @@ jobs:
           node-version: '22.14'
           cache: 'npm'
 
-      - name: Setup Java (Android)
-        if: matrix.platform == 'android'
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Android SDK (Android)
-        if: matrix.platform == 'android'
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v2
-
-      - name: Setup Xcode (iOS)
-        if: matrix.platform == 'ios'
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: 'latest'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Clear Next.js cache
         run: |
-          echo "Clearing Next.js cache for ${{ matrix.platform }} build..."
+          echo "Clearing Next.js cache for Android build..."
           rm -rf .next || true
 
-      - name: Build client for mobile
+      - name: Build client for Android
         run: npm run client
         env:
           NEXT_PUBLIC_JWT_AUTH: '1'
@@ -314,28 +303,20 @@ jobs:
           NEXT_PUBLIC_BUILD_TARGET: client
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
 
-      - name: Generate mobile assets
+      - name: Generate Android assets
         run: npm run cli -- assets
 
-      - name: Sync with mobile project
-        run: npx cap sync ${{ matrix.platform }}
+      - name: Sync with Android project
+        run: npx cap sync android
 
-      - name: Build Android APK
-        if: matrix.platform == 'android'
+      - name: Build with Gradle
         run: |
           cd android
           ./gradlew assembleDebug --no-daemon --stacktrace
         env:
           JAVA_HOME: ${{ env.JAVA_HOME }}
 
-      - name: Build iOS project
-        if: matrix.platform == 'ios'
-        run: |
-          cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath build clean build
-
-      - name: Find Android APK files
-        if: matrix.platform == 'android'
+      - name: Find APK files
         id: find_apk
         run: |
           cd android
@@ -343,7 +324,6 @@ jobs:
           APK_NAME="app-debug.apk"
           
           if [ -n "$APK_PATH" ]; then
-            # Remove the leading './' from the path to avoid GitHub Actions path issues
             CLEAN_PATH=$(echo "$APK_PATH" | sed 's|^\./||')
             echo "apk_path=$CLEAN_PATH" >> $GITHUB_OUTPUT
             echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
@@ -354,15 +334,81 @@ jobs:
           fi
 
       - name: Upload Android APK artifact
-        if: matrix.platform == 'android'
         uses: actions/upload-artifact@v4
         with:
           name: android-apk-debug
           path: android/${{ steps.find_apk.outputs.apk_path }}
           retention-days: 30
 
+  ios-build:
+    runs-on: macos-latest
+    needs: [test, npm-publish, deploy-nextjs]
+    if: success()
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.14'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Clear Next.js cache
+        run: |
+          echo "Clearing Next.js cache for iOS build..."
+          rm -rf .next || true
+
+      - name: Build client for iOS
+        run: npm run client
+        env:
+          NEXT_PUBLIC_JWT_AUTH: '1'
+          TEST_TOKEN: ${{secrets.TEST_TOKEN}}
+          NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${{secrets.NEXT_PUBLIC_HASURA_GRAPHQL_URL}}
+          HASURA_ADMIN_SECRET: ${{secrets.HASURA_ADMIN_SECRET}}
+          HASURA_JWT_SECRET: ${{secrets.HASURA_JWT_SECRET}}
+          HASURA_EVENT_SECRET: ${{secrets.HASURA_EVENT_SECRET}}
+          NEXT_PUBLIC_MAIN_URL: ${{secrets.NEXT_PUBLIC_MAIN_URL}}
+          NEXT_PUBLIC_BASE_URL: ${{secrets.NEXT_PUBLIC_BASE_URL}}
+          NEXT_PUBLIC_APP_URL: ${{secrets.NEXT_PUBLIC_APP_URL}}
+          NEXT_PUBLIC_API_URL: ${{secrets.NEXT_PUBLIC_API_URL}}
+          NEXT_PUBLIC_LOCALE: en
+          NEXTAUTH_SECRET: ${{secrets.NEXTAUTH_SECRET}}
+          GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+          GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+          YANDEX_CLIENT_ID: ${{secrets.YANDEX_CLIENT_ID}}
+          YANDEX_CLIENT_SECRET: ${{secrets.YANDEX_CLIENT_SECRET}}
+          GITHUB_ID: ${{secrets.GITHUB_ID}}
+          GITHUB_SECRET: ${{secrets.GITHUB_SECRET}}
+          FACEBOOK_CLIENT_ID: ${{secrets.FACEBOOK_CLIENT_ID}}
+          FACEBOOK_CLIENT_SECRET: ${{secrets.FACEBOOK_CLIENT_SECRET}}
+          VK_CLIENT_ID: ${{secrets.VK_CLIENT_ID}}
+          VK_CLIENT_SECRET: ${{secrets.VK_CLIENT_SECRET}}
+          RESEND_API_KEY: ${{secrets.RESEND_API_KEY}}
+          TELEGRAM_LOGIN_BOT_TOKEN: ${{secrets.TELEGRAM_LOGIN_BOT_TOKEN}}
+          POSTGRES_URL: ${{secrets.POSTGRES_URL}}
+          DATABASE_URL: ${{secrets.DATABASE_URL}}
+          BUILD_TIME: ${{ github.event.head_commit.timestamp }}
+          NODE_ENV: production
+          NEXT_PUBLIC_BUILD_TARGET: client
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+
+      - name: Generate iOS assets
+        run: npm run cli -- assets
+
+      - name: Sync with iOS project
+        run: npx cap sync ios
+
+      - name: Build iOS project
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath build clean build
+
       - name: Upload iOS build artifact
-        if: matrix.platform == 'ios'
         uses: actions/upload-artifact@v4
         with:
           name: ios-build
@@ -371,7 +417,7 @@ jobs:
 
   create-release:
     runs-on: ubuntu-latest
-    needs: [test, npm-publish, deploy-nextjs, docker-build, mobile-build]
+    needs: [test, npm-publish, deploy-nextjs, docker-build, android-build]
     if: success()
     permissions:
       contents: write
@@ -516,7 +562,7 @@ jobs:
 
   telegram-notification:
     runs-on: ubuntu-latest
-    needs: [test, npm-publish, deploy-nextjs, docker-build, mobile-build, create-release]
+    needs: [create-release]
     if: always()
     steps:
       - name: Checkout repository
