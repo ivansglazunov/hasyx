@@ -172,7 +172,9 @@ jobs:
         fi
         
         if [ -n "$APK_PATH" ]; then
-          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+          # Remove the leading './' from the path to avoid GitHub Actions path issues
+          CLEAN_PATH=$(echo "$APK_PATH" | sed 's|^\./||')
+          echo "apk_path=$CLEAN_PATH" >> $GITHUB_OUTPUT
           echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
           echo "apk_size=$(du -h "$APK_PATH" | cut -f1)" >> $GITHUB_OUTPUT
         else
