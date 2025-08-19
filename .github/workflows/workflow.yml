@@ -150,10 +150,13 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
             ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}
 
-  android-build:
+  mobile-build:
     runs-on: ubuntu-latest
     needs: [test, npm-publish, deploy-nextjs]
     if: success()
+    strategy:
+      matrix:
+        platform: [android, ios]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -164,24 +167,32 @@ jobs:
           node-version: '22.14'
           cache: 'npm'
 
-      - name: Setup Java
+      - name: Setup Java (Android)
+        if: matrix.platform == 'android'
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Android SDK
+      - name: Setup Android SDK (Android)
+        if: matrix.platform == 'android'
         uses: android-actions/setup-android@v2
+
+      - name: Setup Xcode (iOS)
+        if: matrix.platform == 'ios'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 'latest'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Clear Next.js cache
         run: |
-          echo "Clearing Next.js cache for Android build..."
+          echo "Clearing Next.js cache for ${{ matrix.platform }} build..."
           rm -rf .next || true
 
-      - name: Build client for Android
+      - name: Build client for mobile
         run: npm run client
         env:
           TEST_TOKEN: ${{secrets.TEST_TOKEN}}
@@ -207,20 +218,28 @@ jobs:
           NEXT_PUBLIC_BUILD_TARGET: client
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
 
-      - name: Generate Android assets
+      - name: Generate mobile assets
         run: npm run cli -- assets
 
-      - name: Sync with Android project
-        run: npx cap sync android
+      - name: Sync with mobile project
+        run: npx cap sync ${{ matrix.platform }}
 
-      - name: Build with Gradle
+      - name: Build Android APK
+        if: matrix.platform == 'android'
         run: |
           cd android
           ./gradlew assembleDebug --no-daemon --stacktrace
         env:
           JAVA_HOME: ${{ env.JAVA_HOME }}
 
-      - name: Find APK files
+      - name: Build iOS project
+        if: matrix.platform == 'ios'
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath build clean build
+
+      - name: Find Android APK files
+        if: matrix.platform == 'android'
         id: find_apk
         run: |
           cd android
@@ -238,16 +257,25 @@ jobs:
             exit 1
           fi
 
-      - name: Upload APK artifact
+      - name: Upload Android APK artifact
+        if: matrix.platform == 'android'
         uses: actions/upload-artifact@v4
         with:
           name: android-apk-debug
           path: android/${{ steps.find_apk.outputs.apk_path }}
           retention-days: 30
 
+      - name: Upload iOS build artifact
+        if: matrix.platform == 'ios'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: ios/App/build
+          retention-days: 30
+
   create-release:
     runs-on: ubuntu-latest
-    needs: [test, npm-publish, deploy-nextjs, docker-build, android-build]
+    needs: [test, npm-publish, deploy-nextjs, docker-build, mobile-build]
     if: success()
     permissions:
       contents: write
@@ -392,7 +420,7 @@ jobs:
 
   telegram-notification:
     runs-on: ubuntu-latest
-    needs: [test, npm-publish, deploy-nextjs, docker-build, android-build, create-release]
+    needs: [test, npm-publish, deploy-nextjs, docker-build, mobile-build, create-release]
     if: always()
     steps:
       - name: Checkout repository

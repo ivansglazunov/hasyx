@@ -1,10 +1,10 @@
 # Fastlane Integration
 
-Fastlane integration for automated Android app building, signing, and deployment in Hasyx projects.
+Fastlane integration for automated mobile app building, signing, and deployment in Hasyx projects (Android and iOS).
 
 ## Overview
 
-Fastlane is a powerful automation tool for mobile app development that simplifies building, signing, and deploying Android applications. This integration provides:
+Fastlane is a powerful automation tool for mobile app development that simplifies building, signing, and deploying mobile applications. This integration provides:
 
 - **Automated APK building** with Gradle integration
 - **APK signing** for release builds
