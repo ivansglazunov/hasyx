@@ -30,6 +30,65 @@ function parseEnvFile(filePath: string): Record<string, string> {
   } catch {}
   return env;
 }
+
+/**
+ * Получает имя проекта из git окружения
+ * Если git репозиторий не найден, возвращает 'super-idea'
+ */
+function getProjectNameFromGit(): string {
+  try {
+    // Проверяем, есть ли .git папка в текущей директории
+    if (!fs.existsSync('.git')) {
+      return 'super-idea';
+    }
+
+    // Получаем remote origin URL
+    const remoteUrl = spawn.sync('git', ['config', '--get', 'remote.origin.url'], { 
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe']
+    }).stdout?.trim();
+
+    if (!remoteUrl) {
+      return 'super-idea';
+    }
+
+    // Извлекаем имя репозитория из URL
+    // Поддерживаем форматы:
+    // https://github.com/username/repo-name.git
+    // git@github.com:username/repo-name.git
+    // ssh://git@github.com/username/repo-name.git
+    
+    let repoName = '';
+    
+    if (remoteUrl.includes('github.com') || remoteUrl.includes('gitlab.com') || remoteUrl.includes('bitbucket.org')) {
+      // HTTPS/SSH формат для популярных платформ
+      const parts = remoteUrl.split('/');
+      repoName = parts[parts.length - 1];
+    } else if (remoteUrl.includes('git@')) {
+      // SSH формат
+      const parts = remoteUrl.split(':');
+      if (parts.length > 1) {
+        const lastPart = parts[parts.length - 1];
+        repoName = lastPart.split('/').pop() || '';
+      }
+    } else if (remoteUrl.includes('ssh://')) {
+      // SSH URL формат
+      const parts = remoteUrl.split('/');
+      repoName = parts[parts.length - 1];
+    }
+
+    // Убираем .git расширение если есть
+    if (repoName.endsWith('.git')) {
+      repoName = repoName.slice(0, -4);
+    }
+
+    return repoName || 'super-idea';
+  } catch (error) {
+    // В случае любой ошибки возвращаем fallback
+    return 'super-idea';
+  }
+}
+
 import * as gh from './github';
 import * as vercelApi from './vercel/index';
 import { setWebhook as tgSetWebhook, removeWebhook as tgRemoveWebhook, calibrate as tgCalibrate } from './telegram';
@@ -530,25 +589,61 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
   const targetDir = projectRoot;
   debug(`Target directory for init: ${targetDir}`);
 
-  // Get project name from package.json
+  // Get project name from package.json or git repository
   let projectName = packageName; // Default fallback
+  let pkgJson: any = {};
+  const pkgJsonPath = path.join(projectRoot, 'package.json');
+  let packageJsonExists = false;
+  
   try {
-    const pkgJsonPath = path.join(projectRoot, 'package.json');
-    const pkgJson = await fs.readJson(pkgJsonPath);
-    if (pkgJson.name) {
-      projectName = pkgJson.name;
-      debug(`Found project name in package.json: ${projectName}`);
+    if (fs.existsSync(pkgJsonPath)) {
+      pkgJson = await fs.readJson(pkgJsonPath);
+      packageJsonExists = true;
+      
+      if (pkgJson.name) {
+        projectName = pkgJson.name;
+        debug(`Found project name in package.json: ${projectName}`);
+      } else {
+        // Если имя не задано, получаем из git
+        const gitProjectName = getProjectNameFromGit();
+        projectName = gitProjectName;
+        pkgJson.name = gitProjectName;
+        debug(`No project name found in package.json, using git repository name: ${projectName}`);
+      }
     } else {
-      debug(`No project name found in package.json, using default: ${packageName}`);
+      // Если package.json не существует, создаем базовый
+      const gitProjectName = getProjectNameFromGit();
+      projectName = gitProjectName;
+      pkgJson = {
+        name: gitProjectName,
+        version: '0.0.0',
+        description: `A brilliant ${gitProjectName} project - turning ideas into reality`,
+        private: true,
+        scripts: {},
+        dependencies: {},
+        devDependencies: {}
+      };
+      debug(`Created new package.json with project name: ${projectName}`);
     }
   } catch (error) {
-    console.warn(`⚠️ Could not read package.json to determine project name, using default: ${packageName}`);
+    console.warn(`⚠️ Could not read package.json to determine project name, using git repository name`);
     debug(`Error reading package.json: ${error}`);
+    
+    const gitProjectName = getProjectNameFromGit();
+    projectName = gitProjectName;
+    pkgJson = {
+      name: gitProjectName,
+      version: '0.0.0',
+      description: `A brilliant ${gitProjectName} project - turning ideas into reality`,
+      private: true,
+      scripts: {},
+      dependencies: {},
+      devDependencies: {}
+    };
   }
 
   // Prevent hasyx from initializing itself
   // Only block if we're actually in a hasyx project directory (has package.json with hasyx name)
-  const pkgJsonPath = path.join(projectRoot, 'package.json');
   const hasPackageJson = fs.existsSync(pkgJsonPath);
   
   if (projectName === packageName && hasPackageJson) {
@@ -933,11 +1028,35 @@ vscode:
     if (fs.existsSync(pkgJsonPath)) {
       const pkgJson = await fs.readJson(pkgJsonPath);
 
-      if (!pkgJson.engine) {
-        pkgJson.engine = {
-          node: "^22.14",
-        };
+      // Update basic fields if they are missing
+      let basicFieldsModified = false;
+      
+      if (!pkgJson.name) {
+        pkgJson.name = projectName;
+        basicFieldsModified = true;
       }
+      
+      if (!pkgJson.version) {
+        pkgJson.version = '0.0.0';
+        basicFieldsModified = true;
+      }
+      
+      if (!pkgJson.description) {
+        pkgJson.description = `A brilliant ${pkgJson.name || projectName} project - turning ideas into reality`;
+        basicFieldsModified = true;
+      }
+      
+      if (basicFieldsModified) {
+        await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
+        console.log('✅ Updated package.json with missing basic fields');
+        debug('Updated package.json with basic fields');
+      }
+
+    if (!pkgJson.engine) {
+      pkgJson.engine = {
+        node: "^22.14",
+      };
+    }
 
       if (!pkgJson.scripts) {
         pkgJson.scripts = {};
@@ -1006,8 +1125,6 @@ vscode:
       } else {
         console.log('ℹ️ Required npm scripts and overrides already present in package.json.');
       }
-    } else {
-      console.warn('⚠️ package.json not found in project root. Unable to update npm scripts.');
     }
   } catch (error) {
     console.warn('⚠️ Failed to update npm scripts in package.json:', error);

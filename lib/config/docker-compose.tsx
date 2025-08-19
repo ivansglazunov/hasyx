@@ -116,33 +116,43 @@ export function generateDockerCompose(variant?: string): void {
   };
 
   // Inject application service with environment from generated .env
+  // ONLY if there's a docker configuration or host configuration
   const projectName = getProjectName();
-  if (!spec.services[projectName]) {
+  const shouldCreateAppService = resolved.docker || resolved.host;
+  
+  if (shouldCreateAppService && !spec.services[projectName]) {
     spec.services[projectName] = {
       restart: 'unless-stopped',
       env_file: ['.env'],
     };
+    console.log(`📦 Created Docker service '${projectName}' (docker/host config detected)`);
+  } else if (!shouldCreateAppService) {
+    console.log(`💡 Skipping Docker service '${projectName}' (no docker/host config found)`);
+    console.log(`   To enable Docker app service, add docker or host configuration in hasyx.config.json`);
   }
 
   // Parse generated env and inject ALL variables into the app service environment
-  try {
-    const envContent = generateEnvFile(config, selectedVariant);
-    const envLines = envContent.split('\n');
-    const allEnv: Record<string, string> = {};
-    for (const line of envLines) {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('#')) continue;
-      const eq = trimmed.indexOf('=');
-      if (eq <= 0) continue;
-      const key = trimmed.slice(0, eq);
-      const val = trimmed.slice(eq + 1);
-      allEnv[key] = val;
+  // ONLY if the app service was created
+  if (shouldCreateAppService && spec.services[projectName]) {
+    try {
+      const envContent = generateEnvFile(config, selectedVariant);
+      const envLines = envContent.split('\n');
+      const allEnv: Record<string, string> = {};
+      for (const line of envLines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) continue;
+        const eq = trimmed.indexOf('=');
+        if (eq <= 0) continue;
+        const key = trimmed.slice(0, eq);
+        const val = trimmed.slice(eq + 1);
+        allEnv[key] = val;
+      }
+      const appSvc = spec.services[projectName] as any;
+      appSvc.environment = { ...(appSvc.environment || {}), ...allEnv };
+      // ensure env_file is present (already set), keep others untouched
+    } catch (e) {
+      // If env generation fails, skip flags injection silently
     }
-    const appSvc = spec.services[projectName] as any;
-    appSvc.environment = { ...(appSvc.environment || {}), ...allEnv };
-    // ensure env_file is present (already set), keep others untouched
-  } catch (e) {
-    // If env generation fails, skip flags injection silently
   }
 
   const filePath = path.join(process.cwd(), 'docker-compose.yml');
