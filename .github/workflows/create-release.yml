@@ -1,11 +1,7 @@
+# temporary skipped as deprecating before deletion
 name: Create GitHub Release
 
 on:
-  workflow_run:
-    workflows: ["Build Android APK", "Deploy Next.js site to Pages", "Build and Push Docker Image", "npm-publish"]
-    types:
-      - completed
-    branches: [ main, master ]
   workflow_dispatch:
     inputs:
       tag_name:
@@ -26,6 +22,8 @@ on:
         required: false
         default: false
         type: boolean
+  push:
+    branches: [ main, master ]
 
 jobs:
   wait-for-workflows:
@@ -48,20 +46,7 @@ jobs:
               'Build Android APK'
             ];
             
-            // If this is triggered by workflow_run, we only need to wait for the remaining workflows
-            if (context.eventName === 'workflow_run') {
-              const triggeringWorkflow = context.payload.workflow_run.name;
-              const remainingWorkflows = targetWorkflows.filter(w => w !== triggeringWorkflow);
-              console.log(`Triggered by ${triggeringWorkflow}, waiting for remaining workflows: ${remainingWorkflows.join(', ')}`);
-              
-              if (remainingWorkflows.length === 0) {
-                console.log('No remaining workflows to wait for');
-                return;
-              }
-              
-              targetWorkflows.length = 0;
-              targetWorkflows.push(...remainingWorkflows);
-            }
+
             
             // Wait up to 30 minutes (1800 seconds)
             const maxWaitTime = 1800;
@@ -106,7 +91,7 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     needs: wait-for-workflows
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    if: always()
     permissions:
       contents: write
       packages: read
@@ -212,7 +197,7 @@ jobs:
           NOTES+="This release was created manually.\n\n"
         else
           NOTES+="## Automated Release\n\n"
-          NOTES+="This release was created automatically from workflow: **${{ github.event.workflow_run.name }}**\n\n"
+          NOTES+="This release was created automatically from push to main/master.\n\n"
         fi
         
         NOTES+="## Build Information\n\n"
