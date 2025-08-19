@@ -81,43 +81,26 @@ function createFilesHasyx(): Hasyx {
 /**
  * Generate JWT token for hasura-storage with storage role
  */
-function generateStorageJWT(userId?: string): string {
+async function generateStorageJWT(userId?: string): Promise<string> {
   const debug = Debug('files:jwt');
   debug(`🔑 Generating storage JWT for user: ${userId || 'anonymous'}`);
   
-  const jwt = require('jsonwebtoken');
-  const secret = process.env.HASURA_JWT_SECRET;
+  const { generateJWT } = await import('../jwt');
   
-  if (!secret) {
-    throw new Error('Missing HASURA_JWT_SECRET for storage JWT generation');
-  }
-  
-  // Extract the key from the JWT secret JSON
-  let jwtKey: string;
-  try {
-    const jwtConfig = JSON.parse(secret);
-    jwtKey = jwtConfig.key;
-  } catch (error) {
-    // If it's not JSON, assume it's the key directly
-    jwtKey = secret;
-  }
-  
-  const payload = {
-    sub: userId || 'anonymous',
-    'https://hasura.io/jwt/claims': {
-      'x-hasura-allowed-roles': ['user', 'storage'],
-      'x-hasura-default-role': 'user',  // Change to user instead of storage
-      'x-hasura-user-id': userId || 'anonymous'
-    },
-    // Add user_id to metadata for hasura-storage
-    user_id: userId || 'anonymous',
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour
+  const hasuraClaims = {
+    'x-hasura-allowed-roles': ['user', 'storage'],
+    'x-hasura-default-role': 'user',  // Change to user instead of storage
+    'x-hasura-user-id': userId || 'anonymous'
   };
   
-  debug(`📦 JWT payload:`, payload);
+  // Add user_id to metadata for hasura-storage
+  const additionalClaims = {
+    user_id: userId || 'anonymous'
+  };
   
-  const token = jwt.sign(payload, jwtKey);
+  debug(`📦 JWT payload:`, { hasuraClaims, additionalClaims });
+  
+  const token = await generateJWT(userId || 'anonymous', hasuraClaims, { expiresIn: '1h' });
   debug(`✅ JWT generated successfully for user: ${userId || 'anonymous'}`);
   
   return token;
@@ -160,7 +143,7 @@ export async function uploadFile(
       debug(`📤 Adding userId to form data: ${userId}`);
     }
     
-    const jwtToken = generateStorageJWT(userId);
+    const jwtToken = await generateStorageJWT(userId);
     debug(`🔐 Using JWT token for user: ${userId || 'anonymous'}`);
     
     const headers: Record<string, string> = {

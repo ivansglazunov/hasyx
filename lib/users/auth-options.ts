@@ -10,7 +10,7 @@ import FacebookProvider from 'next-auth/providers/facebook';
 import VkProvider from 'next-auth/providers/vk';
 import { createApolloClient } from '../apollo/apollo'; // Import from generated package
 import { Hasyx } from '../hasyx/hasyx'; // Import from generated package
-import { SignJWT } from 'jose';
+
 import { TelegramProvider } from '../telegram/telegram-credentials'; // Import TelegramProvider
 
 // Ensure type augmentation is applied globally (can be in a separate .d.ts file or here)
@@ -548,17 +548,9 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
         // Generate and save accessToken (Hasura JWT) in token
         // Using data from token for generation
         try {
-            const jwtSecret = process.env.HASURA_JWT_SECRET;
-            if (!jwtSecret) throw new Error('HASURA_JWT_SECRET is not configured.');
+            const { generateJWT } = await import('../jwt');
             
-            const parsedJwtSecret = JSON.parse(jwtSecret);
-            if (!parsedJwtSecret.key) throw new Error('Invalid HASURA_JWT_SECRET format.');
-            
-            const hasuraJwt = await new SignJWT(token["https://hasura.io/jwt/claims"])
-              .setProtectedHeader({ alg: 'HS256' }) // Specify the algorithm
-              .setIssuedAt()
-              // .setExpirationTime('2h') // Set token expiration time if needed
-              .sign(new TextEncoder().encode(parsedJwtSecret.key)); // Use key from secret
+            const hasuraJwt = await generateJWT(userId, token["https://hasura.io/jwt/claims"], { expiresIn: '2h' });
               
             (token as any).accessToken = hasuraJwt; // Save generated JWT
             tempTokenForRedirect = hasuraJwt; // Save for redirect callback

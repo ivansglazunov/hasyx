@@ -13,6 +13,18 @@ const ssrServerPath = path.join(projectRoot, 'lib', 'ssr-server.tsx');
 const ssrClientPath = path.join(projectRoot, 'lib', 'ssr-client.tsx');
 const ssrActivePath = path.join(projectRoot, 'lib', 'ssr.tsx');
 
+// Автоматически включать JWT auth для client builds
+async function enableJwtAuthForClient() {
+  const envPath = path.join(projectRoot, '.env');
+  const envContent = fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf8') : '';
+  
+  if (!envContent.includes('NEXT_PUBLIC_JWT_AUTH=1')) {
+    const newEnvContent = envContent + '\n# Auto-enabled JWT auth for client build\nNEXT_PUBLIC_JWT_AUTH=1\n';
+    fs.writeFileSync(envPath, newEnvContent);
+    console.log('✅ Auto-enabled JWT auth for client build (NEXT_PUBLIC_JWT_AUTH=1)');
+  }
+}
+
 // Keep track of modified files
 const modifiedCallsites = new Set<string>();
 const modifiedAsyncSignatureFiles = new Set<string>();
@@ -166,6 +178,10 @@ export async function buildClient() {
   let apiWasMoved = false; // Flag to track if we moved the directory
 
   try {
+    // 0. Автоматически включать JWT auth для client build
+    console.log('🔐 Enabling JWT auth for client build...');
+    await enableJwtAuthForClient();
+    
     // Pre-clean any leftover force-static markers from previous runs
     await restoreForceStaticOnly();
     // --- Pre-build steps ---

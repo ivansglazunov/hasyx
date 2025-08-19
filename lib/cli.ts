@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { setupCommands } from './cli-hasyx';
+import { setupCommands } from 'hasyx/lib/cli-hasyx';
 
 const program = new Command();
 

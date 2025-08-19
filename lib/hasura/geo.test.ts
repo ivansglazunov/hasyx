@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
-import jwt from 'jsonwebtoken';
+
 
 const HASURA_GRAPHQL_URL = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!;
 const HASURA_BASE_URL = HASURA_GRAPHQL_URL.replace('/v1/graphql', '');
@@ -130,13 +130,9 @@ async function ensureTestUsers(): Promise<{ adminId: string; user1: string; user
     const id2 = r2.result?.[1]?.[0];
 
     // Prepare user token and a thin GraphQL client (native fetch, no heavy deps)
-    const rawSecret = process.env.HASURA_JWT_SECRET || '{"type":"HS256","key":"your-secret-key"}';
-    let key = rawSecret;
-    let alg: jwt.Algorithm = 'HS256';
-    try { const cfg = JSON.parse(rawSecret); key = cfg.key; alg = (cfg.type || 'HS256') as jwt.Algorithm; } catch {}
-    const claims = { 'x-hasura-allowed-roles': ['user','anonymous','me'], 'x-hasura-default-role': 'user', 'x-hasura-user-id': user1 };
-    const payload: any = { sub: user1, 'https://hasura.io/jwt/claims': claims };
-    const token = jwt.sign(payload, key as string, { algorithm: alg, expiresIn: '1h' });
+    const { generateJWT } = await import('../jwt');
+    const hasuraClaims = { 'x-hasura-allowed-roles': ['user','anonymous','me'], 'x-hasura-default-role': 'user', 'x-hasura-user-id': user1 };
+    const token = await generateJWT(user1, hasuraClaims);
     const gql = async (query: string, variables: any) => {
       const resp = await fetch(process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, {
         method: 'POST',

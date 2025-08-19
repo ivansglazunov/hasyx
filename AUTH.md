@@ -181,6 +181,101 @@ The optional `options` object (`TestAuthorizeOptions`) extends the `ApolloOption
 * Never commit `.env` files containing your `TEST_TOKEN` value
 * The functionality has built-in safeguards to prevent production use
 
+## JWT Auth: Local Storage Without Session
+
+JWT authentication mode enables mobile applications (Android/iOS) to authenticate via OAuth providers without relying on traditional client-server sessions. This is essential for client-only builds where session cookies are not available.
+
+### How It Works
+
+1. **Mobile App**: Generates UUID and starts polling for JWT token
+2. **OAuth Flow**: User completes OAuth authentication on web
+3. **JWT Storage**: Token saved to `auth_jwt` table with UUID
+4. **Token Retrieval**: Mobile app receives JWT via UUID polling
+5. **API Access**: Mobile app uses JWT for authenticated requests
+
+### Configuration
+
+Enable in your variant configuration:
+```bash
+npx hasyx config
+# Select variant → Host Configuration → Enable JWT Auth
+```
+
+Or manually in `hasyx.config.json`:
+```json
+{
+  "hosts": {
+    "prod": {
+      "url": "https://hasyx.deep.foundation",
+      "jwtAuth": true
+    }
+  }
+}
+```
+
+**Note**: JWT auth is automatically enabled for client-only builds (`clientOnly: true`) and when explicitly configured (`jwtAuth: true`).
+
+### Automatic JWT Auth for Client Builds
+
+When building client-only applications, JWT auth is automatically enabled:
+
+```bash
+# npm run client automatically enables JWT auth
+npm run client
+
+# npx hasyx client automatically enables JWT auth  
+npx hasyx client
+```
+
+**What happens automatically:**
+- `NEXT_PUBLIC_JWT_AUTH=1` is added to `.env` file
+- JWT authentication system is activated
+- Mobile apps can authenticate via OAuth + JWT flow
+
+This ensures that mobile applications and standalone builds can authenticate without server-side sessions.
+
+### Client Implementation
+
+The JWT client is available in `components/jwt-auth.tsx`:
+
+```typescript
+import { useJwt } from "hasyx/components/jwt-auth";
+
+// In your component
+const jwtClient = useJwt();
+
+// Generate UUID and start polling
+const jwtId = uuidv4();
+localStorage.setItem('nextauth_jwt_id', jwtId);
+
+jwtClient.id = jwtId;
+jwtClient.start(); // Polls every second
+
+// Handle JWT received
+jwtClient.onDone = (jwt) => {
+  localStorage.setItem('nextauth_jwt', jwt);
+  // Use JWT for API calls
+};
+```
+
+### API Endpoints
+
+- `GET /api/auth_jwt?jwt=<uuid>` - Check JWT status
+- `POST /api/auth/jwt-complete` - Complete JWT authentication
+- `GET /api/auth/jwt-signin` - JWT signin completion page
+
+### Local Storage Keys
+
+- `nextauth_jwt_id` - UUID for JWT polling
+- `nextauth_jwt` - Received JWT token for API calls
+
+### Use Cases
+
+- **Mobile Apps**: Android/iOS applications
+- **Client-Only Builds**: Standalone applications without server
+- **Cross-Platform**: Capacitor, Electron, PWA
+- **OAuth Integration**: Google, GitHub, Telegram, etc.
+
 ## Dependencies
 
 *   `next-auth` (specifically session cookies and `next-auth/jwt` for decoding)

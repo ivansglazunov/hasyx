@@ -55,7 +55,7 @@ import {
 } from './validation';
 
 export { 
-  assetsCommand, eventsCommand, unbuildCommand, localCommand, vercelCommand, processLogs, processConfiguredDiffs, processConfiguredStates, envCommand, gitpodCommand };
+  assetsCommand, eventsCommand, unbuildCommand, localCommand, vercelCommand, processLogs, processConfiguredDiffs, processConfiguredStates, envCommand };
 
 // Exported lists used by build-templates.ts to stage raw TS/TSX for publishing
 export const LIB_SCAFFOLD_FILES: string[] = [

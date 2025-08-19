@@ -63,6 +63,11 @@ hasyxConfig.host = z.object({
   clientOnly: z
     .boolean()
     .describe('Client-only build flag (maps to NEXT_PUBLIC_CLIENT_ONLY). Enable only if server features are disabled.'),
+  jwtAuth: z
+    .boolean()
+    .default(false)
+    .describe('Enable JWT authentication mode for mobile apps (NEXT_PUBLIC_JWT_AUTH). Required for Android/iOS integration.')
+    .meta({ numericBoolean: true }),
   watchtower: z
     .boolean()
     .default(true)
@@ -74,11 +79,18 @@ hasyxConfig.host = z.object({
     port: 'PORT',
     // Duplicate mapping: one source value -> multiple env targets
     url: ['NEXT_PUBLIC_MAIN_URL', 'NEXT_PUBLIC_BASE_URL', 'NEXT_PUBLIC_API_URL'],
-    clientOnly: 'NEXT_PUBLIC_CLIENT_ONLY'
+    clientOnly: 'NEXT_PUBLIC_CLIENT_ONLY',
+    jwtAuth: 'NEXT_PUBLIC_JWT_AUTH'
+  },
+  // Автоматически включать JWT auth для client builds
+  autoJwtAuth: (value: any) => {
+    return value?.jwtAuth || value?.clientOnly;
   },
   compose: (value: any, _resolved?: any) => {
     const port = value?.port || 3000;
     const watchtower = value?.watchtower !== false; // default to true
+    // Автоматически включать JWT auth для client builds
+    const jwtAuth = value?.jwtAuth || value?.clientOnly;
     
     const labels: Record<string, string> = {};
     if (watchtower) {
@@ -93,6 +105,9 @@ hasyxConfig.host = z.object({
           restart: 'unless-stopped',
           env_file: ['.env'],
           ports: [`${port}:${port}`],
+          environment: {
+            NEXT_PUBLIC_JWT_AUTH: jwtAuth ? '1' : '0'
+          },
           ...(Object.keys(labels).length > 0 && { labels }),
         },
       },

@@ -200,6 +200,15 @@ function generateEnvFile(config: any, variant: string): string {
     envVars.push(`${name}=${enabled ? '1' : '0'}`);
   }
 
+  // Автоматически включать JWT auth для client builds
+  const hostConfig = resolvedConfig.host;
+  if (hostConfig) {
+    const jwtAuth = hostConfig.jwtAuth || hostConfig.clientOnly;
+    if (jwtAuth) {
+      envVars.push('NEXT_PUBLIC_JWT_AUTH=1');
+    }
+  }
+
   return envVars.join('\n');
 }
 
