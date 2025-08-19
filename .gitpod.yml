@@ -8,11 +8,12 @@ tasks:
       npm install
       npm run gitpod
       echo "✅ Hasyx setup completed!"
-      echo "🚀 Starting services..."
+      echo "🚀 Starting infrastructure services..."
       docker compose up -d
       echo "📋 Applying database migrations..."
       npm run migrate
       echo "🎉 Setup complete! Run 'npm run dev' to start development server"
+      echo "💡 Note: App runs locally, Docker is used only for infrastructure"
     init: |
       npm install
       npm run gitpod
@@ -41,3 +42,4 @@ vscode:
     - ms-vscode.vscode-git
     - ms-vscode.vscode-eslint
     - ms-vscode.vscode-prettier
+

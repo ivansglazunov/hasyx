@@ -124,9 +124,12 @@ export const gitpodCommand = async () => {
     
     console.log('✅ Gitpod configuration completed successfully!');
     console.log('🚀 Next steps:');
-    console.log('   1. Run "docker compose up -d" to start services');
+    console.log('   1. Run "docker compose up -d" to start infrastructure services (PostgreSQL, Hasura, MinIO)');
     console.log('   2. Run "npm run migrate" to apply database migrations');
-    console.log('   3. Run "npm run dev" to start development server');
+    console.log('   3. Run "npm run dev" to start development server (runs locally, not in Docker)');
+    console.log('');
+    console.log('💡 Note: In Gitpod, the app runs locally via "npm run dev", not in Docker container');
+    console.log('   Docker is used only for infrastructure services (database, GraphQL, storage)');
     
   } catch (error) {
     console.error('❌ Gitpod setup failed:', error);
@@ -148,19 +151,10 @@ async function generateGitpodConfig() {
     variant: 'gitpod',
     variants: {
       gitpod: {
-        host: 'gitpod',
         hasura: 'gitpod',
         pg: 'gitpod',
         storage: 'gitpod',
         nextAuthSecrets: 'gitpod'
-      }
-    },
-    hosts: {
-      gitpod: {
-        port: 3000,
-        url: `https://3000-${workspaceId}.ws-${workspaceUrl}`,
-        clientOnly: false,
-        watchtower: false
       }
     },
     hasura: {
@@ -233,10 +227,6 @@ async function updateHasyxConfig(gitpodConfig: any) {
       ...gitpodConfig.variants
     },
     // Ensure other objects are properly merged
-    hosts: {
-      ...currentConfig.hosts,
-      ...gitpodConfig.hosts
-    },
     hasura: {
       ...currentConfig.hasura,
       ...gitpodConfig.hasura
@@ -759,11 +749,12 @@ tasks:
       npm install
       npm run gitpod
       echo "✅ Hasyx setup completed!"
-      echo "🚀 Starting services..."
+      echo "🚀 Starting infrastructure services..."
       docker compose up -d
       echo "📋 Applying database migrations..."
       npm run migrate
       echo "🎉 Setup complete! Run 'npm run dev' to start development server"
+      echo "💡 Note: App runs locally, Docker is used only for infrastructure"
     init: |
       npm install
       npm run gitpod
