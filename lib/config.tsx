@@ -63,6 +63,10 @@ hasyxConfig.host = z.object({
   clientOnly: z
     .boolean()
     .describe('Client-only build flag (maps to NEXT_PUBLIC_CLIENT_ONLY). Enable only if server features are disabled.'),
+  watchtower: z
+    .boolean()
+    .default(true)
+    .describe('Enable Watchtower automatic updates for this container (default: true).'),
 }).meta({
   title: 'Host Configuration',
   description: 'Configure the publicly accessible URL and port of your application. Use your production domain in production (e.g., https://example.com) and localhost during development. Set client-only mode only if your app must run without server features.',
@@ -74,6 +78,13 @@ hasyxConfig.host = z.object({
   },
   compose: (value: any, _resolved?: any) => {
     const port = value?.port || 3000;
+    const watchtower = value?.watchtower !== false; // default to true
+    
+    const labels: Record<string, string> = {};
+    if (watchtower) {
+      labels['com.centurylinklabs.watchtower.enable'] = 'true';
+    }
+    
     return {
       services: {
         hasyx: {
@@ -81,7 +92,8 @@ hasyxConfig.host = z.object({
           container_name: 'hasyx-app',
           restart: 'unless-stopped',
           env_file: ['.env'],
-          ports: [`${port}:3004`],
+          ports: [`${port}:${port}`],
+          ...(Object.keys(labels).length > 0 && { labels }),
         },
       },
     };

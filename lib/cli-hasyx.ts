@@ -401,6 +401,7 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'schema.tsx': 'schema.tsx',
     'public/favicon.ico': 'public/favicon.ico',
     'public/logo.svg': 'public/logo.svg',
+    'public/hasura-schema.json': 'public/hasura-schema.json',
     'Dockerfile': 'Dockerfile',
     '.dockerignore': '.dockerignore',
     'vercel.json': 'vercel.json',

@@ -1,5 +1,5 @@
-import { getOrCreateUserAndAccount } from '@/lib/users/auth-server';
-import { Hasyx } from '@/lib/hasyx/hasyx';
+import { getOrCreateUserAndAccount } from 'hasyx/lib/users/auth-server';
+import { Hasyx } from 'hasyx/lib/hasyx/hasyx';
 import Debug from '../debug';
 import crypto, { createHmac } from 'crypto';
 

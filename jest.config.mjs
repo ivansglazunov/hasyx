@@ -11,10 +11,9 @@ const config = {
   moduleNameMapper: {
     '^jose$': 'jose',
     '^@/(.*)$': '<rootDir>/$1',
-    '^hasyx$': '<rootDir>/lib/index.ts',
-    '^hasyx/(.*)$': '<rootDir>/$1',
     '^react$': '<rootDir>/node_modules/react',
     '^react-dom$': '<rootDir>/node_modules/react-dom',
+    '^next-intl$': '<rootDir>/node_modules/next-intl',
   },
   modulePathIgnorePatterns: [
     '/\\.next/'

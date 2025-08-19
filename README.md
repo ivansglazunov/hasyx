@@ -416,6 +416,8 @@ npx hasyx init --reinit
 *   🔄 = Overwrites the file if it exists.
 *   ✨ = Creates the file only if it does not exist (or always replaces it with `--reinit`).
 
+**Note:** Files marked with ✨ are "soft copied" - they won't overwrite existing files unless you use `--reinit` or `--force`. This is particularly useful for files like `public/hasura-schema.json` that you may have already generated and customized in your project.
+
 **npm Scripts Setup:**
 
 During initialization, Hasyx ensures that the following npm scripts are added to your project's package.json:
@@ -561,7 +563,8 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 │   │           └── ✨ page.tsx  # Dynamic documentation page
 |-- public/
 │   ├── ✨ logo.svg             # Default logo, replace with your own
-│   └── ✨ favicon.ico           # Default favicon
+│   ├── ✨ favicon.ico           # Default favicon
+│   └── ✨ hasura-schema.json   # Hasura GraphQL schema (soft copy, won't overwrite existing)
 |-- events/
 │   ├── ✨ notify.json           # Default Hasura event trigger definition for notifications
 │   ├── ✨ schedule.json         # Default Hasura event trigger definition for schedule
