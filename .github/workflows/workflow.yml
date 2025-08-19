@@ -45,6 +45,7 @@ jobs:
         env:
           # Test environment variables
           JEST_LOCAL: ${{secrets.JEST_LOCAL}}
+          NEXT_PUBLIC_JWT_AUTH: '1'
           TEST_TOKEN: ${{secrets.TEST_TOKEN}}
           NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${{secrets.NEXT_PUBLIC_HASURA_GRAPHQL_URL}}
           HASURA_ADMIN_SECRET: ${{secrets.HASURA_ADMIN_SECRET}}
@@ -92,6 +93,37 @@ jobs:
 
       - name: Build package
         run: npm run build
+        env:
+          NEXT_PUBLIC_JWT_AUTH: '1'
+          TEST_TOKEN: ${{secrets.TEST_TOKEN}}
+          NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${{secrets.NEXT_PUBLIC_HASURA_GRAPHQL_URL}}
+          HASURA_ADMIN_SECRET: ${{secrets.HASURA_ADMIN_SECRET}}
+          HASURA_JWT_SECRET: ${{secrets.HASURA_JWT_SECRET}}
+          HASURA_EVENT_SECRET: ${{secrets.HASURA_EVENT_SECRET}}
+          NEXT_PUBLIC_MAIN_URL: ${{secrets.NEXT_PUBLIC_MAIN_URL}}
+          NEXT_PUBLIC_BASE_URL: ${{secrets.NEXT_PUBLIC_BASE_URL}}
+          NEXT_PUBLIC_APP_URL: ${{secrets.NEXT_PUBLIC_APP_URL}}
+          NEXT_PUBLIC_API_URL: ${{secrets.NEXT_PUBLIC_API_URL}}
+          NEXT_PUBLIC_LOCALE: en
+          NEXTAUTH_SECRET: ${{secrets.NEXTAUTH_SECRET}}
+          GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+          GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+          YANDEX_CLIENT_ID: ${{secrets.YANDEX_CLIENT_ID}}
+          YANDEX_CLIENT_SECRET: ${{secrets.YANDEX_CLIENT_SECRET}}
+          GITHUB_ID: ${{secrets.GITHUB_ID}}
+          GITHUB_SECRET: ${{secrets.GITHUB_SECRET}}
+          FACEBOOK_CLIENT_ID: ${{secrets.FACEBOOK_CLIENT_ID}}
+          FACEBOOK_CLIENT_SECRET: ${{secrets.FACEBOOK_CLIENT_SECRET}}
+          VK_CLIENT_ID: ${{secrets.VK_CLIENT_ID}}
+          VK_CLIENT_SECRET: ${{secrets.VK_CLIENT_SECRET}}
+          RESEND_API_KEY: ${{secrets.RESEND_API_KEY}}
+          TELEGRAM_LOGIN_BOT_TOKEN: ${{secrets.TELEGRAM_LOGIN_BOT_TOKEN}}
+          POSTGRES_URL: ${{secrets.POSTGRES_URL}}
+          DATABASE_URL: ${{secrets.DATABASE_URL}}
+          BUILD_TIME: ${{ github.event.head_commit.timestamp }}
+          NODE_ENV: production
+          NEXT_PUBLIC_BUILD_TARGET: pages
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
 
       - name: Publish to npm
         run: npm publish
@@ -123,6 +155,7 @@ jobs:
       - name: Build Next.js site
         run: npm run build
         env:
+          NEXT_PUBLIC_JWT_AUTH: '1'
           TEST_TOKEN: ${{secrets.TEST_TOKEN}}
           NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${{secrets.NEXT_PUBLIC_HASURA_GRAPHQL_URL}}
           HASURA_ADMIN_SECRET: ${{secrets.HASURA_ADMIN_SECRET}}
@@ -231,6 +264,7 @@ jobs:
       - name: Build client for mobile
         run: npm run client
         env:
+          NEXT_PUBLIC_JWT_AUTH: '1'
           TEST_TOKEN: ${{secrets.TEST_TOKEN}}
           NEXT_PUBLIC_HASURA_GRAPHQL_URL: ${{secrets.NEXT_PUBLIC_HASURA_GRAPHQL_URL}}
           HASURA_ADMIN_SECRET: ${{secrets.HASURA_ADMIN_SECRET}}
