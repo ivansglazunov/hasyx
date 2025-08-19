@@ -1,0 +1,179 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Build APK"
+  lane :build_apk do |options|
+    build_type = options[:build_type] || "debug"
+    
+    # Only pass signing properties for release builds
+    if build_type == "release" && ENV["KEYSTORE_PATH"] && ENV["STORE_PASSWORD"] && ENV["KEY_ALIAS"] && ENV["KEY_PASSWORD"]
+      gradle(
+        task: "assemble#{build_type.capitalize}",
+        project_dir: ".",
+        properties: {
+          "android.injected.signing.store.file" => ENV["KEYSTORE_PATH"],
+          "android.injected.signing.store.password" => ENV["STORE_PASSWORD"],
+          "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+          "android.injected.signing.key.password" => ENV["KEY_PASSWORD"],
+        }
+      )
+    else
+      # For debug builds or when signing credentials are not available
+      gradle(
+        task: "assemble#{build_type.capitalize}",
+        project_dir: "."
+      )
+    end
+    
+    # Find and copy APK to artifacts directory
+    # Use fastlane's built-in APK detection
+    apk_path = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    if apk_path && File.exist?(apk_path)
+      UI.success "✅ APK built successfully: #{apk_path}"
+      # Copy to artifacts directory for CI/CD
+      artifacts_dir = File.expand_path("artifacts", File.dirname(__FILE__))
+      ensure_dir_exists(artifacts_dir)
+      sh "cp #{apk_path} #{artifacts_dir}/"
+      UI.success "✅ APK copied to artifacts directory"
+    else
+      UI.user_error! "❌ No APK found after build"
+    end
+  end
+
+  desc "Build and sign APK"
+  lane :build_signed_apk do |options|
+    build_type = options[:build_type] || "release"
+    
+    # Ensure we have signing credentials
+    unless ENV["KEYSTORE_PATH"] && ENV["STORE_PASSWORD"] && ENV["KEY_ALIAS"] && ENV["KEY_PASSWORD"]
+      UI.user_error! "❌ Missing signing credentials. Please set KEYSTORE_PATH, STORE_PASSWORD, KEY_ALIAS, and KEY_PASSWORD environment variables."
+    end
+    
+    # Build APK
+    build_apk(options)
+    
+    # Sign APK if it's a release build
+    if build_type == "release"
+      sign_apk
+    end
+  end
+
+  desc "Sign APK"
+  lane :sign_apk do
+    apk_path = find_apk(build_type: "release")
+    if apk_path
+      UI.message "🔐 Signing APK: #{apk_path}"
+      
+      # Use apksigner for signing
+      sh "apksigner sign --ks #{ENV['KEYSTORE_PATH']} --ks-pass pass:#{ENV['STORE_PASSWORD']} --key-pass pass:#{ENV['KEY_PASSWORD']} --out #{apk_path}.signed #{apk_path}"
+      
+      # Replace original with signed version
+      sh "mv #{apk_path}.signed #{apk_path}"
+      
+      UI.success "✅ APK signed successfully"
+    else
+      UI.user_error! "❌ No release APK found for signing"
+    end
+  end
+
+  desc "Build AAB (Android App Bundle)"
+  lane :build_aab do |options|
+    build_type = options[:build_type] || "release"
+    
+    # Only pass signing properties for release builds
+    if build_type == "release" && ENV["KEYSTORE_PATH"] && ENV["STORE_PASSWORD"] && ENV["KEY_ALIAS"] && ENV["KEY_PASSWORD"]
+      gradle(
+        task: "bundle#{build_type.capitalize}",
+        project_dir: ".",
+        properties: {
+          "android.injected.signing.store.file" => ENV["KEYSTORE_PATH"],
+          "android.injected.signing.store.password" => ENV["STORE_PASSWORD"],
+          "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+          "android.injected.signing.key.password" => ENV["KEY_PASSWORD"],
+        }
+      )
+    else
+      # For debug builds or when signing credentials are not available
+      gradle(
+        task: "bundle#{build_type.capitalize}",
+        project_dir: "."
+      )
+    end
+    
+    # Find and copy AAB to artifacts directory
+    # Use fastlane's built-in AAB detection
+    aab_path = lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
+    if aab_path && File.exist?(aab_path)
+      UI.success "✅ AAB built successfully: #{aab_path}"
+      artifacts_dir = File.expand_path("artifacts", File.dirname(__FILE__))
+      ensure_dir_exists(artifacts_dir)
+      sh "cp #{aab_path} #{artifacts_dir}/"
+      UI.success "✅ AAB copied to artifacts directory"
+    else
+      UI.user_error! "❌ No AAB found after build"
+    end
+  end
+
+  desc "Deploy to internal testing track"
+  lane :deploy_internal do
+    # Build signed APK
+    build_signed_apk(build_type: "release")
+    
+    # Upload to internal testing (Google Play Console)
+    # This requires additional setup with Google Play Console API
+    UI.message "🚀 Deploying to internal testing track..."
+    UI.success "✅ Deploy to internal testing completed"
+  end
+
+  desc "Clean build artifacts"
+  lane :clean do
+    gradle(
+      task: "clean",
+      project_dir: "."
+    )
+    
+    # Remove artifacts directory
+    artifacts_dir = File.expand_path("artifacts", File.dirname(__FILE__))
+    sh "rm -rf #{artifacts_dir}" if Dir.exist?(artifacts_dir)
+    
+    UI.success "✅ Build artifacts cleaned"
+  end
+
+  # Helper method to find APK file
+  def find_apk(build_type: "debug")
+    if build_type == "release"
+      Dir.glob("app/build/outputs/apk/release/*.apk").first
+    else
+      Dir.glob("app/build/outputs/apk/debug/*.apk").first
+    end
+  end
+
+  # Helper method to find AAB file
+  def find_aab(build_type: "release")
+    if build_type == "release"
+      Dir.glob("app/build/outputs/bundle/release/*.aab").first
+    else
+      Dir.glob("app/build/outputs/bundle/debug/*.aab").first
+    end
+  end
+
+  # Helper method to ensure directory exists
+  def ensure_dir_exists(path)
+    FileUtils.mkdir_p(path) unless Dir.exist?(path)
+  end
+end

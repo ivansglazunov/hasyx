@@ -18,7 +18,13 @@ jobs:
             console.log(`Waiting for workflows to complete for commit: ${sha}`);
             
             // Define the workflows we want to wait for
-            const targetWorkflows = ['test', 'npm-publish', 'Deploy Next.js site to Pages'];
+            const targetWorkflows = [
+              'test', 
+              'npm-publish', 
+              'Deploy Next.js site to Pages',
+              'Build Android APK',
+              'Create GitHub Release'
+            ];
             
             // Wait up to 30 minutes (1800 seconds)
             const maxWaitTime = 1800;

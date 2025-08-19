@@ -1,0 +1,6 @@
+# Fastlane Plugins
+# Uncomment the plugins you want to use
+
+# gem 'fastlane-plugin-firebase_app_distribution'
+# gem 'fastlane-plugin-google_play_track'
+# gem 'fastlane-plugin-versioning'

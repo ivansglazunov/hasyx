@@ -1,0 +1,200 @@
+name: Create GitHub Release
+
+on:
+  workflow_run:
+    workflows: ["Build Android APK", "Deploy Next.js site to Pages", "Build and Push Docker Image", "npm-publish"]
+    types:
+      - completed
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag (e.g., v1.0.0)'
+        required: true
+        type: string
+      release_name:
+        description: 'Release name'
+        required: false
+        type: string
+      draft:
+        description: 'Create as draft'
+        required: false
+        default: false
+        type: boolean
+      prerelease:
+        description: 'Create as prerelease'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: write
+      packages: read
+      actions: read
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.14'
+        cache: 'npm'
+
+    - name: Get package info
+      id: package
+      run: |
+        echo "name=$(node -p "require('./package.json').name")" >> $GITHUB_OUTPUT
+        echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+        echo "description=$(node -p "require('./package.json').description")" >> $GITHUB_OUTPUT
+
+    - name: Determine tag and release name
+      id: release_info
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          TAG_NAME="${{ github.event.inputs.tag_name }}"
+          RELEASE_NAME="${{ github.event.inputs.release_name }}"
+          IS_DRAFT="${{ github.event.inputs.draft }}"
+          IS_PRERELEASE="${{ github.event.inputs.prerelease }}"
+        else
+          # Extract tag from workflow_run
+          TAG_NAME="${{ steps.package.outputs.version }}"
+          RELEASE_NAME="${{ steps.package.outputs.name }} ${{ steps.package.outputs.version }}"
+          IS_DRAFT="false"
+          IS_PRERELEASE="false"
+        fi
+        
+        echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+        echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
+        echo "is_draft=$IS_DRAFT" >> $GITHUB_OUTPUT
+        echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+
+    - name: Get workflow run info
+      id: workflow_info
+      if: github.event.workflow_run
+      run: |
+        echo "workflow_run_id=${{ github.event.workflow_run.id }}" >> $GITHUB_OUTPUT
+        echo "workflow_name=${{ github.event.workflow_run.name }}" >> $GITHUB_OUTPUT
+        echo "workflow_conclusion=${{ github.event.workflow_run.conclusion }}" >> $GITHUB_OUTPUT
+
+    - name: Download Android APK artifact
+      id: download_apk
+      if: github.event.workflow_run
+      uses: actions/download-artifact@v4
+      with:
+        name: android-apk-debug
+        path: ./artifacts
+
+    - name: Check APK artifact
+      id: check_apk
+      run: |
+        if [ -f "./artifacts/app-debug.apk" ]; then
+          echo "apk_found=true" >> $GITHUB_OUTPUT
+          echo "apk_size=$(du -h "./artifacts/app-debug.apk" | cut -f1)" >> $GITHUB_OUTPUT
+        else
+          echo "apk_found=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        NOTES="# Release Notes for ${{ steps.release_info.outputs.release_name }}\n\n"
+        
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          NOTES+="## Manual Release\n\n"
+          NOTES+="This release was created manually.\n\n"
+        else
+          NOTES+="## Automated Release\n\n"
+          NOTES+="This release was created automatically from workflow: **${{ steps.workflow_info.outputs.workflow_name }}**\n\n"
+        fi
+        
+        NOTES+="## Build Information\n\n"
+        NOTES+="- **Version**: ${{ steps.package.outputs.version }}\n"
+        NOTES+="- **Package**: ${{ steps.package.outputs.name }}\n"
+        NOTES+="- **Commit**: \`${{ github.sha }}\`\n"
+        NOTES+="- **Branch**: \`${{ github.ref_name }}\`\n"
+        NOTES+="- **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")\n\n"
+        
+        if [ "${{ steps.check_apk.outputs.apk_found }}" = "true" ]; then
+          NOTES+="## 📱 Android APK\n\n"
+          NOTES+="- **APK Size**: ${{ steps.check_apk.outputs.apk_size }}\n"
+          NOTES+="- **Build Type**: Debug\n"
+          NOTES+="- **Download**: Available below\n\n"
+        fi
+        
+        NOTES+="## 🔗 Related Links\n\n"
+        NOTES+="- **GitHub Pages**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}\n"
+        NOTES+="- **Docker Hub**: https://hub.docker.com/r/${{ secrets.DOCKER_USERNAME }}/${{ steps.package.outputs.name }}\n"
+        NOTES+="- **npm Package**: https://www.npmjs.com/package/${{ steps.package.outputs.name }}\n\n"
+        
+        NOTES+="## 📋 Changelog\n\n"
+        NOTES+="See [CHANGELOG.md](./CHANGELOG.md) for detailed changes.\n\n"
+        
+        NOTES+="---\n\n"
+        NOTES+="*This release was created automatically by GitHub Actions.*\n"
+        
+        echo "$NOTES" > release_notes.md
+        echo "notes_file=release_notes.md" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.release_info.outputs.tag_name }}
+        release_name: ${{ steps.release_info.outputs.release_name }}
+        body_path: ${{ steps.release_notes.outputs.notes_file }}
+        draft: ${{ steps.release_info.outputs.is_draft }}
+        prerelease: ${{ steps.release_info.outputs.is_prerelease }}
+
+    - name: Upload APK to Release
+      if: steps.check_apk.outputs.apk_found == 'true'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifacts/app-debug.apk
+        asset_name: ${{ steps.package.outputs.name }}-${{ steps.package.outputs.version }}-debug.apk
+        asset_content_type: application/vnd.android.package-archive
+
+    - name: Generate release summary
+      run: |
+        echo "🎉 Release Created Successfully!"
+        echo "Tag: ${{ steps.release_info.outputs.tag_name }}"
+        echo "Name: ${{ steps.release_info.outputs.release_name }}"
+        echo "URL: ${{ steps.create_release.outputs.html_url }}"
+        echo "Draft: ${{ steps.release_info.outputs.is_draft }}"
+        echo "Prerelease: ${{ steps.release_info.outputs.is_prerelease }}"
+        
+        if [ "${{ steps.check_apk.outputs.apk_found }}" = "true" ]; then
+          echo "APK: Uploaded (${{ steps.check_apk.outputs.apk_size }})"
+        else
+          echo "APK: Not found"
+        fi
+
+    - name: Comment on workflow run
+      if: github.event.workflow_run
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: comment } = await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.payload.workflow_run.id,
+            body: `🎉 **Release Created Successfully!**
+          
+          **Release**: [${context.payload.workflow_run.name}](${context.payload.workflow_run.html_url})
+          **Tag**: \`${context.payload.workflow_run.head_branch}\`
+          **Status**: ✅ ${context.payload.workflow_run.conclusion}
+          
+          📱 **Android APK**: ${context.payload.workflow_run.conclusion === 'success' ? 'Available in release' : 'Build failed'}
+          
+          🔗 **Release URL**: ${context.payload.workflow_run.html_url}`
+          });

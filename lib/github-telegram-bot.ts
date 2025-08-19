@@ -48,23 +48,28 @@ Your ONLY task is to take the provided data and generate a single, celebratory T
 🎉 Here is the message: ...
 
 **Example of what TO DO (GOOD OUTPUT):**
-🎉 HASYX 0.1.309 RELEASED! 🚀
+🎉 HASYX 0.2.0-alpha.25 RELEASED! 🚀
 ... (the rest of the message content) ...
 
 **MESSAGE CONTENT GUIDELINES:**
 - **Goal:** Celebrate progress and what was accomplished.
-- **Style:** Joyful and enthusiastic, using emojis like 🎉, 🚀, ✨.
+- **Style:** Joyful and enthusiastic, using emojis like 🎉, 🚀, ✨, 📱, 🎯.
 - **Structure:**
     1.  Joyful opening with project name and version.
     2.  Enthusiastic description of changes from the commit message.
     3.  STRICT reporting of workflow results (e.g., "✅ Tests PASSED!", "❌ Build FAILED!").
-    4.  Change statistics.
-    5.  Links to repository and documentation.
-    6.  Inspiring conclusion.
+    4.  Android build status and mobile app readiness.
+    5.  GitHub Release status and artifacts availability.
+    6.  Change statistics.
+    7.  Links to repository, documentation, and releases.
+    8.  Inspiring conclusion.
 - **Special Reporting:**
     - If tests passed: "All tests are green! 🟢"
     - If tests failed: "Tests failed, but we'll fix them! 💪"
     - If deployment successful: "Code is already in production! 🚀"
+    - If Android build successful: "Android APK/AAB built successfully! 📱"
+    - If GitHub Release created: "GitHub Release created with artifacts! 🎯"
+    - If mobile app ready: "Mobile app ready for distribution! 📱✨"
 `
 });
 

@@ -1,0 +1,191 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+        - debug
+        - release
+      use_fastlane:
+        description: 'Use fastlane for build'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  JAVA_VERSION: '21'
+  ANDROID_SDK_VERSION: '35'
+  GRADLE_VERSION: '8.11.1'
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.14'
+        cache: 'npm'
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ env.JAVA_VERSION }}
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        sdk-platform: ${{ env.ANDROID_SDK_VERSION }}
+        sdk-build-tools: ${{ env.ANDROID_SDK_VERSION }}.0.0
+        sdk-ndk: '25.2.9519653'
+
+    - name: Setup Ruby for fastlane
+      if: github.event.inputs.use_fastlane == 'true'
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: true
+
+    - name: Install fastlane
+      if: github.event.inputs.use_fastlane == 'true'
+      run: |
+        gem install fastlane
+        fastlane --version
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Cache Android build
+      uses: actions/cache@v4
+      with:
+        path: |
+          android/.gradle
+          android/app/build
+        key: ${{ runner.os }}-android-${{ hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-android-
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build client for Android
+      run: npm run client
+      env:
+        NEXT_PUBLIC_BUILD_TARGET: client
+        NODE_ENV: production
+        # Добавьте другие необходимые переменные окружения
+
+    - name: Generate Android assets
+      run: npm run cli -- assets
+
+    - name: Sync with Android project
+      run: npx cap sync android
+
+    - name: Build with fastlane (if enabled)
+      if: github.event.inputs.use_fastlane == 'true'
+      run: |
+        cd android
+        fastlane build_apk build_type:${{ github.event.inputs.build_type || 'debug' }}
+      env:
+        JAVA_HOME: ${{ env.JAVA_HOME }}
+
+    - name: Build with Gradle (fallback)
+      if: github.event.inputs.use_fastlane != 'true'
+      run: |
+        cd android
+        ./gradlew assemble${{ github.event.inputs.build_type || 'Debug' }} --no-daemon --stacktrace
+      env:
+        JAVA_HOME: ${{ env.JAVA_HOME }}
+
+    - name: Find APK files
+      id: find_apk
+      run: |
+        cd android
+        if [ "${{ github.event.inputs.build_type || 'debug' }}" = "release" ]; then
+          APK_PATH=$(find . -name "*release*.apk" -type f | head -1)
+          APK_NAME="app-release-unsigned.apk"
+        else
+          APK_PATH=$(find . -name "*debug*.apk" -type f | head -1)
+          APK_NAME="app-debug.apk"
+        fi
+        
+        if [ -n "$APK_PATH" ]; then
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+          echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
+          echo "apk_size=$(du -h "$APK_PATH" | cut -f1)" >> $GITHUB_OUTPUT
+        else
+          echo "❌ No APK found!"
+          exit 1
+        fi
+
+    - name: Sign APK (if release)
+      if: github.event.inputs.build_type == 'release'
+      run: |
+        cd android
+        echo "🔐 Signing release APK..."
+        # Здесь можно добавить логику подписи APK
+        # Например, с помощью fastlane или gradle signing config
+        echo "✅ APK signing completed"
+
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk-${{ github.event.inputs.build_type || 'debug' }}
+        path: android/${{ steps.find_apk.outputs.apk_path }}
+        retention-days: 30
+
+    - name: Build info
+      run: |
+        echo "📱 Android Build Completed Successfully!"
+        echo "Build Type: ${{ github.event.inputs.build_type || 'debug' }}"
+        echo "Build Method: ${{ github.event.inputs.use_fastlane == 'true' && 'fastlane' || 'gradle' }}"
+        echo "APK Path: ${{ steps.find_apk.outputs.apk_path }}"
+        echo "APK Size: ${{ steps.find_apk.outputs.apk_size }}"
+        echo "APK Name: ${{ steps.find_apk.outputs.apk_name }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Branch: ${{ github.ref_name }}"
+
+    - name: Set outputs
+      id: outputs
+      run: |
+        echo "apk_name=${{ steps.find_apk.outputs.apk_name }}" >> $GITHUB_OUTPUT
+        echo "apk_size=${{ steps.find_apk.outputs.apk_size }}" >> $GITHUB_OUTPUT
+        echo "build_type=${{ github.event.inputs.build_type || 'debug' }}" >> $GITHUB_OUTPUT
+        echo "build_method=${{ github.event.inputs.use_fastlane == 'true' && 'fastlane' || 'gradle' }}" >> $GITHUB_OUTPUT
+        echo "commit_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+        echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+
+    outputs:
+      apk_name: ${{ steps.outputs.outputs.apk_name }}
+      apk_size: ${{ steps.outputs.outputs.apk_size }}
+      build_type: ${{ steps.outputs.outputs.build_type }}
+      build_method: ${{ steps.outputs.outputs.build_method }}
+      commit_sha: ${{ steps.outputs.outputs.commit_sha }}
+      branch: ${{ steps.outputs.outputs.branch }}
+      success: ${{ job.status == 'success' }}

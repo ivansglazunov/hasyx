@@ -40,6 +40,7 @@ Hasyx provides a robust starting point and a set of tools for building applicati
 [![URL Query State Management Documentation](https://img.shields.io/badge/Use%20Query%20Hook-MD-lightblue)](USE-QUERY.md)
 [![Files Storage Documentation](https://img.shields.io/badge/Files%20Storage-MD-darkgreen)](FILES.md)
 [![plv8 Extension Documentation](https://img.shields.io/badge/plv8%20Extension-MD-darkred)](PLV8.md)
+[![Fastlane Integration Documentation](https://img.shields.io/badge/Fastlane%20Integration-MD-orange)](FASTLANE.md)
 
 ## Technologies Used
 
@@ -68,7 +69,7 @@ Hasyx takes responsibility for:
 *   **Progressive Web App (PWA) Support:** Complete PWA functionality with service workers, offline support, installability, and push notifications. See [`PWA.md`](PWA.md) for details.
 *   **Audit Trail & Logs System:** Comprehensive audit trail functionality with configurable database triggers for tracking granular string changes (using diff-match-patch) and complete state snapshots. Features include CLI management with `npx hasyx logs`, JSON-based configuration via `hasyx.config.json`, selective column tracking, and complete Hasura permissions integration. See [`LOGS.md`](LOGS.md) for details.
 *   **GitHub → Telegram Bot Integration:** Automated CI/CD notifications via Telegram bot with AI-generated commit summaries, strict status reporting, and privacy-focused messaging. Features strict workflow status reporting (PASSED/FAILED for tests, builds, deploys), privacy-focused messaging (no author names), smart MD file linking, and rich English-language notifications. Waits for all workflows to complete, then sends detailed messages with commit analysis, test results, deployment URLs, and direct links to repository and documentation. Uses a modular architecture: **`github-telegram-bot-hasyx.ts`** (core functionality with generator function) и **`github-telegram-bot.ts`** (проектная конфигурация). Конфигурируется переменной `HASYX_GITHUB_TELEGRAM_BOT`. См. [`TELEGRAM_BOT.md`](lib/TELEGRAM_BOT.md).
-*   [Coming Soon] Preparing Capacitor for building cross-platform applications (Android, iOS, Desktop, Browser Extensions, etc.).
+*   **Capacitor Integration:** Cross-platform application building (Android, iOS, Desktop, Browser Extensions, etc.) with automated build workflows using Fastlane. See [FASTLANE.md](FASTLANE.md) for complete Android build automation.
 *   **Cytoscape Integration:** A powerful set of React components for graph visualizations using Cytoscape.js, allowing for custom HTML rendering within nodes and reactive style updates. See [`CYTO.md`](CYTO.md) for details.
 *   **DNS and SSL Management:** Comprehensive subdomain management with automated HTTPS setup using CloudFlare DNS, Let's Encrypt SSL certificates, and nginx configuration. Features include DNS propagation waiting, automatic certificate renewal, idempotent operations, and complete subdomain lifecycle management. Configure CloudFlare API credentials and domain settings via `hasyx.config.json` (keys: `HASYX_DNS_DOMAIN`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID`, `LETSENCRYPT_EMAIL`). See [`CLOUDFLARE.md`](CLOUDFLARE.md), [`SSL.md`](SSL.md), [`NGINX.md`](NGINX.md), and [`SUBDOMAIN.md`](SUBDOMAIN.md) for details.
 *   **URL Query State Management:** A powerful `use-query` hook for synchronizing state between multiple components using URL query parameters. Features automatic URL synchronization, multi-component state sharing, TypeScript support, browser navigation compatibility, SSR safety, and JSON serialization for complex objects. Perfect for search pages, filters, pagination, and any scenario where you need shareable, bookmarkable URLs with persistent state. See [`USE-QUERY.md`](USE-QUERY.md) for complete documentation and examples.
@@ -175,6 +176,7 @@ Explore the different modules and functionalities of Hasyx:
 *   **[USE-QUERY.md](USE-QUERY.md):** Complete guide to URL query state management with the `use-query` hook for synchronizing state between multiple components through URL parameters.
 *   **[FILES.md](FILES.md):** Complete guide to Hasyx Files Storage system with S3-compatible storage, file upload/download, metadata management, and REST API integration.
 *   **[PLV8.md](PLV8.md):** Complete guide to plv8 (PostgreSQL JavaScript) extension support for creating JavaScript functions and triggers in PostgreSQL with cross-platform compatibility.
+*   **[FASTLANE.md](FASTLANE.md):** Complete guide to Fastlane integration for automated Android app building, signing, and deployment with CI/CD integration.
 *   **[GEO.md](GEO.md):** PostGIS-powered geospatial layer (schema `geo`, `features` table, spatial helpers, permissions) with Hasyx client usage examples.
 
 ## 🚀 Quick Start

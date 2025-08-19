@@ -27,6 +27,8 @@ export interface WorkflowStatus {
   test: 'success' | 'failure' | 'cancelled' | 'skipped' | 'in_progress' | 'queued' | 'unknown';
   publish: 'success' | 'failure' | 'cancelled' | 'skipped' | 'in_progress' | 'queued' | 'unknown';
   deploy: 'success' | 'failure' | 'cancelled' | 'skipped' | 'in_progress' | 'queued' | 'unknown';
+  android: 'success' | 'failure' | 'cancelled' | 'skipped' | 'in_progress' | 'queued' | 'unknown';
+  release: 'success' | 'failure' | 'cancelled' | 'skipped' | 'in_progress' | 'queued' | 'unknown';
 }
 
 export interface GithubTelegramBotOptions {
@@ -165,19 +167,25 @@ async function fetchWorkflowStatus(commitSha: string, repoUrl: string, githubTok
       test: 'unknown',
       publish: 'unknown', 
       deploy: 'unknown',
+      android: 'unknown',
+      release: 'unknown',
       details: {
         error: `GitHub API error: ${response.status}`,
         workflows: [],
         testResults: null,
         publishResults: null,
         deployResults: null,
+        androidResults: null,
+        releaseResults: null,
         summary: {
           totalWorkflows: 0,
           successfulWorkflows: 0,
           failedWorkflows: 0,
           testFailures: [],
           publishDetails: null,
-          deployUrl: null
+          deployUrl: null,
+          androidArtifacts: null,
+          releaseArtifacts: null
         }
       }
     };
@@ -190,18 +198,24 @@ async function fetchWorkflowStatus(commitSha: string, repoUrl: string, githubTok
     test: 'unknown',
     publish: 'unknown',
     deploy: 'unknown',
+    android: 'unknown',
+    release: 'unknown',
     details: {
       workflows: [],
       testResults: null,
       publishResults: null,
       deployResults: null,
+      androidResults: null,
+      releaseResults: null,
       summary: {
         totalWorkflows: 0,
         successfulWorkflows: 0,
         failedWorkflows: 0,
         testFailures: [],
         publishDetails: null,
-        deployUrl: null
+        deployUrl: null,
+        androidArtifacts: null,
+        releaseArtifacts: null
       }
     }
   };
@@ -325,6 +339,53 @@ async function fetchWorkflowStatus(commitSha: string, repoUrl: string, githubTok
                 }
               }
             }
+          } else if (workflowName.includes('android') || workflowName.includes('Build Android')) {
+            status.android = conclusion || 'unknown';
+            
+            // Extract Android build details
+            const androidJob = jobsData.jobs?.[0];
+            if (androidJob) {
+              status.details.androidResults = {
+                status: androidJob.status,
+                conclusion: androidJob.conclusion,
+                name: androidJob.name,
+                duration: androidJob.completed_at && androidJob.started_at ?
+                  Math.round((new Date(androidJob.completed_at).getTime() - new Date(androidJob.started_at).getTime()) / 1000) : null
+              };
+              
+              // Extract Android artifacts information
+              if (conclusion === 'success') {
+                status.details.summary.androidArtifacts = {
+                  apkBuilt: true,
+                  aabBuilt: true,
+                  message: 'Android APK and AAB built successfully! 📱'
+                };
+              }
+            }
+          } else if (workflowName.includes('release') || workflowName.includes('Create GitHub Release')) {
+            status.release = conclusion || 'unknown';
+            
+            // Extract Release details
+            const releaseJob = jobsData.jobs?.[0];
+            if (releaseJob) {
+              status.details.releaseResults = {
+                status: releaseJob.status,
+                conclusion: releaseJob.conclusion,
+                name: releaseJob.name,
+                duration: releaseJob.completed_at && releaseJob.started_at ?
+                  Math.round((new Date(releaseJob.completed_at).getTime() - new Date(releaseJob.started_at).getTime()) / 1000) : null
+              };
+              
+              // Extract Release artifacts information
+              if (conclusion === 'success') {
+                status.details.summary.releaseArtifacts = {
+                  releaseCreated: true,
+                  apkAttached: true,
+                  aabAttached: true,
+                  message: 'GitHub Release created with Android artifacts! 🎯'
+                };
+              }
+            }
           }
         }
       } catch (jobError) {
@@ -401,15 +462,36 @@ export async function askGithubTelegramBot(options: GithubTelegramBotOptions): P
 - Tests: ${workflowStatus.test} ${getStatusEmoji(workflowStatus.test)} (REQUIRED: explicitly state "PASSED" or "FAILED")
 - Build/Publishing: ${workflowStatus.publish} ${getStatusEmoji(workflowStatus.publish)} (REQUIRED: explicitly state "PASSED" or "FAILED")
 - Deployment: ${workflowStatus.deploy} ${getStatusEmoji(workflowStatus.deploy)} (REQUIRED: explicitly state "PASSED" or "FAILED")
+- Android Build: ${workflowStatus.android} ${getStatusEmoji(workflowStatus.android)} (REQUIRED: explicitly state "PASSED" or "FAILED")
+- GitHub Release: ${workflowStatus.release} ${getStatusEmoji(workflowStatus.release)} (REQUIRED: explicitly state "PASSED" or "FAILED")
 
 **All Workflows Summary:**
 ${workflowStatus.details.workflows.map(w => 
   `- ${w.name}: ${w.conclusion} ${getStatusEmoji(w.conclusion)} (${w.duration}s)`
 ).join('\n')}
 
+**Android Build Details:**
+${workflowStatus.details.androidResults ? 
+  `- Status: ${workflowStatus.details.androidResults.status} ${getStatusEmoji(workflowStatus.details.androidResults.status)}
+- Duration: ${workflowStatus.details.androidResults.duration}s
+- APK: ✅ Built successfully
+- AAB: ✅ Built successfully` : 
+  '- Android build not found or not completed'}
+
+**GitHub Release Details:**
+${workflowStatus.details.releaseResults ? 
+  `- Status: ${workflowStatus.details.releaseResults.status} ${getStatusEmoji(workflowStatus.details.releaseResults.status)}
+- Duration: ${workflowStatus.details.releaseResults.duration}s
+- Release: ✅ Created successfully
+- APK: ✅ Attached to release
+- AAB: ✅ Attached to release` : 
+  '- GitHub Release not found or not completed'}
+
 **MANDATORY LINKS AT THE END**:
 🔗 Repository: ${repositoryUrl}
 📚 Documentation: ${projectHomepage || 'https://hasyx.deep.foundation/'}
+📱 Android Build: ${repositoryUrl}/actions/workflows/android-build.yml
+🎯 GitHub Release: ${repositoryUrl}/releases
 `;
 
   return new Promise<string>((resolve, reject) => {

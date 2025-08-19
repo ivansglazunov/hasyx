@@ -475,6 +475,46 @@
           "level": 3
         },
         {
+          "title": "JWT Auth: Local Storage Without Session",
+          "url": "/hasyx/doc/AUTH#jwt-auth-local-storage-without-session",
+          "level": 2
+        },
+        {
+          "title": "How It Works",
+          "url": "/hasyx/doc/AUTH#how-it-works",
+          "level": 3
+        },
+        {
+          "title": "Configuration",
+          "url": "/hasyx/doc/AUTH#configuration",
+          "level": 3
+        },
+        {
+          "title": "Automatic JWT Auth for Client Builds",
+          "url": "/hasyx/doc/AUTH#automatic-jwt-auth-for-client-builds",
+          "level": 3
+        },
+        {
+          "title": "Client Implementation",
+          "url": "/hasyx/doc/AUTH#client-implementation",
+          "level": 3
+        },
+        {
+          "title": "API Endpoints",
+          "url": "/hasyx/doc/AUTH#api-endpoints",
+          "level": 3
+        },
+        {
+          "title": "Local Storage Keys",
+          "url": "/hasyx/doc/AUTH#local-storage-keys",
+          "level": 3
+        },
+        {
+          "title": "Use Cases",
+          "url": "/hasyx/doc/AUTH#use-cases",
+          "level": 3
+        },
+        {
           "title": "Dependencies",
           "url": "/hasyx/doc/AUTH#dependencies",
           "level": 2
@@ -14946,5 +14986,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-08-19T10:02:28.200Z"
+  "lastUpdated": "2025-08-19T11:01:41.156Z"
 }
