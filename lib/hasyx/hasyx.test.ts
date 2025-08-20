@@ -9,7 +9,8 @@ import { createApolloClient, HasyxApolloClient } from '../apollo/apollo';
 import Debug from '../debug'; 
 import { Generator } from '../generator'; 
 import schema from '../../public/hasura-schema.json'; 
-import { hashPassword } from '../users/auth-server'; 
+import { hashPassword } from '../users/auth-server';
+import { createTestUser } from '../create-test-user';
 
 const debug = Debug('test:hasyx');
 
@@ -18,11 +19,7 @@ const generate = Generator(schema as any);
 const HASURA_URL = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!;
 const ADMIN_SECRET = process.env.HASURA_ADMIN_SECRET!;
 
-interface TestUser {
-  id: string;
-  name: string;
-  hasura_role?: string;
-}
+interface TestUser { id: string; name: string; hasura_role?: string; }
 
 // Helper function to create an admin Hasyx client
 function createAdminHasyx(): Hasyx {
@@ -39,27 +36,7 @@ function createAdminHasyx(): Hasyx {
   return new Hasyx(adminApolloClient, generate);
 }
 
-// Helper function to create test user
-async function createTestUser(adminHasyx: Hasyx, suffix: string = ''): Promise<TestUser> {
-  const email = `hasyx-test-${uuidv4()}@example.com`;
-  const password = 'password123';
-  const name = `Hasyx Test User ${suffix}`;
-  
-  const createdUser = await adminHasyx.insert<TestUser>({
-    table: 'users',
-    object: { email, name, hasura_role: 'user' },
-    returning: ['id', 'name']
-  });
-  
-  if (!createdUser || !createdUser.id) {
-    throw new Error(`Failed to create test user ${suffix}`);
-  }
-  
-  return {
-    id: createdUser.id,
-    name: createdUser.name
-  };
-}
+// unified createTestUser imported
 
 // Helper function to cleanup user
 async function cleanupTestUser(adminHasyx: Hasyx, userId: string) {
@@ -94,7 +71,7 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
         
         // Create 3 test users
         for (let i = 0; i < 3; i++) {
-          const user = await createTestUser(adminHasyx, `${i + 1}`);
+          const user = await createTestUser();
           testUsers.push(user);
           debug(`[test:hasyx]   👤 Test user ${i + 1} created: ${user.id} with name: ${user.name}`);
         }
@@ -154,12 +131,13 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
         
         // Testing INSERT and DELETE with temporary user
         debug('🧪 Testing INSERT and DELETE: Creating temporary user...');
-        const tempUser = await createTestUser(adminHasyx, 'Temp');
+        const tempUser = await createTestUser();
         
         debug('📊 INSERT returned:', tempUser);
         expect(tempUser).toBeDefined();
         expect(tempUser.id).toBeTruthy();
-        expect(tempUser.name).toContain('Temp');
+        expect(typeof tempUser.name).toBe('string');
+        expect(tempUser.name.length).toBeGreaterThan(0);
         debug('✅ INSERT test succeeded.');
         
         // Testing DELETE
@@ -210,7 +188,7 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
       
       try {
         // Create test user
-        testUser = await createTestUser(adminHasyx, 'WS-Test');
+        testUser = await createTestUser();
         debug(`[test:hasyx] 👤 Test user created for WebSocket test: ${testUser.id}`);
         
         // Create WebSocket-enabled Hasyx client
@@ -769,7 +747,7 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
   describe('Stream method', () => {
     it('should create streaming subscription with WebSocket', async () => {
       const adminHasyx = createAdminHasyx();
-      const user = await createTestUser(adminHasyx, 'stream-test');
+      const user = await createTestUser();
       const { hasyx: userHasyx } = await adminHasyx._authorize(user.id, { ws: true });
 
       // Create room for streaming test
@@ -870,7 +848,7 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
 
     it('should fallback to polling when WebSocket is not available', async () => {
       const adminHasyx = createAdminHasyx();
-      const user = await createTestUser(adminHasyx, 'stream-polling');
+      const user = await createTestUser();
       const { hasyx: userHasyx } = await adminHasyx._authorize(user.id, { ws: false });
 
       // Create room for streaming test
@@ -970,7 +948,7 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
 
     it('should handle stream errors gracefully', async () => {
       const adminHasyx = createAdminHasyx();
-      const user = await createTestUser(adminHasyx, 'stream-error');
+      const user = await createTestUser();
       const { hasyx: userHasyx } = await adminHasyx._authorize(user.id, { ws: true });
 
       // Create streaming subscription with invalid cursor

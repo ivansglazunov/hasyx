@@ -13,16 +13,12 @@ const ssrServerPath = path.join(projectRoot, 'lib', 'ssr-server.tsx');
 const ssrClientPath = path.join(projectRoot, 'lib', 'ssr-client.tsx');
 const ssrActivePath = path.join(projectRoot, 'lib', 'ssr.tsx');
 
-// Автоматически включать JWT auth для client builds
+// Автоматически включать JWT auth для client builds (без изменения .env)
 async function enableJwtAuthForClient() {
-  const envPath = path.join(projectRoot, '.env');
-  const envContent = fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf8') : '';
-  
-  if (!envContent.includes('NEXT_PUBLIC_JWT_AUTH=1')) {
-    const newEnvContent = envContent + '\n# Auto-enabled JWT auth for client build\nNEXT_PUBLIC_JWT_AUTH=1\n';
-    fs.writeFileSync(envPath, newEnvContent);
-    console.log('✅ Auto-enabled JWT auth for client build (NEXT_PUBLIC_JWT_AUTH=1)');
-  }
+  // Не изменяем .env — только выставляем окружение текущего процесса
+  // и логируем факт включения
+  process.env.NEXT_PUBLIC_JWT_AUTH = '1';
+  console.log('✅ Enabling JWT auth for client build via env (NEXT_PUBLIC_JWT_AUTH=1)');
 }
 
 // Keep track of modified files
@@ -227,7 +223,8 @@ export async function buildClient() {
     console.log(`      NEXT_PUBLIC_MAIN_URL: ${process.env.NEXT_PUBLIC_MAIN_URL}`);
     // ----------------------------------------------------------
     
-    buildSuccess = await runCommand('cross-env NEXT_PUBLIC_BUILD_TARGET=client NODE_ENV=production next build');
+    // Передаём NEXT_PUBLIC_JWT_AUTH=1 на лету, не трогая .env
+    buildSuccess = await runCommand('cross-env NEXT_PUBLIC_JWT_AUTH=1 NEXT_PUBLIC_BUILD_TARGET=client NODE_ENV=production next build');
 
   } catch (error) {
     console.error('❌ An error occurred during the build process phase:', error);

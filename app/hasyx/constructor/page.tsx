@@ -3,8 +3,8 @@ import sidebar from "@/app/sidebar"
 import Constructor from "hasyx/lib/constructor"
 import useSsr, { SsrResult } from "hasyx/lib/ssr"
 
-export default async function ConstructorPage() {
-  const { session } = await useSsr(authOptions) as SsrResult;
+export default function ConstructorPage() {
+  const { session } = useSsr() as SsrResult;
 
   return (
     <Constructor 

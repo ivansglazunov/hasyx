@@ -5,6 +5,7 @@ import path from 'path';
 import { createApolloClient } from './apollo/apollo';
 import { Generator } from './generator';
 import { Hasyx } from './hasyx/hasyx';
+import { createTestUser } from './create-test-user';
 import schema from '../public/hasura-schema.json';
 import Debug from './debug';
 import { gql } from '@apollo/client/core';
@@ -24,15 +25,7 @@ function createAdminHasyx(): Hasyx {
   return new Hasyx(apollo as any, generate);
 }
 
-async function createTestUser(adminH: Hasyx, suffix: string) {
-  const email = `msg-test-${uuidv4()}${suffix}@example.com`;
-  const inserted = await adminH.insert({
-    table: 'users',
-    object: { email, name: `Msg Test User ${suffix}`, hasura_role: 'user' },
-    returning: ['id', 'name'],
-  });
-  return inserted;
-}
+// unified createTestUser imported
 
 // Custom matcher for timestamp proximity
 expect.extend({
@@ -87,7 +80,7 @@ declare global {
 
     it('user can create room', async () => {
       const adminH = createAdminHasyx();
-      const user = await createTestUser(adminH, 'room-owner');
+      const user = await createTestUser();
 
       const { hasyx: userH } = await adminH._authorize(user.id, { ws: false });
 
@@ -117,7 +110,7 @@ declare global {
   describe('Messages', () => {
     it('user can create message in room (allow_reply)', async () => {
       const adminH = createAdminHasyx();
-      const user = await createTestUser(adminH, 'msg-creator');
+      const user = await createTestUser();
       const { hasyx: userH } = await adminH._authorize(user.id, { ws: false });
 
       // Create room with allow_reply_users: ['user']
@@ -177,8 +170,8 @@ declare global {
 
     it('user cannot edit message without allow_change', async () => {
       const adminH = createAdminHasyx();
-      const author = await createTestUser(adminH, 'author');
-      const editor = await createTestUser(adminH, 'editor');
+      const author = await createTestUser();
+      const editor = await createTestUser();
       const { hasyx: authorH } = await adminH._authorize(author.id, { ws: false });
       const { hasyx: editorH } = await adminH._authorize(editor.id, { ws: false });
 
@@ -243,7 +236,7 @@ declare global {
 
     it('user can edit own message when allow_change permits', async () => {
       const adminH = createAdminHasyx();
-      const author = await createTestUser(adminH, 'author');
+      const author = await createTestUser();
       const { hasyx: authorH } = await adminH._authorize(author.id, { ws: false });
 
       // Create room with allow_change_users: ['user']
@@ -306,8 +299,8 @@ declare global {
 
     it('visibility follows allow_select rules', async () => {
       const adminH = createAdminHasyx();
-      const author = await createTestUser(adminH, 'author');
-      const viewer = await createTestUser(adminH, 'viewer');
+      const author = await createTestUser();
+      const viewer = await createTestUser();
       const { hasyx: authorH } = await adminH._authorize(author.id, { ws: false });
       const { hasyx: viewerH } = await adminH._authorize(viewer.id, { ws: false });
 
@@ -371,7 +364,7 @@ declare global {
 
     it('editing requires all rooms to allow change', async () => {
       const adminH = createAdminHasyx();
-      const author = await createTestUser(adminH, 'author');
+      const author = await createTestUser();
       const { hasyx: authorH } = await adminH._authorize(author.id, { ws: false });
 
       // Create two rooms - one allows change, one doesn't
@@ -461,7 +454,7 @@ declare global {
   describe('Replies', () => {
     it('user can reply when allow_reply permits', async () => {
       const adminH = createAdminHasyx();
-      const user = await createTestUser(adminH, 'replier');
+      const user = await createTestUser();
       const { hasyx: userH } = await adminH._authorize(user.id, { ws: false });
 
       // Create room with allow_reply_users: ['user']
@@ -517,7 +510,7 @@ declare global {
 
     it('user can remove own reply when allow_remove permits', async () => {
       const adminH = createAdminHasyx();
-      const user = await createTestUser(adminH, 'remover');
+      const user = await createTestUser();
       const { hasyx: userH } = await adminH._authorize(user.id, { ws: false });
 
       // Create room with allow_remove_users: ['user']
@@ -578,8 +571,8 @@ declare global {
 
     it('user with allow_delete can remove any reply', async () => {
       const adminH = createAdminHasyx();
-      const author = await createTestUser(adminH, 'author');
-      const deleter = await createTestUser(adminH, 'deleter');
+      const author = await createTestUser();
+      const deleter = await createTestUser();
       const { hasyx: authorH, jwt: authorJwt } = await adminH._authorize(author.id, { ws: false });
       const { hasyx: deleterH, jwt: deleterJwt } = await adminH._authorize(deleter.id, { ws: false });
 
@@ -643,7 +636,7 @@ declare global {
 
     it('update on replies is forbidden', async () => {
       const adminH = createAdminHasyx();
-      const user = await createTestUser(adminH, 'updater');
+      const user = await createTestUser();
       const { hasyx: userH } = await adminH._authorize(user.id, { ws: false });
 
       // Create room
@@ -707,7 +700,7 @@ declare global {
     // ❗ Real Hasura streaming subscription test (WebSocket)
     it('streaming subscription emits new messages after cursor', async () => {
       const adminH = createAdminHasyx();
-      const user = await createTestUser(adminH, 'stream');
+      const user = await createTestUser();
       const { hasyx: userH } = await adminH._authorize(user.id, { ws: true });
 
       // Create room

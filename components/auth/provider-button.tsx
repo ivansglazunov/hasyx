@@ -29,53 +29,26 @@ export function ProviderButton({ provider, icon, label, className }: ProviderBut
       if (isJwtMode) {
         debug(`Starting ${provider} authentication in JWT mode`);
         
+        // Ensure we have a valid JWT ID before saving
+        if (!jwtClient.id) {
+          jwtClient.update();
+        }
+        
+        debug(`Using JWT ID: ${jwtClient.id} for ${provider} authentication`);
+        
         // Save JWT ID to localStorage so it can be accessed after OAuth redirect
         localStorage.setItem('nextauth_jwt_id', jwtClient.id);
         localStorage.setItem('nextauth_jwt_provider', provider);
         
-        // Open standard NextAuth signin URL in new window
-        const authUrl = `${API_URL}/api/auth/signin/${provider}`;
-        debug(`Opening NextAuth signin URL:`, authUrl);
-        
-        // Open in new window/tab for JWT auth
-        const authWindow = window.open(authUrl, '_blank', 'width=600,height=700');
-        
-        // Listen for messages from the auth window
-        const messageListener = (event: MessageEvent) => {
-          if (event.origin !== window.location.origin) return;
-          
-          if (event.data.type === 'NEXTAUTH_SIGNIN_SUCCESS') {
-            debug('Received signin success message from auth window');
-            // Start JWT client polling
-            jwtClient.start();
-            // Remove the message listener
-            window.removeEventListener('message', messageListener);
-            // Close auth window if still open
-            if (authWindow && !authWindow.closed) {
-              authWindow.close();
-            }
-          }
-        };
-        
-        window.addEventListener('message', messageListener);
-        
-        // Handle case when popup is blocked or closed manually
-        const checkClosed = setInterval(() => {
-          if (authWindow && authWindow.closed) {
-            clearInterval(checkClosed);
-            window.removeEventListener('message', messageListener);
-            debug('Auth window was closed manually');
-          }
-        }, 1000);
-        
-        // Cleanup after 5 minutes
-        setTimeout(() => {
-          clearInterval(checkClosed);
-          window.removeEventListener('message', messageListener);
-          if (authWindow && !authWindow.closed) {
-            authWindow.close();
-          }
-        }, 5 * 60 * 1000);
+        // Start polling immediately on the client
+        jwtClient.start();
+
+        // Build callbackUrl carrying jwtId and close flag so remote can complete and close itself
+        const callbackUrl = `${API_URL}/auth/callback?jwtId=${encodeURIComponent(jwtClient.id)}&close=1`;
+        // Open helper page that auto-submits POST to NextAuth (avoids provider chooser page)
+        const helperUrl = `${API_URL}/api/auth/jwt-signin?provider=${encodeURIComponent(provider)}&callbackUrl=${encodeURIComponent(callbackUrl)}`;
+        debug(`Opening JWT helper signin URL:`, helperUrl);
+        window.open(helperUrl, '_blank', 'width=600,height=700');
         
       } else {
         // Regular NextAuth mode

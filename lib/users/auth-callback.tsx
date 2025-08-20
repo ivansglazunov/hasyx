@@ -26,83 +26,75 @@ export const useAuthCallback = (): AuthCallbackState => {
       setCallbackState({ status: 'loading' });
       return;
     }
-    
+
+    // Proceed only after NextAuth session is authenticated (ensures JWT is generated and available to getToken)
     if (status === 'authenticated' && session && !hasRedirected) {
-      debug('User authenticated successfully, preparing redirect...');
+      debug('User authenticated successfully, completing JWT if jwtId present...');
       setCallbackState({ status: 'completing' });
       setHasRedirected(true);
-      
-      // Get JWT-related data from localStorage
-      const jwtId = localStorage.getItem('nextauth_jwt_id');
-      const jwtProvider = localStorage.getItem('nextauth_jwt_provider');
-      
-      debug('JWT callback data:', { jwtId, jwtProvider });
-      
+
+      // Get JWT-related data from localStorage or from URL (jwtId)
+      const jwtId = localStorage.getItem('nextauth_jwt_id') || (typeof window !== 'undefined' ? new URL(window.location.href).searchParams.get('jwtId') : null);
+      debug('JWT callback data:', { jwtId });
+
       // If we have JWT data, complete the JWT authentication
-      if (jwtId && jwtProvider) {
-        debug('Completing JWT authentication...');
-        
+      if (jwtId) {
+        debug('Completing JWT authentication (with authenticated session)...');
+
         const completeJwtAuth = async () => {
           try {
-            // Call the JWT complete endpoint
             const response = await fetch('/api/auth/jwt-complete', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-              body: JSON.stringify({
-                jwtId: jwtId,
-              }),
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ jwtId }),
             });
-            
+
             if (response.ok) {
               debug('JWT authentication completed successfully');
-              
               // Clean up localStorage
               localStorage.removeItem('nextauth_jwt_id');
               localStorage.removeItem('nextauth_jwt_provider');
-              
-              // Redirect to root or saved URL
-              const savedUrl = localStorage.getItem('nextauth_jwt_redirect');
-              if (savedUrl) {
-                localStorage.removeItem('nextauth_jwt_redirect');
-                window.location.href = savedUrl;
+
+              // If close=1 present, close popup silently (for mobile/Capacitor flow)
+              const shouldClose = typeof window !== 'undefined' && new URL(window.location.href).searchParams.get('close') === '1';
+              if (shouldClose) {
+                try { window.close(); } catch {}
               } else {
-                window.location.href = '/';
+                const savedUrl = localStorage.getItem('nextauth_jwt_redirect');
+                if (savedUrl) {
+                  localStorage.removeItem('nextauth_jwt_redirect');
+                  window.location.href = savedUrl;
+                } else {
+                  window.location.href = '/';
+                }
               }
             } else {
-              debug('JWT authentication completion failed:', response.status);
+              const text = await response.text().catch(() => '');
+              debug('JWT authentication completion failed:', response.status, text);
               // Clean up localStorage on error
               localStorage.removeItem('nextauth_jwt_id');
               localStorage.removeItem('nextauth_jwt_provider');
               localStorage.removeItem('nextauth_jwt_redirect');
-              
-              // Show error or redirect to home
               window.location.href = '/?error=jwt-completion-failed';
             }
-        } catch (error) {
+          } catch (error) {
             debug('Error completing JWT authentication:', error);
             // Clean up localStorage on error
             localStorage.removeItem('nextauth_jwt_id');
             localStorage.removeItem('nextauth_jwt_provider');
             localStorage.removeItem('nextauth_jwt_redirect');
-          
-            // Show error or redirect to home
             window.location.href = '/?error=jwt-completion-error';
           }
         };
-          
         completeJwtAuth();
-          return;
+        return;
       }
-      
+
       // Regular (non-JWT) authentication redirect
       const preAuthUrl = sessionStorage.getItem('preAuthUrl') || '/';
       sessionStorage.removeItem('preAuthUrl');
-      
       debug('Redirecting to:', preAuthUrl);
-      
-      // Use Next.js router for client-side navigation
       router.replace(preAuthUrl);
       return;
     }

@@ -143,7 +143,12 @@ function determineSecureProtocol(host: string, protocol: string): boolean {
     debug(`Client secure location: ${isSecureLocation}`);
     return isSecureLocation;
   } else {
-    // Server: always assume secure
+    // Server: do NOT force https for localhost
+    const isLocalhost = /^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(host);
+    if (isLocalhost) {
+      debug('Server environment + localhost detected - not forcing secure protocol');
+      return false;
+    }
     debug('Server environment - using secure protocol');
     return true;
   }

@@ -814,6 +814,41 @@ export class Hasyx {
   }
 
   /**
+   * Retrieves JWT token from the server for client-side authentication.
+   * This method is used when JWT_FORCE is enabled to ensure JWT availability.
+   * @returns Promise resolving with the JWT token string
+   * @throws Error if the request fails
+   */
+  async jwt(): Promise<string> {
+    try {
+      debug('Requesting JWT token from server');
+      const response = await fetch('/api/auth/get-jwt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get JWT: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const token = data.token;
+      
+      if (!token) {
+        throw new Error('No JWT token received from server');
+      }
+
+      debug('JWT token received successfully');
+      return token;
+    } catch (error) {
+      debug('Error getting JWT token:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Executes raw SQL against the Hasura database.
    * Requires admin-level access with URL and admin secret.
    * @param sql - The SQL query to execute
@@ -905,6 +940,37 @@ export class Hasyx {
         debug('Debug insert skipped: Not in admin context (no admin secret found in Hasyx options).');
       }
       return undefined;
+    }
+  }
+
+  /**
+   * Uses an invite code to register the current user as invited
+   * @param code - The invite code to use
+   * @returns Promise resolving with invite usage result
+   */
+  async invite(code: string): Promise<any> {
+    try {
+      debug('Using invite code:', code);
+      
+      const response = await fetch('/api/invite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+      debug('Invite result:', result);
+      return result;
+    } catch (error: any) {
+      debug('Error using invite:', error);
+      throw error;
     }
   }
 

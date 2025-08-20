@@ -43,6 +43,18 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
   useEffect(() => {
     if (!process.env.NEXT_PUBLIC_JWT_AUTH || typeof window === 'undefined') return;
     
+    const base64UrlDecode = (input: string) => {
+      try {
+        // Convert base64url -> base64
+        let base64 = input.replace(/-/g, '+').replace(/_/g, '/');
+        // Add padding if needed
+        while (base64.length % 4 !== 0) base64 += '=';
+        return atob(base64);
+      } catch (e) {
+        throw e;
+      }
+    };
+
     const checkJwtAuth = () => {
       const jwt = localStorage.getItem('nextauth_jwt');
       if (jwt !== jwtToken) {
@@ -52,7 +64,8 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
         if (jwt) {
           try {
             const [, payloadB64] = jwt.split('.');
-            const payload = JSON.parse(atob(payloadB64)); // Use atob for browser compatibility
+            const payloadJson = base64UrlDecode(payloadB64);
+            const payload = JSON.parse(payloadJson);
             const hasuraClaims = payload['https://hasura.io/jwt/claims'];
             
             if (hasuraClaims) {
@@ -64,10 +77,12 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
               };
               setJwtUser(user);
               debug('JWT user extracted from JWT:', user);
+              
             }
           } catch (error) {
             debug('Error parsing JWT:', error);
             setJwtUser(null);
+            
           }
         } else {
           setJwtUser(null);
@@ -106,31 +121,42 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
 
     // Define the base API URL (GraphQL endpoint)
     let apiUrl: string;
-    if (jwtToken) {
+    let useWebSockets = typeof window !== 'undefined';
+    
+    if (jwtToken || (!!+process.env.NEXT_PUBLIC_JWT_AUTH!)) {
       debug('Creating new Apollo client with JWT token:', jwtToken);
+      // When JWT is available, use Hasura GraphQL URL directly for WebSocket support
       apiUrl = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!;
+      useWebSockets = true; // Force WebSocket for JWT/force mode
+      
     } else if (isLocalhost && !urlOverride) {
       // Local development without override - use API_URL with http
       debug('Creating new Apollo client using API_URL:', API_URL);
       apiUrl = url('http', API_URL, '/api/graphql');
+      
     } else if (urlOverride) {
       // Override URL provided - use it with appropriate protocol
       debug('Creating new Apollo client with urlOverride:', urlOverride);
       apiUrl = url('http', urlOverride, '/api/graphql');
+      
     } else {
       // Production/Preview - use API_URL with appropriate protocol  
       debug('Creating new Apollo client using API_URL:', API_URL);
       apiUrl = url('http', API_URL, '/api/graphql');
+      
     }
     
     debug(`HasyxProviderCore: Final API URL: ${apiUrl}, isLocalhost: ${isLocalhost}, based on urlOverride: ${urlOverride}`);
     debug(`HasyxProviderCore: JWT token: ${jwtToken ? 'present' : 'none'}`);
+    debug(`HasyxProviderCore: WebSocket enabled: ${useWebSockets}`);
     
-    return {
+    const apolloOpts = {
       url: apiUrl,
-      ws: typeof window !== 'undefined', // Enable WebSocket support
+      ws: useWebSockets,
       token: jwtToken || undefined, // Use JWT if available
     };
+    
+    return apolloOpts;
   }, [urlOverride, jwtToken]));
   
   // Keep the generator on Apollo client for compatibility
@@ -149,15 +175,38 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
       : (session?.user || null);
       
     hasyxInstance.user = effectiveUser;
+    
+    
+    // Override the jwt method to trigger Hasyx rebuild
+    const originalJwt = hasyxInstance.jwt.bind(hasyxInstance);
+    hasyxInstance.jwt = async function() {
+      
+      const token = await originalJwt();
+      // After getting JWT, update state to trigger rebuild
+      setJwtToken(token);
+      
+      return token;
+    };
+    
     hasyxInstance.logout = (options?: any) => {
       const jwt = localStorage.getItem('nextauth_jwt');
       if (jwt) {
         debug('Logging out with JWT');
         localStorage.removeItem('nextauth_jwt');
         setJwtToken(null);
+        setJwtUser(null);
+        try {
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: 'nextauth_jwt',
+            newValue: null,
+            oldValue: jwt,
+          }));
+        } catch {}
+        
       } else {
         debug('Logging out with session');
         signOut(options);
+        
       }
     };
     return hasyxInstance;
@@ -178,6 +227,22 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
 export function HasyxProvider({ children, generate }: { children: React.ReactNode, generate: Generate }) {
   // Use enhanced url function for auth base path
   const authBasePath = url('http', API_URL, '/api/auth');
+
+  useEffect(() => {
+    console.log('process.env.NEXT_PUBLIC_JWT_AUTH', process.env.NEXT_PUBLIC_JWT_AUTH);
+    console.log('process.env.NEXT_PUBLIC_MAIN_URL', process.env.NEXT_PUBLIC_MAIN_URL);
+    console.log('process.env.NEXT_PUBLIC_BASE_URL', process.env.NEXT_PUBLIC_BASE_URL);
+    console.log('process.env.NEXT_PUBLIC_API_URL', process.env.NEXT_PUBLIC_API_URL);
+    console.log('process.env.NEXT_PUBLIC_CLIENT_ONLY', process.env.NEXT_PUBLIC_CLIENT_ONLY);
+    console.log('process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL', process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL);
+    console.log('process.env.NEXT_PUBLIC_NEXTAUTH_ENABLED', process.env.NEXT_PUBLIC_NEXTAUTH_ENABLED);
+    console.log('process.env.NEXT_PUBLIC_TELEGRAM_AUTH_ENABLED', process.env.NEXT_PUBLIC_TELEGRAM_AUTH_ENABLED);
+    console.log('process.env.NEXT_PUBLIC_GITHUB_AUTH_ENABLED', process.env.NEXT_PUBLIC_GITHUB_AUTH_ENABLED);
+    console.log('process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED', process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED);
+    console.log('process.env.NEXT_PUBLIC_YANDEX_AUTH_ENABLED', process.env.NEXT_PUBLIC_YANDEX_AUTH_ENABLED);
+    console.log('process.env.NEXT_PUBLIC_FACEBOOK_AUTH_ENABLED', process.env.NEXT_PUBLIC_FACEBOOK_AUTH_ENABLED);
+    console.log('process.env.NEXT_PUBLIC_VK_AUTH_ENABLED', process.env.NEXT_PUBLIC_VK_AUTH_ENABLED);
+  }, []);
 
   return (
     // SessionProvider is needed for signIn/signOut calls

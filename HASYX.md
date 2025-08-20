@@ -280,6 +280,7 @@ function subscribeToUserChanges(userId: string) {
 *   `async update(options: HasyxMethodOptions): Promise<any>`: Executes an update mutation.
 *   `async delete(options: HasyxMethodOptions): Promise<any>`: Executes a delete mutation.
 *   `subscribe(options: HasyxMethodOptions): Observable<any>`: Initiates a subscription, returning an Apollo Observable. If WebSockets are disabled (`NEXT_PUBLIC_WS=0`), falls back to polling.
+*   `async jwt(): Promise<string>`: Retrieves JWT token from the server for client-side authentication. This method is used when JWT_FORCE is enabled to ensure JWT availability. Returns the JWT token string or throws an error if the request fails.
 *   `async sql(sql: string, source?: string, cascade?: boolean): Promise<any>`: Executes raw SQL against the Hasura database. Requires admin-level access with URL and admin secret. Throws an error if Hasura instance is not available.
 *   `testAuthorize(userId: string, options: TestAuthorizeOptions): Promise<{ axios, apollo, hasyx }>`: (Development & Testing Only) A convenience method for authenticating as a specific user. It calls the global `testAuthorize` function but intelligently passes down the schema and Apollo client options from the current `Hasyx` instance. Options you provide to this method will override the instance's defaults.
 

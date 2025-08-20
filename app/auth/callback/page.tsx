@@ -5,6 +5,8 @@ import { useAuthCallback, AuthCallbackCompleting, AuthCallbackError } from 'hasy
 export default function AuthCallbackPage() {
   const callbackState = useAuthCallback();
 
+  // Diagnostics removed
+
   switch (callbackState.status) {
     case 'loading':
     case 'completing':

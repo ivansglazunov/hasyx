@@ -11,7 +11,6 @@ const JwtContext = createContext<JwtClient>(
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem('nextauth_jwt', jwt);
       }
-      console.log('JWT authentication completed, JWT saved to localStorage');
     }
   })
 );
@@ -32,7 +31,46 @@ export function useJwt(): JwtClient {
 
 // Component to wrap your app for JWT auth support
 export function JwtAuthProvider({ children }: { children: React.ReactNode }) {
+
   useEffect(() => {
+    // Check for JWT_FORCE mode first
+    if (!!+process.env.NEXT_PUBLIC_JWT_FORCE!) {
+      // Force JWT retrieval - this ensures JWT is always available
+      const forceJwtRetrieval = async () => {
+        try {
+          // Check if JWT already exists
+          const existingJwt = localStorage.getItem('nextauth_jwt');
+          if (!existingJwt) {
+            // Request JWT from server
+            const response = await fetch('/api/auth/get-jwt', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              if (data.token) {
+                localStorage.setItem('nextauth_jwt', data.token);
+                // Trigger storage event for other components
+                window.dispatchEvent(new StorageEvent('storage', {
+                  key: 'nextauth_jwt',
+                  newValue: data.token,
+                  oldValue: null
+                }));
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Failed to force JWT retrieval:', error);
+        }
+      };
+
+      forceJwtRetrieval();
+    }
+    
+    // Regular JWT auth initialization
     if (!!+process.env.NEXT_PUBLIC_JWT_AUTH!) {
       initJwtClient();
     }

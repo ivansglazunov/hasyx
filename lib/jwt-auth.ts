@@ -11,7 +11,7 @@ interface JwtOptions {
 export class JwtClient {
   public id: string = '';
   public interval: number | null = null;
-  public time: number = 1000;
+  public time: number = 5000;
   private onDone: (jwt: string) => void;
 
   constructor(options: JwtOptions) {
@@ -46,10 +46,21 @@ export class JwtClient {
           debug('JWT auth still waiting');
           break;
         case 'done':
-          debug('JWT auth completed, calling onDone');
+          debug('JWT auth completed, saving JWT and calling onDone');
           this.stop();
-          // Remove from localStorage
+          // Save JWT and cleanup localStorage
           if (typeof localStorage !== 'undefined') {
+            try {
+              localStorage.setItem('nextauth_jwt', data.jwt);
+              // Trigger storage event so other tabs/components can react immediately
+              try {
+                window.dispatchEvent(new StorageEvent('storage', {
+                  key: 'nextauth_jwt',
+                  newValue: data.jwt,
+                  oldValue: null,
+                }));
+              } catch {}
+            } catch {}
             localStorage.removeItem('nextauth_jwt_id');
           }
           this.onDone(data.jwt);
@@ -72,6 +83,7 @@ export class JwtClient {
     // Save to localStorage
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('nextauth_jwt_id', this.id);
+      debug(`Saved JWT ID to localStorage: ${this.id}`);
     }
     
     this.interval = setInterval(() => {

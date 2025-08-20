@@ -3,8 +3,8 @@ import sidebar from "@/app/sidebar"
 import Diagnostics from "hasyx/lib/diagnostics"
 import useSsr, { SsrResult } from "hasyx/lib/ssr"
 
-export default async function DiagnosticsPage() {
-  const { session } = await useSsr(authOptions) as SsrResult;
+export default function DiagnosticsPage() {
+  const { session } = useSsr() as SsrResult;
 
   return (
     <Diagnostics 

@@ -2,6 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
+import { signIn } from 'next-auth/react';
 import Debug from 'hasyx/lib/debug';
 
 const debug = Debug('auth:jwt-signin');
@@ -10,6 +11,8 @@ function JwtSigninContent() {
   const searchParams = useSearchParams();
   const jwt = searchParams.get('jwt');
   const error = searchParams.get('error');
+  const provider = searchParams.get('provider');
+  const callbackUrl = searchParams.get('callbackUrl');
 
   useEffect(() => {
     if (error) {
@@ -23,6 +26,19 @@ function JwtSigninContent() {
       }
       window.close();
       return;
+    }
+
+    // Auto-trigger NextAuth signIn to the specified provider with given callbackUrl
+    if (provider) {
+      try {
+        debug('Triggering NextAuth signIn for provider with callbackUrl', { provider, callbackUrl });
+        // NextAuth will handle redirect to OAuth provider
+        signIn(provider, {
+          callbackUrl: callbackUrl || undefined,
+        } as any);
+      } catch (e) {
+        debug('Failed to trigger signIn:', e);
+      }
     }
 
     if (jwt) {
@@ -42,7 +58,7 @@ function JwtSigninContent() {
       // Close the popup
       window.close();
     }
-  }, [jwt, error]);
+  }, [jwt, error, provider, callbackUrl]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

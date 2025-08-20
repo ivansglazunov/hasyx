@@ -33,13 +33,15 @@ export async function handleAuthJwtGET(request: NextRequest) {
     // Query the auth_jwt table
     const result = await adminClient.select({
       table: 'auth_jwt',
-      where: { id: { _eq: jwtId } }
+      where: { id: { _eq: jwtId } },
+      returning: ['id', 'jwt', 'redirect'],
+      limit: 1,
     });
     
     if (!result || result.length === 0) {
-      debug(`JWT auth record not found for ID: ${jwtId}`);
+      debug(`JWT auth record not found for ID: ${jwtId} → awaiting creation`);
       return NextResponse.json(
-        { status: 'lost' },
+        { status: 'await' },
         { headers: corsHeaders }
       );
     }

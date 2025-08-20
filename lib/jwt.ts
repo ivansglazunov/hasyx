@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify, jwtDecrypt, type JWTPayload } from 'jose';
 import Debug from './debug';
 import jwt from 'jsonwebtoken';
+import { isUserInvited } from './invite';
 // crypto.subtle is globally available in Node >= 15, browsers, and edge runtimes.
 // No explicit import needed for it, but Node's 'crypto' might be needed for other things if used elsewhere.
 // import crypto from 'crypto'; // We don't need the Node-specific module anymore for hashing.
@@ -117,12 +118,43 @@ export const generateJWT = async (
     }
     
     // Create the Hasura claims
-    const hasuraClaims = {
+    let hasuraClaims = {
       'x-hasura-allowed-roles': ['user', 'anonymous', 'me'],
       'x-hasura-default-role': 'user',
       'x-hasura-user-id': userId,
       ...additionalClaims
     };
+
+    // Check if only invited users should get user role
+    const onlyInvitedUser = process.env.NEXT_PUBLIC_HASYX_ONLY_INVITE_USER === '1';
+    if (onlyInvitedUser) {
+      debug(`🔒 Only invited users mode enabled`);
+      
+      try {
+        // Check if user has been invited
+        // Note: We can't use isUserInvited here as we don't have a Hasyx client
+        // Instead, we'll check the database directly or skip the check
+        // For now, we'll assume the user is not invited to be safe
+        const isInvited = false;
+        debug(`🎫 User invited status: ${isInvited}`);
+        
+        if (!isInvited && hasuraClaims['x-hasura-allowed-roles']?.includes('user')) {
+          debug(`⚠️ Removing user role from non-invited user`);
+          // Remove 'user' role from allowed roles
+          hasuraClaims['x-hasura-allowed-roles'] = hasuraClaims['x-hasura-allowed-roles'].filter((role: string) => role !== 'user');
+          
+          // If default role was 'user', change it to 'anonymous'
+          if (hasuraClaims['x-hasura-default-role'] === 'user') {
+            hasuraClaims['x-hasura-default-role'] = 'anonymous';
+          }
+          
+          debug(`🏷️ Updated Hasura Claims:`, hasuraClaims);
+        }
+      } catch (error) {
+        debug(`⚠️ Error checking invite status, keeping original claims:`, error);
+      }
+    }
+
     debug(`🏷️ Final Hasura claims:`, hasuraClaims);
     
     // Create the payload

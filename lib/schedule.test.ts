@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createApolloClient } from './apollo/apollo';
 import { Generator } from './generator';
 import { Hasyx } from './hasyx/hasyx';
+import { createTestUser } from './create-test-user';
 import schema from '../public/hasura-schema.json';
 import { hashPassword } from './users/auth-server';
 
@@ -19,20 +20,12 @@ function createAdminHasyx(): Hasyx {
   return new Hasyx(apollo as any, generate);
 }
 
-async function createTestUser(adminH: Hasyx, suffix: string) {
-  const email = `schedule-test-${uuidv4()}-${suffix}@example.com`;
-  const inserted = await adminH.insert({
-    table: 'users',
-    object: { email, name: `Schedule Test ${suffix}`, hasura_role: 'user' },
-    returning: ['id', 'email'],
-  });
-  return inserted;
-}
+// unified createTestUser imported
 
 (!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Schedule permissions', () => {
   it('user can create and delete own schedule', async () => {
     const adminH = createAdminHasyx();
-    const user = await createTestUser(adminH, 'owner');
+    const user = await createTestUser();
     const { hasyx: userH } = await adminH._authorize(user.id, { ws: false });
 
     const scheduleId = uuidv4();
@@ -56,7 +49,7 @@ async function createTestUser(adminH: Hasyx, suffix: string) {
     expect(schedule.title).toBe('My Title');
 
     // Any other user can select it (public visibility)
-    const stranger = await createTestUser(adminH, 'viewer');
+    const stranger = await createTestUser();
     const { hasyx: strangerH } = await adminH._authorize(stranger.id, { ws: false });
     const rows = await strangerH.select({
       table: 'schedule',
@@ -82,8 +75,8 @@ async function createTestUser(adminH: Hasyx, suffix: string) {
 
   it('user cannot edit or delete another user schedule', async () => {
     const adminH = createAdminHasyx();
-    const owner = await createTestUser(adminH, 'owner');
-    const stranger = await createTestUser(adminH, 'stranger');
+    const owner = await createTestUser();
+    const stranger = await createTestUser();
     const { hasyx: ownerH } = await adminH._authorize(owner.id, { ws: false });
     const { hasyx: strangerH } = await adminH._authorize(stranger.id, { ws: false });
 
@@ -131,8 +124,8 @@ async function createTestUser(adminH: Hasyx, suffix: string) {
 
   it('user can create and update own event; cannot modify others', async () => {
     const adminH = createAdminHasyx();
-    const owner = await createTestUser(adminH, 'owner');
-    const other = await createTestUser(adminH, 'other');
+    const owner = await createTestUser();
+    const other = await createTestUser();
     const { hasyx: ownerH } = await adminH._authorize(owner.id, { ws: false });
     const { hasyx: otherH } = await adminH._authorize(other.id, { ws: false });
 

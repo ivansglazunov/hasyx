@@ -15,6 +15,7 @@ import { hashPassword } from './auth-server';
 import Debug from '../debug';
 import { Generator } from '../generator';
 import { Hasyx } from '../hasyx/hasyx';
+import { createTestUser } from '../create-test-user';
 import { generateJWT } from '../jwt';
 
 // Load environment variables from .env file
@@ -53,32 +54,7 @@ function createAdminHasyx(): Hasyx {
   return new Hasyx(adminApolloClient, generate);
 }
 
-// Helper function to create test user
-async function createTestUser(adminHasyx: Hasyx, suffix: string = ''): Promise<TestUser> {
-  const email = `auth-test-${uuidv4()}@example.com`;
-  const name = `Auth Test User ${suffix}`;
-  
-  const createdUser = await adminHasyx.insert<TestUser>({
-    table: 'users',
-    object: { 
-      email, 
-      name, 
-      hasura_role: 'user',
-      is_admin: false 
-    },
-    returning: ['id', 'email', 'name']
-  });
-  
-  if (!createdUser || !createdUser.id) {
-    throw new Error(`Failed to create test user ${suffix}`);
-  }
-  
-  return {
-    id: createdUser.id,
-    email: createdUser.email,
-    name: createdUser.name
-  };
-}
+// unified createTestUser imported
 
 // Helper function to cleanup user
 async function cleanupTestUser(adminHasyx: Hasyx, userId: string) {
@@ -113,7 +89,7 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
       debug('🧪 Testing JWT generation and client authorization...');
       
       // Create test user
-      testUser = await createTestUser(adminHasyx, 'Valid');
+      testUser = await createTestUser();
       debug(`Test user created with ID: ${testUser.id}`);
 
       // Generate JWT manually instead of using testAuthorize
@@ -194,7 +170,7 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
       debug('🧪 Testing testAuthorize function without TEST_TOKEN...');
       
       // Create test user
-      testUser = await createTestUser(adminHasyx, 'NoToken');
+      testUser = await createTestUser();
       
       const originalToken = process.env.TEST_TOKEN;
       delete process.env.TEST_TOKEN; // Temporarily remove token

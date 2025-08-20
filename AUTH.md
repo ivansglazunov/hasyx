@@ -234,6 +234,49 @@ npx hasyx client
 
 This ensures that mobile applications and standalone builds can authenticate without server-side sessions.
 
+### JWT_FORCE: Guaranteed JWT Availability for Serverless
+
+For serverless environments (like Vercel) where WebSocket subscriptions are not available, the `JWT_FORCE` configuration ensures that JWT tokens are always available for direct Hasura GraphQL endpoint access.
+
+**Configuration:**
+```bash
+npx hasyx config
+# Select variant → Host Configuration → Enable JWT Force
+```
+
+Or manually in `hasyx.config.json`:
+```json
+{
+  "hosts": {
+    "prod": {
+      "url": "https://hasyx.deep.foundation",
+      "jwtForce": true
+    }
+  }
+}
+```
+
+**What happens automatically:**
+- `NEXT_PUBLIC_JWT_FORCE=1` is added to `.env` file
+- JWT token is automatically requested from `/api/auth/get-jwt` on app initialization
+- Hasyx client is rebuilt with JWT token for WebSocket support
+- Apollo client uses `NEXT_PUBLIC_HASURA_GRAPHQL_URL` directly for subscriptions
+
+**Benefits:**
+- **WebSocket Support**: Enables real-time subscriptions in serverless environments
+- **Direct Hasura Access**: Bypasses API routes for GraphQL operations
+- **Automatic Token Management**: JWT is retrieved and stored without user intervention
+- **Serverless Compatibility**: Works in Vercel, Netlify, and other serverless platforms
+
+**How it works:**
+1. App starts and checks for `NEXT_PUBLIC_JWT_FORCE=1`
+2. If JWT not in localStorage, automatically requests from `/api/auth/get-jwt`
+3. JWT token is stored and Hasyx client is rebuilt
+4. Apollo client switches to direct Hasura endpoint with WebSocket support
+5. All GraphQL operations (including subscriptions) work via Hasura endpoint
+
+This ensures that even in serverless environments, your application can use WebSocket subscriptions and direct Hasura GraphQL access for optimal performance.
+
 ### Client Implementation
 
 The JWT client is available in `components/jwt-auth.tsx`:
@@ -257,6 +300,39 @@ jwtClient.onDone = (jwt) => {
   // Use JWT for API calls
 };
 ```
+
+### Using Hasyx JWT Method
+
+For programmatic JWT retrieval, you can use the `.jwt()` method on any Hasyx instance:
+
+```typescript
+import { useHasyx } from 'hasyx';
+
+function MyComponent() {
+  const hasyx = useHasyx();
+  
+  const handleGetJwt = async () => {
+    try {
+      // This will request JWT from /api/auth/get-jwt
+      const token = await hasyx.jwt();
+      console.log('JWT received:', token);
+      
+      // Token is automatically stored and Hasyx client rebuilt
+      // You can now use WebSocket subscriptions
+    } catch (error) {
+      console.error('Failed to get JWT:', error);
+    }
+  };
+  
+  return (
+    <button onClick={handleGetJwt}>
+      Get JWT Token
+    </button>
+  );
+}
+```
+
+**Note:** When using `hasyx.jwt()`, the JWT token is automatically stored in localStorage and the Hasyx client is rebuilt to use the direct Hasura GraphQL endpoint with WebSocket support.
 
 ### API Endpoints
 

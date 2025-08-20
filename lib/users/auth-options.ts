@@ -55,6 +55,10 @@ export const baseProviders = [
   GoogleProvider({
     clientId: process.env.GOOGLE_CLIENT_ID!,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    // Increase network timeout for discovery/authorization to avoid OAuthSignin timeouts in dev
+    httpOptions: {
+      timeout: 15000,
+    },
   }),
   YandexProvider({
     clientId: process.env.YANDEX_CLIENT_ID!,
@@ -255,12 +259,44 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
         });
 
         let userId: string | undefined = token.sub;
-        let provider: string | undefined = account?.provider;
+        let provider: string | undefined = account?.provider || token.provider;
         let emailVerified: string | null | undefined = token.emailVerified; // Start with existing token value
         
         // Note: Passive mode for OAuth is handled separately
         // For credentials, passive auth goes through custom endpoint
         
+        // Diagnostics: show potential cookie presence (placeholder)
+        try {
+          console.log('[jwt-plan] jwt: NextAuth JWT callback running. Will read hasyx_jwt_id cookie here in real impl');
+        } catch {}
+
+        // Normalize userId for OAuth across callback invocations
+        // If token.sub is a non-UUID (e.g., Google numeric ID), resolve it to DB user UUID via accounts mapping
+        try {
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          const looksLikeUuid = !!userId && uuidRegex.test(userId);
+          if (!looksLikeUuid && provider && userId) {
+            debug('JWT Callback: Resolving non-UUID userId via accounts mapping', { provider, providerAccountId: userId });
+            const accountLookup = await client.select({
+              table: 'accounts',
+              where: {
+                provider: { _eq: provider },
+                provider_account_id: { _eq: userId },
+              },
+              returning: ['user_id'],
+              limit: 1,
+            });
+            if (accountLookup && accountLookup.length > 0 && accountLookup[0].user_id) {
+              userId = accountLookup[0].user_id;
+              debug('JWT Callback: Mapped provider account to user UUID', { userId });
+            } else {
+              debug('JWT Callback: No account mapping found for provider account id');
+            }
+          }
+        } catch (mapErr) {
+          debug('JWT Callback: Error while mapping provider account to user UUID:', mapErr);
+        }
+
         // This block runs only on sign-in when account and user/profile are passed
         debug('🔍 JWT Callback: Checking if account and user are present:', {
           hasAccount: !!account,
@@ -596,15 +632,47 @@ export function createAuthOptions(additionalProviders: any[] = [], client: Hasyx
         
         const defaultRedirectUrl = url.startsWith('/') ? `${baseUrl}${url}` : url;
         const targetOrigin = new URL(defaultRedirectUrl).origin;
+
+        // Diagnostics removed
         
-        // If redirect is NOT to our baseUrl (i.e., to localhost callback)
-        // and we have a token from jwt callback
+        // If this is our client auth callback URL, we can finish JWT flow entirely on server
+        try {
+          const parsed = new URL(defaultRedirectUrl);
+          const isAuthCallback = parsed.pathname.includes('/auth/callback');
+          const jwtId = parsed.searchParams.get('jwtId');
+          if (isAuthCallback && jwtId && tempTokenForRedirect) {
+            debug('Redirect Callback: Completing JWT on server. jwtId present, temp token present');
+            // Server-side insert into auth_jwt without any client fetch
+            try {
+              await client.insert({
+                table: 'auth_jwt',
+                object: {
+                  id: jwtId,
+                  jwt: tempTokenForRedirect,
+                  redirect: null,
+                  created_at: Date.now(),
+                },
+              });
+              debug('Redirect Callback: Inserted auth_jwt record for jwtId:', jwtId);
+            } catch (insertErr) {
+              console.error('Redirect Callback: Failed to insert auth_jwt:', insertErr);
+            }
+            // Clean temp token and cleanup callback-only params
+            tempTokenForRedirect = null;
+            parsed.searchParams.delete('jwtId');
+            parsed.searchParams.delete('close');
+            return parsed.toString();
+          }
+        } catch {}
+        
+        // If redirect is NOT to our baseUrl (i.e., to other origin) and we have a token,
+        // we can still pass it (diagnostic/legacy). Not needed for our local client flow.
         if (targetOrigin !== baseUrl && tempTokenForRedirect) {
-            const redirectUrlWithToken = new URL(defaultRedirectUrl); // Use URL where NextAuth wanted to redirect
-            redirectUrlWithToken.searchParams.set('auth_token', tempTokenForRedirect);
-            debug('Redirect Callback: Different origin detected, appending token:', redirectUrlWithToken.toString());
-            tempTokenForRedirect = null; // Reset temporary token
-            return redirectUrlWithToken.toString();
+          const redirectUrlWithToken = new URL(defaultRedirectUrl);
+          redirectUrlWithToken.searchParams.set('auth_token', tempTokenForRedirect);
+          debug('Redirect Callback: Different origin detected, appending token:', redirectUrlWithToken.toString());
+          tempTokenForRedirect = null; // Reset temporary token
+          return redirectUrlWithToken.toString();
         }
         
         // In all other cases (redirect within Vercel, no token)

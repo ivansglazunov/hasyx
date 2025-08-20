@@ -68,6 +68,11 @@ hasyxConfig.host = z.object({
     .default(false)
     .describe('Enable JWT authentication mode for mobile apps (NEXT_PUBLIC_JWT_AUTH). Required for Android/iOS integration.')
     .meta({ numericBoolean: true }),
+  jwtForce: z
+    .boolean()
+    .default(false)
+    .describe('Force JWT token retrieval for serverless environments (NEXT_PUBLIC_JWT_FORCE). Ensures JWT is always available for WebSocket subscriptions.')
+    .meta({ numericBoolean: true }),
   watchtower: z
     .boolean()
     .default(true)
@@ -80,17 +85,19 @@ hasyxConfig.host = z.object({
     // Duplicate mapping: one source value -> multiple env targets
     url: ['NEXT_PUBLIC_MAIN_URL', 'NEXT_PUBLIC_BASE_URL', 'NEXT_PUBLIC_API_URL'],
     clientOnly: 'NEXT_PUBLIC_CLIENT_ONLY',
-    jwtAuth: 'NEXT_PUBLIC_JWT_AUTH'
+    jwtAuth: 'NEXT_PUBLIC_JWT_AUTH',
+    jwtForce: 'NEXT_PUBLIC_JWT_FORCE'
   },
   // Автоматически включать JWT auth для client builds
   autoJwtAuth: (value: any) => {
     return value?.jwtAuth || value?.clientOnly;
   },
-  compose: (value: any, _resolved?: any) => {
+    compose: (value: any, _resolved?: any) => {
     const port = value?.port || 3000;
     const watchtower = value?.watchtower !== false; // default to true
     // Автоматически включать JWT auth для client builds
     const jwtAuth = value?.jwtAuth || value?.clientOnly;
+    const jwtForce = value?.jwtForce || false;
     
     const labels: Record<string, string> = {};
     if (watchtower) {
@@ -106,7 +113,8 @@ hasyxConfig.host = z.object({
           env_file: ['.env'],
           ports: [`${port}:${port}`],
           environment: {
-            NEXT_PUBLIC_JWT_AUTH: jwtAuth ? '1' : '0'
+            NEXT_PUBLIC_JWT_AUTH: jwtAuth ? '1' : '0',
+            NEXT_PUBLIC_JWT_FORCE: jwtForce ? '1' : '0'
           },
           ...(Object.keys(labels).length > 0 && { labels }),
         },
@@ -1013,17 +1021,44 @@ hasyxConfig.nextAuthSecrets = nextAuthConfigSchema;
 
 hasyxConfig.nextAuthSecretsList = nextAuthSecretsList;
 
-// Global settings
-hasyxConfig.global = z.object({
-  jestLocal: z.boolean().optional().describe('Enable Jest local mode (writes JEST_LOCAL=1 when true, 0 when false)'),
-}).meta({
-  type: 'global-config',
-  title: 'Global Settings',
-  description: 'Global non-variant settings applied to all variants.',
-  envMapping: {
-    jestLocal: 'JEST_LOCAL',
-  },
-});
+  // Invites configuration
+  hasyxConfig.invites = z.object({
+    onlyInvitedUser: z
+      .boolean()
+      .default(false)
+      .describe('Only allow users with invites to get user role (NEXT_PUBLIC_HASYX_ONLY_INVITE_USER). When enabled, users must use an invite code to get user role access.')
+      .meta({ numericBoolean: true }),
+  }).meta({
+    type: 'invites-config',
+    title: 'Invites Configuration',
+    description: 'Configure invite system behavior. When "Only Invited User" is enabled, users must use an invite code to get user role access.',
+    envMapping: {
+      onlyInvitedUser: 'NEXT_PUBLIC_HASYX_ONLY_INVITE_USER',
+    },
+  });
+
+  hasyxConfig.invitesList = z.record(
+    z.string(),
+    hasyxConfig.invites,
+  ).meta({
+    data: 'invites',
+    type: 'keys',
+    default: ['default'],
+    add: hasyxConfig.invites,
+    descriptionTemplate: (_data: any) => 'Invite system settings',
+  });
+
+  // Global settings
+  hasyxConfig.global = z.object({
+    jestLocal: z.boolean().optional().describe('Enable Jest local mode (writes JEST_LOCAL=1 when true, 0 when false)'),
+  }).meta({
+    type: 'global-config',
+    title: 'Global Settings',
+    description: 'Global non-variant settings applied to all variants.',
+    envMapping: {
+      jestLocal: 'JEST_LOCAL',
+    },
+  });
 
   // Testing Schema (for test-data tokens)
   hasyxConfig.testing = z.object({
@@ -1439,6 +1474,7 @@ hasyxConfig.file = z.object({
   // global and other variant-bound extras
   testing: hasyxConfig.testings,
   global: hasyxConfig.global,
+  invites: hasyxConfig.invitesList,
 });
 
  

@@ -1,56 +1,55 @@
 import dotenv from 'dotenv';
+import { v4 as uuidv4 } from 'uuid';
 import { createApolloClient } from './apollo/apollo';
-import { Hasyx } from './hasyx/hasyx'; 
+import { Hasyx } from './hasyx/hasyx';
 import { Generator } from './generator';
-import { hashPassword } from './users/auth-server';
 import schema from '../public/hasura-schema.json';
 
 // Load environment variables
 dotenv.config();
 
 export async function createTestUser() {
-  const adminClient = new Hasyx(createApolloClient({
-    url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!,
-    secret: process.env.HASURA_ADMIN_SECRET!,
-  }), Generator(schema));
+  const adminClient = new Hasyx(
+    createApolloClient({
+      url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!,
+      secret: process.env.HASURA_ADMIN_SECRET!,
+    }),
+    Generator(schema)
+  );
 
-  const testEmail = 'test@example.com';
-  const testPassword = '123456';
+  const email = `test-${uuidv4()}@example.com`;
+  const name = `Test User ${uuidv4().slice(0, 8)}`;
 
   try {
-    // Check if user exists
-    const existing = await adminClient.select({
+    console.log('[create-test-user] inserting user', { email, name });
+    const inserted = await adminClient.insert({
       table: 'users',
-      where: { email: { _eq: testEmail } },
-      returning: ['id', 'email']
+      object: {
+        email,
+        name,
+        is_admin: false,
+        hasura_role: 'user',
+      },
+      returning: ['id', 'email', 'name'],
     });
-    if (Array.isArray(existing) && existing.length > 0) {
-      return { id: existing[0].id, email: existing[0].email };
-    } else if (existing && existing.id) {
-      return { id: existing.id, email: existing.email };
+    console.log('[create-test-user] insert result=', inserted);
+
+    if (inserted && inserted.id) {
+      return { id: inserted.id, email: inserted.email, name: inserted.name };
     }
-      // Create test user
-      const newUser = await adminClient.insert({
-        table: 'users',
-        objects: [{
-          email: testEmail,
-          name: 'Test User',
-          is_admin: false,
-          hasura_role: 'user'
-      }],
-      returning: ['id', 'email']
-    });
-    // newUser может быть массивом, объектом или mutation response
-    if (Array.isArray(newUser) && newUser.length > 0) {
-      return { id: newUser[0].id, email: newUser[0].email };
-    } else if (newUser && newUser.returning && Array.isArray(newUser.returning) && newUser.returning.length > 0) {
-      return { id: newUser.returning[0].id, email: newUser.returning[0].email };
-    } else if (newUser && newUser.id) {
-      return { id: newUser.id, email: newUser.email };
+
+    if (Array.isArray(inserted) && inserted.length > 0) {
+      return { id: inserted[0].id, email: inserted[0].email, name: inserted[0].name };
     }
-    throw new Error('Failed to create or find test user');
+
+    if (inserted && inserted.returning && Array.isArray(inserted.returning) && inserted.returning.length > 0) {
+      const row = inserted.returning[0];
+      return { id: row.id, email: row.email, name: row.name };
+    }
+
+    throw new Error('Failed to create test user');
   } catch (error) {
     console.error('❌ Error creating test user:', error);
     throw error;
   }
-} 
+}

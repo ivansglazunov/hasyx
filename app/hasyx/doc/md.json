@@ -495,8 +495,18 @@
           "level": 3
         },
         {
+          "title": "JWT_FORCE: Guaranteed JWT Availability for Serverless",
+          "url": "/hasyx/doc/AUTH#jwt-force-guaranteed-jwt-availability-for-serverless",
+          "level": 3
+        },
+        {
           "title": "Client Implementation",
           "url": "/hasyx/doc/AUTH#client-implementation",
+          "level": 3
+        },
+        {
+          "title": "Using Hasyx JWT Method",
+          "url": "/hasyx/doc/AUTH#using-hasyx-jwt-method",
           "level": 3
         },
         {
@@ -2041,6 +2051,164 @@
         {
           "title": "Best Practices",
           "url": "/hasyx/doc/EXEC#best-practices",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Fastlane Integration",
+      "url": "/hasyx/doc/FASTLANE",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/FASTLANE#overview",
+          "level": 2
+        },
+        {
+          "title": "Quick Start",
+          "url": "/hasyx/doc/FASTLANE#quick-start",
+          "level": 2
+        },
+        {
+          "title": "Prerequisites",
+          "url": "/hasyx/doc/FASTLANE#prerequisites",
+          "level": 3
+        },
+        {
+          "title": "Installation",
+          "url": "/hasyx/doc/FASTLANE#installation",
+          "level": 3
+        },
+        {
+          "title": "Basic Usage",
+          "url": "/hasyx/doc/FASTLANE#basic-usage",
+          "level": 3
+        },
+        {
+          "title": "Configuration",
+          "url": "/hasyx/doc/FASTLANE#configuration",
+          "level": 2
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/FASTLANE#environment-variables",
+          "level": 3
+        },
+        {
+          "title": "Keystore Setup",
+          "url": "/hasyx/doc/FASTLANE#keystore-setup",
+          "level": 3
+        },
+        {
+          "title": "Available Lanes",
+          "url": "/hasyx/doc/FASTLANE#available-lanes",
+          "level": 2
+        },
+        {
+          "title": "GitHub Actions Integration",
+          "url": "/hasyx/doc/FASTLANE#github-actions-integration",
+          "level": 2
+        },
+        {
+          "title": "Android Build Workflow",
+          "url": "/hasyx/doc/FASTLANE#android-build-workflow",
+          "level": 3
+        },
+        {
+          "title": "Manual Trigger",
+          "url": "/hasyx/doc/FASTLANE#manual-trigger",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables in CI",
+          "url": "/hasyx/doc/FASTLANE#environment-variables-in-ci",
+          "level": 3
+        },
+        {
+          "title": "Advanced Configuration",
+          "url": "/hasyx/doc/FASTLANE#advanced-configuration",
+          "level": 2
+        },
+        {
+          "title": "Custom Fastfile",
+          "url": "/hasyx/doc/FASTLANE#custom-fastfile",
+          "level": 3
+        },
+        {
+          "title": "Plugin Integration",
+          "url": "/hasyx/doc/FASTLANE#plugin-integration",
+          "level": 3
+        },
+        {
+          "title": "Multi-Environment Support",
+          "url": "/hasyx/doc/FASTLANE#multi-environment-support",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/FASTLANE#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/FASTLANE#common-issues",
+          "level": 3
+        },
+        {
+          "title": "Debug Mode",
+          "url": "/hasyx/doc/FASTLANE#debug-mode",
+          "level": 3
+        },
+        {
+          "title": "Best Practices",
+          "url": "/hasyx/doc/FASTLANE#best-practices",
+          "level": 2
+        },
+        {
+          "title": "1. Secure Credential Management",
+          "url": "/hasyx/doc/FASTLANE#1-secure-credential-management",
+          "level": 3
+        },
+        {
+          "title": "2. Build Optimization",
+          "url": "/hasyx/doc/FASTLANE#2-build-optimization",
+          "level": 3
+        },
+        {
+          "title": "3. CI/CD Integration",
+          "url": "/hasyx/doc/FASTLANE#3-cicd-integration",
+          "level": 3
+        },
+        {
+          "title": "4. Testing",
+          "url": "/hasyx/doc/FASTLANE#4-testing",
+          "level": 3
+        },
+        {
+          "title": "Examples",
+          "url": "/hasyx/doc/FASTLANE#examples",
+          "level": 2
+        },
+        {
+          "title": "Complete Release Workflow",
+          "url": "/hasyx/doc/FASTLANE#complete-release-workflow",
+          "level": 3
+        },
+        {
+          "title": "Automated Build Script",
+          "url": "/hasyx/doc/FASTLANE#automated-build-script",
+          "level": 3
+        },
+        {
+          "title": "Related Documentation",
+          "url": "/hasyx/doc/FASTLANE#related-documentation",
+          "level": 2
+        },
+        {
+          "title": "Support",
+          "url": "/hasyx/doc/FASTLANE#support",
           "level": 2
         }
       ],
@@ -6168,13 +6336,8 @@
           "level": 3
         },
         {
-          "title": "Workflow Timing:",
-          "url": "/hasyx/doc/TELEGRAM_BOT#workflow-timing",
-          "level": 3
-        },
-        {
-          "title": "Target Workflows:",
-          "url": "/hasyx/doc/TELEGRAM_BOT#target-workflows",
+          "title": "Workflow Configuration:",
+          "url": "/hasyx/doc/TELEGRAM_BOT#workflow-configuration",
           "level": 3
         },
         {
@@ -6971,6 +7134,54 @@
         {
           "title": "v1.0.0 (2025-01-XX)",
           "url": "/hasyx/doc/WSTUNNEL#v100-2025-01-xx",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Installation",
+      "url": "/hasyx/doc/README",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Available Actions",
+          "url": "/hasyx/doc/README#available-actions",
+          "level": 1
+        },
+        {
+          "title": "Android",
+          "url": "/hasyx/doc/README#android",
+          "level": 2
+        },
+        {
+          "title": "android build_apk",
+          "url": "/hasyx/doc/README#android-build-apk",
+          "level": 3
+        },
+        {
+          "title": "android build_signed_apk",
+          "url": "/hasyx/doc/README#android-build-signed-apk",
+          "level": 3
+        },
+        {
+          "title": "android sign_apk",
+          "url": "/hasyx/doc/README#android-sign-apk",
+          "level": 3
+        },
+        {
+          "title": "android build_aab",
+          "url": "/hasyx/doc/README#android-build-aab",
+          "level": 3
+        },
+        {
+          "title": "android deploy_internal",
+          "url": "/hasyx/doc/README#android-deploy-internal",
+          "level": 3
+        },
+        {
+          "title": "android clean",
+          "url": "/hasyx/doc/README#android-clean",
           "level": 3
         }
       ],
@@ -7840,6 +8051,11 @@
       "collapse": true,
       "items": [
         {
+          "title": "Contributing",
+          "url": "/hasyx/doc/CONTRIBUTING#contributing",
+          "level": 1
+        },
+        {
           "title": "Development Setup",
           "url": "/hasyx/doc/CONTRIBUTING#development-setup",
           "level": 2
@@ -7848,6 +8064,11 @@
           "title": "Debug Information",
           "url": "/hasyx/doc/CONTRIBUTING#debug-information",
           "level": 2
+        },
+        {
+          "title": "Database Debug Logging",
+          "url": "/hasyx/doc/CONTRIBUTING#database-debug-logging",
+          "level": 3
         },
         {
           "title": "Running Tests",
@@ -7900,11 +8121,6 @@
           "level": 2
         },
         {
-          "title": "Quick Testing with `npx hasyx js`",
-          "url": "/hasyx/doc/CONTRIBUTING#quick-testing-with-npx-hasyx-js",
-          "level": 3
-        },
-        {
           "title": "Testing Aggregation Features",
           "url": "/hasyx/doc/CONTRIBUTING#testing-aggregation-features",
           "level": 2
@@ -7920,16 +8136,6 @@
           "level": 3
         },
         {
-          "title": "Common Aggregation Patterns to Test",
-          "url": "/hasyx/doc/CONTRIBUTING#common-aggregation-patterns-to-test",
-          "level": 3
-        },
-        {
-          "title": "Debugging Aggregation Issues",
-          "url": "/hasyx/doc/CONTRIBUTING#debugging-aggregation-issues",
-          "level": 3
-        },
-        {
           "title": "Writing Database Migrations",
           "url": "/hasyx/doc/CONTRIBUTING#writing-database-migrations",
           "level": 2
@@ -7940,34 +8146,39 @@
           "level": 3
         },
         {
+          "title": "Running Migrations with Filters",
+          "url": "/hasyx/doc/CONTRIBUTING#running-migrations-with-filters",
+          "level": 3
+        },
+        {
           "title": "Core Migration Principles",
           "url": "/hasyx/doc/CONTRIBUTING#core-migration-principles",
           "level": 3
         },
         {
-          "title": "Advanced Migration Patterns",
-          "url": "/hasyx/doc/CONTRIBUTING#advanced-migration-patterns",
-          "level": 3
-        },
-        {
-          "title": "Migration Testing and Validation",
-          "url": "/hasyx/doc/CONTRIBUTING#migration-testing-and-validation",
-          "level": 3
-        },
-        {
-          "title": "Migration Best Practices Summary",
-          "url": "/hasyx/doc/CONTRIBUTING#migration-best-practices-summary",
-          "level": 3
-        },
-        {
-          "title": "Contribution Guidelines",
-          "url": "/hasyx/doc/CONTRIBUTING#contribution-guidelines",
-          "level": 2
-        },
-        {
           "title": "Project Structure Philosophy",
           "url": "/hasyx/doc/CONTRIBUTING#project-structure-philosophy",
           "level": 2
+        },
+        {
+          "title": "⚠️ CRITICAL: API Architecture Principle",
+          "url": "/hasyx/doc/CONTRIBUTING#critical-api-architecture-principle",
+          "level": 2
+        },
+        {
+          "title": "Why This Matters",
+          "url": "/hasyx/doc/CONTRIBUTING#why-this-matters",
+          "level": 3
+        },
+        {
+          "title": "Example Implementation",
+          "url": "/hasyx/doc/CONTRIBUTING#example-implementation",
+          "level": 3
+        },
+        {
+          "title": "Benefits of This Approach",
+          "url": "/hasyx/doc/CONTRIBUTING#benefits-of-this-approach",
+          "level": 3
         },
         {
           "title": "Specific Guidance for `app/payments/tbank/options.ts`",
@@ -7977,6 +8188,31 @@
         {
           "title": "`generateReceipt` Function Stub",
           "url": "/hasyx/doc/CONTRIBUTING#generatereceipt-function-stub",
+          "level": 3
+        },
+        {
+          "title": "DNS and SSL Management",
+          "url": "/hasyx/doc/CONTRIBUTING#dns-and-ssl-management",
+          "level": 2
+        },
+        {
+          "title": "Quick Setup",
+          "url": "/hasyx/doc/CONTRIBUTING#quick-setup",
+          "level": 3
+        },
+        {
+          "title": "Testing Philosophy",
+          "url": "/hasyx/doc/CONTRIBUTING#testing-philosophy",
+          "level": 3
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/CONTRIBUTING#testing",
+          "level": 2
+        },
+        {
+          "title": "Adding Tests for New Features (e.g., Database Operators)",
+          "url": "/hasyx/doc/CONTRIBUTING#adding-tests-for-new-features-eg-database-operators",
           "level": 3
         }
       ],
@@ -8767,6 +9003,164 @@
         {
           "title": "Best Practices",
           "url": "/hasyx/doc/EXEC#best-practices",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Fastlane Integration",
+      "url": "/hasyx/doc/FASTLANE",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/FASTLANE#overview",
+          "level": 2
+        },
+        {
+          "title": "Quick Start",
+          "url": "/hasyx/doc/FASTLANE#quick-start",
+          "level": 2
+        },
+        {
+          "title": "Prerequisites",
+          "url": "/hasyx/doc/FASTLANE#prerequisites",
+          "level": 3
+        },
+        {
+          "title": "Installation",
+          "url": "/hasyx/doc/FASTLANE#installation",
+          "level": 3
+        },
+        {
+          "title": "Basic Usage",
+          "url": "/hasyx/doc/FASTLANE#basic-usage",
+          "level": 3
+        },
+        {
+          "title": "Configuration",
+          "url": "/hasyx/doc/FASTLANE#configuration",
+          "level": 2
+        },
+        {
+          "title": "Environment Variables",
+          "url": "/hasyx/doc/FASTLANE#environment-variables",
+          "level": 3
+        },
+        {
+          "title": "Keystore Setup",
+          "url": "/hasyx/doc/FASTLANE#keystore-setup",
+          "level": 3
+        },
+        {
+          "title": "Available Lanes",
+          "url": "/hasyx/doc/FASTLANE#available-lanes",
+          "level": 2
+        },
+        {
+          "title": "GitHub Actions Integration",
+          "url": "/hasyx/doc/FASTLANE#github-actions-integration",
+          "level": 2
+        },
+        {
+          "title": "Android Build Workflow",
+          "url": "/hasyx/doc/FASTLANE#android-build-workflow",
+          "level": 3
+        },
+        {
+          "title": "Manual Trigger",
+          "url": "/hasyx/doc/FASTLANE#manual-trigger",
+          "level": 3
+        },
+        {
+          "title": "Environment Variables in CI",
+          "url": "/hasyx/doc/FASTLANE#environment-variables-in-ci",
+          "level": 3
+        },
+        {
+          "title": "Advanced Configuration",
+          "url": "/hasyx/doc/FASTLANE#advanced-configuration",
+          "level": 2
+        },
+        {
+          "title": "Custom Fastfile",
+          "url": "/hasyx/doc/FASTLANE#custom-fastfile",
+          "level": 3
+        },
+        {
+          "title": "Plugin Integration",
+          "url": "/hasyx/doc/FASTLANE#plugin-integration",
+          "level": 3
+        },
+        {
+          "title": "Multi-Environment Support",
+          "url": "/hasyx/doc/FASTLANE#multi-environment-support",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/FASTLANE#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/FASTLANE#common-issues",
+          "level": 3
+        },
+        {
+          "title": "Debug Mode",
+          "url": "/hasyx/doc/FASTLANE#debug-mode",
+          "level": 3
+        },
+        {
+          "title": "Best Practices",
+          "url": "/hasyx/doc/FASTLANE#best-practices",
+          "level": 2
+        },
+        {
+          "title": "1. Secure Credential Management",
+          "url": "/hasyx/doc/FASTLANE#1-secure-credential-management",
+          "level": 3
+        },
+        {
+          "title": "2. Build Optimization",
+          "url": "/hasyx/doc/FASTLANE#2-build-optimization",
+          "level": 3
+        },
+        {
+          "title": "3. CI/CD Integration",
+          "url": "/hasyx/doc/FASTLANE#3-cicd-integration",
+          "level": 3
+        },
+        {
+          "title": "4. Testing",
+          "url": "/hasyx/doc/FASTLANE#4-testing",
+          "level": 3
+        },
+        {
+          "title": "Examples",
+          "url": "/hasyx/doc/FASTLANE#examples",
+          "level": 2
+        },
+        {
+          "title": "Complete Release Workflow",
+          "url": "/hasyx/doc/FASTLANE#complete-release-workflow",
+          "level": 3
+        },
+        {
+          "title": "Automated Build Script",
+          "url": "/hasyx/doc/FASTLANE#automated-build-script",
+          "level": 3
+        },
+        {
+          "title": "Related Documentation",
+          "url": "/hasyx/doc/FASTLANE#related-documentation",
+          "level": 2
+        },
+        {
+          "title": "Support",
+          "url": "/hasyx/doc/FASTLANE#support",
           "level": 2
         }
       ],
@@ -13589,6 +13983,44 @@
       "level": 1
     },
     {
+      "title": "TODO",
+      "url": "/hasyx/doc/TODO",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Тестирование",
+          "url": "/hasyx/doc/TODO#",
+          "level": 2
+        },
+        {
+          "title": "1. Промаркировать тесты, требующие запущенного приложения",
+          "url": "/hasyx/doc/TODO#1",
+          "level": 3
+        },
+        {
+          "title": "2. Применить jest-skip во всех тестах проекта",
+          "url": "/hasyx/doc/TODO#2-jest-skip",
+          "level": 3
+        },
+        {
+          "title": "3. Ручное тестирование VTB интеграции",
+          "url": "/hasyx/doc/TODO#3-vtb",
+          "level": 3
+        },
+        {
+          "title": "4. Тестирование API endpoints",
+          "url": "/hasyx/doc/TODO#4-api-endpoints",
+          "level": 3
+        },
+        {
+          "title": "5. Реализация системы бенчмаркинга и мониторинга",
+          "url": "/hasyx/doc/TODO#5",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Use-Query Hook",
       "url": "/hasyx/doc/USE-QUERY",
       "collapse": true,
@@ -14986,5 +15418,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-08-19T11:01:41.156Z"
+  "lastUpdated": "2025-08-20T19:15:47.198Z"
 }

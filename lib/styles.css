@@ -2273,6 +2273,21 @@
     -webkit-user-select: none;
     user-select: none;
   }
+  .\[invite\:createInvite\] {
+    invite: createInvite;
+  }
+  .\[invite\:deleteInvite\] {
+    invite: deleteInvite;
+  }
+  .\[invite\:isUserInvited\] {
+    invite: isUserInvited;
+  }
+  .\[invite\:listUserInvites\] {
+    invite: listUserInvites;
+  }
+  .\[invite\:useInvite\] {
+    invite: useInvite;
+  }
   .\[test\:hasyx\] {
     test: hasyx;
   }

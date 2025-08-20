@@ -70,21 +70,10 @@ export function JwtDebugCard() {
 
     setCopyLoading(true);
     try {
-      const response = await fetch('/api/auth/get-jwt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(tJwt('failedGet'));
-      }
-
-      const data = await response.json();
+      const token = await hasyx.jwt();
       
-      if (data.jwt) {
-        await navigator.clipboard.writeText(data.jwt);
+      if (token) {
+        await navigator.clipboard.writeText(token);
         toast.success(tJwt('copied'));
       } else {
         toast.error(tJwt('failedGet'));
