@@ -2960,8 +2960,8 @@
           "level": 2
         },
         {
-          "title": "5) Конфигурация и CLI",
-          "url": "/hasyx/doc/GUIDE#5-cli",
+          "title": "5) Конфигурация и CLI `npm run config`/`npx hasyx config`",
+          "url": "/hasyx/doc/GUIDE#5-cli-npm-run-confignpx-hasyx-config",
           "level": 2
         },
         {
@@ -15418,5 +15418,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-08-20T19:15:47.198Z"
+  "lastUpdated": "2025-08-22T11:06:29.290Z"
 }
