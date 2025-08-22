@@ -268,70 +268,42 @@ async function fetchWorkflowStatus(commitSha: string, repoUrl: string, githubTok
           };
           
           status.details.workflows.push(workflowDetails);
-          
-          // Analyze specific workflow types for detailed reporting
-          if (workflowName.includes('test')) {
-            status.test = conclusion || 'unknown';
-            
-            // Extract detailed test results
-            const testJob = jobsData.jobs?.find((job: any) => 
-              job.steps?.some((step: any) => step.name?.toLowerCase().includes('test'))
-            );
-            if (testJob) {
-              const testStep = testJob.steps?.find((step: any) => 
-                step.name?.toLowerCase().includes('test')
-              );
-              if (testStep) {
-                status.details.testResults = {
-                  status: testStep.status,
-                  conclusion: testStep.conclusion,
-                  name: testStep.name,
-                  duration: testStep.completed_at && testStep.started_at ?
-                    Math.round((new Date(testStep.completed_at).getTime() - new Date(testStep.started_at).getTime()) / 1000) : null
-                };
+
+          // Analyze jobs within this workflow run to determine statuses
+          for (const job of jobsData.jobs || []) {
+            const jobName = (job.name || '').toLowerCase();
+            const jobResult = (job.conclusion || job.status || 'unknown') as WorkflowStatus['test'];
+
+            const buildResultDetail = {
+              status: job.status,
+              conclusion: job.conclusion,
+              name: job.name,
+              duration: job.completed_at && job.started_at ?
+                Math.round((new Date(job.completed_at).getTime() - new Date(job.started_at).getTime()) / 1000) : null
+            };
+
+            if (jobName === 'test') {
+              status.test = jobResult;
+              status.details.testResults = buildResultDetail;
+
+              if (job.conclusion === 'failure' && Array.isArray(job.steps)) {
+                const failureSteps = job.steps
+                  .filter((step: any) => step.conclusion === 'failure')
+                  .map((step: any) => ({ stepName: step.name, workflowName: run.name }));
+                status.details.summary.testFailures.push(...failureSteps);
               }
             }
-            
-            // Track test failures
-            if (conclusion === 'failure') {
-              const failureSteps = jobsData.jobs?.flatMap((job: any) => 
-                job.steps?.filter((step: any) => step.conclusion === 'failure').map((step: any) => ({
-                  stepName: step.name,
-                  workflowName: run.name
-                }))
-              ).filter(Boolean) || [];
-              status.details.summary.testFailures.push(...failureSteps);
+
+            if (jobName === 'npm-publish') {
+              status.publish = jobResult;
+              status.details.publishResults = buildResultDetail;
             }
-          } else if (workflowName.includes('publish') || workflowName.includes('npm-publish')) {
-            status.publish = conclusion || 'unknown';
-            
-            // Extract publish details
-            const publishJob = jobsData.jobs?.[0];
-            if (publishJob) {
-              status.details.publishResults = {
-                status: publishJob.status,
-                conclusion: publishJob.conclusion,
-                name: publishJob.name,
-                duration: publishJob.completed_at && publishJob.started_at ?
-                  Math.round((new Date(publishJob.completed_at).getTime() - new Date(publishJob.started_at).getTime()) / 1000) : null
-              };
-            }
-          } else if (workflowName.includes('deploy') || workflowName.includes('pages') || workflowName.includes('nextjs')) {
-            status.deploy = conclusion || 'unknown';
-            
-            // Extract deploy details
-            const deployJob = jobsData.jobs?.[0];
-            if (deployJob) {
-              status.details.deployResults = {
-                status: deployJob.status,
-                conclusion: deployJob.conclusion,
-                name: deployJob.name,
-                duration: deployJob.completed_at && deployJob.started_at ?
-                  Math.round((new Date(deployJob.completed_at).getTime() - new Date(deployJob.started_at).getTime()) / 1000) : null
-              };
-              
-              // Try to extract deployment URL from artifacts or environment
-              if (workflowName.includes('pages') && conclusion === 'success') {
+
+            if (jobName === 'deploy-nextjs') {
+              status.deploy = jobResult;
+              status.details.deployResults = buildResultDetail;
+
+              if (job.conclusion === 'success') {
                 const projectName = repoUrl.match(/github\.com\/[^\/]+\/([^\/\.]+)/)?.[1];
                 const ownerName = repoUrl.match(/github\.com\/([^\/]+)\/[^\/\.]+/)?.[1];
                 if (projectName && ownerName) {
@@ -339,50 +311,32 @@ async function fetchWorkflowStatus(commitSha: string, repoUrl: string, githubTok
                 }
               }
             }
-          } else if (workflowName.includes('android') || workflowName.includes('Build Android')) {
-            status.android = conclusion || 'unknown';
-            
-            // Extract Android build details
-            const androidJob = jobsData.jobs?.[0];
-            if (androidJob) {
-              status.details.androidResults = {
-                status: androidJob.status,
-                conclusion: androidJob.conclusion,
-                name: androidJob.name,
-                duration: androidJob.completed_at && androidJob.started_at ?
-                  Math.round((new Date(androidJob.completed_at).getTime() - new Date(androidJob.started_at).getTime()) / 1000) : null
-              };
-              
-              // Extract Android artifacts information
-              if (conclusion === 'success') {
+
+            if (jobName === 'android-build') {
+              status.android = jobResult;
+              status.details.androidResults = buildResultDetail;
+
+              const uploadedApkStep = (job.steps || []).find((s: any) => (s.name || '').toLowerCase().includes('upload android apk'));
+              if ((job.conclusion === 'success') || (uploadedApkStep && uploadedApkStep.conclusion === 'success')) {
                 status.details.summary.androidArtifacts = {
                   apkBuilt: true,
-                  aabBuilt: true,
-                  message: 'Android APK and AAB built successfully! 📱'
+                  aabBuilt: false,
+                  message: 'Android APK built successfully! 📱'
                 };
               }
             }
-          } else if (workflowName.includes('release') || workflowName.includes('Create GitHub Release')) {
-            status.release = conclusion || 'unknown';
-            
-            // Extract Release details
-            const releaseJob = jobsData.jobs?.[0];
-            if (releaseJob) {
-              status.details.releaseResults = {
-                status: releaseJob.status,
-                conclusion: releaseJob.conclusion,
-                name: releaseJob.name,
-                duration: releaseJob.completed_at && releaseJob.started_at ?
-                  Math.round((new Date(releaseJob.completed_at).getTime() - new Date(releaseJob.started_at).getTime()) / 1000) : null
-              };
-              
-              // Extract Release artifacts information
-              if (conclusion === 'success') {
+
+            if (jobName === 'create-release') {
+              status.release = jobResult;
+              status.details.releaseResults = buildResultDetail;
+
+              const uploadedToRelease = (job.steps || []).find((s: any) => (s.name || '').toLowerCase().includes('upload apk to release'));
+              if ((job.conclusion === 'success') || (uploadedToRelease && uploadedToRelease.conclusion === 'success')) {
                 status.details.summary.releaseArtifacts = {
                   releaseCreated: true,
-                  apkAttached: true,
-                  aabAttached: true,
-                  message: 'GitHub Release created with Android artifacts! 🎯'
+                  apkAttached: Boolean(uploadedToRelease ? uploadedToRelease.conclusion === 'success' : true),
+                  aabAttached: false,
+                  message: 'GitHub Release created with artifacts! 🎯'
                 };
               }
             }
@@ -422,6 +376,7 @@ export async function askGithubTelegramBot(options: GithubTelegramBotOptions): P
 
   const commitInfo = await fetchCommitInfo(commitSha, repositoryUrl, githubToken);
   const workflowStatus = await fetchWorkflowStatus(commitInfo.sha, repositoryUrl, githubToken);
+  const webRepoUrl = repositoryUrl.replace(/\.git$/, '');
   
   const provider = new OpenRouterProvider({ 
     token: openRouterApiKey,
@@ -445,7 +400,7 @@ export async function askGithubTelegramBot(options: GithubTelegramBotOptions): P
 - Name: ${projectName}
 - Version: ${projectVersion || 'N/A'}
 - Description: ${projectDescription || 'No description'}
-- Repository: ${repositoryUrl}
+- Repository: ${webRepoUrl}
 - Homepage: ${projectHomepage || 'Homepage not available'}
 
 **Commit Details (Focus on what was ACCOMPLISHED):**
@@ -488,10 +443,10 @@ ${workflowStatus.details.releaseResults ?
   '- GitHub Release not found or not completed'}
 
 **MANDATORY LINKS AT THE END**:
-🔗 Repository: ${repositoryUrl}
+🔗 Repository: ${webRepoUrl}
 📚 Documentation: ${projectHomepage || 'https://hasyx.deep.foundation/'}
-📱 Android Build: ${repositoryUrl}/actions/workflows/workflow.yml
-🎯 GitHub Release: ${repositoryUrl}/releases
+📱 Android Build: ${webRepoUrl}/actions/workflows/workflow.yml
+🎯 GitHub Release: ${webRepoUrl}/releases
 `;
 
   return new Promise<string>((resolve, reject) => {
