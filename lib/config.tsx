@@ -324,6 +324,17 @@ hasyxConfig.variant = z.object({
     backLabel: '< back',
     descriptionTemplate: (data: any) => data?.appName || 'no app name'
   }),
+  // iOS Signing configuration
+  iosSigning: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'iosSigning',
+    referenceKey: 'iosSigning',
+    title: 'iOS Signing Configuration',
+    description: 'Select an iOS signing configuration (optional)',
+    emptyMessage: 'No iOS signing configurations available. Create iOS signing configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (_data: any) => 'Apple signing'
+  }),
   
   // OAuth configurations
   googleOAuth: z.string().optional().meta({
@@ -566,7 +577,7 @@ hasyxConfig.variant = z.object({
   fields: [
     'host', 'hasura', 'telegramBot', 'telegramChannel', 'environment', 'testing',
     'googleOAuth', 'yandexOAuth', 'githubOAuth', 'facebookOAuth', 'vkOAuth', 'telegramLoginOAuth', 'nextAuthSecrets',
-    'storage', 'pg', 'docker', 'dockerhub', 'github', 'vercel', 'githubTelegramBot',
+    'storage', 'pg', 'docker', 'dockerhub', 'github', 'vercel', 'iosSigning', 'githubTelegramBot',
     'resend', 'openrouter', 'firebase', 'firebasePublic', 'dns', 'cloudflare', 'projectUser', 'githubWebhooks'
   ]
 });
@@ -1226,6 +1237,55 @@ hasyxConfig.vercels = z.record(
   descriptionTemplate: (data: any) => data?.projectName || 'no project name'
 });
 
+// iOS Signing Schema
+hasyxConfig.iosSigning = z.object({
+  teamId: z.string()
+    .min(1, 'Please enter a valid Apple Team ID')
+    .describe('Apple Developer Team ID (APPLE_TEAM_ID). Example: ABCDE12345'),
+  codeSignIdentity: z.string()
+    .default('Apple Distribution')
+    .describe('Code Signing Identity (IOS_CODE_SIGN_IDENTITY). Usually "Apple Distribution" or "Apple Development"'),
+  provisioningProfileSpecifier: z.string()
+    .min(1, 'Please enter a valid Provisioning Profile name')
+    .describe('Provisioning Profile Specifier name as shown in Xcode (IOS_PROVISIONING_PROFILE_SPECIFIER). Example: hasyx'),
+  bundleId: z.string()
+    .min(1, 'Please enter a valid Bundle Identifier')
+    .describe('App Bundle Identifier (IOS_BUNDLE_ID). Example: com.hasyx.app'),
+  certP12Base64: z.string()
+    .optional()
+    .describe('Base64 of your .p12 signing certificate (IOS_CERT_P12). Do not commit raw files.'),
+  certP12Password: z.string()
+    .optional()
+    .describe('Password for the .p12 certificate (IOS_CERT_PASSWORD).'),
+  provisioningProfileBase64: z.string()
+    .optional()
+    .describe('Base64 of your .mobileprovision profile (IOS_PROFILE). Do not commit raw files.'),
+}).meta({
+  type: 'ios-signing-config',
+  title: 'iOS Signing Configuration',
+  description: 'How to obtain signing assets:\n\n1) Create/identify your App ID (Bundle ID) in Apple Developer → Certificates, Identifiers & Profiles → Identifiers.\n2) Create a Provisioning Profile (Distribution or Development) for this App ID → Download the .mobileprovision.\n3) Create/obtain an Apple Distribution/Development certificate in Keychain Access → export as .p12 with a password.\n4) Base64-encode files for CI: macOS: `base64 -i file.p12 | pbcopy`, Linux: `base64 -w0 file.p12`. Do the same for the .mobileprovision.\n5) Fill fields below. In CI these map to env: APPLE_TEAM_ID, IOS_CODE_SIGN_IDENTITY, IOS_PROVISIONING_PROFILE_SPECIFIER, IOS_BUNDLE_ID, IOS_CERT_P12, IOS_CERT_PASSWORD, IOS_PROFILE.',
+  envMapping: {
+    teamId: 'APPLE_TEAM_ID',
+    codeSignIdentity: 'IOS_CODE_SIGN_IDENTITY',
+    provisioningProfileSpecifier: 'IOS_PROVISIONING_PROFILE_SPECIFIER',
+    bundleId: 'IOS_BUNDLE_ID',
+    certP12Base64: 'IOS_CERT_P12',
+    certP12Password: 'IOS_CERT_PASSWORD',
+    provisioningProfileBase64: 'IOS_PROFILE',
+  }
+});
+
+hasyxConfig.iosSignings = z.record(
+  z.string(),
+  hasyxConfig.iosSigning,
+).meta({
+  data: 'iosSigning',
+  type: 'keys',
+  default: ['default'],
+  add: hasyxConfig.iosSigning,
+  descriptionTemplate: (data: any) => `${data?.teamId || 'no team'} • ${data?.bundleId || 'no bundle id'}`
+});
+
 // Environment Schema
  hasyxConfig.environment = z.object({
   appName: z.string()
@@ -1468,6 +1528,7 @@ hasyxConfig.file = z.object({
   cloudflare: hasyxConfig.cloudflares, // Cloudflare
   projectUser: hasyxConfig.projectUsers, // Project users
   vercel: hasyxConfig.vercels, // Vercel deployment
+  iosSigning: hasyxConfig.iosSignings, // iOS signing configuration
   environment: hasyxConfig.environments, // Environment settings
   githubWebhooks: hasyxConfig.githubWebhooksList, // GitHub webhooks
   githubTelegramBot: githubTelegramBots, // GitHub Telegram Bot

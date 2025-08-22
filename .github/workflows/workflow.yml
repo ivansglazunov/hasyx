@@ -256,7 +256,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
@@ -403,17 +403,135 @@ jobs:
       - name: Sync with iOS project
         run: npx cap sync ios
 
-      - name: Build iOS project
+      - name: Determine iOS signing mode
+        id: ios_signing
+        run: |
+          SIGNED=false
+          TESTFLIGHT=false
+          if [ -n "${APPLE_TEAM_ID}" ] && [ -n "${IOS_CERT_P12}" ] && [ -n "${IOS_CERT_PASSWORD}" ] && [ -n "${IOS_PROFILE}" ]; then
+            SIGNED=true
+          fi
+          if [ -n "${APP_STORE_CONNECT_API_KEY_ID}" ] && [ -n "${APP_STORE_CONNECT_API_ISSUER_ID}" ] && [ -n "${APP_STORE_CONNECT_API_KEY_P8}" ]; then
+            TESTFLIGHT=true
+          fi
+          echo "signed=$SIGNED" >> $GITHUB_OUTPUT
+          echo "testflight=$TESTFLIGHT" >> $GITHUB_OUTPUT
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          IOS_CERT_P12: ${{ secrets.IOS_CERT_P12 }}
+          IOS_CERT_PASSWORD: ${{ secrets.IOS_CERT_PASSWORD }}
+          IOS_PROFILE: ${{ secrets.IOS_PROFILE }}
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
+      - name: Build iOS (unsigned simulator)
+        if: steps.ios_signing.outputs.signed != 'true'
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath build clean build
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO DEVELOPMENT_TEAM= clean build
 
-      - name: Upload iOS build artifact
+      - name: Upload iOS build artifact (unsigned)
+        if: steps.ios_signing.outputs.signed != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ios-build
           path: ios/App/build
           retention-days: 30
+
+      - name: Import signing certificate
+        if: steps.ios_signing.outputs.signed == 'true'
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_CERT_P12 }}
+          p12-password: ${{ secrets.IOS_CERT_PASSWORD }}
+
+      - name: Install provisioning profile
+        if: steps.ios_signing.outputs.signed == 'true'
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${IOS_PROFILE}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/hasyx.mobileprovision
+        env:
+          IOS_PROFILE: ${{ secrets.IOS_PROFILE }}
+
+      - name: Archive iOS (Release, signed)
+        if: steps.ios_signing.outputs.signed == 'true'
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release \
+            -archivePath build/App.xcarchive \
+            DEVELOPMENT_TEAM=${APPLE_TEAM_ID} \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="${IOS_PROVISIONING_PROFILE_SPECIFIER}" \
+            CODE_SIGN_IDENTITY="${IOS_CODE_SIGN_IDENTITY}" \
+            PRODUCT_BUNDLE_IDENTIFIER="${IOS_BUNDLE_ID}" \
+            clean archive
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          IOS_PROVISIONING_PROFILE_SPECIFIER: ${{ secrets.IOS_PROVISIONING_PROFILE_SPECIFIER }}
+          IOS_CODE_SIGN_IDENTITY: ${{ secrets.IOS_CODE_SIGN_IDENTITY }}
+          IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
+
+      - name: Export IPA (ad-hoc/app-store)
+        if: steps.ios_signing.outputs.signed == 'true'
+        run: |
+          cd ios/App
+          cat > exportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store</string>
+            <key>compileBitcode</key><false/>
+            <key>destination</key><string>export</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>stripSwiftSymbols</key><true/>
+            <key>uploadSymbols</key><true/>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${IOS_BUNDLE_ID}</key><string>${IOS_PROVISIONING_PROFILE_SPECIFIER}</string>
+            </dict>
+          </dict></plist>
+          EOF
+          xcodebuild -exportArchive -archivePath build/App.xcarchive \
+            -exportOptionsPlist exportOptions.plist -exportPath build/ipa
+        env:
+          IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
+          IOS_PROVISIONING_PROFILE_SPECIFIER: ${{ secrets.IOS_PROVISIONING_PROFILE_SPECIFIER }}
+
+      - name: Upload iOS IPA artifact (signed)
+        if: steps.ios_signing.outputs.signed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ios/App/build/ipa/*.ipa
+          retention-days: 30
+
+      - name: Setup Ruby
+        if: steps.ios_signing.outputs.testflight == 'true'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Upload to TestFlight
+        if: steps.ios_signing.outputs.testflight == 'true'
+        run: |
+          gem install fastlane --no-document
+          cat > authkey.json <<EOF
+          {
+            "key_id": "${APP_STORE_CONNECT_API_KEY_ID}",
+            "issuer_id": "${APP_STORE_CONNECT_API_ISSUER_ID}",
+            "key": "${APP_STORE_CONNECT_API_KEY_P8}"
+          }
+          EOF
+          fastlane pilot upload \
+            --ipa ios/App/build/ipa/*.ipa \
+            --api_key_path authkey.json \
+            --skip_submission true \
+            --skip_waiting_for_build_processing true
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   create-release:
     runs-on: ubuntu-latest
