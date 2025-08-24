@@ -105,6 +105,9 @@ export async function applySQLSchema(hasura: Hasura) {
 export async function trackTables(hasura: Hasura) {
   debug('🔍 Tracking invites tables...');
   
+  // Ensure core tables are tracked (users can be untracked if source was recreated)
+  await hasura.trackTable({ schema: 'public', table: 'users' }).catch(() => {});
+
   await hasura.trackTable({ schema: 'public', table: 'invites' });
   await hasura.trackTable({ schema: 'public', table: 'invited' });
   
@@ -269,8 +272,19 @@ export async function up(customHasura?: Hasura) {
   });
   
   try {
-    // Ensure default data source exists before any operations
-    await hasura.ensureDefaultSource();
+    // Ensure default data source exists before any operations (safe)
+    // Important: avoid deleting/recreating existing source to preserve metadata
+    try {
+      const exists = await hasura.checkSourceExists('default');
+      if (!exists) {
+        await hasura.ensureDefaultSource();
+      } else {
+        debug('✅ Default data source already exists (skip redefinition)');
+      }
+    } catch (e) {
+      // If network error during check, better to skip to avoid destructive redefine
+      debug('⚠️ Skipping ensureDefaultSource due to check error, assuming source exists');
+    }
     
     await applySQLSchema(hasura);
     await trackTables(hasura);

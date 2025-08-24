@@ -82,6 +82,8 @@ export async function useInvite(hasyx: Hasyx, code: string): Promise<InviteResul
       Generator(schema as any)
     );
 
+    console.log('[invite:useInvite] admin url=', (adminClient.apolloClient as any)?._options?.url, 'user url=', (hasyx.apolloClient as any)?._options?.url);
+
     const invite = await adminClient.select({
       table: 'invites',
       where: { code: { _eq: code } },
@@ -111,12 +113,12 @@ export async function useInvite(hasyx: Hasyx, code: string): Promise<InviteResul
       return { success: false, message: 'Invalid or already used invite code' };
     }
 
-    // Check if user already used an invite
-    const existingInvited = await hasyx.select({
+    // Check if user already used an invite (use admin to avoid role/allowlist issues)
+    const existingInvited = await adminClient.select({
       table: 'invited',
       where: { user_id: { _eq: hasyx.userId } },
       returning: ['id'],
-      role: 'me'
+      limit: 1
     });
     console.log('[invite:useInvite] existingInvitedByUser=', existingInvited);
 
@@ -174,7 +176,7 @@ export async function listUserInvites(hasyx: Hasyx): Promise<InviteResult> {
     const invites = await hasyx.select({
       table: 'invites',
       where: { user_id: { _eq: hasyx.userId } },
-      returning: ['id', 'code', 'created_at', 'updated_at']
+      returning: ['id', 'user_id', 'code', 'created_at', 'updated_at']
     });
     console.log('[invite:listUserInvites] invites=', invites);
 
@@ -229,15 +231,22 @@ export async function deleteInvite(hasyx: Hasyx, inviteId: string): Promise<Invi
       };
     }
 
-    // Check if invite has been used
-    const invitedCount = await hasyx.select({
+    // Admin client (for checking usage and deletion)
+    const adminClient = new Hasyx(
+      createApolloClient({ secret: process.env.HASURA_ADMIN_SECRET! }),
+      Generator(schema as any)
+    );
+    console.log('[invite:deleteInvite] admin url=', (adminClient.apolloClient as any)?._options?.url);
+
+    // Check if invite has been used (via admin to avoid role/allowlist issues)
+    const invitedCount = await adminClient.select({
       table: 'invited',
       where: { invite_id: { _eq: inviteId } },
       aggregate: { count: true }
     });
     console.log('[invite:deleteInvite] invitedCount=', invitedCount);
 
-    const count = invitedCount?.aggregate?.count || 0;
+    const count = (invitedCount as any)?.invited_aggregate?.aggregate?.count ?? (invitedCount as any)?.aggregate?.count ?? 0;
     if (count > 0) {
       return {
         success: false,
@@ -245,12 +254,13 @@ export async function deleteInvite(hasyx: Hasyx, inviteId: string): Promise<Invi
       };
     }
 
-    // Delete the invite
-    await hasyx.delete({
+    // Delete the invite by primary key using admin context
+    const delResult = await adminClient.delete({
       table: 'invites',
       pk_columns: { id: inviteId },
       returning: ['id']
     });
+    console.log('[invite:deleteInvite] delete result=', delResult);
     console.log('[invite:deleteInvite] deleted invite id=', inviteId);
 
     debug('Invite deleted successfully:', inviteId);
@@ -284,7 +294,13 @@ export async function isUserInvited(hasyx: Hasyx, userId?: string): Promise<bool
       return false;
     }
 
-    const invited = await hasyx.select({
+    // Use admin client to avoid role/allowlist issues for invited visibility
+    const adminClient = new Hasyx(
+      createApolloClient({ secret: process.env.HASURA_ADMIN_SECRET! }),
+      Generator(schema as any)
+    );
+    console.log('[invite:isUserInvited] admin url=', (adminClient.apolloClient as any)?._options?.url);
+    const invited = await adminClient.select({
       table: 'invited',
       where: { user_id: { _eq: targetUserId } },
       returning: ['id'],

@@ -8,8 +8,7 @@ export interface SmsOptions {
 }
 
 export async function sendSms(options: SmsOptions): Promise<boolean> {
-  debug('SMS to %s: %s', options.to, options.text);
+  console.log('SMS to %s: %s', options.to, options.text);
   return true;
 }
-
 
