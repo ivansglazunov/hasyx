@@ -29,7 +29,7 @@ Hasyx provides a robust starting point and a set of tools for building applicati
 [![PWA Support Documentation](https://img.shields.io/badge/PWA%20Support-MD-9cf)](PWA.md)
 [![Schedule System Documentation](https://img.shields.io/badge/Schedule%20System-MD-purple)](SCHEDULE.md)
 [![Logs System Documentation](https://img.shields.io/badge/Logs%20System-MD-brown)](LOGS.md)
-[![Messaging System Documentation](https://img.shields.io/badge/Messaging%20System-MD-darkslateblue)](MESSAGING.md)
+[![Messaging System Documentation](https://img.shields.io/badge/Messaging%20System-MD-darkslateblue)](MESSAGING.md) [![Groups System Documentation](https://img.shields.io/badge/Groups%20System-MD-darkslategray)](GROUPS.md)
 [![TBank Payments Documentation](https://img.shields.io/badge/TBank%20Payments-MD-ff69b4)](TBANK.md)
 [![Tinkoff API Base Documentation](https://img.shields.io/badge/Tinkoff%20API-MD-lightpink)](TINKOFF_API.md)
 [![CloudFlare DNS Management Documentation](https://img.shields.io/badge/CloudFlare%20DNS-MD-orange)](CLOUDFLARE.md)
@@ -162,6 +162,7 @@ Explore the different modules and functionalities of Hasyx:
 *   **[PWA.md](PWA.md):** Progressive Web App support with offline functionality, installability, and push notifications.
 *   **[LOGS.md](LOGS.md):** Comprehensive audit trail system with granular diff tracking and complete state snapshots for your Hasura database.
 *   **[MESSAGING.md](MESSAGING.md):** Messaging schema and permission model (rooms, messages, replies) with streaming subscriptions and read cursors.
+*   **[GROUPS.md](GROUPS.md):** Groups schema and permission model (groups, memberships, invitations) with triggers and allow-lists.
 *   **[NOTIFY.md](NOTIFY.md):** Overview of the notifications system.
 *   **[NOTIFY-FIREBASE.md](NOTIFY-FIREBASE.md):** Specifics on Firebase Cloud Messaging for push notifications.
 *   **[NOTIFY-TELEGRAM-BOT.md](NOTIFY-TELEGRAM-BOT.md):** Details on Telegram Bot integration for notifications.

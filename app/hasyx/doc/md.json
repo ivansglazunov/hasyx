@@ -2935,6 +2935,84 @@
       "level": 1
     },
     {
+      "title": "Hasyx Groups",
+      "url": "/hasyx/doc/GROUPS",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/GROUPS#overview",
+          "level": 2
+        },
+        {
+          "title": "Database Schema",
+          "url": "/hasyx/doc/GROUPS#database-schema",
+          "level": 2
+        },
+        {
+          "title": "groups",
+          "url": "/hasyx/doc/GROUPS#groups",
+          "level": 3
+        },
+        {
+          "title": "memberships",
+          "url": "/hasyx/doc/GROUPS#memberships",
+          "level": 3
+        },
+        {
+          "title": "invitations",
+          "url": "/hasyx/doc/GROUPS#invitations",
+          "level": 3
+        },
+        {
+          "title": "Triggers & Functions",
+          "url": "/hasyx/doc/GROUPS#triggers-functions",
+          "level": 2
+        },
+        {
+          "title": "Permission Model",
+          "url": "/hasyx/doc/GROUPS#permission-model",
+          "level": 2
+        },
+        {
+          "title": "Allow-list tokens",
+          "url": "/hasyx/doc/GROUPS#allow-list-tokens",
+          "level": 3
+        },
+        {
+          "title": "groups",
+          "url": "/hasyx/doc/GROUPS#groups",
+          "level": 3
+        },
+        {
+          "title": "memberships",
+          "url": "/hasyx/doc/GROUPS#memberships",
+          "level": 3
+        },
+        {
+          "title": "invitations",
+          "url": "/hasyx/doc/GROUPS#invitations",
+          "level": 3
+        },
+        {
+          "title": "Typical Flows",
+          "url": "/hasyx/doc/GROUPS#typical-flows",
+          "level": 2
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/GROUPS#testing",
+          "level": 2
+        },
+        {
+          "title": "UI Pages",
+          "url": "/hasyx/doc/GROUPS#ui-pages",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Hasyx — план статьи для Хабра и контент‑чеклисты",
       "url": "/hasyx/doc/GUIDE",
       "collapse": true,
@@ -15418,5 +15496,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-08-22T11:06:29.290Z"
+  "lastUpdated": "2025-08-25T12:26:25.100Z"
 }

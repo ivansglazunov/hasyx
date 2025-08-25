@@ -15,7 +15,11 @@ import Debug from './debug';
 
 const debug = Debug('renderer');
 
-export const QueriesManager = ({ queries, setQueries, schema = hasyxSchema }) => {
+export const QueriesManager = ({ queries, setQueries, schema = hasyxSchema }: {
+  queries: any;
+  setQueries: any;
+  schema: any;
+}) => {
   const addQuery = () => {
     const newQuery = {
       table: 'users',

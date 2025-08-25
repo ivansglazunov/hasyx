@@ -75,6 +75,10 @@ export const sidebar: SidebarData = {
           url: "/hasyx/messaging",
         },
         {
+          title: "👥 Groups",
+          url: "/hasyx/groups",
+        },
+        {
           title: `🃏 ${t('hoverCardDemo')}`,
           url: "/hasyx/hover-card",
         },
