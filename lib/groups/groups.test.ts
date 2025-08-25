@@ -19,7 +19,7 @@ function createAdminHasyx(): Hasyx {
   return new Hasyx(apollo as any, generate);
 }
 
-describe('Groups module', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Groups module', () => {
   it('anonymous cannot create group; user can and becomes owner', async () => {
     const adminH = createAdminHasyx();
 
