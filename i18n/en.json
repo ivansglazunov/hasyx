@@ -390,6 +390,10 @@
     "notSet": "Not Set"
   }
   ,
+  "diagnostics": {
+    "invites": "Invites"
+  }
+  ,
   "jwt": {
     "title": "JWT Debug",
     "description": "Tools for working with JWT authentication",

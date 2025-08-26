@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
-import Debug from '../../lib/debug';
-import { Hasura } from '../../lib/hasura/hasura';
-import { down as downGroups } from '../../lib/groups/down-groups';
+import Debug from 'hasyx/lib/debug';
+import { Hasura } from 'hasyx/lib/hasura/hasura';
+import { down as downGroups } from 'hasyx/lib/groups/down-groups';
 
 dotenv.config();
 

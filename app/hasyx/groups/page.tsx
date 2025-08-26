@@ -12,12 +12,12 @@ import { Input } from 'hasyx/components/ui/input';
 import { Label } from 'hasyx/components/ui/label';
 import { MultiSelectHasyx } from 'hasyx/components/multi-select-hasyx';
 import { Plus } from 'lucide-react';
-import { Groups } from '@/lib/groups/groups';
+import { Groups } from 'hasyx/lib/groups/groups';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function GroupsPage() {
   const hasyx = useHasyx();
-  const groupsApi = React.useMemo(() => new (require('../../../lib/groups/groups').Groups)(hasyx), [hasyx]);
+  const groupsApi = React.useMemo(() => new Groups(hasyx), [hasyx]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);

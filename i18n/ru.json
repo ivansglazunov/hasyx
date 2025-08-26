@@ -390,6 +390,10 @@
     "notSet": "Не задано"
   }
   ,
+  "diagnostics": {
+    "invites": "Инвайты"
+  }
+  ,
   "jwt": {
     "title": "JWT Отладка",
     "description": "Инструменты для работы с JWT аутентификацией",
