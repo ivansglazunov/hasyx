@@ -137,8 +137,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
             // Foreground message listener (optional UI hook)
             try {
-              await FirebaseMessaging.addListener('messageReceived', (payload: any) => {
-                debug('Native message received in foreground:', payload);
+              await FirebaseMessaging.addListener('notificationReceived', (payload: any) => {
+                debug('Native notification received in foreground:', payload);
               });
             } catch {}
 
