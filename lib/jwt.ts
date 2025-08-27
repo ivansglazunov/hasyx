@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify, jwtDecrypt, type JWTPayload } from 'jose';
 import Debug from './debug';
 import jwt from 'jsonwebtoken';
-import { isUserInvited } from './invite';
+// IMPORTANT: Do not import Hasyx, apollo, or invite here to avoid circular deps in middleware
 // crypto.subtle is globally available in Node >= 15, browsers, and edge runtimes.
 // No explicit import needed for it, but Node's 'crypto' might be needed for other things if used elsewhere.
 // import crypto from 'crypto'; // We don't need the Node-specific module anymore for hashing.
@@ -131,11 +131,27 @@ export const generateJWT = async (
       debug(`🔒 Only invited users mode enabled`);
       
       try {
-        // Check if user has been invited
-        // Note: We can't use isUserInvited here as we don't have a Hasyx client
-        // Instead, we'll check the database directly or skip the check
-        // For now, we'll assume the user is not invited to be safe
-        const isInvited = false;
+        // Perform a real check using direct GraphQL call with admin secret to avoid import cycles
+        const adminSecret = process.env.HASURA_ADMIN_SECRET;
+        const hasuraUrl = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL;
+        if (!adminSecret || !hasuraUrl) {
+          debug('Missing HASURA_ADMIN_SECRET or NEXT_PUBLIC_HASURA_GRAPHQL_URL; skipping invite check');
+          throw new Error('Missing HASURA envs');
+        }
+        const query = `query IsInvited($userId: uuid!) { invited(where: { user_id: { _eq: $userId } }, limit: 1) { id } }`;
+        const res = await fetch(hasuraUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-hasura-admin-secret': adminSecret,
+          },
+          body: JSON.stringify({ query, variables: { userId } }),
+        });
+        const json: any = await res.json();
+        if (json?.errors) {
+          throw new Error(JSON.stringify(json.errors));
+        }
+        const isInvited = Array.isArray(json?.data?.invited) && json.data.invited.length > 0;
         debug(`🎫 User invited status: ${isInvited}`);
         
         if (!isInvited && hasuraClaims['x-hasura-allowed-roles']?.includes('user')) {

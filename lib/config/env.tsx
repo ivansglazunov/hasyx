@@ -62,6 +62,32 @@ function getEnvMappingForType(typeKey: string): Record<string, string | string[]
   return listMeta?.envMapping as Record<string, string | string[]> | undefined;
 }
 
+// Получение набора полей, которые должны сериализоваться как numeric boolean (1/0)
+function getNumericBooleanSetForType(typeKey: string): Set<string> {
+  const result = new Set<string>();
+  const fileSchema: any = (hasyxConfig as any).file;
+  if (!fileSchema || !(fileSchema as any).shape) return result;
+  const shape: any = (fileSchema as any).shape;
+  let listSchema = shape[typeKey];
+  if (!listSchema && typeKey === 'host') listSchema = shape['hosts'];
+  if (!listSchema && shape[`${typeKey}s`]) listSchema = shape[`${typeKey}s`];
+  if (!listSchema || typeof (listSchema as any).meta !== 'function') return result;
+  const listMeta = (listSchema as any).meta();
+  const addSchema = listMeta?.add;
+  // Для объектной схемы перечисляем поля и их метаданные
+  if (addSchema && (addSchema as any)._def && (addSchema as any)._def.shape) {
+    const rawShape = (addSchema as any)._def.shape;
+    const objShape = typeof rawShape === 'function' ? rawShape() : rawShape;
+    for (const [key, fieldSchema] of Object.entries<any>(objShape)) {
+      try {
+        const m = typeof (fieldSchema as any).meta === 'function' ? (fieldSchema as any).meta() : undefined;
+        if (m && m.numericBoolean) result.add(key);
+      } catch {}
+    }
+  }
+  return result;
+}
+
 // Получение имени публичного флага включенности фичи из meta.envEnabledName
 function getEnvEnabledNameForType(typeKey: string): string | undefined {
   const fileSchema: any = (hasyxConfig as any).file;
@@ -98,6 +124,7 @@ function generateEnvFile(config: any, variant: string): string {
   // Генерируем переменные для каждой конфигурации
   for (const [configType, configData] of Object.entries(resolvedConfig)) {
     const envMapping = getEnvMappingForType(configType);
+    const numericBooleanSet = getNumericBooleanSetForType(configType);
     if (!envMapping || !configData) continue;
     if (typeof configData !== 'object' || Object.keys(configData).length === 0) continue;
 
@@ -116,6 +143,11 @@ function generateEnvFile(config: any, variant: string): string {
               envVars.push(`${envKey}=${v ? '1' : '0'}`);
               return;
             }
+          }
+          // Numeric boolean per schema meta
+          if (typeof v === 'boolean' && numericBooleanSet.has(configKey)) {
+            envVars.push(`${envKey}=${v ? '1' : '0'}`);
+            return;
           }
           envVars.push(`${envKey}=${v}`);
         };
@@ -203,10 +235,7 @@ function generateEnvFile(config: any, variant: string): string {
   // Автоматически включать JWT auth для client builds
   const hostConfig = resolvedConfig.host;
   if (hostConfig) {
-    const jwtAuth = hostConfig.jwtAuth || hostConfig.clientOnly;
-    if (jwtAuth) {
-      envVars.push('NEXT_PUBLIC_JWT_AUTH=1');
-    }
+    // Больше не дублируем NEXT_PUBLIC_JWT_AUTH здесь – оно придёт из envMapping с учётом numericBoolean
   }
 
   return envVars.join('\n');

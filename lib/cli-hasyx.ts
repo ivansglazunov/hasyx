@@ -367,11 +367,37 @@ export const githubSyncCommand = async () => {
 };
 
 /**
+ * GitHub clear command: remove all repo secrets (no re-add)
+ */
+export const githubClearCommand = async () => {
+  const remoteUrl = gh.getRemoteUrl();
+  if (!remoteUrl) {
+    console.error('❌ Git remote origin not found. Initialize a GitHub repo first.');
+    process.exit(1);
+  }
+  gh.ensureGhCli();
+  try { gh.checkAuth(); } catch (e) { console.error('❌ GitHub CLI not authenticated. Run: gh auth login'); process.exit(1); }
+
+  // List and remove all existing secrets
+  const list = spawn.sync('gh', ['secret', 'list', '-R', remoteUrl], { encoding: 'utf-8' });
+  const lines = (list.stdout || '').split('\n').map(l => l.trim()).filter(Boolean);
+  for (const line of lines) {
+    const name = line.split(/\s+/)[0];
+    if (!name) continue;
+    spawn.sync('gh', ['secret', 'remove', name, '-R', remoteUrl], { encoding: 'utf-8' });
+  }
+
+  console.log('✅ GitHub secrets cleared');
+};
+
+/**
  * Describe GitHub commands
  */
 export const githubCommandDescribe = (cmd: Command) => {
-  const c = cmd.description('GitHub operations');
+  const c = cmd.description('GitHub operations')
+    .addHelpText('after', `\nExamples:\n  npx hasyx github sync\n  npx hasyx github clear\n  npm run cli -- github --help`);
   c.command('sync').description('Purge and sync GitHub Actions secrets from .env').action(githubSyncCommand);
+  c.command('clear').description('Remove all GitHub Actions secrets (no re-add)').action(githubClearCommand);
   return c;
 };
 
@@ -383,12 +409,13 @@ export const vercelSyncCommand = async () => {
   const token = env.VERCEL_TOKEN;
   const project = env.VERCEL_PROJECT_NAME;
   const teamId = env.VERCEL_TEAM_ID;
+  const userId = env.VERCEL_USER_ID;
   if (!token || !project) {
     console.error('❌ Missing VERCEL_TOKEN or VERCEL_PROJECT_NAME in .env');
     process.exit(1);
   }
   // Ensure linked
-  if (!vercelApi.link(project, token, teamId)) {
+  if (!vercelApi.link(project, token, teamId, userId)) {
     console.error(`❌ Failed to link to Vercel project ${project}`);
     process.exit(1);
   }
@@ -397,6 +424,10 @@ export const vercelSyncCommand = async () => {
     console.warn('⚠️ Could not pull current Vercel env; proceeding with sync');
   }
   const current = parseEnvFile('.env.vercel');
+  // Print a clear plan so the Vercel CLI "Changes:" (pull step) is not confusing
+  const currentKeys = Object.keys(current).filter(k => k);
+  const envKeysToPush = Object.keys(env).filter(k => !['VERCEL_TOKEN','VERCEL_TEAM_ID','VERCEL_USER_ID','VERCEL_PROJECT_NAME'].includes(k));
+  console.log(`ℹ️ Plan: will remove ${currentKeys.length} keys from development/preview/production and add ${envKeysToPush.length} keys from .env`);
   const envTypes: Array<'production'|'preview'|'development'> = ['production', 'preview', 'development'];
   // Remove all currently present keys
   for (const key of Object.keys(current)) {
@@ -404,7 +435,7 @@ export const vercelSyncCommand = async () => {
   }
   // Add all from .env excluding Vercel control keys
   for (const [key, value] of Object.entries(env)) {
-    if (['VERCEL_TOKEN','VERCEL_TEAM_ID','VERCEL_PROJECT_NAME'].includes(key)) continue;
+    if (['VERCEL_TOKEN','VERCEL_TEAM_ID','VERCEL_USER_ID','VERCEL_PROJECT_NAME'].includes(key)) continue;
     if (typeof value !== 'string') continue;
     // Force WS off for Vercel runtime
     if (key === 'NEXT_PUBLIC_WS') {
@@ -413,7 +444,45 @@ export const vercelSyncCommand = async () => {
     }
     for (const t of envTypes) { vercelApi.envAdd(key, t, value, token); }
   }
-  console.log('✅ Vercel environment variables synchronized from .env');
+  // Verify by pulling again and reporting concise summary
+  if (vercelApi.envPull(token, '.env.vercel')) {
+    const after = parseEnvFile('.env.vercel');
+    console.log(`✅ Vercel environment synchronized: ${Object.keys(after).length} keys present (development) from .env`);
+    console.log('ℹ️ Note: the "Changes:" list above refers only to the initial pull step, not the final state');
+  } else {
+    console.log('✅ Vercel environment variables synchronized from .env');
+  }
+};
+
+/**
+ * Vercel clear command: remove all env vars in production/preview/development (no re-add)
+ */
+export const vercelClearCommand = async () => {
+  const env = parseEnvFile('.env');
+  const token = env.VERCEL_TOKEN;
+  const project = env.VERCEL_PROJECT_NAME;
+  const teamId = env.VERCEL_TEAM_ID;
+  const userId = env.VERCEL_USER_ID;
+  if (!token || !project) {
+    console.error('❌ Missing VERCEL_TOKEN or VERCEL_PROJECT_NAME in .env');
+    process.exit(1);
+  }
+  // Ensure linked
+  if (!vercelApi.link(project, token, teamId, userId)) {
+    console.error(`❌ Failed to link to Vercel project ${project}`);
+    process.exit(1);
+  }
+  // Pull current to know keys
+  if (!vercelApi.envPull(token, '.env.vercel')) {
+    console.warn('⚠️ Could not pull current Vercel env; proceeding with clear');
+  }
+  const current = parseEnvFile('.env.vercel');
+  const envTypes: Array<'production'|'preview'|'development'> = ['production', 'preview', 'development'];
+  // Remove all currently present keys
+  for (const key of Object.keys(current)) {
+    for (const t of envTypes) { vercelApi.envRemove(key, t, token); }
+  }
+  console.log('✅ Vercel environment variables cleared');
 };
 
 // (moved into existing describe functions below)
@@ -1933,12 +2002,17 @@ export const localCommandDescribe = (cmd: Command) => {
 };
 
 export const vercelCommandDescribe = (cmd: Command) => {
-  const group = cmd.description('Vercel operations');
+  const group = cmd.description('Vercel operations')
+    .addHelpText('after', `\nExamples:\n  npx hasyx vercel sync\n  npx hasyx vercel clear\n  npm run cli -- vercel --help`);
   // legacy note removed
   group
     .command('sync')
     .description('Purge and sync Vercel environment variables from .env')
     .action(vercelSyncCommand);
+  group
+    .command('clear')
+    .description('Remove all Vercel environment variables across production/preview/development (no re-add)')
+    .action(vercelClearCommand);
   return group;
 };
 

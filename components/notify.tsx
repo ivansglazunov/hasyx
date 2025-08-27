@@ -102,12 +102,54 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     }
   }, [dbPermissionError]);
 
-  // Initialize Firebase and check for notification support
+  // Initialize Firebase (web) or Capacitor Firebase Messaging (native) and check for notification support
   useEffect(() => {
     async function initializeNotifications() {
       setLoading(true);
       try {
-        // Check if notifications are supported in the browser
+        // Prefer native path when running inside Capacitor (Android/iOS)
+        try {
+          const { Capacitor } = await import('@capacitor/core');
+          if (Capacitor?.isNativePlatform?.()) {
+            debug('Capacitor native platform detected. Using native Firebase Messaging.');
+            setIsSupported(true);
+            // Dynamic import to avoid bundling for web
+            const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
+
+            // iOS/Android 13+: request permission
+            try { await FirebaseMessaging.requestPermissions(); } catch {}
+
+            // Get FCM token
+            try {
+              const tokenRes = await FirebaseMessaging.getToken();
+              const nativeToken = (tokenRes as any)?.token;
+              if (nativeToken) {
+                setDeviceToken(nativeToken);
+                setIsFcmInitialized(true);
+                setPermissionStatus('granted');
+                debug('Native FCM token acquired:', nativeToken);
+              } else {
+                setError('Failed to get native FCM token');
+              }
+            } catch (e: any) {
+              setError(`Failed to get native FCM token: ${e?.message || e}`);
+            }
+
+            // Foreground message listener (optional UI hook)
+            try {
+              await FirebaseMessaging.addListener('messageReceived', (payload: any) => {
+                debug('Native message received in foreground:', payload);
+              });
+            } catch {}
+
+            setLoading(false);
+            return;
+          }
+        } catch {
+          // Capacitor not available; continue to web path
+        }
+
+        // Web path using Firebase Web SDK
         if (typeof window !== 'undefined' && ('Notification' in window)) {
           debug('Browser Notification API supported.');
 
@@ -293,13 +335,21 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     setLoading(true);
     setError(null);
     try {
-      // Delete FCM token from Firebase
+      // Native path: try Capacitor Firebase Messaging delete
+      try {
+        const { Capacitor } = await import('@capacitor/core');
+        if (Capacitor?.isNativePlatform?.()) {
+          const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
+          try { await FirebaseMessaging.deleteToken(); } catch {}
+          debug('Native FCM token deleted.');
+        }
+      } catch {}
+
+      // Web path: delete FCM token from Firebase
       if (firebaseMessaging) {
         const { deleteToken: deleteTokenFcmFn } = await import('firebase/messaging');
         await deleteTokenFcmFn(firebaseMessaging);
         debug('FCM token deleted from Firebase.');
-      } else {
-        debug('Firebase messaging not initialized. Skipping FCM token deletion.');
       }
       setDeviceToken(null); // Clear local token
       setPermissionStatus('default'); // Reset browser permission status optimistically

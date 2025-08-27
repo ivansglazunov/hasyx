@@ -3390,6 +3390,84 @@
       "level": 1
     },
     {
+      "title": "Hasyx Invites",
+      "url": "/hasyx/doc/INVITE",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/INVITE#overview",
+          "level": 2
+        },
+        {
+          "title": "Database Schema",
+          "url": "/hasyx/doc/INVITE#database-schema",
+          "level": 2
+        },
+        {
+          "title": "invites",
+          "url": "/hasyx/doc/INVITE#invites",
+          "level": 3
+        },
+        {
+          "title": "invited",
+          "url": "/hasyx/doc/INVITE#invited",
+          "level": 3
+        },
+        {
+          "title": "Relationships",
+          "url": "/hasyx/doc/INVITE#relationships",
+          "level": 3
+        },
+        {
+          "title": "Permissions (Hasura)",
+          "url": "/hasyx/doc/INVITE#permissions-hasura",
+          "level": 2
+        },
+        {
+          "title": "API Route",
+          "url": "/hasyx/doc/INVITE#api-route",
+          "level": 2
+        },
+        {
+          "title": "Client Integration",
+          "url": "/hasyx/doc/INVITE#client-integration",
+          "level": 2
+        },
+        {
+          "title": "Business Logic (`lib/invite.ts`)",
+          "url": "/hasyx/doc/INVITE#business-logic-libinvitets",
+          "level": 2
+        },
+        {
+          "title": "JWT Behavior",
+          "url": "/hasyx/doc/INVITE#jwt-behavior",
+          "level": 2
+        },
+        {
+          "title": "UI",
+          "url": "/hasyx/doc/INVITE#ui",
+          "level": 2
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/INVITE#testing",
+          "level": 2
+        },
+        {
+          "title": "Migrations and Schema",
+          "url": "/hasyx/doc/INVITE#migrations-and-schema",
+          "level": 2
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/INVITE#troubleshooting",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Hasyx Logs System",
       "url": "/hasyx/doc/LOGS",
       "collapse": true,
@@ -4122,6 +4200,54 @@
       "level": 1
     },
     {
+      "title": "Android Push Notifications (Capacitor + FCM)",
+      "url": "/hasyx/doc/NOTIFY-ANDROID",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Prerequisites",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#prerequisites",
+          "level": 2
+        },
+        {
+          "title": "Install plugins",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#install-plugins",
+          "level": 2
+        },
+        {
+          "title": "Firebase config",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#firebase-config",
+          "level": 2
+        },
+        {
+          "title": "AndroidManifest",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#androidmanifest",
+          "level": 2
+        },
+        {
+          "title": "Code changes (done)",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#code-changes-done",
+          "level": 2
+        },
+        {
+          "title": "Build and run",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#build-and-run",
+          "level": 2
+        },
+        {
+          "title": "Testing plan (use app/hasyx/diagnostics)",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#testing-plan-use-apphasyxdiagnostics",
+          "level": 2
+        },
+        {
+          "title": "Notes",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#notes",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Web Push Notifications with Firebase Cloud Messaging (FCM) in Hasyx",
       "url": "/hasyx/doc/NOTIFY-FIREBASE",
       "collapse": true,
@@ -4149,6 +4275,64 @@
         {
           "title": "Client-Side Service Worker (`firebase-messaging-sw.js`)",
           "url": "/hasyx/doc/NOTIFY-FIREBASE#client-side-service-worker-firebase-messaging-swjs",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "iOS Push Notifications (Capacitor + FCM via APNs)",
+      "url": "/hasyx/doc/NOTIFY-IOS",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Prerequisites",
+          "url": "/hasyx/doc/NOTIFY-IOS#prerequisites",
+          "level": 2
+        },
+        {
+          "title": "Install plugins",
+          "url": "/hasyx/doc/NOTIFY-IOS#install-plugins",
+          "level": 2
+        },
+        {
+          "title": "Xcode capabilities",
+          "url": "/hasyx/doc/NOTIFY-IOS#xcode-capabilities",
+          "level": 2
+        },
+        {
+          "title": "Firebase config",
+          "url": "/hasyx/doc/NOTIFY-IOS#firebase-config",
+          "level": 2
+        },
+        {
+          "title": "AppDelegate updates (done)",
+          "url": "/hasyx/doc/NOTIFY-IOS#appdelegate-updates-done",
+          "level": 2
+        },
+        {
+          "title": "Request permission + get token (runtime)",
+          "url": "/hasyx/doc/NOTIFY-IOS#request-permission-get-token-runtime",
+          "level": 2
+        },
+        {
+          "title": "Build and run",
+          "url": "/hasyx/doc/NOTIFY-IOS#build-and-run",
+          "level": 2
+        },
+        {
+          "title": "APNs key in Firebase",
+          "url": "/hasyx/doc/NOTIFY-IOS#apns-key-in-firebase",
+          "level": 2
+        },
+        {
+          "title": "Testing plan (use app/hasyx/diagnostics)",
+          "url": "/hasyx/doc/NOTIFY-IOS#testing-plan-use-apphasyxdiagnostics",
+          "level": 2
+        },
+        {
+          "title": "Notes",
+          "url": "/hasyx/doc/NOTIFY-IOS#notes",
           "level": 2
         }
       ],
@@ -6796,6 +6980,11 @@
           "title": "5. Реализация системы бенчмаркинга и мониторинга",
           "url": "/hasyx/doc/TODO#5",
           "level": 3
+        },
+        {
+          "title": "Инвайты / JWT",
+          "url": "/hasyx/doc/TODO#jwt",
+          "level": 2
         }
       ],
       "level": 1
@@ -15496,5 +15685,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-08-25T12:26:25.100Z"
+  "lastUpdated": "2025-08-27T18:09:04.011Z"
 }

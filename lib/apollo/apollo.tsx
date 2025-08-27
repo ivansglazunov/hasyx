@@ -12,7 +12,7 @@ import Debug from '../debug';
 import { ContextSetter } from '@apollo/client/link/context';
 import { GraphQLRequest } from '@apollo/client/core';
 import { useMemo } from 'react';
-import { getJwtSecret } from '../jwt';
+// Avoid importing from '../jwt' here to prevent middleware circular init issues
 
 import { onError } from '@apollo/client/link/error';
 import { Generate } from '../generator';
@@ -520,6 +520,5 @@ export default {
   createApolloClient,
   getClient,
   resetClientInstance,
-  getJwtSecret,
   checkConnection
 }; 

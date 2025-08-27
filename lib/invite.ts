@@ -78,7 +78,7 @@ export async function useInvite(hasyx: Hasyx, code: string): Promise<InviteResul
 
     // Use admin to check invite existence by code (regular users cannot see others' invites)
     const adminClient = new Hasyx(
-      createApolloClient({ secret: process.env.HASURA_ADMIN_SECRET! }),
+      createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET! }),
       Generator(schema as any)
     );
 
@@ -233,7 +233,7 @@ export async function deleteInvite(hasyx: Hasyx, inviteId: string): Promise<Invi
 
     // Admin client (for checking usage and deletion)
     const adminClient = new Hasyx(
-      createApolloClient({ secret: process.env.HASURA_ADMIN_SECRET! }),
+      createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET! }),
       Generator(schema as any)
     );
     console.log('[invite:deleteInvite] admin url=', (adminClient.apolloClient as any)?._options?.url);
@@ -296,7 +296,7 @@ export async function isUserInvited(hasyx: Hasyx, userId?: string): Promise<bool
 
     // Use admin client to avoid role/allowlist issues for invited visibility
     const adminClient = new Hasyx(
-      createApolloClient({ secret: process.env.HASURA_ADMIN_SECRET! }),
+      createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET! }),
       Generator(schema as any)
     );
     console.log('[invite:isUserInvited] admin url=', (adminClient.apolloClient as any)?._options?.url);

@@ -1209,6 +1209,9 @@ hasyxConfig.vercel = z.object({
   token: z.string()
     .min(1, 'Please enter a valid Vercel Token')
     .describe('Vercel Access Token - Get from https://vercel.com/account/tokens'),
+  userId: z.string()
+    .optional()
+    .describe('Vercel User ID - Optional, for personal accounts (treated as personal mode when set and teamId is empty)'),
   teamId: z.string()
     .optional()
     .describe('Vercel Team ID - Optional, for team accounts'),
@@ -1218,9 +1221,10 @@ hasyxConfig.vercel = z.object({
 }).meta({
   type: 'vercel-config',
   title: 'Vercel Configuration',
-  description: 'Steps:\n1) Create Access Token: https://vercel.com/account/tokens\n2) (Optional) Team ID from team settings\n3) Project Name: as in Vercel project (auto-detected from .vercel/project.json if present)',
+  description: 'Steps:\n1) Create Access Token: https://vercel.com/account/tokens\n2) (Optional) Team ID for team projects or User ID for personal projects\n3) Project Name: as in Vercel project (auto-detected from .vercel/project.json if present)',
   envMapping: {
     token: 'VERCEL_TOKEN',
+    userId: 'VERCEL_USER_ID',
     teamId: 'VERCEL_TEAM_ID',
     projectName: 'VERCEL_PROJECT_NAME'
   }

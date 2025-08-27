@@ -123,7 +123,9 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
     let apiUrl: string;
     let useWebSockets = typeof window !== 'undefined';
     
-    if (jwtToken || (!!+process.env.NEXT_PUBLIC_JWT_AUTH!)) {
+    const jwtAuthEnabled = (!!+process.env.NEXT_PUBLIC_JWT_AUTH!);
+    const jwtForceEnabled = (!!+process.env.NEXT_PUBLIC_JWT_FORCE!);
+    if (jwtToken || jwtAuthEnabled || jwtForceEnabled) {
       debug('Creating new Apollo client with JWT token:', jwtToken);
       // When JWT is available, use Hasura GraphQL URL directly for WebSocket support
       apiUrl = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!;

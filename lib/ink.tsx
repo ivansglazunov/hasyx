@@ -503,19 +503,19 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
     }
   }, [formData, onSubmit, isSubmitting]);
 
-  // Автоматический переход после обновления состояния
-  useEffect(() => {
-    if (currentField && currentFieldState && !currentFieldState.error && currentFieldState.touched) {
-      const timeoutId = setTimeout(() => {
-        if (!isProcessingField.current) {
-          debug(`Form useEffect - auto-submitting field ${currentField.key}`);
-          handleFieldSubmit();
-        }
-      }, 100);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [currentFieldState?.value, currentFieldState?.touched, currentFieldState?.error, currentField, handleFieldSubmit]);
+  // Отключено: глобальный авто-переход по любому изменению значения поля
+  // useEffect(() => {
+  //   if (currentField && currentFieldState && !currentFieldState.error && currentFieldState.touched) {
+  //     const timeoutId = setTimeout(() => {
+  //       if (!isProcessingField.current) {
+  //         debug(`Form useEffect - auto-submitting field ${currentField.key}`);
+  //         handleFieldSubmit();
+  //       }
+  //     }, 100);
+  //     
+  //     return () => clearTimeout(timeoutId);
+  //   }
+  // }, [currentFieldState?.value, currentFieldState?.touched, currentFieldState?.error, currentField, handleFieldSubmit]);
 
   const renderField = useCallback(() => {
     if (!currentField || !isInitialized) return null;
@@ -538,8 +538,10 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
           onConfig={(value) => {
             console.log(`ReferenceSelector onConfig - setting value and moving to next field`);
             handleFieldChange(value);
-            // После выбора в ReferenceSelector ВСЕГДА переходим к следующему полю
-            debug(`ReferenceSelector onConfig - waiting for useEffect auto-submit`);
+            // Явный переход к следующему полю после выбора
+            setTimeout(() => {
+              handleFieldSubmit();
+            }, 100);
           }}
           meta={meta}
           onBack={() => {
@@ -577,7 +579,7 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
             onChange={(value) => {
               console.log(`Enum Select onChange for ${key}:`, value);
               handleFieldChange(value);
-              // Автопереход к следующему полю как в ReferenceSelector
+              // Явный переход к следующему полю после выбора
               setTimeout(() => {
                 handleFieldSubmit();
               }, 100);
