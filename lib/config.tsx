@@ -149,7 +149,7 @@ hasyxConfig.hasura = z.object({
     .describe('Hasura Event Secret (HASURA_EVENT_SECRET). Used to verify event/webhook requests. Can be a random 32-byte hex string.'),
 }).meta({
   title: 'Hasura Configuration',
-  description: 'Steps:\n1) Create a Hasura project (Hasura Cloud or local).\n2) Copy GraphQL endpoint as NEXT_PUBLIC_HASURA_GRAPHQL_URL.\n3) Set HASURA_ADMIN_SECRET in project settings and copy it here.\n4) Generate a JWT secret: 32-byte hex -> embed as JSON: {"type":"HS256","key":"<hex>"}.\n5) Generate HASURA_EVENT_SECRET (random 32-byte hex). These values secure your API and events.',
+  description: 'Steps:\n1) Create a Hasura project (Hasura Cloud or local).\n2) Copy GraphQL endpoint as NEXT_PUBLIC_HASURA_GRAPHQL_URL.\n3) Set HASURA_ADMIN_SECRET in project settings and copy it here.\n4) Generate a JWT secret: 32-byte hex -> embed as JSON: {"type":"HS256","key":"<hex>"}.\n5) Generate HASURA_EVENT_SECRET (random 32-byte hex).\n6) Set HASURA_GRAPHQL_UNAUTHORIZED_ROLE = anonymous in Hasura environment variables. These values secure your API and events.',
   envMapping: {
     url: 'NEXT_PUBLIC_HASURA_GRAPHQL_URL',
     secret: 'HASURA_ADMIN_SECRET',

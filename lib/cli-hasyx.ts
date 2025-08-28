@@ -1167,6 +1167,7 @@ vscode:
       let scriptsModified = false;
       let overridesModified = false;
       let dependenciesModified = false;
+      let devDependenciesModified = false;
       
       for (const [scriptName, scriptValue] of Object.entries(requiredScripts)) {
         if (!pkgJson.scripts[scriptName] || pkgJson.scripts[scriptName] !== scriptValue) {
@@ -1191,6 +1192,24 @@ vscode:
         }
       }
 
+      // Ensure required devDependencies for Jest + ts-jest are present in child project
+      const requiredDevDependencies: Record<string, string> = {
+        jest: "29.7.0",
+        "ts-jest": "29.1.2",
+        "@types/jest": "29.5.12",
+      };
+
+      if (!pkgJson.devDependencies) {
+        pkgJson.devDependencies = {};
+      }
+      for (const [depName, depVersion] of Object.entries(requiredDevDependencies)) {
+        const currentDevDepVersion: string | undefined = pkgJson.devDependencies[depName];
+        if (!currentDevDepVersion || currentDevDepVersion !== depVersion) {
+          pkgJson.devDependencies[depName] = depVersion;
+          devDependenciesModified = true;
+        }
+      }
+
       // Check if overrides need to be updated
       if (!pkgJson.overrides?.zod || pkgJson.overrides.zod !== "^4.0.15") {
         if (!pkgJson.overrides) {
@@ -1200,9 +1219,9 @@ vscode:
         overridesModified = true;
       }
       
-      if (scriptsModified || overridesModified || dependenciesModified) {
+      if (scriptsModified || overridesModified || dependenciesModified || devDependenciesModified) {
         await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
-        if (scriptsModified && overridesModified && dependenciesModified) {
+        if (scriptsModified && overridesModified && dependenciesModified && devDependenciesModified) {
           console.log('✅ Required npm scripts, overrides, and dependencies updated in package.json.');
         } else if (scriptsModified) {
           console.log('✅ Required npm scripts updated in package.json.');
@@ -1210,6 +1229,8 @@ vscode:
           console.log('✅ Required overrides updated in package.json.');
         } else if (dependenciesModified) {
           console.log('✅ Required dependencies updated in package.json.');
+        } else if (devDependenciesModified) {
+          console.log('✅ Required devDependencies updated in package.json.');
         }
       } else {
         console.log('ℹ️ Required npm scripts and overrides already present in package.json.');

@@ -7,18 +7,19 @@ import { NextIntlClientProvider } from 'next-intl';
 import { i18nMessages } from 'hasyx/lib/i18n/messages';
 import { Eruda } from "hasyx/lib/eruda";
 import { Generator } from "hasyx";
-import schema from "../public/hasura-schema.json";
-
+import { useMemo } from "react";
 
 interface ClientLayoutProps {
   defaultLocale: string;
+  schema: any;
   children: React.ReactNode;
 }
 
-const generate = Generator(schema);
-
-export function ClientLayout({ defaultLocale, children }: ClientLayoutProps) {
+export function ClientLayout({ defaultLocale, schema, children }: ClientLayoutProps) {
   const { locale, setLocale } = useLocaleClient(defaultLocale);
+  const generate = useMemo(() => {
+    return Generator(schema);
+  }, []);
   
   return (
     <HasyxProvider generate={generate}>
