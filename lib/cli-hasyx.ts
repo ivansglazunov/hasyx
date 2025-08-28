@@ -1158,13 +1158,36 @@ vscode:
         "gitpod": `npx ${packageName} gitpod`
       };
       
+      // Ensure React runtime dependencies are present in child project
+      const requiredDependencies: Record<string, string> = {
+        react: "19.1.1",
+        "react-dom": "19.1.1",
+      };
+      
       let scriptsModified = false;
       let overridesModified = false;
+      let dependenciesModified = false;
       
       for (const [scriptName, scriptValue] of Object.entries(requiredScripts)) {
         if (!pkgJson.scripts[scriptName] || pkgJson.scripts[scriptName] !== scriptValue) {
           pkgJson.scripts[scriptName] = scriptValue;
           scriptsModified = true;
+        }
+      }
+
+      // Add or update required dependencies; move from devDependencies if necessary
+      if (!pkgJson.dependencies) {
+        pkgJson.dependencies = {};
+      }
+      for (const [depName, depVersion] of Object.entries(requiredDependencies)) {
+        const currentDepVersion: string | undefined = pkgJson.dependencies[depName];
+        const currentDevDepVersion: string | undefined = pkgJson.devDependencies?.[depName];
+        if (currentDevDepVersion) {
+          delete pkgJson.devDependencies[depName];
+        }
+        if (!currentDepVersion || currentDepVersion !== depVersion || currentDevDepVersion) {
+          pkgJson.dependencies[depName] = depVersion;
+          dependenciesModified = true;
         }
       }
 
@@ -1177,14 +1200,16 @@ vscode:
         overridesModified = true;
       }
       
-      if (scriptsModified || overridesModified) {
+      if (scriptsModified || overridesModified || dependenciesModified) {
         await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
-        if (scriptsModified && overridesModified) {
-          console.log('✅ Required npm scripts and overrides updated in package.json.');
+        if (scriptsModified && overridesModified && dependenciesModified) {
+          console.log('✅ Required npm scripts, overrides, and dependencies updated in package.json.');
         } else if (scriptsModified) {
           console.log('✅ Required npm scripts updated in package.json.');
         } else if (overridesModified) {
           console.log('✅ Required overrides updated in package.json.');
+        } else if (dependenciesModified) {
+          console.log('✅ Required dependencies updated in package.json.');
         }
       } else {
         console.log('ℹ️ Required npm scripts and overrides already present in package.json.');
