@@ -16,7 +16,7 @@ type SocketAuthData = { authenticated: false } | { authenticated: true, userId: 
 const URL = (process.env.NEXT_PUBLIC_MAIN_URL || process.env.NEXT_PUBLIC_BASE_URL || window.location.host)!;
 
 export function SocketAuthStatus() {
-  const tStatus = useTranslations('authStatus');
+  const t = useTranslations();
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
   const [authData, setAuthData] = useState<SocketAuthData | null>(null);
   const [error, setError] = useState<any>(null);
@@ -111,8 +111,8 @@ export function SocketAuthStatus() {
       <CardHeader>
          <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="text-lg">{tStatus('ws.title')}</CardTitle>
-            <CardDescription>{tStatus('ws.description')}</CardDescription>
+            <CardTitle className="text-lg">{t('authStatus.ws.title')}</CardTitle>
+            <CardDescription>{t('authStatus.ws.description')}</CardDescription>
           </div>
            {/* Optional: Add reconnect button */}
            {/* <Button variant="ghost" size="icon" onClick={connectWebSocket} disabled={connectionStatus === 'connecting'} aria-label="Reconnect WebSocket">
@@ -122,7 +122,7 @@ export function SocketAuthStatus() {
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex items-center space-x-2">
-           <Label>{tStatus('ws.connection')}</Label>
+           <Label>{t('authStatus.ws.connection')}</Label>
            <Status 
              status={statusLabel} 
              error={error}
@@ -130,27 +130,27 @@ export function SocketAuthStatus() {
         </div>
         {connectionStatus === 'connected' && authData && (
           <div>
-            <Label>{tStatus('ws.authStatus')}</Label>
+            <Label>{t('authStatus.ws.authStatus')}</Label>
              <p className={`text-sm ${authData.authenticated ? 'text-green-600' : 'text-red-600'}`}>
-                {authData.authenticated ? tStatus('authenticated') : tStatus('notAuthenticated')}
+                {authData.authenticated ? t('authStatus.authenticated') : t('authStatus.notAuthenticated')}
              </p>
           </div>
         )}
         {connectionStatus === 'connected' && authData?.authenticated && (
           <div>
-            <Label>{tStatus('ws.userData')}</Label>
+            <Label>{t('authStatus.ws.userData')}</Label>
             {/* Display userId and token data sent by the server */}
             <CodeBlock value={JSON.stringify({ userId: authData.userId, token: authData.token }, null, 2)} />
           </div>
         )}
          {connectionStatus === 'error' && (
           <div>
-            <Label className='text-red-500'>{tStatus('ws.connError')}</Label>
-            <CodeBlock value={error?.message || tStatus('unknownWsError')} />
+            <Label className='text-red-500'>{t('authStatus.ws.connError')}</Label>
+            <CodeBlock value={error?.message || t('authStatus.unknownWsError')} />
           </div>
         )}
          {connectionStatus === 'idle' && (
-            <p className="text-sm text-muted-foreground">{tStatus('ws.idle')}</p>
+            <p className="text-sm text-muted-foreground">{t('authStatus.ws.idle')}</p>
          )}
       </CardContent>
     </Card>

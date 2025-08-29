@@ -109,10 +109,7 @@ interface AccountsProps {
 
 export function Accounts({ userId, AccountComponent = AccountsAccount }: AccountsProps) {
   const hasyx = useHasyx();
-  const tAccounts = useTranslations('accounts');
-  const tActions = useTranslations('actions');
-  const tErrors = useTranslations('errors');
-  const tSuccess = useTranslations('success');
+  const t = useTranslations();
   const effectiveUserId = userId || hasyx.userId;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [accountToDelete, setAccountToDelete] = useState<Account | null>(null);
@@ -147,11 +144,11 @@ export function Accounts({ userId, AccountComponent = AccountsAccount }: Account
         where: { id: { _eq: account.id } },
       });
       
-      toast.success(tSuccess('accountDisconnected', { provider: account.provider }));
+      toast.success(t('success.accountDisconnected', { provider: account.provider }));
       refetch();
     } catch (error) {
       debug('Error deleting account:', error);
-      toast.error(tErrors('accountDisconnectFailed'));
+      toast.error(t('errors.accountDisconnectFailed'));
     } finally {
       setIsDeleting(false);
     }
@@ -166,20 +163,20 @@ export function Accounts({ userId, AccountComponent = AccountsAccount }: Account
   };
 
   if (!effectiveUserId) {
-    return <div className="text-sm text-muted-foreground">{tAccounts('noUserId')}</div>;
+    return <div className="text-sm text-muted-foreground">{t('accounts.noUserId')}</div>;
   }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center px-2 py-1">
         <Loader2 className="h-4 w-4 animate-spin mr-2" />
-        <span className="text-sm text-muted-foreground">{tAccounts('loading')}</span>
+        <span className="text-sm text-muted-foreground">{t('accounts.loading')}</span>
       </div>
     );
   }
 
   if (accounts.length === 0) {
-    return <div className="text-sm text-muted-foreground px-2 py-1">{tAccounts('noConnected')}</div>;
+    return <div className="text-sm text-muted-foreground px-2 py-1">{t('accounts.noConnected')}</div>;
   }
 
   return (
@@ -201,7 +198,7 @@ export function Accounts({ userId, AccountComponent = AccountsAccount }: Account
           onClick={() => setAddAccountDialogOpen(true)}
         >
           <Plus className="h-4 w-4" />
-          <span>{tAccounts('addAccount')}</span>
+          <span>{t('accounts.addAccount')}</span>
         </Button>
       </div>
 
@@ -209,20 +206,20 @@ export function Accounts({ userId, AccountComponent = AccountsAccount }: Account
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{tAccounts('disconnectTitle')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('accounts.disconnectTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {tAccounts('disconnectDescription', { provider: accountToDelete?.provider || '' })}
+              {t('accounts.disconnectDescription', { provider: accountToDelete?.provider || '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{tActions('cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700"
             >
               {isDeleting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-              {tActions('disconnect')}
+              {t('actions.disconnect')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -232,9 +229,9 @@ export function Accounts({ userId, AccountComponent = AccountsAccount }: Account
       <Dialog open={addAccountDialogOpen} onOpenChange={setAddAccountDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{tAccounts('addAccountTitle')}</DialogTitle>
+            <DialogTitle>{t('accounts.addAccountTitle')}</DialogTitle>
             <DialogDescription>
-              {tAccounts('addAccountDescription')}
+              {t('accounts.addAccountDescription')}
             </DialogDescription>
           </DialogHeader>
           

@@ -22,10 +22,7 @@ const debug = Debug('auth:actions-card');
 
 export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
   const hasyx = useHasyx();
-  const tAuth = useTranslations('auth');
-  const tCommon = useTranslations('common');
-  const tActions = useTranslations('actions');
-  const tErrors = useTranslations('errors');
+  const t = useTranslations();
   const { data: session, status } = useSession();
   const loading = status === 'loading';
   const userId = session?.user?.id;
@@ -61,17 +58,17 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
     return (
       <Card {...props}>
         <CardHeader>
-          <CardTitle>{tAuth('connectedAccounts')}</CardTitle>
-          <CardDescription>{tAuth('signInToYourAccount')}</CardDescription>
+          <CardTitle>{t('auth.connectedAccounts')}</CardTitle>
+          <CardDescription>{t('auth.signInToYourAccount')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid w-full items-center gap-2">
-            <Label>{tAuth('signInToYourAccount')}</Label>
-            {loading && <p className="flex items-center"><Loader2 className="mr-2 h-4 w-4 animate-spin" />{tCommon('loading')}</p>}
-            {!session && !loading && <p>{tAuth('signIn')}</p>}
+            <Label>{t('auth.signInToYourAccount')}</Label>
+            {loading && <p className="flex items-center"><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t('common.loading')}</p>}
+            {!session && !loading && <p>{t('auth.signIn')}</p>}
           </div>
           <div className="grid w-full items-center gap-2">
-            <Label>{tAuth('signIn')}</Label>
+            <Label>{t('auth.signIn')}</Label>
             <OAuthButtons />
           </div>
         </CardContent>
@@ -83,14 +80,14 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <Card {...props}>
         <CardHeader>
-          <CardTitle>{tAuth('connectedAccounts')}</CardTitle>
-          <CardDescription>{tAuth('addAccountDescription')}</CardDescription>
+          <CardTitle>{t('auth.connectedAccounts')}</CardTitle>
+          <CardDescription>{t('auth.addAccountDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="auth">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="auth">Auth</TabsTrigger>
-            <TabsTrigger value="accounts">{tAuth('connectedAccounts')}</TabsTrigger>
+            <TabsTrigger value="accounts">{t('auth.connectedAccounts')}</TabsTrigger>
           </TabsList>
           <TabsContent value="auth" className="mt-4 space-y-4">
             <div className="grid w-full items-center gap-2">
@@ -100,21 +97,21 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
                 {userId && (
                   <span className="flex items-center">
                     {subLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                     {subError && <span className="text-xs text-red-500" title={subError.message}>{tErrors('unknown')}</span>}
+                     {subError && <span className="text-xs text-red-500" title={subError.message}>{t('errors.unknown')}</span>}
                     {!subLoading && !subError && emailVerified && (
                        <span 
                         title={`Email verified at ${new Date(emailVerified).toLocaleString()}`}
                         className="mr-2 px-2 py-0.5 rounded text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 flex items-center"
                       >
-                         <MailCheck className="mr-1 h-3 w-3" /> {tCommon('yes')}
+                         <MailCheck className="mr-1 h-3 w-3" /> {t('common.yes')}
                       </span>
                     )}
                      {!subLoading && !subError && !emailVerified && (
                        <span 
-                         title={tErrors('unknown')}
+                         title={t('errors.unknown')}
                         className="mr-2 px-2 py-0.5 rounded text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 flex items-center"
                       >
-                         <MailWarning className="mr-1 h-3 w-3" /> {tCommon('no')}
+                         <MailWarning className="mr-1 h-3 w-3" /> {t('common.no')}
                          {/* TODO: Add Resend Button Here */}
                       </span>
                     )}
@@ -136,9 +133,9 @@ export function AuthActionsCard(props: React.HTMLAttributes<HTMLDivElement>) {
             </div>
 
             <div className="grid w-full items-center gap-2">
-              <Label>{tAuth('signOut')}</Label>
+              <Label>{t('auth.signOut')}</Label>
               <Button onClick={handleSignOut} disabled={loading}>
-                <LogOut className="mr-2 h-4 w-4" /> {tAuth('signOut')}
+                <LogOut className="mr-2 h-4 w-4" /> {t('auth.signOut')}
               </Button>
             </div>
           </TabsContent>

@@ -16,7 +16,7 @@ const debug = Debug('auth:get-status');
 type AuthData = { authenticated: false } | { authenticated: true, token: any };
 
 export function GetAuthStatus() {
-  const tStatus = useTranslations('authStatus');
+  const t = useTranslations();
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [authData, setAuthData] = useState<AuthData | null>(null);
   const [error, setError] = useState<any>(null);
@@ -57,8 +57,8 @@ export function GetAuthStatus() {
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="text-lg">{tStatus('get.title')}</CardTitle>
-            <CardDescription>{tStatus('get.description')}</CardDescription>
+            <CardTitle className="text-lg">{t('authStatus.get.title')}</CardTitle>
+            <CardDescription>{t('authStatus.get.description')}</CardDescription>
           </div>
           <Button variant="ghost" size="icon" onClick={fetchData} disabled={status === 'loading'} aria-label="Refresh GET status">
             <RefreshCw className={`h-4 w-4 ${status === 'loading' ? 'animate-spin' : ''}`} />
@@ -67,27 +67,27 @@ export function GetAuthStatus() {
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex items-center space-x-2">
-           <Label>{tStatus('get.requestStatus')}</Label>
+           <Label>{t('authStatus.get.requestStatus')}</Label>
            <Status 
              status={statusLabel} 
-             label={status === 'success' && !authData?.authenticated ? tStatus('get.successUnauth') : undefined}
+             label={status === 'success' && !authData?.authenticated ? t('authStatus.get.successUnauth') : undefined}
              error={error}
            />
         </div>
         {status === 'success' && authData?.authenticated && (
           <div>
-            <Label>{tStatus('get.decodedJwt')}</Label>
+            <Label>{t('authStatus.get.decodedJwt')}</Label>
             <CodeBlock value={JSON.stringify(authData.token, null, 2)} />
           </div>
         )}
          {status === 'error' && (
           <div>
-            <Label className='text-red-500'>{tStatus('get.fetchError')}</Label>
-            <CodeBlock value={error?.message || tStatus('unknownFetchError')} />
+            <Label className='text-red-500'>{t('authStatus.get.fetchError')}</Label>
+            <CodeBlock value={error?.message || t('authStatus.unknownFetchError')} />
           </div>
         )}
          {status === 'success' && !authData?.authenticated && (
-           <p className="text-sm text-muted-foreground">{tStatus('get.notAuthenticated')}</p>
+           <p className="text-sm text-muted-foreground">{t('authStatus.get.notAuthenticated')}</p>
          )}
       </CardContent>
     </Card>

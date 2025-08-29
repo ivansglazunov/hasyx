@@ -14,9 +14,7 @@ import { useJwt } from '../jwt-auth';
 import { API_URL } from 'hasyx/lib/url';
 
 export function CredentialsSignInCard(props: React.HTMLAttributes<HTMLDivElement>) {
-  const tAuth = useTranslations('auth');
-  const tCommon = useTranslations('common');
-  const tForms = useTranslations('forms');
+  const t = useTranslations();
   const jwtClient = useJwt();
   const isJwtMode = !!+process.env.NEXT_PUBLIC_JWT_AUTH!;
   
@@ -91,10 +89,10 @@ export function CredentialsSignInCard(props: React.HTMLAttributes<HTMLDivElement
       <CardHeader>
         <CardTitle className="text-2xl flex items-center gap-2">
           <KeyRound className="h-6 w-6" />
-          {tAuth('signIn')}
+          {t('auth.signIn')}
         </CardTitle>
         <CardDescription>
-          {tAuth('signInToYourAccount')}
+          {t('auth.signInToYourAccount')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -105,7 +103,7 @@ export function CredentialsSignInCard(props: React.HTMLAttributes<HTMLDivElement
               <TabsTrigger value="phone">Phone</TabsTrigger>
             </TabsList>
             <TabsContent value="email" className="mt-4 grid gap-2">
-              <Label htmlFor="email">{tForms('labels.email')}</Label>
+              <Label htmlFor="email">{t('forms.labels.email')}</Label>
               <Input id="email" type="email" placeholder="m@example.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={isCredentialsLoading || !!attemptId} required />
             </TabsContent>
             <TabsContent value="phone" className="mt-4 grid gap-2">
@@ -116,7 +114,7 @@ export function CredentialsSignInCard(props: React.HTMLAttributes<HTMLDivElement
 
           <div className="grid gap-2">
             <div className="flex items-center">
-              <Label htmlFor="password">{tForms('labels.password')}</Label>
+              <Label htmlFor="password">{t('forms.labels.password')}</Label>
             </div>
             <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} disabled={isCredentialsLoading || !!attemptId} required />
           </div>
@@ -142,7 +140,7 @@ export function CredentialsSignInCard(props: React.HTMLAttributes<HTMLDivElement
 
           {!attemptId && (
             <Button type="button" className="w-full" onClick={handleStart} disabled={isCredentialsLoading}>
-              {isCredentialsLoading ? tCommon('loading') : 'Send code'}
+              {isCredentialsLoading ? t('common.loading') : 'Send code'}
             </Button>
           )}
         </div>

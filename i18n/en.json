@@ -65,7 +65,8 @@
     "validation": "Validation",
     "hoverCardDemo": "Hover Card Demo",
     "shockDemo": "Shock Demo",
-    "documentation": "Documentation"
+    "documentation": "Documentation",
+    "columns": "Columns"
   },
   "forms": {
     "labels": {
@@ -154,7 +155,10 @@
       "unknownUser": "Unknown User",
       "id": "ID",
       "created": "Created",
-      "updated": "Updated"
+      "updated": "Updated",
+      "accounts": "Accounts",
+      "rooms": "Rooms",
+      "groups": "Groups"
     },
     "accounts": {
       "loading": "Loading account...",
@@ -164,6 +168,24 @@
       "user": "User",
       "created": "Created",
       "updated": "Updated"
+    },
+    "groups": {
+      "loading": "Loading group...",
+      "failed": "Failed to load group",
+      "delete": "Delete",
+      "resign": "Resign",
+      "claim": "Claim",
+      "members": "Members",
+      "invitations": "Invitations",
+      "makeAdmin": "Admin",
+      "makeMember": "Member",
+      "remove": "Remove",
+      "makeOwner": "Owner",
+      "approve": "Approve",
+      "deny": "Deny",
+      "invite": "Invite",
+      "inviteePlaceholder": "Invitee user id",
+      "noInvitations": "No invitations"
     },
     "default": {
       "entityId": "Entity ID",
@@ -394,6 +416,23 @@
   ,
   "diagnostics": {
     "invites": "Invites"
+  }
+  ,
+  "columns": {
+    "entities": "Entities",
+    "loading": "Loading…",
+    "failed": "Failed to load",
+    "emptyUsers": "No users",
+    "emptyAccounts": "No accounts",
+    "emptyGroups": "No groups",
+    "emptyRooms": "No rooms",
+    "noColumnFor": "No column for {name}",
+    "usersTitle": "Users",
+    "accountsTitle": "Accounts",
+    "groupsTitle": "Groups",
+    "roomsTitle": "Rooms",
+    "room": "Room",
+    "backToList": "Back to list"
   }
   ,
   "jwt": {

@@ -18,7 +18,7 @@ interface User {
 }
 
 export function UsersSubscription() {
-  const tUsers = useTranslations('usersList');
+  const t = useTranslations();
   const { data = [], loading, error } = useSubscription(
     {
       table: 'users',
@@ -36,21 +36,21 @@ export function UsersSubscription() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">{tUsers('subscription.title')}</CardTitle>
-        <CardDescription>{tUsers('subscription.description')}</CardDescription>
+        <CardTitle className="text-lg">{t('usersList.subscription.title')}</CardTitle>
+        <CardDescription>{t('usersList.subscription.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         {loading && (
           <div className="flex items-center justify-center p-4">
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" /> {tUsers('loading')}
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" /> {t('usersList.loading')}
           </div>
         )}
         {error && (
           <Alert variant="destructive">
             <Terminal className="h-4 w-4" />
-            <AlertTitle>{tUsers('subscription.errorTitle')}</AlertTitle>
+            <AlertTitle>{t('usersList.subscription.errorTitle')}</AlertTitle>
             <AlertDescription>
-              {error.message || tUsers('subscription.errorDescription')}
+              {error.message || t('usersList.subscription.errorDescription')}
             </AlertDescription>
           </Alert>
         )}
@@ -59,14 +59,14 @@ export function UsersSubscription() {
             {data?.map((user) => (
               <li key={user.id} className="text-sm p-2 border rounded bg-muted/40">
                 <p><strong>ID:</strong> {user.id}</p>
-                {user.name && <p><strong>{tUsers('name')}:</strong> {user.name}</p>}
-                {user.email && <p><strong>{tUsers('email')}:</strong> {user.email}</p>}
+                {user.name && <p><strong>{t('usersList.name')}:</strong> {user.name}</p>}
+                {user.email && <p><strong>{t('usersList.email')}:</strong> {user.email}</p>}
               </li>
             ))}
           </ul>
         )}
          {(!loading && !error && !data?.length) && (
-           <p className="text-sm text-muted-foreground">{tUsers('empty')}</p>
+           <p className="text-sm text-muted-foreground">{t('usersList.empty')}</p>
          )}
       </CardContent>
     </Card>

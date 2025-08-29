@@ -47,7 +47,7 @@ async function saveConfig(config: ConfigObject): Promise<void> {
 }
 
 export function HasyxConfigForm() {
-  const tConfig = useTranslations('config');
+  const t = useTranslations();
   const [config, setConfig] = useState<ConfigObject | null>(null);
   const [jsonSchema, setJsonSchema] = useState<any | null>(null);
   const [formData, setFormData] = useState<ConfigObject | null>(null);
@@ -220,7 +220,7 @@ export function HasyxConfigForm() {
   }, []);
 
   if (!config || !jsonSchema || !formData) {
-    return <div style={{ padding: 16 }}>{tConfig('loading')}</div>;
+    return <div style={{ padding: 16 }}>{t('config.loading')}</div>;
   }
 
   // Views
@@ -230,7 +230,7 @@ export function HasyxConfigForm() {
         {/* Variant selector entry */}
         <Card className="cursor-pointer" onClick={() => setView({ name: 'variant' })}>
           <CardHeader>
-            <CardTitle>{tConfig('variant')}</CardTitle>
+            <CardTitle>{t('config.variant')}</CardTitle>
             <CardDescription>{getVariantSummary()}</CardDescription>
           </CardHeader>
         </Card>
@@ -240,7 +240,7 @@ export function HasyxConfigForm() {
           <Card key={s.key} className="cursor-pointer" onClick={() => setView({ name: 'keys', sectionKey: s.key })}>
             <CardHeader>
               <CardTitle>{s.key}</CardTitle>
-              <CardDescription>{tConfig('items', { count: getCount(s.key) })}</CardDescription>
+              <CardDescription>{t('config.items', { count: getCount(s.key) })}</CardDescription>
             </CardHeader>
           </Card>
         ))}
@@ -253,8 +253,8 @@ export function HasyxConfigForm() {
     return (
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setView({ name: 'root' })}>{tConfig('back')}</Button>
-          <div className="text-xl font-semibold">{tConfig('selectVariant')}</div>
+          <Button variant="outline" onClick={() => setView({ name: 'root' })}>{t('config.back')}</Button>
+          <div className="text-xl font-semibold">{t('config.selectVariant')}</div>
         </div>
         <div className="max-w-sm">
           <Select value={(formData as any).variant || ''} onValueChange={(value) => {
@@ -262,7 +262,7 @@ export function HasyxConfigForm() {
             updateConfig(next);
           }}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={tConfig('pickVariant')} />
+              <SelectValue placeholder={t('config.pickVariant')} />
             </SelectTrigger>
             <SelectContent>
               {variants.map(v => (
@@ -293,10 +293,10 @@ export function HasyxConfigForm() {
     return (
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setView({ name: 'root' })}>{tConfig('back')}</Button>
+          <Button variant="outline" onClick={() => setView({ name: 'root' })}>{t('config.back')}</Button>
           <div className="text-xl font-semibold">{sectionKey}</div>
           <div className="ml-auto">
-            <Button onClick={handleAdd}>{tConfig('add')}</Button>
+            <Button onClick={handleAdd}>{t('config.add')}</Button>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -305,11 +305,11 @@ export function HasyxConfigForm() {
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle className="text-base">{k}</CardTitle>
-                  <CardDescription>{tConfig('editSection', { section: sectionKey })}</CardDescription>
+                  <CardDescription>{t('config.editSection', { section: sectionKey })}</CardDescription>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setView({ name: 'keyForm', sectionKey, keyName: k })}>{tConfig('open')}</Button>
-                  <Button variant="destructive" onClick={() => handleDelete(k)}>{tConfig('delete')}</Button>
+                  <Button variant="outline" onClick={() => setView({ name: 'keyForm', sectionKey, keyName: k })}>{t('config.open')}</Button>
+                  <Button variant="destructive" onClick={() => handleDelete(k)}>{t('config.delete')}</Button>
                 </div>
               </CardHeader>
             </Card>
@@ -354,7 +354,7 @@ export function HasyxConfigForm() {
     return (
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setView({ name: 'keys', sectionKey })}>{tConfig('back')}</Button>
+          <Button variant="outline" onClick={() => setView({ name: 'keys', sectionKey })}>{t('config.back')}</Button>
           <div className="text-xl font-semibold">{sectionKey} / {keyName}</div>
         </div>
         <Card>
@@ -373,7 +373,7 @@ export function HasyxConfigForm() {
                 next[sectionKey] = { ...(next[sectionKey] || {}), [keyName]: data };
                 updateConfig(next);
               }}
-              onError={(errs) => setError(tConfig('validationErrors', { count: errs.length }))}
+              onError={(errs) => setError(t('config.validationErrors', { count: errs.length }))}
             />
           </CardContent>
         </Card>
@@ -404,8 +404,8 @@ export function HasyxConfigForm() {
       {effectiveView.name === 'variantForm' && renderVariantForm(effectiveView.keyName)}
 
       <div className="text-sm text-muted-foreground min-h-5">
-        {saving && <span>{tConfig('saving')}</span>}
-        {!saving && dirty && !error && <span>{tConfig('changesSaved')}</span>}
+        {saving && <span>{t('config.saving')}</span>}
+        {!saving && dirty && !error && <span>{t('config.changesSaved')}</span>}
       </div>
       {error && <div className="text-red-500 text-sm">{error}</div>}
     </div>

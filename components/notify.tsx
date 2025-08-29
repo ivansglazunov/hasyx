@@ -454,7 +454,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 export function NotificationCard() {
   const hasyx = useHasyx();
   const userId = hasyx?.userId;
-  const tN = useTranslations('notifications');
+  const t = useTranslations('notifications');
   
   const [notificationTitle, setNotificationTitle] = useState('Test Notification');
   const [notificationBody, setNotificationBody] = useState('This is a test notification!');
@@ -623,11 +623,11 @@ export function NotificationCard() {
     return (
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <CardTitle>{tN('loginRequiredTitle')}</CardTitle>
-          <CardDescription>{tN('loginRequiredDescription')}</CardDescription>
+          <CardTitle>{t('loginRequiredTitle')}</CardTitle>
+          <CardDescription>{t('loginRequiredDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>{tN('pleaseLogin')}</p>
+          <p>{t('pleaseLogin')}</p>
         </CardContent>
       </Card>
     );
@@ -638,30 +638,30 @@ export function NotificationCard() {
       <CardHeader>
         <CardTitle className="flex items-center">
           <Bell className="mr-2 h-5 w-5" />
-          {tN('title')}
+          {t('title')}
           {permissions.length > 0 && (
             <Badge variant="outline" className="ml-2 bg-green-100 text-green-700 border-green-300">
-              {tN('providersCount', { count: permissions.length })}
+              {t('providersCount', { count: permissions.length })}
             </Badge>
           )}
         </CardTitle>
         <CardDescription>
-          {tN('description')}
+          {t('description')}
         </CardDescription>
       </CardHeader>
       
       <Tabs defaultValue="send" className="w-full">
         <TabsList className="grid grid-cols-2 mx-6">
-          <TabsTrigger value="send">{tN('tabs.send')}</TabsTrigger>
-          <TabsTrigger value="history">{tN('tabs.historyWithCount', { count: notifications.length })}</TabsTrigger>
+          <TabsTrigger value="send">{t('tabs.send')}</TabsTrigger>
+          <TabsTrigger value="history">{t('tabs.historyWithCount', { count: notifications.length })}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="send" className="space-y-4 p-6 pt-4">
           {permissionsError && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>{tN('permissionsErrorTitle')}</AlertTitle>
-              <AlertDescription>{tN('permissionsErrorDescription', { message: permissionsError.message })}</AlertDescription>
+              <AlertTitle>{t('permissionsErrorTitle')}</AlertTitle>
+              <AlertDescription>{t('permissionsErrorDescription', { message: permissionsError.message })}</AlertDescription>
             </Alert>
           )}
           
@@ -674,23 +674,23 @@ export function NotificationCard() {
           ) : permissions.length === 0 ? (
             <Alert>
               <Info className="h-4 w-4" />
-              <AlertTitle>{tN('noProvidersTitle')}</AlertTitle>
+              <AlertTitle>{t('noProvidersTitle')}</AlertTitle>
               <AlertDescription>
-                {tN('noProvidersDescription')}
+                {t('noProvidersDescription')}
               </AlertDescription>
             </Alert>
           ) : (
             <>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-medium">{tN('availableMethods')}</h4>
+                  <h4 className="font-medium">{t('availableMethods')}</h4>
                   <div className="flex items-center space-x-2">
                     <Checkbox 
                       id="select-all"
                       checked={selectedProviders.length === permissions.length && permissions.length > 0}
                       onCheckedChange={handleSelectAll}
                     />
-                    <Label htmlFor="select-all" className="text-sm">{tN('selectAll')}</Label>
+                    <Label htmlFor="select-all" className="text-sm">{t('selectAll')}</Label>
                   </div>
                 </div>
                 
@@ -710,8 +710,8 @@ export function NotificationCard() {
                           </Label>
                           <p className="text-xs text-muted-foreground">
                             {permission.provider === 'telegram_bot' ? 
-                              `${tN('labels.chatId')}: ${permission.device_token}` :
-                              `${tN('labels.token')}: ${permission.device_token.substring(0, 20)}...`
+                              `${t('labels.chatId')}: ${permission.device_token}` :
+                              `${t('labels.token')}: ${permission.device_token.substring(0, 20)}...`
                             }
                           </p>
                         </div>
@@ -725,15 +725,15 @@ export function NotificationCard() {
               </div>
               
               <div className="space-y-3">
-                <h4 className="font-medium">{tN('content')}</h4>
+                <h4 className="font-medium">{t('content')}</h4>
                 <Input
-                  placeholder={tN('titlePlaceholder')}
+                  placeholder={t('titlePlaceholder')}
                   value={notificationTitle}
                   onChange={(e) => setNotificationTitle(e.target.value)}
                   disabled={isSending}
                 />
                 <Textarea
-                  placeholder={tN('bodyPlaceholder')}
+                  placeholder={t('bodyPlaceholder')}
                   value={notificationBody}
                   onChange={(e) => setNotificationBody(e.target.value)}
                   disabled={isSending}
@@ -746,12 +746,12 @@ export function NotificationCard() {
                 >
                   {isSending ? (
                     <>
-                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> {tN('sending')}
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> {t('sending')}
                     </>
                   ) : (
                     <>
                       <BellRing className="mr-2 h-4 w-4" /> 
-                      {tN('sendToProviders', { count: selectedProviders.length })}
+                      {t('sendToProviders', { count: selectedProviders.length })}
                     </>
                   )}
                 </Button>
@@ -763,7 +763,7 @@ export function NotificationCard() {
         <TabsContent value="history" className="space-y-4 p-6 pt-4">
           <div className="flex items-center space-x-2">
             <History className="h-4 w-4" />
-            <h4 className="font-medium">{tN('recent')}</h4>
+            <h4 className="font-medium">{t('recent')}</h4>
           </div>
           
           {notificationsLoading ? (
@@ -775,9 +775,9 @@ export function NotificationCard() {
           ) : notifications.length === 0 ? (
             <Alert>
               <Info className="h-4 w-4" />
-              <AlertTitle>{tN('historyEmptyTitle')}</AlertTitle>
+              <AlertTitle>{t('historyEmptyTitle')}</AlertTitle>
               <AlertDescription>
-                {tN('historyEmptyDescription')}
+                {t('historyEmptyDescription')}
               </AlertDescription>
             </Alert>
           ) : (

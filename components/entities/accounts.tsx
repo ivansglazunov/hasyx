@@ -5,6 +5,7 @@ import { useQuery } from 'hasyx';
 import { Button as UIButton } from 'hasyx/components/ui/button';
 import { Card as UICard, CardContent, CardHeader, CardTitle } from 'hasyx/components/ui/card';
 import { Badge } from 'hasyx/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from 'hasyx/components/ui/avatar';
 import { X } from 'lucide-react';
 import { CytoNode as CytoNodeComponent } from 'hasyx/lib/cyto';
 import { cn } from 'hasyx/lib/utils';
@@ -76,13 +77,13 @@ export function Card({ data, onClose, ...props }: {
   );
   
   const accountData = providedData || fetchedAccount;
-  const tAccounts = useTranslations('entities.accounts');
+  const t = useTranslations('entities.accounts');
   
   if (loading) {
     return (
       <UICard className="w-80" {...props}>
         <CardContent className="p-4">
-          <div className="text-sm text-muted-foreground">{tAccounts('loading')}</div>
+          <div className="text-sm text-muted-foreground">{t('loading')}</div>
         </CardContent>
       </UICard>
     );
@@ -92,7 +93,7 @@ export function Card({ data, onClose, ...props }: {
     return (
       <UICard className="w-80" {...props}>
         <CardContent className="p-4">
-          <div className="text-sm text-destructive">{tAccounts('failed')}</div>
+          <div className="text-sm text-destructive">{t('failed')}</div>
         </CardContent>
       </UICard>
     );
@@ -118,10 +119,10 @@ export function Card({ data, onClose, ...props }: {
             </div>
             <div>
               <CardTitle className="text-base capitalize">
-                {accountData.provider || tAccounts('unknownProvider')}
+                {accountData.provider || t('unknownProvider')}
               </CardTitle>
               {accountData.provider_id && (
-                <p className="text-sm text-muted-foreground">{tAccounts('id')}: {accountData.provider_id}</p>
+                <p className="text-sm text-muted-foreground">{t('id')}: {accountData.provider_id}</p>
               )}
             </div>
           </div>
@@ -140,19 +141,19 @@ export function Card({ data, onClose, ...props }: {
       <CardContent className="pt-0">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs">{tAccounts('id')}: {accountData.id}</Badge>
+            <Badge variant="outline" className="text-xs">{t('id')}: {accountData.id}</Badge>
             {accountData.user_id && (
-              <Badge variant="secondary" className="text-xs">{tAccounts('user')}: {accountData.user_id}</Badge>
+              <Badge variant="secondary" className="text-xs">{t('user')}: {accountData.user_id}</Badge>
             )}
           </div>
           {accountData.created_at && (
             <div className="text-xs text-muted-foreground">
-              {tAccounts('created')}: {new Date(accountData.created_at).toLocaleDateString()}
+              {t('created')}: {new Date(accountData.created_at).toLocaleDateString()}
             </div>
           )}
           {accountData.updated_at && (
             <div className="text-xs text-muted-foreground">
-              {tAccounts('updated')}: {new Date(accountData.updated_at).toLocaleDateString()}
+              {t('updated')}: {new Date(accountData.updated_at).toLocaleDateString()}
             </div>
           )}
         </div>
@@ -175,3 +176,36 @@ export function CytoNode({ data, ...props }: {
     classes: cn('entity', props.classes)
   }} />;
 }
+
+export const Column = ({ title = 'Account', id, setNext }: { title?: string; id?: string; setNext?: (next: { type: 'entity' | 'list'; id?: string; name?: string; title?: string; query?: any }) => void }) => {
+  const { data: account, loading, error } = useQuery(
+    { table: 'accounts', pk_columns: { id }, returning: ['id', 'provider', 'user_id'] },
+    { skip: !id, role: 'user' }
+  );
+  const { data: user } = useQuery(
+    { table: 'users', pk_columns: { id: account?.user_id }, returning: ['id','name','image'] },
+    { skip: !account?.user_id, role: 'user' }
+  );
+  const t = useTranslations('entities.accounts');
+  if (!id) return <div className="p-3 text-sm text-muted-foreground">No account selected</div>;
+  if (loading) return <div className="p-3 text-sm text-muted-foreground">{t('loading')}</div>;
+  if (error || !account) return <div className="p-3 text-sm text-destructive">{t('failed')}</div>;
+  const providerTitle = (account.provider || 'Account').toString();
+  const username = user?.name || user?.id || '';
+  return (
+    <div className="h-full flex flex-col">
+      <div className="p-3 font-medium flex items-center gap-2">
+        <Avatar className="w-6 h-6"><AvatarImage src={user?.image} /><AvatarFallback>{(username || providerTitle).toString().slice(0,2).toUpperCase()}</AvatarFallback></Avatar>
+        <span className="capitalize">{providerTitle}</span>
+      </div>
+      <div className="p-2 space-y-1">
+        {account.user_id && (
+          <button
+            className="w-full text-left px-2 py-2 rounded hover:bg-muted"
+            onClick={() => setNext && setNext({ type: 'entity', name: 'users', title: t('user'), id: account.user_id })}
+          >{t('user')}</button>
+        )}
+      </div>
+    </div>
+  );
+};

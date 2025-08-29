@@ -16,8 +16,7 @@ export function JwtDebugCard() {
   const hasyx = useHasyx();
   const { data: session } = useSession();
   const jwtClient = useJwt();
-  const tJwt = useTranslations('jwt');
-  const tCommon = useTranslations('common');
+  const t = useTranslations();
   const [jwtInput, setJwtInput] = useState('');
   const [currentJwt, setCurrentJwt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +45,7 @@ export function JwtDebugCard() {
   // Handle JWT login
   const handleJwtLogin = () => {
     if (!jwtInput.trim()) {
-      toast.error(tJwt('enterToken'));
+      toast.error(t('jwt.enterToken'));
       return;
     }
 
@@ -54,17 +53,17 @@ export function JwtDebugCard() {
       // Save JWT to localStorage
       localStorage.setItem('nextauth_jwt', jwtInput.trim());
       setCurrentJwt(jwtInput.trim());
-      toast.success(tJwt('tokenSaved'));
+      toast.success(t('jwt.tokenSaved'));
       setJwtInput('');
     } catch (error) {
-      toast.error(tJwt('errorSaving'));
+      toast.error(t('jwt.errorSaving'));
     }
   };
 
   // Handle JWT copy
   const handleCopyJwt = async () => {
     if (!session) {
-      toast.error(tJwt('needAuth'));
+      toast.error(t('jwt.needAuth'));
       return;
     }
 
@@ -74,12 +73,12 @@ export function JwtDebugCard() {
       
       if (token) {
         await navigator.clipboard.writeText(token);
-        toast.success(tJwt('copied'));
+        toast.success(t('jwt.copied'));
       } else {
-        toast.error(tJwt('failedGet'));
+        toast.error(t('jwt.failedGet'));
       }
     } catch (error) {
-      toast.error(tJwt('errorGetting'));
+      toast.error(t('jwt.errorGetting'));
     } finally {
       setCopyLoading(false);
     }
@@ -89,31 +88,31 @@ export function JwtDebugCard() {
   const handleClearJwt = () => {
     localStorage.removeItem('nextauth_jwt');
     setCurrentJwt(null);
-    toast.success(tJwt('removed'));
+    toast.success(t('jwt.removed'));
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{tJwt('title')}</CardTitle>
-        <CardDescription>{tJwt('description')}</CardDescription>
+        <CardTitle>{t('jwt.title')}</CardTitle>
+        <CardDescription>{t('jwt.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="login">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="login">{tJwt('tabs.login')}</TabsTrigger>
-            <TabsTrigger value="generate">{tJwt('tabs.generate')}</TabsTrigger>
-            <TabsTrigger value="current">{tJwt('tabs.current')}</TabsTrigger>
+            <TabsTrigger value="login">{t('jwt.tabs.login')}</TabsTrigger>
+            <TabsTrigger value="generate">{t('jwt.tabs.generate')}</TabsTrigger>
+            <TabsTrigger value="current">{t('jwt.tabs.current')}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="login" className="mt-4">
             <div className="space-y-4">
               <div>
-                <Label htmlFor="jwt-input">{tJwt('jwtToken')}</Label>
+                <Label htmlFor="jwt-input">{t('jwt.jwtToken')}</Label>
                 <Input
                   id="jwt-input"
                   type="text"
-                  placeholder={tJwt('placeholder')}
+                  placeholder={t('jwt.placeholder')}
                   value={jwtInput}
                   onChange={(e) => setJwtInput(e.target.value)}
                   className="mt-2"
@@ -124,10 +123,10 @@ export function JwtDebugCard() {
                 disabled={isLoading || !jwtInput.trim()}
                 className="w-full"
               >
-                {isLoading ? tJwt('loggingIn') : tJwt('loginWithJwt')}
+                {isLoading ? t('jwt.loggingIn') : t('jwt.loginWithJwt')}
               </Button>
               <p className="text-sm text-muted-foreground">
-                {tJwt('enterJwtToLogin')}
+                {t('jwt.enterJwtToLogin')}
               </p>
             </div>
           </TabsContent>
@@ -135,13 +134,13 @@ export function JwtDebugCard() {
           <TabsContent value="generate" className="mt-4">
             <div className="space-y-4">
               <div>
-                <p className="text-sm font-medium mb-2">{tJwt('authStatus')}</p>
-                <CodeBlock value={session ? tJwt('authenticated') : tJwt('notAuthenticated')} />
+                <p className="text-sm font-medium mb-2">{t('jwt.authStatus')}</p>
+                <CodeBlock value={session ? t('jwt.authenticated') : t('jwt.notAuthenticated')} />
               </div>
               {session && (
                 <div>
-                  <p className="text-sm font-medium mb-2">{tJwt('user')}</p>
-                  <CodeBlock value={session.user?.email || tJwt('notSpecified')} />
+                  <p className="text-sm font-medium mb-2">{t('jwt.user')}</p>
+                  <CodeBlock value={session.user?.email || t('jwt.notSpecified')} />
                 </div>
               )}
               <Button 
@@ -149,10 +148,10 @@ export function JwtDebugCard() {
                 disabled={copyLoading || !session}
                 className="w-full"
               >
-                {copyLoading ? tJwt('generating') : tJwt('copyJwt')}
+                {copyLoading ? t('jwt.generating') : t('jwt.copyJwt')}
               </Button>
               <p className="text-sm text-muted-foreground">
-                {tJwt('copyDescription')}
+                {t('jwt.copyDescription')}
               </p>
             </div>
           </TabsContent>
@@ -160,8 +159,8 @@ export function JwtDebugCard() {
           <TabsContent value="current" className="mt-4">
             <div className="space-y-4">
               <div>
-                <p className="text-sm font-medium mb-2">{tJwt('jwtLocalStorage')}</p>
-                <CodeBlock value={currentJwt || tJwt('notFound')} />
+                <p className="text-sm font-medium mb-2">{t('jwt.jwtLocalStorage')}</p>
+                <CodeBlock value={currentJwt || t('jwt.notFound')} />
               </div>
               {currentJwt && (
                 <Button 
@@ -169,11 +168,11 @@ export function JwtDebugCard() {
                   variant="destructive"
                   className="w-full"
                 >
-                  {tJwt('clearJwt')}
+                  {t('jwt.clearJwt')}
                 </Button>
               )}
               <p className="text-sm text-muted-foreground">
-                {tJwt('updatedAutomatically')}
+                {t('jwt.updatedAutomatically')}
               </p>
             </div>
           </TabsContent>

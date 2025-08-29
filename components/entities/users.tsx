@@ -73,13 +73,13 @@ export function Card({ data, onClose, ...props }: {
   
   const userData = providedData || fetchedUser;
   
-  const tUsers = useTranslations('entities.users');
+  const t = useTranslations('entities.users');
 
   if (loading) {
     return (
       <UICard className="w-80" {...props}>
         <CardContent className="p-4">
-          <div className="text-sm text-muted-foreground">{tUsers('loading')}</div>
+          <div className="text-sm text-muted-foreground">{t('loading')}</div>
         </CardContent>
       </UICard>
     );
@@ -89,7 +89,7 @@ export function Card({ data, onClose, ...props }: {
     return (
       <UICard className="w-80" {...props}>
         <CardContent className="p-4">
-          <div className="text-sm text-destructive">{tUsers('failed')}</div>
+          <div className="text-sm text-destructive">{t('failed')}</div>
         </CardContent>
       </UICard>
     );
@@ -110,7 +110,7 @@ export function Card({ data, onClose, ...props }: {
               </AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle className="text-base">{userData.name || tUsers('unknownUser')}</CardTitle>
+              <CardTitle className="text-base">{userData.name || t('unknownUser')}</CardTitle>
               {userData.email && (
                 <p className="text-sm text-muted-foreground">{userData.email}</p>
               )}
@@ -131,16 +131,16 @@ export function Card({ data, onClose, ...props }: {
       <CardContent className="pt-0">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs">{tUsers('id')}: {userData.id}</Badge>
+            <Badge variant="outline" className="text-xs">{t('id')}: {userData.id}</Badge>
           </div>
           {userData.created_at && (
             <div className="text-xs text-muted-foreground">
-              {tUsers('created')}: {new Date(userData.created_at).toLocaleDateString()}
+              {t('created')}: {new Date(userData.created_at).toLocaleDateString()}
             </div>
           )}
           {userData.updated_at && (
             <div className="text-xs text-muted-foreground">
-              {tUsers('updated')}: {new Date(userData.updated_at).toLocaleDateString()}
+              {t('updated')}: {new Date(userData.updated_at).toLocaleDateString()}
             </div>
           )}
         </div>
@@ -171,3 +171,46 @@ export function CytoNode({ data, ...props }: {
     children={opened ? <Card data={data} onClose={() => setOpened(false)} /> : null}
   />;
 }
+
+export const Column = ({ title = 'User', id, setNext }: { title?: string; id?: string; setNext?: (next: { type: 'entity' | 'list'; id?: string; name?: string; title?: string; query?: any }) => void }) => {
+  const { data: user, loading, error } = useQuery(
+    { table: 'users', pk_columns: { id }, returning: ['id', 'name', 'image'] },
+    { skip: !id, role: 'user' }
+  );
+  const t2 = useTranslations('entities.users');
+  if (!id) return <div className="p-3 text-sm text-muted-foreground">No user selected</div>;
+  if (loading) return <div className="p-3 text-sm text-muted-foreground">{t2('loading')}</div>;
+  if (error || !user) return <div className="p-3 text-sm text-destructive">{t2('failed')}</div>;
+  const displayName = user?.name || `User ${user?.id}`;
+  return (
+    <div className="h-full flex flex-col">
+      <div className="p-3 font-medium flex items-center gap-2">
+        <Avatar className="w-6 h-6"><AvatarImage src={user?.image} /><AvatarFallback>{displayName.slice(0,2).toUpperCase()}</AvatarFallback></Avatar>
+        <span>{displayName}</span>
+      </div>
+      <div className="p-2 space-y-1">
+        <button
+          className="w-full text-left px-2 py-2 rounded hover:bg-muted"
+          onClick={() => setNext && setNext({
+            type: 'list', name: 'accounts', title: t2('accounts'),
+            query: { table: 'accounts', where: { user_id: { _eq: id } }, returning: ['id','provider','user_id'], limit: 50 }
+          })}
+        >{t2('accounts')}</button>
+        <button
+          className="w-full text-left px-2 py-2 rounded hover:bg-muted"
+          onClick={() => setNext && setNext({
+            type: 'list', name: 'rooms', title: t2('rooms'),
+            query: { table: 'rooms', where: { _or: [ { user_id: { _eq: id } }, { replies: { user_id: { _eq: id } } } ] }, returning: ['id','title','updated_at'], limit: 50, order_by: { updated_at: 'desc' as const } }
+          })}
+        >{t2('rooms')}</button>
+        <button
+          className="w-full text-left px-2 py-2 rounded hover:bg-muted"
+          onClick={() => setNext && setNext({
+            type: 'list', name: 'groups', title: t2('groups'),
+            query: { table: 'groups', where: { memberships: { user_id: { _eq: id } } }, returning: ['id','title','visibility','join_policy','updated_at'], limit: 50 }
+          })}
+        >{t2('groups')}</button>
+      </div>
+    </div>
+  );
+};

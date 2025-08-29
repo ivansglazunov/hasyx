@@ -65,7 +65,8 @@
     "validation": "Валидация",
     "hoverCardDemo": "Демо Hover Card",
     "shockDemo": "Демо Shock",
-    "documentation": "Документация"
+    "documentation": "Документация",
+    "columns": "Колонки"
   },
   "forms": {
     "labels": {
@@ -154,7 +155,10 @@
       "unknownUser": "Неизвестный пользователь",
       "id": "ID",
       "created": "Создан",
-      "updated": "Обновлён"
+      "updated": "Обновлён",
+      "accounts": "Аккаунты",
+      "rooms": "Комнаты",
+      "groups": "Группы"
     },
     "accounts": {
       "loading": "Загрузка аккаунта...",
@@ -164,6 +168,24 @@
       "user": "Пользователь",
       "created": "Создан",
       "updated": "Обновлён"
+    },
+    "groups": {
+      "loading": "Загрузка группы...",
+      "failed": "Не удалось загрузить группу",
+      "delete": "Удалить",
+      "resign": "Сложить владение",
+      "claim": "Забрать владение",
+      "members": "Участники",
+      "invitations": "Приглашения",
+      "makeAdmin": "Админ",
+      "makeMember": "Участник",
+      "remove": "Удалить",
+      "makeOwner": "Назначить владельцем",
+      "approve": "Одобрить",
+      "deny": "Отклонить",
+      "invite": "Пригласить",
+      "inviteePlaceholder": "ID пользователя для приглашения",
+      "noInvitations": "Нет приглашений"
     },
     "default": {
       "entityId": "ID сущности",
@@ -396,6 +418,23 @@
     "invites": "Инвайты"
   }
   ,
+  "columns": {
+    "entities": "Сущности",
+    "loading": "Загрузка…",
+    "failed": "Не удалось загрузить",
+    "emptyUsers": "Нет пользователей",
+    "emptyAccounts": "Нет аккаунтов",
+    "emptyGroups": "Нет групп",
+    "emptyRooms": "Нет комнат",
+    "noColumnFor": "Нет колонки для {name}",
+    "usersTitle": "Пользователи",
+    "accountsTitle": "Аккаунты",
+    "groupsTitle": "Группы",
+    "roomsTitle": "Комнаты",
+    "room": "Комната",
+    "backToList": "Назад к списку"
+  }
+  ,
   "jwt": {
     "title": "JWT Отладка",
     "description": "Инструменты для работы с JWT аутентификацией",
@@ -482,17 +521,7 @@
     "notAuthenticated": "Не авторизован"
   }
   ,
-  "entities": {
-    "default": {
-      "entityId": "ID сущности",
-      "noAdditional": "Дополнительные данные отсутствуют",
-      "schema": "Схема",
-      "created": "Создан",
-      "updated": "Обновлён",
-      "data": "Данные"
-    }
-  }
-  ,
+  
   "payments": {
     "title": "Платежи",
     "tabs": {

@@ -7,10 +7,9 @@ import { HoverCardClient } from './client';
 import { useTranslations } from 'hasyx';
 
 export default function HoverCardPage() {
-  const tNav = useTranslations('nav');
-  const tPages = useTranslations('pages.hoverCard');
+  const t = useTranslations();
   return (
-    <SidebarLayout sidebarData={sidebar} breadcrumb={[{ title: pckg.name, link: '/' }, { title: tPages('title') }] }>
+    <SidebarLayout sidebarData={sidebar} breadcrumb={[{ title: pckg.name, link: '/' }, { title: t('pages.hoverCard.title') }] }>
       <HoverCardClient />
     </SidebarLayout>
   );

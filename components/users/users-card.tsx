@@ -12,19 +12,19 @@ const debug = Debug('users-card');
 
 export function UsersCard(props: React.HTMLAttributes<HTMLDivElement>) {
   debug('Rendering UsersCard with tabs');
-  const tUsers = useTranslations('usersList');
+  const t = useTranslations();
 
   return (
     <Card {...props}>
       <CardHeader>
-        <CardTitle>{tUsers('title')}</CardTitle>
-        <CardDescription>{tUsers('description')}</CardDescription>
+        <CardTitle>{t('usersList.title')}</CardTitle>
+        <CardDescription>{t('usersList.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="query"> {/* Default to query tab */} 
           <TabsList className="grid w-full grid-cols-2"> {/* Two tabs */} 
-            <TabsTrigger value="query">{tUsers('tabs.query')}</TabsTrigger>
-            <TabsTrigger value="subscription">{tUsers('tabs.subscription')}</TabsTrigger>
+            <TabsTrigger value="query">{t('usersList.tabs.query')}</TabsTrigger>
+            <TabsTrigger value="subscription">{t('usersList.tabs.subscription')}</TabsTrigger>
           </TabsList>
           <TabsContent value="query" className="mt-4">
             {/* Render UsersQuery only when tab is active */}

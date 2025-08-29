@@ -20,7 +20,7 @@ export default function FilesZone({
   onRemove,
   renderRemoveButton
 }: FilesZoneProps) {
-  const tFiles = useTranslations('files');
+  const t = useTranslations();
   const { uploadingFiles, removeFile } = useFilesStore();
 
   const displayFiles = showCompleted 
@@ -61,13 +61,13 @@ export default function FilesZone({
   const getStatusText = (status: UploadingFile['status']) => {
     switch (status) {
       case 'uploading':
-        return tFiles('status.uploading');
+        return t('files.status.uploading');
       case 'completed':
-        return tFiles('status.completed');
+        return t('files.status.completed');
       case 'error':
-        return tFiles('status.error');
+        return t('files.status.error');
       default:
-        return tFiles('status.unknown');
+        return t('files.status.unknown');
     }
   };
 
@@ -140,7 +140,7 @@ export default function FilesZone({
               <button
                 onClick={e => { e.stopPropagation(); (onRemove ?? removeFile)(file.id); }}
                 className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                title={tFiles('removeFile')}
+                title={t('files.removeFile')}
                 type="button"
               >
                 ✕

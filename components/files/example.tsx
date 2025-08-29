@@ -7,19 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle } from 'hasyx/components/ui/ca
 import { useTranslations } from 'hasyx';
 
 export default function FilesExample() {
-  const tFiles = useTranslations('files');
+  const t = useTranslations();
   const { handleFilesSelected, handleUploadComplete, handleUploadError } = useFilesUpload();
 
   return (
     <div className="space-y-6 p-6">
       <Card>
         <CardHeader>
-          <CardTitle>{tFiles('example.title')}</CardTitle>
+          <CardTitle>{t('files.example.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Простая кнопка с dropzone */}
           <div>
-            <h3 className="text-lg font-medium mb-2">{tFiles('example.simpleButton')}</h3>
+            <h3 className="text-lg font-medium mb-2">{t('files.example.simpleButton')}</h3>
             <Files
               onFilesSelected={handleFilesSelected}
               onUploadComplete={handleUploadComplete}
@@ -28,14 +28,14 @@ export default function FilesExample() {
               className="inline-block"
             >
               <Button>
-                {tFiles('example.uploadFiles')}
+                {t('files.example.uploadFiles')}
               </Button>
             </Files>
           </div>
 
           {/* Кастомная зона загрузки */}
           <div>
-            <h3 className="text-lg font-medium mb-2">{tFiles('example.customDropZone')}</h3>
+            <h3 className="text-lg font-medium mb-2">{t('files.example.customDropZone')}</h3>
             <Files
               onFilesSelected={handleFilesSelected}
               onUploadComplete={handleUploadComplete}
@@ -46,9 +46,9 @@ export default function FilesExample() {
             >
               <div className="space-y-2">
                 <div className="text-4xl">📁</div>
-                <div className="text-lg font-medium">{tFiles('example.dropHere')}</div>
+                <div className="text-lg font-medium">{t('files.example.dropHere')}</div>
                 <div className="text-sm text-muted-foreground">
-                  {tFiles('example.orClick')}
+                  {t('files.example.orClick')}
                 </div>
               </div>
             </Files>
@@ -56,7 +56,7 @@ export default function FilesExample() {
 
           {/* Зона отображения загружаемых файлов */}
           <div>
-            <h3 className="text-lg font-medium mb-2">{tFiles('example.uploadingFiles')}</h3>
+            <h3 className="text-lg font-medium mb-2">{t('files.example.uploadingFiles')}</h3>
             <FilesZone />
           </div>
         </CardContent>

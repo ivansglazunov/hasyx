@@ -42,7 +42,7 @@ interface Reply {
 
 export default function Room({ room }: RoomProps) {
   const hasyx = useHasyx();
-  const tMsg = useTranslations('messaging');
+  const t = useTranslations('messaging');
   const [newMessage, setNewMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
 
@@ -122,13 +122,13 @@ export default function Room({ room }: RoomProps) {
           <div>
             <h1 className="text-xl font-bold">{room.title}</h1>
             <p className="text-sm text-muted-foreground">
-              {tMsg('createdAt', { date: new Date(room.created_at).toLocaleDateString() })}
+              {t('createdAt', { date: new Date(room.created_at).toLocaleDateString() })}
             </p>
           </div>
           <div className="flex items-center space-x-2">
             <Badge variant="secondary">
               <MessageSquare className="w-3 h-3 mr-1" />
-              {tMsg('messagesCount', { count: messages.length })}
+              {t('messagesCount', { count: messages.length })}
             </Badge>
           </div>
         </div>
@@ -140,13 +140,13 @@ export default function Room({ room }: RoomProps) {
         <ScrollArea className="flex-1 p-4">
           {messagesLoading ? (
             <div className="text-center py-8 text-muted-foreground">
-              {tMsg('loadingMessages')}
+              {t('loadingMessages')}
             </div>
           ) : messages.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>{tMsg('noMessages')}</p>
-              <p className="text-sm">{tMsg('startConversation')}</p>
+              <p>{t('noMessages')}</p>
+              <p className="text-sm">{t('startConversation')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -180,7 +180,7 @@ export default function Room({ room }: RoomProps) {
         <div className="p-4 border-t bg-background">
           <div className="flex space-x-2">
             <Textarea
-              placeholder={tMsg('enterMessage')}
+              placeholder={t('enterMessage')}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}

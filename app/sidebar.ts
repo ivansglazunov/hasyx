@@ -86,6 +86,10 @@ export const sidebar: SidebarData = {
           title: `💢 ${t('shockDemo')}`,
           url: "/hasyx/shock-hook",
         },
+        {
+          title: `🟦 ${t('columns')}`,
+          url: "/hasyx/columns",
+        },
       ],
     },
     // Add documentation section with collapse functionality

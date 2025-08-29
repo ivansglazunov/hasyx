@@ -36,7 +36,7 @@ export function Button({ data, ...props }: {
   data: DefaultData;
   [key: string]: any;
 }) {
-  const tEntities = useTranslations('entities.default');
+  const t = useTranslations('entities.default');
   const entityId = typeof data === 'string' ? data : data?.id;
   const entityData = typeof data === 'object' ? data : null;
   
@@ -65,7 +65,7 @@ export function Card({ data, onClose, ...props }: {
   onClose?: () => void;
   [key: string]: any;
 }) {
-  const tEntities = useTranslations('entities.default');
+  const t = useTranslations('entities.default');
   const entityId = typeof data === 'string' ? data : data?.id;
   const entityData = typeof data === 'object' ? data : null;
   
@@ -74,9 +74,9 @@ export function Card({ data, onClose, ...props }: {
       <UICard className="w-80" {...props}>
         <CardContent className="p-4">
           <div className="text-sm text-muted-foreground">
-            {tEntities('entityId')}: {data}
+            {t('entityId')}: {data}
             <br />
-            <span className="text-xs">{tEntities('noAdditional')}</span>
+            <span className="text-xs">{t('noAdditional')}</span>
           </div>
         </CardContent>
       </UICard>
@@ -102,7 +102,7 @@ export function Card({ data, onClose, ...props }: {
             <div>
               <CardTitle className="text-base capitalize">{table}</CardTitle>
               {schema !== 'public' && (
-                <p className="text-sm text-muted-foreground">{tEntities('schema')}: {schema}</p>
+                <p className="text-sm text-muted-foreground">{t('schema')}: {schema}</p>
               )}
             </div>
           </div>
@@ -133,19 +133,19 @@ export function Card({ data, onClose, ...props }: {
           {/* Timestamps */}
           {entityData?.created_at && (
             <div className="text-xs text-muted-foreground">
-              {tEntities('created')}: {new Date(entityData.created_at).toLocaleDateString()}
+              {t('created')}: {new Date(entityData.created_at).toLocaleDateString()}
             </div>
           )}
           {entityData?.updated_at && (
             <div className="text-xs text-muted-foreground">
-              {tEntities('updated')}: {new Date(entityData.updated_at).toLocaleDateString()}
+              {t('updated')}: {new Date(entityData.updated_at).toLocaleDateString()}
             </div>
           )}
           
           {/* User data as JSON if present */}
           {Object.keys(userData).length > 0 && (
             <div className="mt-3">
-              <div className="text-xs font-medium mb-1">{tEntities('data')}:</div>
+              <div className="text-xs font-medium mb-1">{t('data')}:</div>
               <div className="bg-muted rounded p-2 text-xs font-mono overflow-auto max-h-32">
                 <pre>{JSON.stringify(userData, null, 2)}</pre>
               </div>

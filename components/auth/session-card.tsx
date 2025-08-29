@@ -16,22 +16,22 @@ interface SessionCardProps {
 
 function HasyxSessionTab() {
   const hasyx = useHasyx();
-  const tSess = useTranslations('session');
+  const t = useTranslations();
   
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">{tSess('hasyx.title')}</CardTitle>
-        <CardDescription>{tSess('hasyx.description')}</CardDescription>
+        <CardTitle className="text-lg">{t('session.hasyx.title')}</CardTitle>
+        <CardDescription>{t('session.hasyx.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div>
-            <p className="text-sm font-medium mb-2">{tSess('hasyx.userId')}</p>
+            <p className="text-sm font-medium mb-2">{t('session.hasyx.userId')}</p>
             <CodeBlock value={hasyx.userId || 'null'} />
           </div>
           <div>
-            <p className="text-sm font-medium mb-2">{tSess('hasyx.user')}</p>
+            <p className="text-sm font-medium mb-2">{t('session.hasyx.user')}</p>
             <CodeBlock value={JSON.stringify(hasyx.user, null, 2)} />
           </div>
         </div>
@@ -41,32 +41,32 @@ function HasyxSessionTab() {
 }
 
 export function SessionCard({ serverSession }: SessionCardProps & React.HTMLAttributes<HTMLDivElement>) {
-  const tSess = useTranslations('session');
+  const t = useTranslations();
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{tSess('title')}</CardTitle>
-        <CardDescription>{tSess('description')}</CardDescription>
+        <CardTitle>{t('session.title')}</CardTitle>
+        <CardDescription>{t('session.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="ssr">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="ssr">{tSess('tabs.ssr')}</TabsTrigger>
-            <TabsTrigger value="get">{tSess('tabs.get')}</TabsTrigger>
-            <TabsTrigger value="socket">{tSess('tabs.socket')}</TabsTrigger>
-            <TabsTrigger value="hasyx">{tSess('tabs.hasyx')}</TabsTrigger>
+            <TabsTrigger value="ssr">{t('session.tabs.ssr')}</TabsTrigger>
+            <TabsTrigger value="get">{t('session.tabs.get')}</TabsTrigger>
+            <TabsTrigger value="socket">{t('session.tabs.socket')}</TabsTrigger>
+            <TabsTrigger value="hasyx">{t('session.tabs.hasyx')}</TabsTrigger>
           </TabsList>
           <TabsContent value="ssr" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">{tSess('ssr.title')}</CardTitle>
-                <CardDescription>{tSess('ssr.description')}</CardDescription>
+                <CardTitle className="text-lg">{t('session.ssr.title')}</CardTitle>
+                <CardDescription>{t('session.ssr.description')}</CardDescription>
               </CardHeader>
               <CardContent>
                 {serverSession ? (
                   <CodeBlock value={JSON.stringify(serverSession, null, 2)} />
                 ) : (
-                  <p>{tSess('ssr.empty')}</p>
+                  <p>{t('session.ssr.empty')}</p>
                 )}
               </CardContent>
             </Card>

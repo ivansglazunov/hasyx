@@ -22,9 +22,9 @@ interface User {
 }
 
 export function UsersQuery() {
-  const tUsers = useTranslations('usersList');
+  const t = useTranslations();
   const tf = (key: string, fallback: string) => {
-    try { return tUsers(key as any); } catch { return fallback; }
+    try { return t(key as any); } catch { return fallback; }
   };
   const hasyx = useHasyx();
   const [search, setSearch] = useState('');
@@ -49,27 +49,27 @@ export function UsersQuery() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">{tUsers('query.title')}</CardTitle>
-        <CardDescription>{tUsers('query.description')}</CardDescription>
+        <CardTitle className="text-lg">{t('usersList.query.title')}</CardTitle>
+        <CardDescription>{t('usersList.query.description')}</CardDescription>
       </CardHeader>
       <CardContent>
         {loading && (
           <div className="flex items-center justify-center p-4">
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" /> {tUsers('loading')}
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" /> {t('usersList.loading')}
           </div>
         )}
         {error && (
           <Alert variant="destructive">
             <Terminal className="h-4 w-4" />
-            <AlertTitle>{tUsers('query.errorTitle')}</AlertTitle>
+            <AlertTitle>{t('usersList.query.errorTitle')}</AlertTitle>
             <AlertDescription>
-              {error.message || tUsers('query.errorDescription')}
+              {error.message || t('usersList.query.errorDescription')}
             </AlertDescription>
           </Alert>
         )}
         <div className="flex items-center gap-2 mb-3">
           <Input
-            placeholder={tUsers('searchByName')}
+            placeholder={t('usersList.searchByName')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -107,7 +107,7 @@ export function UsersQuery() {
           </ul>
         )}
          {(!loading && !error && !data?.length) && (
-           <p className="text-sm text-muted-foreground">{tUsers('empty')}</p>
+           <p className="text-sm text-muted-foreground">{t('usersList.empty')}</p>
          )}
       </CardContent>
     </Card>

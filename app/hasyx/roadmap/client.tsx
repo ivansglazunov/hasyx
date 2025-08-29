@@ -379,9 +379,7 @@ function CreateIssueDialog({
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const hasyx = useHasyx();
-  const tIssues = useTranslations('issues');
-  const tForms = useTranslations('forms');
-  const tSuccess = useTranslations('success');
+  const t = useTranslations();
 
   // Get all issues to extract unique labels
   const { data: allIssues = [] } = useQuery({
@@ -417,7 +415,7 @@ function CreateIssueDialog({
 
   const handleCreateIssue = async () => {
     if (!title.trim()) {
-      toast.error(tIssues('titleRequired'));
+      toast.error(t('titleRequired'));
       return;
     }
 
@@ -476,7 +474,7 @@ function CreateIssueDialog({
       });
 
       debug('✅ Issue inserted into database:', result);
-      toast.success(tSuccess('issueCreated'));
+      toast.success(t('success.issueCreated'));
       
       // Reset form
       setTitle('');
@@ -491,7 +489,7 @@ function CreateIssueDialog({
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       debug('❌ Failed to create GitHub issue:', error);
       console.error('Create issue error:', error);
-      toast.error(tIssues('failedToCreate', { message: errorMessage }));
+      toast.error(t('failedToCreate', { message: errorMessage }));
     } finally {
       setIsCreating(false);
     }
@@ -508,17 +506,17 @@ function CreateIssueDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{tIssues('createGitHubIssue')}</DialogTitle>
+          <DialogTitle>{t('createGitHubIssue')}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="issue-title" className="text-sm font-medium">
-              {tIssues('title')} *
+              {t('title')} *
             </label>
             <Input
               id="issue-title"
-              placeholder={tForms('placeholders.issueTitle')}
+              placeholder={t('forms.placeholders.issueTitle')}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={isCreating}
@@ -527,13 +525,13 @@ function CreateIssueDialog({
           
           <div className="space-y-2">
             <label htmlFor="issue-labels" className="text-sm font-medium">
-              {tIssues('labels')}
+              {t('labels')}
             </label>
             <MultiSelect
               options={uniqueLabels}
               onValueChange={setSelectedLabels}
               defaultValue={selectedLabels}
-              placeholder={tForms('placeholders.selectLabels')}
+              placeholder={t('forms.placeholders.selectLabels')}
               variant="default"
               animation={0.5}
               maxCount={5}
@@ -543,12 +541,12 @@ function CreateIssueDialog({
           
           <div className="space-y-2">
             <label htmlFor="issue-body" className="text-sm font-medium">
-              {tIssues('description')}
+              {t('description')}
             </label>
             <MarkdownEditor
               value={body}
               onChange={setBody}
-              placeholder={tForms('placeholders.issueDescription')}
+              placeholder={t('forms.placeholders.issueDescription')}
               minHeight={160}
               className="w-full"
             />
@@ -561,13 +559,13 @@ function CreateIssueDialog({
             onClick={handleCancel}
             disabled={isCreating}
           >
-            {useTranslations('actions')('cancel')}
+            {t('actions.cancel')}
           </Button>
           <Button
             onClick={handleCreateIssue}
             disabled={isCreating || !title.trim()}
           >
-            {isCreating ? tIssues('creating') : tIssues('createIssue')}
+            {isCreating ? t('creating') : t('createIssue')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -660,8 +658,7 @@ export default function Client() {
     order_by: [{ updated_at: 'desc' }],
   });
 
-  const tIssues = useTranslations('issues');
-  const tSuccess = useTranslations('success');
+  const t = useTranslations();
   const handleSyncGitHubIssues = async () => {
     setIsSyncing(true);
     try {
@@ -681,12 +678,12 @@ export default function Client() {
       }
 
       debug('✅ GitHub issues sync completed:', result);
-      toast.success(tSuccess('issuesSynced', { count: result.synced }));
+      toast.success(t('success.issuesSynced', { count: result.synced }));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       debug('❌ GitHub issues sync failed:', error);
       console.error('GitHub issues sync error:', error);
-      toast.error(tIssues('failedToSync', { message: errorMessage }));
+      toast.error(t('failedToSync', { message: errorMessage }));
     } finally {
       setIsSyncing(false);
     }
@@ -727,7 +724,7 @@ export default function Client() {
               disabled={isSyncing}
               className="w-full"
             >
-              {isSyncing ? tIssues('syncing') : tIssues('sync')}
+              {isSyncing ? t('syncing') : t('sync')}
             </Button>
           </div>
         </>}
@@ -739,7 +736,7 @@ export default function Client() {
               className="w-full"
               variant="default"
             >
-              ➕ {tIssues('createIssue')}
+              ➕ {t('issues.createIssue')}
             </Button>
             
             {/* Cancel Drawing Mode Button */}
@@ -752,7 +749,7 @@ export default function Client() {
                 className="w-full"
                 variant="destructive"
               >
-                {tIssues('cancelDrawing')}
+                {t('cancelDrawing')}
               </Button>
             )}
           </div>

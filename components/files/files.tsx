@@ -29,7 +29,7 @@ export default function Files({
 }: FilesProps) {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const tFiles = useTranslations('files');
+  const t = useTranslations();
 
   const handleFiles = useCallback(async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -57,7 +57,7 @@ export default function Files({
           });
 
           if (!response.ok) {
-            throw new Error(tFiles('status.error'));
+            throw new Error(t('files.status.error'));
           }
 
           const result = await response.json();
@@ -65,7 +65,7 @@ export default function Files({
         } catch (error) {
           console.error('Upload error:', error);
           if (onUploadError) {
-            onUploadError(tFiles('status.error'));
+            onUploadError(t('files.status.error'));
           }
         }
       }

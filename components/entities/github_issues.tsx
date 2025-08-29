@@ -166,10 +166,7 @@ function IssueButton({ data, ...props }: {
   [key: string]: any;
 }) {
   const issueData = data;
-  const tActions = useTranslations('actions');
-  const tSuccess = useTranslations('success');
-  const tErrors = useTranslations('errors');
-  const tCommon = useTranslations('common');
+  const t = useTranslations();
 
   const displayTitle = issueData?.title || `Issue #${issueData?.number}`;
   const stateColor = issueData?.state === 'open' ? 'bg-green-500' : 'bg-red-500';
@@ -192,10 +189,7 @@ export function Card({ data, onClose, ...props }: {
   [key: string]: any;
 }) {
   const issueData = data;
-  const tActions = useTranslations('actions');
-  const tSuccess = useTranslations('success');
-  const tErrors = useTranslations('errors');
-  const tCommon = useTranslations('common');
+  const t = useTranslations();
   const { startDrawing, onDrawingComplete, currentRelationType } = useDependencyDrawingStore();
   const graphContext = useGraph();
   const toggleDrawMode = graphContext?.toggleDrawMode;
@@ -364,7 +358,7 @@ export function Card({ data, onClose, ...props }: {
             className="text-xs"
           >
             <Pencil className="w-3 h-3 mr-1" />
-            {tActions('edit')}
+            {t('actions.edit')}
           </UIButton>
           {issueData.comments_count !== undefined && (
             <UIButton
@@ -383,7 +377,7 @@ export function Card({ data, onClose, ...props }: {
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>{tActions('edit')} Issue</DialogTitle>
+            <DialogTitle>{t('actions.edit')} Issue</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div className="space-y-1">
@@ -396,7 +390,7 @@ export function Card({ data, onClose, ...props }: {
             </div>
           </div>
           <DialogFooter>
-            <UIButton variant="outline" onClick={() => setIsEditOpen(false)} disabled={isSaving}>{tActions('cancel')}</UIButton>
+            <UIButton variant="outline" onClick={() => setIsEditOpen(false)} disabled={isSaving}>{t('actions.cancel')}</UIButton>
             <UIButton
               onClick={async () => {
                 if (!issueData.id) return;
@@ -408,17 +402,17 @@ export function Card({ data, onClose, ...props }: {
                     _set: { title: editTitle, body: editBody, updated_at: Date.now() },
                     returning: ['id'],
                   });
-                  toast.success(tSuccess('issueUpdated'));
+                  toast.success(t('success.issueUpdated'));
                   setIsEditOpen(false);
                 } catch (e: any) {
-                  toast.error(e?.message || tErrors('updateFailed'));
+                  toast.error(e?.message || t('errors.updateFailed'));
                 } finally {
                   setIsSaving(false);
                 }
               }}
               disabled={isSaving || !editTitle?.trim()}
             >
-              {isSaving ? tCommon('saving') : tActions('save')}
+              {isSaving ? t('common.saving') : t('actions.save')}
             </UIButton>
           </DialogFooter>
         </DialogContent>

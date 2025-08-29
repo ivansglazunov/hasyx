@@ -149,9 +149,7 @@ export const MultiSelect = React.forwardRef<
     },
     ref
   ) => {
-    const tCommon = useTranslations('common');
-    const tForms = useTranslations('forms');
-    const tActions = useTranslations('actions');
+    const t = useTranslations();
 
     const [selectedValues, setSelectedValues] =
       React.useState<string[]>(defaultValue);
@@ -271,7 +269,7 @@ export const MultiSelect = React.forwardRef<
                       )}
                       style={{ animationDuration: `${animation}s` }}
                     >
-                  {tCommon('moreCount', { count: selectedValues.length - maxCount })}
+                  {t('common.moreCount', { count: selectedValues.length - maxCount })}
                       <XCircle
                         className="ml-2 h-4 w-4 cursor-pointer"
                         onClick={(event) => {
@@ -300,7 +298,7 @@ export const MultiSelect = React.forwardRef<
             ) : (
               <div className="flex items-center justify-between w-full mx-auto">
                 <span className="text-sm text-muted-foreground mx-3">
-                  {placeholder || tForms('placeholders.selectOptions')}
+                  {placeholder || t('forms.placeholders.selectOptions')}
                 </span>
                 <ChevronDown className="h-4 cursor-pointer text-muted-foreground mx-2" />
               </div>
@@ -314,12 +312,12 @@ export const MultiSelect = React.forwardRef<
         >
           <Command>
             <CommandInput
-              placeholder={tForms('placeholders.search')}
+              placeholder={t('forms.placeholders.search')}
               onKeyDown={handleInputKeyDown}
               onValueChange={handleSearchChange}
             />
             <CommandList>
-              <CommandEmpty>{tForms('noResults')}</CommandEmpty>
+              <CommandEmpty>{t('forms.noResults')}</CommandEmpty>
               <CommandGroup>
                 <CommandItem
                   key="all"
@@ -336,7 +334,7 @@ export const MultiSelect = React.forwardRef<
                   >
                     <CheckIcon className="h-4 w-4" />
                   </div>
-                  <span>({tForms('selectAll')})</span>
+                  <span>({t('forms.selectAll')})</span>
                 </CommandItem>
                 {options.map((option) => {
                   const isSelected = selectedValues.includes(option.value);
@@ -380,7 +378,7 @@ export const MultiSelect = React.forwardRef<
                         onSelect={handleClear}
                         className="flex-1 justify-center cursor-pointer"
                       >
-                        {tActions('clear')}
+                        {t('actions.clear')}
                       </CommandItem>
                       <Separator
                         orientation="vertical"
@@ -392,7 +390,7 @@ export const MultiSelect = React.forwardRef<
                     onSelect={() => setIsPopoverOpen(false)}
                     className="flex-1 justify-center cursor-pointer max-w-full"
                   >
-                  {tActions('close')}
+                  {t('actions.close')}
                   </CommandItem>
                 </div>
               </CommandGroup>

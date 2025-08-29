@@ -95,7 +95,7 @@ function DropdownAccountItem({ account, delete: handleDelete, _delete }: any) {
           handleDelete(account);
         }}
         className="text-xs text-muted-foreground hover:text-destructive"
-        title={useTranslations('tooltips')('deleteAccountConnection')}
+        title={useTranslations()('tooltips.deleteAccountConnection')}
       >
         <Trash2 size={14} />
       </button>
@@ -104,10 +104,10 @@ function DropdownAccountItem({ account, delete: handleDelete, _delete }: any) {
 }
 
 function UserAccountsList({ userId }: { userId: string }) {
-  const tAuth = useTranslations('auth');
+  const t = useTranslations();
   return (
     <div className="space-y-1">
-      <DropdownMenuLabel className="text-xs text-muted-foreground">{tAuth('connectedAccounts')}</DropdownMenuLabel>
+      <DropdownMenuLabel className="text-xs text-muted-foreground">{t('connectedAccounts')}</DropdownMenuLabel>
       <Accounts userId={userId} AccountComponent={DropdownAccountItem} />
     </div>
   );
@@ -116,7 +116,7 @@ function UserAccountsList({ userId }: { userId: string }) {
 // function AuthenticatedUserMenu({ session }: { session: any }) {
 function AuthenticatedUserMenu({}: {}) {
   const hasyx = useHasyx();
-  const tAuth = useTranslations('auth');
+  const t = useTranslations();
   const handleSignOut = async () => {
     hasyx.logout({ callbackUrl: '/' });
   };
@@ -140,17 +140,17 @@ function AuthenticatedUserMenu({}: {}) {
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={handleSignOut} className="text-red-600 focus:text-red-600">
         <LogOut className="mr-2 h-4 w-4" />
-        {tAuth('signOut')}
+        {t('signOut')}
       </DropdownMenuItem>
     </>
   );
 }
 
 function UnauthenticatedUserMenu() {
-  const tAuth = useTranslations('auth');
+  const t = useTranslations();
   return (
     <>
-      <DropdownMenuLabel>{tAuth('signInToYourAccount')}</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('signInToYourAccount')}</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <div className="p-2">
         <OAuthButtons />
@@ -162,8 +162,7 @@ function UnauthenticatedUserMenu() {
 export function UserProfileDropdown() {
   const hasyx = useHasyx();
   const [open, setOpen] = useState(false);
-  const tCommon = useTranslations('common');
-  const tAuth = useTranslations('auth');
+  const t = useTranslations();
 
   const isAuthenticated = hasyx?.userId;
   const isLoading = false;
@@ -209,7 +208,7 @@ export function UserProfileDropdown() {
           )}
           {isLoading ? (
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">{tCommon('loading')}</span>
+              <span className="text-sm font-medium">{useTranslations()('common.loading')}</span>
               <div className="h-6 w-6 rounded-full bg-muted animate-pulse" />
             </div>
           ) : isAuthenticated ? (
@@ -226,7 +225,7 @@ export function UserProfileDropdown() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">{tAuth('signIn')}</span>
+              <span className="text-sm font-medium">{t('auth.signIn')}</span>
               <LogIn className="h-4 w-4" />
             </div>
           )}

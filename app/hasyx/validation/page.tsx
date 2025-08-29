@@ -4,17 +4,16 @@ import { SidebarLayout } from "hasyx/components/sidebar/layout";
 import { useTranslations } from 'hasyx';
 
 export default function ValidationPage() {
-  const tNav = useTranslations('nav');
-  const tPages = useTranslations('pages.validation');
+  const t = useTranslations();
   return (
     <SidebarLayout sidebarData={sidebar} breadcrumb={[
       { title: 'Hasyx', link: '/' },
-      { title: tNav('validation'), link: '/hasyx/validation' }
+      { title: t('nav.validation'), link: '/hasyx/validation' }
     ]}>
       <div className="flex flex-1 flex-col gap-4 p-4">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold">{tPages('title')}</h1>
-          <p className="text-muted-foreground">{tPages('description')}</p>
+          <h1 className="text-3xl font-bold">{t('pages.validation.title')}</h1>
+          <p className="text-muted-foreground">{t('pages.validation.description')}</p>
         </div>
         
         <ValidationForm />

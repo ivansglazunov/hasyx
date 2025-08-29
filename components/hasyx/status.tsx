@@ -12,10 +12,10 @@ type StatusProps = {
 
 export function Status({ status = 'connecting', label, error }: StatusProps) {
   // Display custom label if provided, otherwise use default text
-  const tCommon = useTranslations('common');
-  const connectingText = label || tCommon('loading');
-  const connectedText = label || tCommon('yes');
-  const errorText = label || tCommon('error');
+  const t = useTranslations();
+  const connectingText = label || t('common.loading');
+  const connectedText = label || t('common.yes');
+  const errorText = label || t('common.error');
   const idleText = label || 'Idle';
   return (<>
 

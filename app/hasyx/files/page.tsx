@@ -29,11 +29,7 @@ interface File {
 type ViewMode = 'grid' | 'list' | 'table';
 
 export default function FilesPage() {
-  const tNav = useTranslations('nav');
-  const tPages = useTranslations('pages.files');
-  const tFiles = useTranslations('files');
-  const tActions = useTranslations('actions');
-  const tCommon = useTranslations('common');
+  const t = useTranslations();
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const { handleFilesSelected, handleUploadComplete, handleUploadError } = useFilesUpload();
   const { choose, setChoose, toggleChoose, clearChoose, isChosen } = useChoose();
@@ -88,7 +84,7 @@ export default function FilesPage() {
 
   // Function to delete file
   const handleDelete = async (fileId: string) => {
-    if (!confirm(tFiles('confirm.deleteOne'))) return;
+    if (!confirm(t('files.confirm.deleteOne'))) return;
 
     try {
       const response = await fetch(`/api/files/${fileId}`, {
@@ -96,13 +92,13 @@ export default function FilesPage() {
       });
 
       if (response.ok) {
-        toast.success(tFiles('toast.deleteSuccessOne'));
+        toast.success(t('files.toast.deleteSuccessOne'));
       } else {
-        throw new Error(tFiles('toast.deleteFailed'));
+        throw new Error(t('files.toast.deleteFailed'));
       }
     } catch (error) {
       console.error('Delete error:', error);
-      toast.error(tFiles('toast.deleteFailed'));
+      toast.error(t('files.toast.deleteFailed'));
     }
   };
 
@@ -110,7 +106,7 @@ export default function FilesPage() {
   const handleDeleteSelected = async () => {
     if (!choose || choose.length === 0) return;
     
-    if (!confirm(tFiles('confirm.deleteMany', { count: choose.length }))) return;
+    if (!confirm(t('files.confirm.deleteMany', { count: choose.length }))) return;
 
     try {
       await hasyx.delete({ 
@@ -118,11 +114,11 @@ export default function FilesPage() {
         where: { id: { _in: choose } }
       });
       
-      toast.success(tFiles('toast.deleteSuccessMany', { count: choose.length }));
+      toast.success(t('files.toast.deleteSuccessMany', { count: choose.length }));
       clearChoose(); // Очищаем выбор после удаления
     } catch (error) {
       console.error('Delete selected files error:', error);
-      toast.error(tFiles('toast.deleteFailedMany'));
+      toast.error(useTranslations('files')('toast.deleteFailedMany'));
     }
   };
 
@@ -137,11 +133,11 @@ export default function FilesPage() {
     return (
       <SidebarLayout sidebarData={sidebar} breadcrumb={[
         { title: pckg.name, link: '/' },
-        { title: tNav('files'), link: '/hasyx/files' }
+        { title: t('nav.files'), link: '/hasyx/files' }
       ]}>
         <div className="flex flex-1 flex-col gap-4 p-4">
           <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-            <div className="text-destructive">{tFiles('toast.errorLoading', { message: error.message })}</div>
+            <div className="text-destructive">{t('files.toast.errorLoading', { message: error.message })}</div>
           </div>
         </div>
       </SidebarLayout>
@@ -151,12 +147,12 @@ export default function FilesPage() {
   return (
     <SidebarLayout sidebarData={sidebar} breadcrumb={[
       { title: pckg.name, link: '/' },
-      { title: tNav('files'), link: '/hasyx/files' }
+      { title: t('nav.files'), link: '/hasyx/files' }
     ]}>
       <div className="flex flex-1 flex-col gap-4 p-4">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold">{tPages('title')}</h1>
-          <p className="text-muted-foreground">{tPages('description')}</p>
+          <h1 className="text-3xl font-bold">{t('pages.files.title')}</h1>
+          <p className="text-muted-foreground">{t('pages.files.description')}</p>
         </div>
         
         {/* Upload Zone */}
@@ -171,11 +167,11 @@ export default function FilesPage() {
           <div className="text-center space-y-4">
             <div className="text-6xl">📁</div>
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold">{tFiles('example.dropHere')}</h2>
-              <p className="text-muted-foreground">{tFiles('example.orClick')}</p>
+              <h2 className="text-2xl font-semibold">{t('files.example.dropHere')}</h2>
+              <p className="text-muted-foreground">{t('files.example.orClick')}</p>
             </div>
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2 mx-auto">
-              <span>{tFiles('example.uploadFiles')}</span>
+              <span>{t('files.example.uploadFiles')}</span>
             </Button>
           </div>
           
@@ -187,7 +183,7 @@ export default function FilesPage() {
                 <button
                   onClick={e => { e.stopPropagation(); filesStore.removeFile(id); }}
                   className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                  title={tFiles('removeFile')}
+                  title={t('files.removeFile')}
                   type="button"
                 >
                   ✕
@@ -202,10 +198,10 @@ export default function FilesPage() {
           <div className="text-sm text-muted-foreground bg-muted px-4 py-2 rounded-lg">
             {loading ? (
               <div className="flex items-center space-x-2">
-                <Status status="connecting" label={tCommon('loading')} />
+                <Status status="connecting" label={t('common.loading')} />
               </div>
             ) : (
-              tFiles('items', { count: files.length })
+              t('files.items', { count: files.length })
             )}
           </div>
           
@@ -218,24 +214,24 @@ export default function FilesPage() {
                   size="sm"
                   onClick={handleDeleteSelected}
                 >
-                  {tActions('delete')}
+                  {t('actions.delete')}
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={handleSelectAll}
                 >
-                  {tCommon('yes')}
+                  {t('common.yes')}
                 </Button>
                 <span className="text-sm font-medium text-primary">
-                  {tFiles('selected', { count: choose.length })}
+                  {t('files.selected', { count: choose.length })}
                 </span>
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={clearChoose}
                 >
-                  {tActions('cancel')}
+                  {t('actions.cancel')}
                 </Button>
               </div>
             ) : (
@@ -244,7 +240,7 @@ export default function FilesPage() {
                 size="sm"
                 onClick={() => setChoose([])}
               >
-                {tActions('select') || 'Choose'}
+                {t('actions.select')}
               </Button>
             )}
             
@@ -258,7 +254,7 @@ export default function FilesPage() {
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                🖼️ {tFiles('view.grid')}
+                🖼️ {t('files.view.grid')}
               </button>
               <button
                 onClick={() => setViewMode('list')}
@@ -268,7 +264,7 @@ export default function FilesPage() {
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                📋 {tFiles('view.list')}
+                📋 {t('files.view.list')}
               </button>
               <button
                 onClick={() => setViewMode('table')}
@@ -278,7 +274,7 @@ export default function FilesPage() {
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                📊 {tFiles('view.table')}
+                📊 {t('files.view.table')}
               </button>
             </div>
           </div>
@@ -287,7 +283,7 @@ export default function FilesPage() {
         {/* Loading indicator for files */}
         {loading && (
           <div className="flex items-center justify-center py-8">
-            <Status status="connecting" label={tFiles('loadingFiles')} />
+            <Status status="connecting" label={t('files.loadingFiles')} />
           </div>
         )}
 
@@ -342,7 +338,7 @@ export default function FilesPage() {
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                      {file.isUploaded ? tFiles('status.uploaded') : tFiles('status.processing')}
+                      {file.isUploaded ? t('files.status.uploaded') : t('files.status.processing')}
                     </span>
                   </div>
 
@@ -353,13 +349,13 @@ export default function FilesPage() {
                       download={file.name}
                       className="text-primary hover:text-primary/80 text-sm font-medium"
                     >
-                      📥 {tActions('download')}
+                      📥 {t('actions.download')}
                     </a>
                     <button
                       onClick={() => handleDelete(file.id)}
                       className="text-destructive hover:text-destructive/80 text-sm font-medium"
                     >
-                      🗑️ {tActions('delete')}
+                      🗑️ {t('actions.delete')}
                     </button>
                   </div>
                 </div>
@@ -413,20 +409,20 @@ export default function FilesPage() {
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                    {file.isUploaded ? tFiles('status.uploaded') : tFiles('status.processing')}
+                    {file.isUploaded ? t('files.status.uploaded') : t('files.status.processing')}
                     </span>
                     <a
                       href={`/api/files/${file.id}`}
                       download={file.name}
                       className="text-primary hover:text-primary/80 text-sm font-medium"
                     >
-                    📥 {tActions('download')}
+                    📥 {t('actions.download')}
                     </a>
                     <button
                       onClick={() => handleDelete(file.id)}
                       className="text-destructive hover:text-destructive/80 text-sm font-medium"
                     >
-                    🗑️ {tActions('delete')}
+                    🗑️ {t('actions.delete')}
                     </button>
                   </div>
               </div>
@@ -442,26 +438,26 @@ export default function FilesPage() {
               <tr>
                 {choose && (
                 <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {tFiles('table.select')}
+                  {t('files.table.select')}
                   </th>
                 )}
                 <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {tFiles('table.file')}
+                  {t('files.table.file')}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {tFiles('table.size')}
+                  {t('files.table.size')}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {tFiles('table.type')}
+                  {t('files.table.type')}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {tFiles('table.created')}
+                  {t('files.table.created')}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {tFiles('table.status')}
+                  {t('files.table.status')}
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  {tFiles('table.actions')}
+                  {t('files.table.actions')}
                 </th>
               </tr>
             </thead>
