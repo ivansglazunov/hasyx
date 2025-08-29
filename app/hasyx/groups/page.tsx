@@ -14,6 +14,7 @@ import { MultiSelectHasyx } from 'hasyx/components/multi-select-hasyx';
 import { Plus } from 'lucide-react';
 import { Groups } from 'hasyx/lib/groups/groups';
 import { v4 as uuidv4 } from 'uuid';
+import { Button as UserButton } from 'hasyx/components/entities/users';
 
 export default function GroupsPage() {
   const hasyx = useHasyx();
@@ -212,17 +213,25 @@ export default function GroupsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {(selected.memberships || []).map((m: any) => (
                     <div key={m.id} className="border rounded p-3 space-y-2">
-                      <div className="text-sm">User: {m.user_id}</div>
+                      <UserButton data={m.user_id} className="w-full"/>
                       <div className="text-sm">Role: {m.role} · Status: {m.status}</div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <Button variant="outline" size="sm" onClick={async () => {
                           await groupsApi.changeMemberRole(selected.id, m.user_id, 'admin');
                           await refetch();
                         }}>Make admin</Button>
                         <Button variant="outline" size="sm" onClick={async () => {
-                          await groupsApi.leaveMembership(m.id);
+                          await groupsApi.changeMemberRole(selected.id, m.user_id, 'member');
                           await refetch();
-                        }}>Set left</Button>
+                        }}>Make member</Button>
+                        <Button variant="outline" size="sm" onClick={async () => {
+                          await groupsApi.claimOwnership(selected.id, m.user_id);
+                          await refetch();
+                        }}>Make owner</Button>
+                        <Button variant="destructive" size="sm" onClick={async () => {
+                          await hasyx.delete({ table: 'memberships', where: { id: { _eq: m.id } } });
+                          await refetch();
+                        }}>Remove</Button>
                       </div>
                     </div>
                   ))}

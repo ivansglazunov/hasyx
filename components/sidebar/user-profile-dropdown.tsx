@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "hasyx/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "hasyx/components/ui/avatar";
-import { LogOut, LogIn, User, Settings, Github, Mail, MailCheck, Trash2 } from "lucide-react";
+import { LogOut, LogIn, User, Settings, Github, Mail, MailCheck, Trash2, EyeOff } from "lucide-react";
 import { signOut, signIn } from "next-auth/react";
 import { useHasyx, useNewHasyx, useSession } from 'hasyx';
 import { useSubscription } from 'hasyx';
@@ -168,10 +168,45 @@ export function UserProfileDropdown() {
   const isAuthenticated = hasyx?.userId;
   const isLoading = false;
 
+  const [canReturn, setCanReturn] = useState(false);
+  const [backTo, setBackTo] = useState<string | null>(null);
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem('hasyx_impersonator_info');
+      if (saved) {
+        const info = JSON.parse(saved || '{}');
+        setBackTo(info?.name || info?.id || null);
+        setCanReturn(true);
+      } else {
+        setBackTo(null);
+        setCanReturn(false);
+      }
+    } catch {
+      setBackTo(null);
+      setCanReturn(false);
+    }
+  }, [open, hasyx?.userId]);
+
+  const handleStopImpersonation = () => {
+    (hasyx as any).stopImpersonation?.();
+    setCanReturn(false);
+    setBackTo(null);
+  };
+
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-auto rounded-full px-3" disabled={isLoading}>
+        <Button variant="ghost" className="relative h-8 w-auto rounded-full px-2 sm:px-3 flex items-center gap-2" disabled={isLoading}>
+          {canReturn && (
+            <button
+              onClick={(e) => { e.stopPropagation(); handleStopImpersonation(); }}
+              className="flex items-center gap-1 text-xs px-2 py-1 rounded bg-muted hover:bg-muted/70"
+              title={backTo ? `Вернуться под ${backTo}` : 'Перестать смотреть его глазами'}
+            >
+              <EyeOff className="h-4 w-4" />
+              <span className="hidden sm:inline">{backTo ? backTo : ''}</span>
+            </button>
+          )}
           {isLoading ? (
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">{tCommon('loading')}</span>

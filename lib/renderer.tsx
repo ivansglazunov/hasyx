@@ -8,14 +8,13 @@ import {
 import { CytoEdge } from "hasyx/lib/cyto";
 import { Button as EntityButton, CytoNode as EntityCytoNode } from 'hasyx/lib/entities';
 import { useSubscription } from "hasyx/lib/hasyx/hasyx-client";
-import hasyxSchema from '@/public/hasura-schema.json';
 import { Plus, X } from 'lucide-react';
 import React, { useCallback, useMemo } from "react";
 import Debug from './debug';
 
 const debug = Debug('renderer');
 
-export const QueriesManager = ({ queries, setQueries, schema = hasyxSchema }: {
+export const QueriesManager = ({ queries, setQueries, schema }: {
   queries: any;
   setQueries: any;
   schema: any;

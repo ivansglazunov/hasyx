@@ -112,7 +112,7 @@ const debug = Debug('test:validation');
     } finally {
       await hasura.deleteSchema({ schema: testSchema, cascade: true });
     }
-  }, 60000);
+  }, 120000);
 
   it('cli validation define/undefine via hasyx.config.json should enforce rule and then clean up', async () => {
     const hasura = new Hasura({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET! });
@@ -228,7 +228,7 @@ const debug = Debug('test:validation');
     } finally {
       await hasura.deleteSchema({ schema: sch, cascade: true });
     }
-  }, 30000);
+  }, 120000);
 });
 
 

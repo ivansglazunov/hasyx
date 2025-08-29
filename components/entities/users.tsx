@@ -63,7 +63,7 @@ export function Card({ data, onClose, ...props }: {
     {
       table: 'users',
       pk_columns: { id: userId },
-      returning: ['id', 'name', 'email', 'image', 'created_at', 'updated_at']
+      returning: ['id', 'name', 'image', 'created_at', 'updated_at']
     },
     { 
       skip: !userId,
@@ -99,7 +99,7 @@ export function Card({ data, onClose, ...props }: {
     <UICard className="w-80" {...props}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap">
             <Avatar className="w-10 h-10">
               <AvatarImage src={userData.image} />
               <AvatarFallback>

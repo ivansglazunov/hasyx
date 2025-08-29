@@ -479,11 +479,11 @@ export function NotificationCard() {
       error?: string;
       created_at: string;
       updated_at: string;
-      notification_message: {
+      message: {
         title: string;
         body: string;
       };
-      notification_permission: {
+      permission: {
         provider: string;
       };
     }>
@@ -491,7 +491,7 @@ export function NotificationCard() {
     {
       table: 'notifications',
       where: { 
-        notification_permission: { 
+        permission: { 
           user_id: { _eq: userId } 
         } 
       },
@@ -499,8 +499,8 @@ export function NotificationCard() {
       limit: 30,
       returning: [
         'id', 'status', 'error', 'created_at', 'updated_at',
-        { notification_message: ['title', 'body'] },
-        { notification_permission: ['provider'] }
+        { message: ['title', 'body'] },
+        { permission: ['provider'] }
       ]
     },
     { skip: !userId }
@@ -651,7 +651,7 @@ export function NotificationCard() {
       </CardHeader>
       
       <Tabs defaultValue="send" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mx-6">
+        <TabsList className="grid grid-cols-2 mx-6">
           <TabsTrigger value="send">{tN('tabs.send')}</TabsTrigger>
           <TabsTrigger value="history">{tN('tabs.historyWithCount', { count: notifications.length })}</TabsTrigger>
         </TabsList>
@@ -786,17 +786,17 @@ export function NotificationCard() {
                 <div key={notification.id} className="p-3 border rounded-lg space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h5 className="font-medium text-sm">{notification.notification_message.title}</h5>
+                      <h5 className="font-medium text-sm">{notification.message.title}</h5>
                       <p className="text-xs text-muted-foreground line-clamp-2">
-                        {notification.notification_message.body}
+                        {notification.message.body}
                       </p>
                     </div>
                     {getStatusBadge(notification.status)}
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <div className="flex items-center space-x-2">
-                      {getProviderIcon(notification.notification_permission.provider)}
-                      <span>{getProviderName(notification.notification_permission.provider)}</span>
+                      {getProviderIcon(notification.permission.provider)}
+                      <span>{getProviderName(notification.permission.provider)}</span>
                     </div>
                     <span>{new Date(notification.created_at).toLocaleString()}</span>
                   </div>

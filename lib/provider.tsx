@@ -5,6 +5,7 @@ import { ThemeProvider } from "hasyx/components/theme-provider";
 import { url, API_URL } from 'hasyx/lib/url';
 import { SessionProvider, useSession as useSessionNextAuth } from "next-auth/react";
 import { useMemo, createContext, useContext, useEffect, useState } from "react";
+import { create } from 'zustand';
 import Debug from './debug';
 import { Generate } from './generator';
 import { Hasyx } from './hasyx/hasyx';
@@ -35,13 +36,28 @@ export const useClient = useHasyx;
 // Re-export useTelegramMiniapp for easy access throughout the app
 export { useTelegramMiniapp };
 
+type ImpersonationState = {
+  originalJwt: string | null;
+  originalUserInfo: { id?: string | null; name?: string | null } | null;
+  setOriginal(jwt: string | null, info: { id?: string | null; name?: string | null } | null): void;
+  clearOriginal(): void;
+};
+
+const useImpersonationStore = create<ImpersonationState>((set) => ({
+  originalJwt: null,
+  originalUserInfo: null,
+  setOriginal: (jwt, info) => set({ originalJwt: jwt, originalUserInfo: info }),
+  clearOriginal: () => set({ originalJwt: null, originalUserInfo: null })
+}));
+
 function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: string, children: React.ReactNode, generate: Generate }) {
   const [jwtToken, setJwtToken] = useState<string | null>(null);
   const [jwtUser, setJwtUser] = useState<any>(null);
+  const { originalJwt, originalUserInfo, setOriginal, clearOriginal } = useImpersonationStore();
   
   // Check for JWT mode and monitor localStorage changes
   useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_JWT_AUTH || typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return;
     
     const base64UrlDecode = (input: string) => {
       try {
@@ -171,6 +187,8 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
   const hasyxInstance = useMemo(() => {
     debug('Creating new Hasyx instance with Apollo client');
     const hasyxInstance = new HasyxClient(apolloClient, generate);
+    // also expose on window for debugging
+    try { (window as any).hasyx = hasyxInstance; } catch {}
     // In JWT mode, prefer JWT user over session user
     const effectiveUser = jwtUser
       ? jwtUser 
@@ -189,12 +207,70 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
       
       return token;
     };
+
+    // Impersonation helpers exposed on Hasyx instance
+    (hasyxInstance as any).impersonate = async (userId: string) => {
+      try {
+        const current = localStorage.getItem('nextauth_jwt');
+        if (current && !originalJwt) {
+          // Save original before switching
+          const [, payloadB64] = current.split('.');
+          const payloadJson = atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/'));
+          const payload = JSON.parse(payloadJson);
+          const name = payload?.name || null;
+          setOriginal(current, { id: jwtUser?.id ?? null, name });
+          localStorage.setItem('hasyx_impersonator_jwt', current);
+          localStorage.setItem('hasyx_impersonator_info', JSON.stringify({ id: jwtUser?.id ?? null, name }));
+        }
+        const resp = await fetch('/api/auth/get-jwt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ asUserId: userId })
+        });
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          throw new Error(err?.error || `HTTP ${resp.status}`);
+        }
+        const data = await resp.json();
+        const newJwt = data.jwt as string;
+        localStorage.setItem('nextauth_jwt', newJwt);
+        setJwtToken(newJwt);
+        // Force WS reconnect to apply new auth
+        try { (hasyxInstance.apolloClient as any)?.reconnectWebSocket?.(); } catch {}
+        try {
+          window.dispatchEvent(new StorageEvent('storage', { key: 'nextauth_jwt', newValue: newJwt }));
+        } catch {}
+        return true;
+      } catch (e) {
+        debug('Impersonation failed:', e);
+        return false;
+      }
+    };
+
+    (hasyxInstance as any).stopImpersonation = () => {
+      const saved = localStorage.getItem('hasyx_impersonator_jwt');
+      if (saved) {
+        localStorage.setItem('nextauth_jwt', saved);
+        setJwtToken(saved);
+        try {
+          window.dispatchEvent(new StorageEvent('storage', { key: 'nextauth_jwt', newValue: saved }));
+        } catch {}
+      }
+      localStorage.removeItem('hasyx_impersonator_jwt');
+      localStorage.removeItem('hasyx_impersonator_info');
+      clearOriginal();
+    };
+
+    // no alias here to avoid recursion
     
     hasyxInstance.logout = (options?: any) => {
       const jwt = localStorage.getItem('nextauth_jwt');
       if (jwt) {
         debug('Logging out with JWT');
         localStorage.removeItem('nextauth_jwt');
+        localStorage.removeItem('hasyx_impersonator_jwt');
+        localStorage.removeItem('hasyx_impersonator_info');
+        clearOriginal();
         setJwtToken(null);
         setJwtUser(null);
         try {

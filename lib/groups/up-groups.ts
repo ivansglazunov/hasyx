@@ -607,6 +607,18 @@ END;$$`,
     ] }
   });
 
+  // memberships: delete (owner/admin/allowed managers; user can delete own membership)
+  await hasura.definePermission({
+    schema: 'public', table: 'memberships', operation: 'delete', role: 'user',
+    filter: { _or: [
+      { user_id: { _eq: 'X-Hasura-User-Id' } },
+      { group: { owner_id: { _eq: 'X-Hasura-User-Id' } } },
+      { group: { memberships: { user_id: { _eq: 'X-Hasura-User-Id' }, role: { _eq: 'admin' }, status: { _eq: 'approved' } } } },
+      { group: { allow_manage_members_users: { _contains: ['user'] } } },
+      { group: { allow_manage_members_users: { _contains: ['X-Hasura-User-Id'] } } }
+    ] }
+  });
+
   // invitations: select
   // Invitations are visible to invitee, inviter, and group owner/admin.
   await hasura.definePermission({
@@ -645,6 +657,13 @@ END;$$`,
       { group: { allow_invite_users: { _contains: ['X-Hasura-User-Id'] } } }
     ] }
   });
+
+  // Admin full permissions for memberships and invitations
+  for (const tbl of ['memberships','invitations'] as const) {
+    for (const op of ['select','insert','update','delete'] as const) {
+      await hasura.definePermission({ schema: 'public', table: tbl, operation: op, role: 'admin', filter: {}, columns: true, aggregate: op==='select' });
+    }
+  }
 
   debug('✨ Hasura groups migration UP completed successfully!');
   return true;

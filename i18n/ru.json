@@ -122,6 +122,7 @@
     "signInToYourAccount": "Войдите в свой аккаунт",
     "continueWith": "Продолжить через {provider}",
     "connectedAccounts": "Подключённые аккаунты",
+    "addAccountDescription": "Выберите провайдера для привязки нового аккаунта к вашему профилю",
     "oauth": {
       "checkingOptions": "Проверяем доступные способы аутентификации..."
     },
@@ -365,7 +366,8 @@
     "loading": "Загрузка...",
     "empty": "Пользователи не найдены.",
     "name": "Имя",
-    "email": "Email"
+    "email": "Email",
+    "searchByName": "Поиск по имени"
   }
   ,
   "pwa": {

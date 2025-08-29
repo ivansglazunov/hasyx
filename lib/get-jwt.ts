@@ -10,6 +10,7 @@ import hasyxSchema from '../public/hasura-schema.json';
 export async function getJwtHandler(request: NextRequest, authOptions: any): Promise<NextResponse> {
   try {
     let userId: string | undefined;
+    let asUserId: string | undefined;
     
     // First try to get user from JWT token in Authorization header
     const token = await getTokenFromRequest(request);
@@ -24,6 +25,14 @@ export async function getJwtHandler(request: NextRequest, authOptions: any): Pro
       }
     }
     
+    // Try to read asUserId from JSON body (admin-only impersonation)
+    try {
+      const body = await request.json();
+      if (body && typeof body.asUserId === 'string' && body.asUserId.trim().length > 0) {
+        asUserId = body.asUserId.trim();
+      }
+    } catch {}
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized. Please sign in first.' },
@@ -40,7 +49,7 @@ export async function getJwtHandler(request: NextRequest, authOptions: any): Pro
     const generate = Generator(hasyxSchema);
     const adminHasyx = new Hasyx(adminApollo, generate);
 
-    // Get user data
+    // Get current user data
     const userData = await adminHasyx.select({
       table: 'users',
       pk_columns: { id: userId },
@@ -54,22 +63,51 @@ export async function getJwtHandler(request: NextRequest, authOptions: any): Pro
       );
     }
 
-    // Generate Hasura claims
-    const latestRole = userData.hasura_role ?? 'user';
+    // Admin can impersonate another user by asUserId
+    let targetUserId = userId;
     const isAdmin = userData.is_admin ?? false;
+    if (asUserId) {
+      if (!isAdmin) {
+        return NextResponse.json(
+          { error: 'Forbidden: only admin can impersonate' },
+          { status: 403 }
+        );
+      }
+      // Ensure target exists
+      const target = await adminHasyx.select({
+        table: 'users',
+        pk_columns: { id: asUserId },
+        returning: ['id']
+      });
+      if (!target?.id) {
+        return NextResponse.json(
+          { error: 'Target user not found' },
+          { status: 404 }
+        );
+      }
+      targetUserId = asUserId;
+    }
+
+    // Generate Hasura claims for target user
+    const targetData = targetUserId === userId ? userData : await adminHasyx.select({
+      table: 'users',
+      pk_columns: { id: targetUserId },
+      returning: ['id', 'hasura_role', 'is_admin']
+    });
+    const latestRole = targetData.hasura_role ?? 'user';
     const allowedRoles = [latestRole, 'me'];
-    if (isAdmin) allowedRoles.push('admin');
+    if (targetData.is_admin) allowedRoles.push('admin');
     if (latestRole !== 'anonymous') allowedRoles.push('anonymous');
     const uniqueAllowedRoles = [...new Set(allowedRoles)];
 
     const hasuraClaims = {
       'x-hasura-allowed-roles': uniqueAllowedRoles,
       'x-hasura-default-role': latestRole,
-      'x-hasura-user-id': userId,
+      'x-hasura-user-id': targetUserId,
     };
 
     // Generate JWT token
-    const jwt = await generateJWT(userId, hasuraClaims);
+    const jwt = await generateJWT(targetUserId, hasuraClaims);
 
     return NextResponse.json({ jwt }, { status: 200 });
 

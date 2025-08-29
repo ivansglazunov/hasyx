@@ -403,6 +403,32 @@ export async function applyPermissions(hasura: Hasura) {
     columns: true
   });
 
+  // Anonymous minimal permissions (return nothing but avoid 400s)
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'notification_permissions',
+    operation: 'select',
+    role: 'anonymous',
+    filter: { id: { _is_null: true } },
+    columns: []
+  });
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'notification_messages',
+    operation: 'select',
+    role: 'anonymous',
+    filter: { id: { _is_null: true } },
+    columns: []
+  });
+  await hasura.definePermission({
+    schema: 'public',
+    table: 'notifications',
+    operation: 'select',
+    role: 'anonymous',
+    filter: { id: { _is_null: true } },
+    columns: []
+  });
+
   debug('✅ Notification permissions applied.');
 }
 

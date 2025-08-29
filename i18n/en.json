@@ -122,6 +122,7 @@
     "signInToYourAccount": "Sign in to your account",
     "continueWith": "Continue with {provider}",
     "connectedAccounts": "Connected Accounts",
+    "addAccountDescription": "Choose a provider to link a new account to your profile",
     "oauth": {
       "checkingOptions": "Checking authentication options..."
     },
@@ -365,7 +366,8 @@
     "loading": "Loading...",
     "empty": "No users found.",
     "name": "Name",
-    "email": "Email"
+    "email": "Email",
+    "searchByName": "Search by name"
   }
   ,
   "pwa": {
