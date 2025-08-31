@@ -1139,6 +1139,8 @@ vscode:
         "unmigrate": `npx ${packageName} unmigrate`,
         "events": `NODE_OPTIONS=\"--experimental-vm-modules\" npx ${packageName} events`,
         "schema": `npx ${packageName} schema`,
+        "vercel": `npx ${packageName} vercel`,
+        "github": `npx ${packageName} github`,
         "init:android": "node -e \"process.exit(require('fs').existsSync('android')?0:1)\" || npx cap add android",
         "init:ios": "node -e \"process.exit(require('fs').existsSync('ios/App')?0:1)\" || npx cap add ios",
         "build:android": "npm run init:android && npm run client && npm run cli -- assets && npx cap sync android",
@@ -2338,6 +2340,9 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
     .action(async () => {
       await processConfiguredValidationUndefine();
     });
+
+  // GitHub command
+  githubCommandDescribe(program.command('github'));
 
   return program;
 }; 
