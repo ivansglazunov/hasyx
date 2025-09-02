@@ -131,6 +131,7 @@ export const LIB_SCAFFOLD_FILES: string[] = [
   'lib/config/docker-compose.tsx',
   'lib/url.ts',
   'lib/i18n/config.ts',
+  'lib/i18n/messages.ts',
 ];
 
 export const COMPONENTS_SCAFFOLD_FILES: string[] = [

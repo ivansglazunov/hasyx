@@ -9,6 +9,7 @@ import edgehandles from 'cytoscape-edgehandles';
 import edgeConnections from 'cytoscape-edge-connections';
 import klay from 'cytoscape-klay';
 import { getLocale } from 'hasyx/lib/i18n';
+import { i18nMessages } from 'hasyx/lib/i18n/messages';
 import schema from "../public/hasura-schema.json";
 
 
@@ -70,7 +71,7 @@ export default function RootLayout({
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
         </head>
         <body>
-          <ClientLayout defaultLocale={defaultLocale} schema={schema}>
+          <ClientLayout defaultLocale={defaultLocale} schema={schema} messages={i18nMessages(defaultLocale)}>
             {children}
           </ClientLayout>
         </body>
