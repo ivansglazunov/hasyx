@@ -3013,144 +3013,194 @@
       "level": 1
     },
     {
-      "title": "Hasyx — план статьи для Хабра и контент‑чеклисты",
+      "title": "Полное руководство по Hasyx",
       "url": "/hasyx/doc/GUIDE",
       "collapse": true,
       "items": [
         {
-          "title": "1) TL;DR: что такое Hasyx",
-          "url": "/hasyx/doc/GUIDE#1-tldr-hasyx",
+          "title": "🎯 Что такое Hasyx",
+          "url": "/hasyx/doc/GUIDE#hasyx",
           "level": 2
         },
         {
-          "title": "2) Для кого и зачем",
+          "title": "👥 Для кого и зачем",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 2
+        },
+        {
+          "title": "Целевая аудитория",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 3
+        },
+        {
+          "title": "Ключевые случаи использования",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 3
+        },
+        {
+          "title": "Hasyx vs разработка с нуля",
+          "url": "/hasyx/doc/GUIDE#hasyx-vs",
+          "level": 3
+        },
+        {
+          "title": "🏗️ Архитектура",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 2
+        },
+        {
+          "title": "Основные компоненты",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 3
+        },
+        {
+          "title": "Ключевые технические решения",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 3
+        },
+        {
+          "title": "🚀 Быстрый старт",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 2
+        },
+        {
+          "title": "Предварительные требования",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 3
+        },
+        {
+          "title": "1. Установка",
+          "url": "/hasyx/doc/GUIDE#1",
+          "level": 3
+        },
+        {
+          "title": "2. Инициализация",
           "url": "/hasyx/doc/GUIDE#2",
-          "level": 2
+          "level": 3
         },
         {
-          "title": "3) Архитектура одним взглядом",
+          "title": "3. Конфигурация",
           "url": "/hasyx/doc/GUIDE#3",
+          "level": 3
+        },
+        {
+          "title": "4. Запуск",
+          "url": "/hasyx/doc/GUIDE#4",
+          "level": 3
+        },
+        {
+          "title": "⚙️ Система конфигурации",
+          "url": "/hasyx/doc/GUIDE#",
           "level": 2
         },
         {
-          "title": "4) Быстрый старт: с нуля до «Hello»",
-          "url": "/hasyx/doc/GUIDE#4-hello",
-          "level": 2
-        },
-        {
-          "title": "5) Конфигурация и CLI `npm run config`/`npx hasyx config`",
-          "url": "/hasyx/doc/GUIDE#5-cli-npm-run-confignpx-hasyx-config",
-          "level": 2
-        },
-        {
-          "title": "6) Аутентификация и роли",
-          "url": "/hasyx/doc/GUIDE#6",
-          "level": 2
-        },
-        {
-          "title": "7) GraphQL через Hasura (и proxy)",
-          "url": "/hasyx/doc/GUIDE#7-graphql-hasura-proxy",
-          "level": 2
-        },
-        {
-          "title": "8) База данных и генератор сущностей",
-          "url": "/hasyx/doc/GUIDE#8",
-          "level": 2
-        },
-        {
-          "title": "9) Файлы и хранилище",
-          "url": "/hasyx/doc/GUIDE#9",
-          "level": 2
-        },
-        {
-          "title": "10) События, Cron и фоновые задачи",
-          "url": "/hasyx/doc/GUIDE#10-cron",
-          "level": 2
-        },
-        {
-          "title": "11) Уведомления (Telegram/Firebase/проч.)",
-          "url": "/hasyx/doc/GUIDE#11-telegramfirebase",
-          "level": 2
-        },
-        {
-          "title": "12) Платежи (Т‑Банк, Тинькофф)",
-          "url": "/hasyx/doc/GUIDE#12",
-          "level": 2
-        },
-        {
-          "title": "13) AI‑интеграции (OpenRouter/Ollama)",
-          "url": "/hasyx/doc/GUIDE#13-ai-openrouterollama",
-          "level": 2
-        },
-        {
-          "title": "14) Telegram: бот, Web App, вебхуки",
-          "url": "/hasyx/doc/GUIDE#14-telegram-web-app",
-          "level": 2
-        },
-        {
-          "title": "15) PWA: офлайн и установка на рабочий стол",
-          "url": "/hasyx/doc/GUIDE#15-pwa",
-          "level": 2
-        },
-        {
-          "title": "16) Логи и мониторинг",
-          "url": "/hasyx/doc/GUIDE#16",
-          "level": 2
-        },
-        {
-          "title": "17) Docker, Nginx, SSL, Subdomain",
-          "url": "/hasyx/doc/GUIDE#17-docker-nginx-ssl-subdomain",
-          "level": 2
-        },
-        {
-          "title": "18) Шаги деплоя в продакшен",
-          "url": "/hasyx/doc/GUIDE#18",
-          "level": 2
-        },
-        {
-          "title": "19) Real‑time и туннели (WebSocket/WSTunnel)",
-          "url": "/hasyx/doc/GUIDE#19-realtime-websocketwstunnel",
-          "level": 2
-        },
-        {
-          "title": "20) Диаграммы/редакторы (Cytoscape/Renderer)",
-          "url": "/hasyx/doc/GUIDE#20-cytoscaperenderer",
-          "level": 2
-        },
-        {
-          "title": "21) Локализация и i18n",
-          "url": "/hasyx/doc/GUIDE#21-i18n",
-          "level": 2
-        },
-        {
-          "title": "22) Тесты и качество",
-          "url": "/hasyx/doc/GUIDE#22",
-          "level": 2
-        },
-        {
-          "title": "23) FAQ и разбор типичных проблем",
-          "url": "/hasyx/doc/GUIDE#23-faq",
-          "level": 2
-        },
-        {
-          "title": "24) Roadmap и как помочь проекту",
-          "url": "/hasyx/doc/GUIDE#24-roadmap",
-          "level": 2
-        },
-        {
-          "title": "25) Заключение и Call‑to‑Action",
-          "url": "/hasyx/doc/GUIDE#25-calltoaction",
-          "level": 2
-        },
-        {
-          "title": "Рецепт артефактов (как складывать материалы)",
+          "title": "Концепция",
           "url": "/hasyx/doc/GUIDE#",
           "level": 3
         },
         {
-          "title": "Мини чеклист готовности статьи к публикации",
+          "title": "Структура hasyx.config.json",
+          "url": "/hasyx/doc/GUIDE#hasyxconfigjson",
+          "level": 3
+        },
+        {
+          "title": "Основные CLI команды",
+          "url": "/hasyx/doc/GUIDE#cli",
+          "level": 3
+        },
+        {
+          "title": "Автоматическая генерация",
           "url": "/hasyx/doc/GUIDE#",
           "level": 3
+        },
+        {
+          "title": "🔐 Система аутентификации и авторизации",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 2
+        },
+        {
+          "title": "Поддерживаемые провайдеры",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 3
+        },
+        {
+          "title": "Базовая настройка аутентификации",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 3
+        },
+        {
+          "title": "Применить все миграции",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 1
+        },
+        {
+          "title": "Применить конкретные миграции",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 1
+        },
+        {
+          "title": "Откатить миграции",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 1
+        },
+        {
+          "title": "Сгенерировать TypeScript типы из схемы Hasura",
+          "url": "/hasyx/doc/GUIDE#typescript-hasura",
+          "level": 1
+        },
+        {
+          "title": "Интерактивная настройка хранилища",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 1
+        },
+        {
+          "title": "Выберите Storage → Local MinIO / AWS S3 / другой провайдер",
+          "url": "/hasyx/doc/GUIDE#storage-local-minio-aws-s3",
+          "level": 1
+        },
+        {
+          "title": "Синхронизация всех event triggers с Hasura",
+          "url": "/hasyx/doc/GUIDE#event-triggers-hasura",
+          "level": 1
+        },
+        {
+          "title": "Создание шаблонов событий",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 1
+        },
+        {
+          "title": "Очистка security headers (для миграции)",
+          "url": "/hasyx/doc/GUIDE#security-headers",
+          "level": 1
+        },
+        {
+          "title": "Docker",
+          "url": "/hasyx/doc/GUIDE#docker",
+          "level": 1
+        },
+        {
+          "title": "Поддомены с SSL",
+          "url": "/hasyx/doc/GUIDE#ssl",
+          "level": 1
+        },
+        {
+          "title": "Результат: https://api.yourdomain.com",
+          "url": "/hasyx/doc/GUIDE#httpsapiyourdomaincom",
+          "level": 1
+        },
+        {
+          "title": "Логи",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 1
+        },
+        {
+          "title": "Тесты",
+          "url": "/hasyx/doc/GUIDE#",
+          "level": 1
+        },
+        {
+          "title": "Debug в production",
+          "url": "/hasyx/doc/GUIDE#debug-production",
+          "level": 1
         }
       ],
       "level": 1
@@ -10139,6 +10189,84 @@
       "level": 1
     },
     {
+      "title": "Hasyx Groups",
+      "url": "/hasyx/doc/GROUPS",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/GROUPS#overview",
+          "level": 2
+        },
+        {
+          "title": "Database Schema",
+          "url": "/hasyx/doc/GROUPS#database-schema",
+          "level": 2
+        },
+        {
+          "title": "groups",
+          "url": "/hasyx/doc/GROUPS#groups",
+          "level": 3
+        },
+        {
+          "title": "memberships",
+          "url": "/hasyx/doc/GROUPS#memberships",
+          "level": 3
+        },
+        {
+          "title": "invitations",
+          "url": "/hasyx/doc/GROUPS#invitations",
+          "level": 3
+        },
+        {
+          "title": "Triggers & Functions",
+          "url": "/hasyx/doc/GROUPS#triggers-functions",
+          "level": 2
+        },
+        {
+          "title": "Permission Model",
+          "url": "/hasyx/doc/GROUPS#permission-model",
+          "level": 2
+        },
+        {
+          "title": "Allow-list tokens",
+          "url": "/hasyx/doc/GROUPS#allow-list-tokens",
+          "level": 3
+        },
+        {
+          "title": "groups",
+          "url": "/hasyx/doc/GROUPS#groups",
+          "level": 3
+        },
+        {
+          "title": "memberships",
+          "url": "/hasyx/doc/GROUPS#memberships",
+          "level": 3
+        },
+        {
+          "title": "invitations",
+          "url": "/hasyx/doc/GROUPS#invitations",
+          "level": 3
+        },
+        {
+          "title": "Typical Flows",
+          "url": "/hasyx/doc/GROUPS#typical-flows",
+          "level": 2
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/GROUPS#testing",
+          "level": 2
+        },
+        {
+          "title": "UI Pages",
+          "url": "/hasyx/doc/GROUPS#ui-pages",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Hasyx — план статьи для Хабра и контент‑чеклисты",
       "url": "/hasyx/doc/GUIDE",
       "collapse": true,
@@ -10501,6 +10629,84 @@
           "title": "Automated Relationships",
           "url": "/hasyx/doc/HID#automated-relationships",
           "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "Hasyx Invites",
+      "url": "/hasyx/doc/INVITE",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/INVITE#overview",
+          "level": 2
+        },
+        {
+          "title": "Database Schema",
+          "url": "/hasyx/doc/INVITE#database-schema",
+          "level": 2
+        },
+        {
+          "title": "invites",
+          "url": "/hasyx/doc/INVITE#invites",
+          "level": 3
+        },
+        {
+          "title": "invited",
+          "url": "/hasyx/doc/INVITE#invited",
+          "level": 3
+        },
+        {
+          "title": "Relationships",
+          "url": "/hasyx/doc/INVITE#relationships",
+          "level": 3
+        },
+        {
+          "title": "Permissions (Hasura)",
+          "url": "/hasyx/doc/INVITE#permissions-hasura",
+          "level": 2
+        },
+        {
+          "title": "API Route",
+          "url": "/hasyx/doc/INVITE#api-route",
+          "level": 2
+        },
+        {
+          "title": "Client Integration",
+          "url": "/hasyx/doc/INVITE#client-integration",
+          "level": 2
+        },
+        {
+          "title": "Business Logic (`lib/invite.ts`)",
+          "url": "/hasyx/doc/INVITE#business-logic-libinvitets",
+          "level": 2
+        },
+        {
+          "title": "JWT Behavior",
+          "url": "/hasyx/doc/INVITE#jwt-behavior",
+          "level": 2
+        },
+        {
+          "title": "UI",
+          "url": "/hasyx/doc/INVITE#ui",
+          "level": 2
+        },
+        {
+          "title": "Testing",
+          "url": "/hasyx/doc/INVITE#testing",
+          "level": 2
+        },
+        {
+          "title": "Migrations and Schema",
+          "url": "/hasyx/doc/INVITE#migrations-and-schema",
+          "level": 2
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/INVITE#troubleshooting",
+          "level": 2
         }
       ],
       "level": 1
@@ -11238,6 +11444,54 @@
       "level": 1
     },
     {
+      "title": "Android Push Notifications (Capacitor + FCM)",
+      "url": "/hasyx/doc/NOTIFY-ANDROID",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Prerequisites",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#prerequisites",
+          "level": 2
+        },
+        {
+          "title": "Install plugins",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#install-plugins",
+          "level": 2
+        },
+        {
+          "title": "Firebase config",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#firebase-config",
+          "level": 2
+        },
+        {
+          "title": "AndroidManifest",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#androidmanifest",
+          "level": 2
+        },
+        {
+          "title": "Code changes (done)",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#code-changes-done",
+          "level": 2
+        },
+        {
+          "title": "Build and run",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#build-and-run",
+          "level": 2
+        },
+        {
+          "title": "Testing plan (use app/hasyx/diagnostics)",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#testing-plan-use-apphasyxdiagnostics",
+          "level": 2
+        },
+        {
+          "title": "Notes",
+          "url": "/hasyx/doc/NOTIFY-ANDROID#notes",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Web Push Notifications with Firebase Cloud Messaging (FCM) in Hasyx",
       "url": "/hasyx/doc/NOTIFY-FIREBASE",
       "collapse": true,
@@ -11265,6 +11519,64 @@
         {
           "title": "Client-Side Service Worker (`firebase-messaging-sw.js`)",
           "url": "/hasyx/doc/NOTIFY-FIREBASE#client-side-service-worker-firebase-messaging-swjs",
+          "level": 2
+        }
+      ],
+      "level": 1
+    },
+    {
+      "title": "iOS Push Notifications (Capacitor + FCM via APNs)",
+      "url": "/hasyx/doc/NOTIFY-IOS",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Prerequisites",
+          "url": "/hasyx/doc/NOTIFY-IOS#prerequisites",
+          "level": 2
+        },
+        {
+          "title": "Install plugins",
+          "url": "/hasyx/doc/NOTIFY-IOS#install-plugins",
+          "level": 2
+        },
+        {
+          "title": "Xcode capabilities",
+          "url": "/hasyx/doc/NOTIFY-IOS#xcode-capabilities",
+          "level": 2
+        },
+        {
+          "title": "Firebase config",
+          "url": "/hasyx/doc/NOTIFY-IOS#firebase-config",
+          "level": 2
+        },
+        {
+          "title": "AppDelegate updates (done)",
+          "url": "/hasyx/doc/NOTIFY-IOS#appdelegate-updates-done",
+          "level": 2
+        },
+        {
+          "title": "Request permission + get token (runtime)",
+          "url": "/hasyx/doc/NOTIFY-IOS#request-permission-get-token-runtime",
+          "level": 2
+        },
+        {
+          "title": "Build and run",
+          "url": "/hasyx/doc/NOTIFY-IOS#build-and-run",
+          "level": 2
+        },
+        {
+          "title": "APNs key in Firebase",
+          "url": "/hasyx/doc/NOTIFY-IOS#apns-key-in-firebase",
+          "level": 2
+        },
+        {
+          "title": "Testing plan (use app/hasyx/diagnostics)",
+          "url": "/hasyx/doc/NOTIFY-IOS#testing-plan-use-apphasyxdiagnostics",
+          "level": 2
+        },
+        {
+          "title": "Notes",
+          "url": "/hasyx/doc/NOTIFY-IOS#notes",
           "level": 2
         }
       ],
@@ -15685,5 +15997,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-08-29T20:15:59.095Z"
+  "lastUpdated": "2025-09-02T16:40:43.265Z"
 }

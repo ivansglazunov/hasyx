@@ -132,6 +132,7 @@ export const LIB_SCAFFOLD_FILES: string[] = [
   'lib/url.ts',
   'lib/i18n/config.ts',
   'lib/i18n/messages.ts',
+  'lib/app-client-layout.tsx',
 ];
 
 export const COMPONENTS_SCAFFOLD_FILES: string[] = [
