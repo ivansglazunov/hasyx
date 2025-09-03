@@ -26,7 +26,7 @@ function resolveVariant(variant: string, config: any) {
   const optionalConfigs = [
     'telegramBot', 'telegramChannel', 'environment',
     'googleOAuth', 'yandexOAuth', 'githubOAuth', 'facebookOAuth', 'vkOAuth', 'telegramLoginOAuth',
-    'storage', 'pg', 'docker', 'dockerhub', 'github', 'resend', 'openrouter', 'firebase', 'firebasePublic',
+    'storage', 'pg', 'docker', 'dockerhub', 'github', 'resend', 'openrouter', 'npm', 'firebase', 'firebasePublic',
     'nextAuthSecrets', 'dns', 'cloudflare', 'projectUser', 'vercel', 'githubWebhooks', 'githubTelegramBot',
     'testing',
   ];

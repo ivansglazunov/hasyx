@@ -131,6 +131,11 @@ jobs:
           NEXT_PUBLIC_BUILD_TARGET: pages
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
 
+      - name: Configure npm auth
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish to npm
         run: npm publish
         env:
@@ -225,8 +230,8 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -234,8 +239,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
-            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
           build-args: |
             NEXT_PUBLIC_HASURA_GRAPHQL_URL=${{ secrets.NEXT_PUBLIC_HASURA_GRAPHQL_URL }}
             NEXT_PUBLIC_MAIN_URL=${{ secrets.NEXT_PUBLIC_MAIN_URL }}
@@ -644,7 +649,7 @@ jobs:
           
           NOTES+="## 🔗 Related Links\n\n"
           NOTES+="- **GitHub Pages**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}\n"
-          NOTES+="- **Docker Hub**: https://hub.docker.com/r/${{ secrets.DOCKER_USERNAME }}/${{ steps.package.outputs.name }}\n"
+          NOTES+="- **Docker Hub**: https://hub.docker.com/r/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.package.outputs.name }}\n"
           NOTES+="- **npm Package**: https://www.npmjs.com/package/${{ steps.package.outputs.name }}\n\n"
           
           NOTES+="## 📋 Changelog\n\n"

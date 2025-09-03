@@ -505,6 +505,28 @@ hasyxConfig.variant = z.object({
     backLabel: '< back',
     descriptionTemplate: (_data: any) => 'OpenRouter AI Service'
   }),
+  // NPM publish token
+  npm: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'npm',
+    referenceKey: 'npm',
+    title: 'NPM Configuration',
+    description: 'Select an NPM configuration (optional) to expose NPM_TOKEN for CI publishing.',
+    emptyMessage: 'No NPM configurations available. Create NPM configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (_data: any) => 'NPM'
+  }),
+  // NPM publish token
+  npm: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'npm',
+    referenceKey: 'npm',
+    title: 'NPM Configuration',
+    description: 'Select an NPM configuration (optional) to expose NPM_TOKEN for CI publishing.',
+    emptyMessage: 'No NPM configurations available. Create NPM configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (_data: any) => 'NPM'
+  }),
   // Firebase Admin
   firebase: z.string().optional().meta({
     type: 'reference-selector',
@@ -589,7 +611,7 @@ hasyxConfig.variant = z.object({
     'host', 'hasura', 'telegramBot', 'telegramChannel', 'environment', 'testing',
     'googleOAuth', 'yandexOAuth', 'githubOAuth', 'facebookOAuth', 'vkOAuth', 'telegramLoginOAuth', 'nextAuthSecrets',
     'storage', 'pg', 'docker', 'dockerhub', 'github', 'vercel', 'iosSigning', 'githubTelegramBot',
-    'resend', 'openrouter', 'firebase', 'firebasePublic', 'dns', 'cloudflare', 'projectUser', 'githubWebhooks'
+    'resend', 'openrouter', 'npm', 'firebase', 'firebasePublic', 'dns', 'cloudflare', 'projectUser', 'githubWebhooks'
   ]
 });
 
@@ -1022,6 +1044,32 @@ hasyxConfig.openrouters = z.record(
   default: ['local', 'dev', 'prod'],
   add: hasyxConfig.openrouter,
   descriptionTemplate: (data: any) => 'OpenRouter AI Service'
+});
+
+// NPM Schema
+hasyxConfig.npm = z.object({
+  token: z
+    .string()
+    .min(1, 'Please enter a valid NPM token')
+    .describe('NPM Token (NPM_TOKEN). Use an Automation token for CI publishing.'),
+}).meta({
+  type: 'npm-config',
+  title: 'NPM Configuration',
+  description: 'Create an NPM Automation token: https://www.npmjs.com/settings/<org-or-user>/tokens → Generate new token → Automation. This token maps to NPM_TOKEN for CI publishing.',
+  envMapping: {
+    token: 'NPM_TOKEN',
+  }
+});
+
+hasyxConfig.npms = z.record(
+  z.string(),
+  hasyxConfig.npm,
+).meta({
+  data: 'npm',
+  type: 'keys',
+  default: ['default'],
+  add: hasyxConfig.npm,
+  descriptionTemplate: (_data: any) => 'NPM Token'
 });
 
 // Firebase (Admin) and Firebase (Public) config moved to lib/firebase/config.tsx
@@ -1530,6 +1578,7 @@ hasyxConfig.file = z.object({
   github: hasyxConfig.githubs, // GitHub API
   resend: hasyxConfig.resends, // Resend email
   openrouter: hasyxConfig.openrouters, // OpenRouter AI
+  npm: hasyxConfig.npms, // NPM (publish token)
   firebase: hasyxConfig.firebases, // Firebase (Admin)
   firebasePublic: z.record(z.string(), firebasePublicSchema).meta({
     data: 'firebasePublic',
