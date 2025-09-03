@@ -14,7 +14,7 @@ function uniqueSuffix(): string {
   return `${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
 }
 
-describe('PostGIS', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('PostGIS', () => {
   it('postgis extension is installed or gracefully unavailable', async () => {
     const hasura = new Hasura({
       url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!,
