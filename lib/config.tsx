@@ -101,7 +101,14 @@ hasyxConfig.host = z.object({
     const port = value?.port || 3000;
     const dockerhub = resolvedAll?.dockerhub ? resolvedAll?.dockerhub : undefined;
     const dockerhubCreds = dockerhub ? dockerhub : undefined;
-    const image = value?.image || dockerhubCreds?.image; // prefer explicit host.image, else dockerhub.image
+    const rawImage = value?.image || dockerhubCreds?.image; // prefer explicit host.image, else dockerhub.image
+    // If image name has no namespace and dockerhub username is provided, prefix it
+    const image = ((): string | undefined => {
+      if (!rawImage) return undefined;
+      if (rawImage.includes('/')) return rawImage;
+      if (dockerhubCreds?.username) return `${dockerhubCreds.username}/${rawImage}`;
+      return rawImage;
+    })();
     const hasDockerhub = Boolean(dockerhubCreds?.username && dockerhubCreds?.image);
     const watchtower = value?.watchtower !== false; // default to true
     // Автоматически включать JWT auth для client builds
