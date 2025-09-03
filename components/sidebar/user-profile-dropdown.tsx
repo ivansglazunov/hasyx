@@ -150,7 +150,7 @@ function UnauthenticatedUserMenu() {
   const t = useTranslations();
   return (
     <>
-      <DropdownMenuLabel>{t('signInToYourAccount')}</DropdownMenuLabel>
+      <DropdownMenuLabel>{t('auth.signInToYourAccount')}</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <div className="p-2">
         <OAuthButtons />

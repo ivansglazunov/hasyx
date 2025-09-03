@@ -234,8 +234,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
-            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+            ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
           build-args: |
             NEXT_PUBLIC_HASURA_GRAPHQL_URL=${{ secrets.NEXT_PUBLIC_HASURA_GRAPHQL_URL }}
             NEXT_PUBLIC_MAIN_URL=${{ secrets.NEXT_PUBLIC_MAIN_URL }}

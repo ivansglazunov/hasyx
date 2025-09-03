@@ -57,6 +57,10 @@ hasyxConfig.host = z.object({
     .number()
     .default(3000)
     .describe('Application port. This is the port your Next.js app will listen on (default: 3000).'),
+  image: z
+    .string()
+    .optional()
+    .describe('Docker image for the application container. If not set, will try dockerhub.image. If neither set, app service will not be generated.'),
   url: z
     .string()
     .describe('Public base URL for your app (maps to NEXT_PUBLIC_MAIN_URL), e.g., https://example.com or http://localhost:3000.'),
@@ -79,7 +83,7 @@ hasyxConfig.host = z.object({
     .describe('Enable Watchtower automatic updates for this container (default: true).'),
 }).meta({
   title: 'Host Configuration',
-  description: 'Configure the publicly accessible URL and port of your application. Use your production domain in production (e.g., https://example.com) and localhost during development. Set client-only mode only if your app must run without server features.',
+  description: 'Configure the publicly accessible URL and port of your application. To enable app container generation, set dockerhub.image (and dockerhub.username). Otherwise only infrastructure services (Postgres/Hasura/MinIO) will be generated.',
   envMapping: {
     port: 'PORT',
     // Duplicate mapping: one source value -> multiple env targets
@@ -93,7 +97,12 @@ hasyxConfig.host = z.object({
     return value?.jwtAuth || value?.clientOnly;
   },
     compose: (value: any, _resolved?: any) => {
+    const resolvedAll: any = _resolved || {};
     const port = value?.port || 3000;
+    const dockerhub = resolvedAll?.dockerhub ? resolvedAll?.dockerhub : undefined;
+    const dockerhubCreds = dockerhub ? dockerhub : undefined;
+    const image = value?.image || dockerhubCreds?.image; // prefer explicit host.image, else dockerhub.image
+    const hasDockerhub = Boolean(dockerhubCreds?.username && dockerhubCreds?.image);
     const watchtower = value?.watchtower !== false; // default to true
     // Автоматически включать JWT auth для client builds
     const jwtAuth = value?.jwtAuth || value?.clientOnly;
@@ -104,22 +113,24 @@ hasyxConfig.host = z.object({
       labels['com.centurylinklabs.watchtower.enable'] = 'true';
     }
     
-    return {
-      services: {
-        hasyx: {
-          image: 'ivansglazunov/hasyx:latest',
-          container_name: 'hasyx-app',
-          restart: 'unless-stopped',
-          env_file: ['.env'],
-          ports: [`${port}:${port}`],
-          environment: {
-            NEXT_PUBLIC_JWT_AUTH: jwtAuth ? '1' : '0',
-            NEXT_PUBLIC_JWT_FORCE: jwtForce ? '1' : '0'
-          },
-          ...(Object.keys(labels).length > 0 && { labels }),
+    const services: any = {};
+    // Generate app service ONLY when dockerhub.username and image provided
+    if (hasDockerhub && image) {
+      services.hasyx = {
+        image,
+        container_name: 'hasyx-app',
+        restart: 'unless-stopped',
+        env_file: ['.env'],
+        ports: [`${port}:${port}`],
+        environment: {
+          NEXT_PUBLIC_JWT_AUTH: jwtAuth ? '1' : '0',
+          NEXT_PUBLIC_JWT_FORCE: jwtForce ? '1' : '0'
         },
-      },
-    };
+        ...(Object.keys(labels).length > 0 && { labels }),
+      };
+    }
+    
+    return { services };
   }
 });
 
