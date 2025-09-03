@@ -2015,6 +2015,45 @@ export const telegramCommandDescribe = (cmd: Command) => {
     .description('Telegram bot operations');
   group.addHelpText('after', '\nLegacy: Deprecated interactive setup is removed; use subcommands.');
   group
+    .command('sync')
+    .description('Sync Telegram settings from current variant: set webhook, menu button, and commands')
+    .action(async () => {
+      // Ensure .env exists and load it
+      try {
+        const { generateEnv } = await import('./config/env');
+        await generateEnv();
+      } catch {}
+      const parse = (fp: string) => {
+        const env: Record<string,string> = {};
+        try {
+          const content = require('fs').readFileSync(fp, 'utf-8');
+          for (const line of content.split('\n')) {
+            const t = line.trim();
+            if (!t || t.startsWith('#')) continue;
+            const i = t.indexOf('=');
+            if (i <= 0) continue;
+            env[t.slice(0,i).trim()] = t.slice(i+1).trim();
+          }
+        } catch {}
+        return env;
+      };
+      const env = parse('.env');
+      const baseUrl = env.NEXT_PUBLIC_API_URL || env.NEXT_PUBLIC_MAIN_URL || env.NEXT_PUBLIC_BASE_URL;
+      if (!baseUrl) {
+        console.error('❌ Base URL not found in .env (NEXT_PUBLIC_API_URL/NEXT_PUBLIC_MAIN_URL/NEXT_PUBLIC_BASE_URL)');
+        process.exit(1);
+      }
+      const webhookUrl = `${baseUrl.replace(/\/$/, '')}/api/telegram_bot`;
+      const projectName = env.NEXT_PUBLIC_APP_NAME || 'App';
+      try {
+        await tgCalibrate({ webhookUrl, projectName });
+        console.log(`✅ Telegram synchronized: webhook=${webhookUrl}`);
+      } catch (e) {
+        console.error('❌ Telegram sync failed:', e);
+        process.exit(1);
+      }
+    });
+  group
     .command('webhook-define <url>')
     .description('Set Telegram webhook URL')
     .action(async (url: string) => { await tgSetWebhook(url); console.log('✅ Webhook defined'); });

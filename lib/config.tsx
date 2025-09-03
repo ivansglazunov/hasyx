@@ -516,17 +516,6 @@ hasyxConfig.variant = z.object({
     backLabel: '< back',
     descriptionTemplate: (_data: any) => 'NPM'
   }),
-  // NPM publish token
-  npm: z.string().optional().meta({
-    type: 'reference-selector',
-    data: 'npm',
-    referenceKey: 'npm',
-    title: 'NPM Configuration',
-    description: 'Select an NPM configuration (optional) to expose NPM_TOKEN for CI publishing.',
-    emptyMessage: 'No NPM configurations available. Create NPM configurations first.',
-    backLabel: '< back',
-    descriptionTemplate: (_data: any) => 'NPM'
-  }),
   // Firebase Admin
   firebase: z.string().optional().meta({
     type: 'reference-selector',
