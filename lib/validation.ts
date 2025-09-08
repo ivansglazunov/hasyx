@@ -9,7 +9,7 @@ const debug = Debug('validation');
 export interface ValidationRule {
   schema?: string;
   table: string;
-  column: string;
+  column?: string;
   validate: string; // path.to.schema.from.root.in.generated.schemas
   schemaSet?: string; // optional key in validation.schemas (defaults to 'project')
 }
@@ -129,7 +129,81 @@ export async function syncSchemasToDatabase(hasura?: Hasura, schemas?: Generated
     );
   `);
 
-  const data = schemas || (await generateProjectJsonSchemas());
+  await hasu.sql(`
+    CREATE TABLE IF NOT EXISTS validation.table_bindings (
+      schema TEXT NOT NULL,
+      table_name TEXT NOT NULL,
+      schema_path TEXT NOT NULL,
+      schema_set TEXT NOT NULL DEFAULT 'project',
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      PRIMARY KEY(schema, table_name)
+    );
+  `);
+
+  // Generate or use provided schemas
+  let data: GeneratedSchemas = schemas || (await generateProjectJsonSchemas());
+
+  // Try to minimize payload by keeping only required schema paths from config
+  try {
+    const cfg = await loadValidationConfigFromFile();
+    const requiredPaths: string[] = [];
+    if (cfg && Array.isArray(cfg.validation)) {
+      for (const rule of cfg.validation) {
+        if (rule && typeof rule.validate === 'string') requiredPaths.push(rule.validate);
+      }
+    }
+    if (requiredPaths.length > 0) {
+      const pickPaths = (root: any, paths: string[]): any => {
+        const out: any = {};
+        for (const p of paths) {
+          const parts = (p || '').split('.');
+          let src: any = root;
+          let dst: any = out;
+          for (let i = 0; i < parts.length; i++) {
+            const key = parts[i];
+            if (!key) continue;
+            if (src == null || typeof src !== 'object' || !(key in src)) {
+              src = null;
+              break;
+            }
+            if (i === parts.length - 1) {
+              if (!(parts[0] in dst)) dst[parts[0]] = {};
+              let cur = dst;
+              for (let j = 0; j < parts.length - 1; j++) {
+                const k = parts[j];
+                cur[k] = cur[k] || {};
+                cur = cur[k];
+              }
+              cur[key] = src[key];
+            } else {
+              // descend
+              if (!(parts[0] in dst)) dst[parts[0]] = {};
+              let cur = dst;
+              for (let j = 0; j <= i; j++) {
+                const k = parts[j];
+                cur[k] = cur[k] || {};
+                cur = cur[k];
+              }
+              src = src[key];
+            }
+          }
+        }
+        return out;
+      };
+      const minimal = pickPaths(data, requiredPaths);
+      // Ensure structure keys exist
+      if (!minimal.schema && data.schema) minimal.schema = {};
+      if (!minimal.config && data.config) minimal.config = {};
+      // Prefer minimal if it reduces size significantly or env hints local testing
+      const fullStr = JSON.stringify(data);
+      const minStr = JSON.stringify(minimal);
+      const preferMinimal = (process.env.JEST_LOCAL === '1') || minStr.length < fullStr.length * 0.7;
+      if (preferMinimal) data = minimal;
+    }
+  } catch {
+    // ignore minimization errors
+  }
+
   const payload = JSON.stringify(data).replace(/'/g, "''");
   await hasu.sql(`
     INSERT INTO validation.schemas (name, content, updated_at)
@@ -145,6 +219,10 @@ export async function loadValidationConfigFromFile(): Promise<ValidationConfig |
     const json = await fs.readJson(configPath);
     if (Array.isArray(json.validation)) {
       return { validation: json.validation } as ValidationConfig;
+    }
+    if (json.validationRules && typeof json.validationRules === 'object' && !Array.isArray(json.validationRules)) {
+      const values = Object.values(json.validationRules).filter(Boolean);
+      if (values.length > 0) return { validation: values as ValidationRule[] };
     }
     return null;
   } catch {
@@ -186,17 +264,26 @@ export async function applyValidationRules(hasura: Hasura, config: ValidationCon
   for (const rule of config.validation) {
     const sch = rule.schema || 'public';
     const tbl = rule.table;
-    const col = rule.column;
     const pathArg = rule.validate;
     const schemaSet = rule.schemaSet || 'project';
-    const triggerName = `hasyx_validation_${sch}_${tbl}_${col}`;
-    await hasura.sql(`
-      DROP TRIGGER IF EXISTS ${triggerName} ON ${sch}.${tbl};
-      CREATE TRIGGER ${triggerName}
-        BEFORE INSERT OR UPDATE OF ${col} ON ${sch}.${tbl}
-        FOR EACH ROW
-        EXECUTE FUNCTION validation.validate_column('${col}', '${pathArg}', '${schemaSet}');
-    `);
+    if (rule.column) {
+      const col = rule.column;
+      const triggerName = `hasyx_validation_${sch}_${tbl}_${col}`;
+      await hasura.sql(`
+        DROP TRIGGER IF EXISTS ${triggerName} ON ${sch}.${tbl};
+        CREATE TRIGGER ${triggerName}
+          BEFORE INSERT OR UPDATE OF ${col} ON ${sch}.${tbl}
+          FOR EACH ROW
+          EXECUTE FUNCTION validation.validate_column('${col}', '${pathArg}', '${schemaSet}');
+      `);
+    } else {
+      await hasura.sql(`
+        INSERT INTO validation.table_bindings(schema, table_name, schema_path, schema_set, updated_at)
+        VALUES ('${sch}', '${tbl}', '${pathArg}', '${schemaSet}', NOW())
+        ON CONFLICT (schema, table_name)
+        DO UPDATE SET schema_path = EXCLUDED.schema_path, schema_set = EXCLUDED.schema_set, updated_at = NOW();
+      `);
+    }
   }
 }
 
@@ -345,6 +432,25 @@ export async function ensureValidationRuntime(hasura: Hasura) {
       var errors = validate(value, schema);
       if (errors.length){ plv8.elog(ERROR, 'Validation failed: ' + errors.join(', ')); }
       return NEW;
+    $$ LANGUAGE plv8;
+  `);
+
+  await hasura.sql(`
+    CREATE OR REPLACE FUNCTION validation.validate_option_key(view_schema TEXT, view_table TEXT, option_key TEXT) RETURNS VOID AS $$
+      var rows = plv8.execute("SELECT schema_path, schema_set FROM validation.table_bindings WHERE schema = $1 AND table_name = $2 LIMIT 1", [view_schema, view_table]);
+      if (!rows || rows.length === 0) { return; }
+      var binding = rows[0];
+      var rows2 = plv8.execute("SELECT content FROM validation.schemas WHERE name = $1 LIMIT 1", [binding.schema_set]);
+      if (!rows2 || rows2.length === 0) { plv8.elog(ERROR, 'Validation schemas not found for set: ' + binding.schema_set); }
+      var root = rows2[0].content;
+      function resolvePath(obj, p){ var parts=(p||'').split('.'); var cur=obj; for (var i=0;i<parts.length;i++){ cur=(cur&&cur[parts[i]])||null; } return cur; }
+      var schema = resolvePath(root, binding.schema_path);
+      if (!schema) { plv8.elog(ERROR, 'Schema not found at path: ' + binding.schema_path); }
+      var props = (schema && schema.properties) || null;
+      if (!props || typeof props !== 'object') { plv8.elog(ERROR, 'Bound schema is not an object with properties'); }
+      if (!Object.prototype.hasOwnProperty.call(props, option_key)) {
+        plv8.elog(ERROR, 'Unknown option key: ' + option_key);
+      }
     $$ LANGUAGE plv8;
   `);
 }

@@ -302,7 +302,15 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
   );
 }
 
-export function HasyxProvider({ children, generate }: { children: React.ReactNode, generate: Generate }) {
+export function HasyxProvider({
+  children,
+  generate,
+  defaultTheme = 'system',
+}: {
+  children: React.ReactNode,
+  generate: Generate,
+  defaultTheme?: string
+}) {
   // Use enhanced url function for auth base path
   const authBasePath = url('http', API_URL, '/api/auth');
 
@@ -328,7 +336,7 @@ export function HasyxProvider({ children, generate }: { children: React.ReactNod
       <TelegramMiniappProvider>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme={defaultTheme}
           enableSystem
           disableTransitionOnChange
         >

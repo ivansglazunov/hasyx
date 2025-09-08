@@ -8,12 +8,13 @@ export function AppClientLayout(props: {
   defaultLocale: string;
   schema: any;
   children: React.ReactNode;
+  defaultTheme?: string;
 }) {
-  const { defaultLocale, schema, children } = props;
+  const { defaultLocale, schema, children, defaultTheme } = props;
   const { locale } = useLocaleClient(defaultLocale);
   const messages = i18nMessages(locale);
   return (
-    <HasyxClientLayout defaultLocale={defaultLocale} schema={schema} messages={messages}>
+    <HasyxClientLayout defaultLocale={defaultLocale} defaultTheme={defaultTheme} schema={schema} messages={messages}>
       {children}
     </HasyxClientLayout>
   );

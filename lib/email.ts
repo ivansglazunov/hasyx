@@ -72,6 +72,8 @@ async function sendEmail(options: EmailOptions): Promise<boolean> {
 export async function sendVerificationEmail(email: string, token: string): Promise<boolean> {
     const verificationLink = `${nextAuthUrl || 'http://localhost:3000'}/api/auth/verify?token=${token}`;
     debug('Generated verification link: %s', verificationLink);
+    // Always log token for diagnostics regardless of real sending
+    console.log('[EMAIL] to=%s token=%s link=%s', email, token, verificationLink);
 
     const subject = 'Verify your email address';
     const html = `<p>Welcome! Please click the link below to verify your email address:</p>

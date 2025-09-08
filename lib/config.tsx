@@ -501,6 +501,17 @@ hasyxConfig.variant = z.object({
     backLabel: '< back',
     descriptionTemplate: (_data: any) => 'Resend Email Service'
   }),
+  // SMS provider (sms.ru)
+  smsru: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'smsru',
+    referenceKey: 'smsru',
+    title: 'sms.ru Configuration',
+    description: 'Select an sms.ru configuration (optional)',
+    emptyMessage: 'No sms.ru configurations available. Create sms.ru configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (_data: any) => 'sms.ru SMS Service'
+  }),
   // LLM provider (OpenRouter)
   openrouter: z.string().optional().meta({
     type: 'reference-selector',
@@ -607,7 +618,7 @@ hasyxConfig.variant = z.object({
     'host', 'hasura', 'telegramBot', 'telegramChannel', 'environment', 'testing',
     'googleOAuth', 'yandexOAuth', 'githubOAuth', 'facebookOAuth', 'vkOAuth', 'telegramLoginOAuth', 'nextAuthSecrets',
     'storage', 'pg', 'docker', 'dockerhub', 'github', 'vercel', 'iosSigning', 'githubTelegramBot',
-    'resend', 'openrouter', 'npm', 'firebase', 'firebasePublic', 'dns', 'cloudflare', 'projectUser', 'githubWebhooks'
+    'resend', 'smsru', 'openrouter', 'npm', 'firebase', 'firebasePublic', 'dns', 'cloudflare', 'projectUser', 'githubWebhooks'
   ]
 });
 
@@ -621,6 +632,30 @@ hasyxConfig.variants = z.record(
   default: ['local', 'dev', 'prod', 'vercel'],
   add: hasyxConfig.variant,
   descriptionTemplate: (data: any) => `${data.host || 'no host'} -> ${data.hasura || 'no hasura'}${data.telegramBot ? ` -> ${data.telegramBot}` : ''}`
+});
+
+// Validation rule schema for interactive UI (maps to hasyx.config.json validationRules)
+hasyxConfig.validationRule = z.object({
+  schema: z.string().default('public').describe('Schema name (default: public)'),
+  table: z.string().min(1, 'Table is required').describe('Table name (without schema when schema=public)'),
+  column: z.string().optional().describe('Column name (omit for table-level binding e.g. options view)'),
+  validate: z.string().min(1, 'Path is required').describe('Path to JSON Schema inside generated schemas (e.g., schema.optionsProfile)'),
+  schemaSet: z.string().default('project').describe('Schema set (default: project)')
+}).meta({
+  type: 'validation-rule',
+  title: 'Validation Rule',
+  description: 'Bind a JSON Schema path (from zod) to a specific column or a whole table (omit column) for plv8 validation.'
+});
+
+hasyxConfig.validationRules = z.record(
+  z.string(),
+  hasyxConfig.validationRule,
+).meta({
+  data: 'validationRules',
+  type: 'keys',
+  default: [],
+  add: hasyxConfig.validationRule,
+  descriptionTemplate: (data: any) => `${data?.schema || 'public'}.${data?.table}${data?.column ? '.' + data.column : ''} -> ${data?.validate || 'path'}`
 });
 
 // Google OAuth configuration
@@ -1015,6 +1050,35 @@ hasyxConfig.resends = z.record(
   default: ['local', 'dev', 'prod'],
   add: hasyxConfig.resend,
   descriptionTemplate: (data: any) => 'Resend Email Service'
+});
+
+// sms.ru Schema
+hasyxConfig.smsru = z.object({
+  apiId: z.string()
+    .min(1, 'Please enter a valid sms.ru API ID')
+    .describe('sms.ru API ID (SMSRU_API_ID). Get from sms.ru dashboard.'),
+  from: z.string()
+    .optional()
+    .describe('sms.ru Sender name (SMSRU_FROM). Optional approved sender name.')
+}).meta({
+  type: 'smsru-config',
+  title: 'sms.ru Configuration',
+  description: 'Configure sms.ru credentials for SMS sending. Provide API ID and optional approved sender name.',
+  envMapping: {
+    apiId: 'SMSRU_API_ID',
+    from: 'SMSRU_FROM'
+  }
+});
+
+hasyxConfig.smsrus = z.record(
+  z.string(), // smsru configuration name
+  hasyxConfig.smsru,
+).meta({
+  data: 'smsru',
+  type: 'keys',
+  default: ['local', 'dev', 'prod'],
+  add: hasyxConfig.smsru,
+  descriptionTemplate: (data: any) => `${data?.apiId ? 'api set' : 'no api'}${data?.from ? ' • from set' : ''}`
 });
 
 // OpenRouter Schema
@@ -1573,6 +1637,7 @@ hasyxConfig.file = z.object({
   dockerhub: dockerHubs, // Docker Hub credentials
   github: hasyxConfig.githubs, // GitHub API
   resend: hasyxConfig.resends, // Resend email
+  smsru: hasyxConfig.smsrus, // sms.ru SMS
   openrouter: hasyxConfig.openrouters, // OpenRouter AI
   npm: hasyxConfig.npms, // NPM (publish token)
   firebase: hasyxConfig.firebases, // Firebase (Admin)
@@ -1596,6 +1661,8 @@ hasyxConfig.file = z.object({
   testing: hasyxConfig.testings,
   global: hasyxConfig.global,
   invites: hasyxConfig.invitesList,
+  // validation rules (optional, alternative to top-level array "validation")
+  validationRules: hasyxConfig.validationRules,
 });
 
  

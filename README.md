@@ -39,7 +39,7 @@ Hasyx provides a robust starting point and a set of tools for building applicati
 [![Docker Hub Publishing Documentation](https://img.shields.io/badge/Docker%20Hub-MD-blue)](DOCKER.md)
 [![URL Query State Management Documentation](https://img.shields.io/badge/Use%20Query%20Hook-MD-lightblue)](USE-QUERY.md)
 [![Files Storage Documentation](https://img.shields.io/badge/Files%20Storage-MD-darkgreen)](FILES.md)
-[![plv8 Extension Documentation](https://img.shields.io/badge/plv8%20Extension-MD-darkred)](PLV8.md)
+[![plv8 Extension Documentation](https://img.shields.io/badge/plv8%20Extension-MD-darkred)](PLV8.md) [![Validation (plv8+Zod) Docs](https://img.shields.io/badge/Validation-MD-darkred)](VALIDATION.md)
 [![Fastlane Integration Documentation](https://img.shields.io/badge/Fastlane%20Integration-MD-orange)](FASTLANE.md)
 
 ## Technologies Used

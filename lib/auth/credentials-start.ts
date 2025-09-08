@@ -18,6 +18,8 @@ export async function handleCredentialsStart(request: NextRequest) {
 
     // Send out-of-band code. For phone we log via sms.ts, for email use resend if configured
     const message = `Your verification code is: ${attempt.code}`;
+    // Always write OTP to terminal for diagnostics regardless of real sending
+    console.log('[OTP] credentials %s:%s code=%s', provider, identifier, attempt.code);
     if (provider === 'phone') {
       await sendSms({ to: identifier, text: message });
     } else {

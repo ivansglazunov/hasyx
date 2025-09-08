@@ -7203,6 +7203,59 @@
       "level": 1
     },
     {
+      "title": "Validation with plv8 + Zod (database-level)",
+      "url": "/hasyx/doc/VALIDATION",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/VALIDATION#overview",
+          "level": 3
+        },
+        {
+          "title": "Where schemas come from",
+          "url": "/hasyx/doc/VALIDATION#where-schemas-come-from",
+          "level": 3
+        },
+        {
+          "title": "Commands",
+          "url": "/hasyx/doc/VALIDATION#commands",
+          "level": 3
+        },
+        {
+          "title": "Configuring validation rules",
+          "url": "/hasyx/doc/VALIDATION#configuring-validation-rules",
+          "level": 3
+        },
+        {
+          "title": "Table-level validation for options view",
+          "url": "/hasyx/doc/VALIDATION#table-level-validation-for-options-view",
+          "level": 3
+        },
+        {
+          "title": "How to write Zod objects for options",
+          "url": "/hasyx/doc/VALIDATION#how-to-write-zod-objects-for-options",
+          "level": 3
+        },
+        {
+          "title": "Internals: plv8 functions and triggers",
+          "url": "/hasyx/doc/VALIDATION#internals-plv8-functions-and-triggers",
+          "level": 3
+        },
+        {
+          "title": "Permissions and behavior",
+          "url": "/hasyx/doc/VALIDATION#permissions-and-behavior",
+          "level": 3
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/VALIDATION#troubleshooting",
+          "level": 3
+        }
+      ],
+      "level": 2
+    },
+    {
       "title": "VTB Payments",
       "url": "/hasyx/doc/VTB",
       "collapse": true,
@@ -15997,5 +16050,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-09-02T16:40:43.265Z"
+  "lastUpdated": "2025-09-06T14:42:50.288Z"
 }
