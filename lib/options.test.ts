@@ -10,7 +10,7 @@ import { processConfiguredValidationDefine } from './validation';
 import { gql } from '@apollo/client/core';
 
 
-describe('options view + validation', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('options view + validation', () => {
   it('introspects options mutation functions', async () => {
     const admin = new Hasyx(
       createApolloClient({ secret: process.env.HASURA_ADMIN_SECRET!, ws: false }),
