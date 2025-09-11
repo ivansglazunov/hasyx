@@ -43,8 +43,8 @@ const debug = Debug('test:validation');
     const ty = await hasura.sql(`SELECT jsonb_typeof(validation.project_schemas()) AS t;`);
     expect(ty.result?.[1]?.[0]).toBe('object');
 
-    const hasProfile = await hasura.sql(`SELECT (validation.project_schemas()->'schema'->'optionsProfile') IS NOT NULL AS ok;`);
-    expect(hasProfile.result?.[1]?.[0]).toBe('t');
+    const hasEmail = await hasura.sql(`SELECT (validation.project_schemas()->'schema'->'email') IS NOT NULL AS ok;`);
+    expect(hasEmail.result?.[1]?.[0]).toBe('t');
   }, 60000);
 
   it('should validate email column using configured schema path via plv8', async () => {
@@ -131,21 +131,21 @@ const debug = Debug('test:validation');
       await hasura.defineTable({ schema: testSchema, table: 'users', id: 'id', type: ColumnType.UUID });
       await hasura.defineColumn({ schema: testSchema, table: 'users', name: 'email', type: ColumnType.TEXT });
 
-      // Define project schemas with test path schema._test_email
-      await hasura.sql(`
-        CREATE OR REPLACE FUNCTION validation.project_schemas() RETURNS JSONB AS $$
-          return { schema: { _test_email: { type: 'string', format: 'email' } } };
-        $$ LANGUAGE plv8 IMMUTABLE;
-      `);
-
-      // Add rule to hasyx.config.json for our test table/column using the injected path
+      // Add rule to hasyx.config.json for our test table/column using a real project path
       const cfg = JSON.parse(originalConfig);
-      if (!Array.isArray(cfg.validation)) cfg.validation = [];
-      cfg.validation.push({ schema: testSchema, table: 'users', column: 'email', validate: 'schema._test_email' });
+      // Ensure only our test rule is applied by the CLI (avoid stale entries from previous runs)
+      cfg.validation = [];
+      if (cfg.validationRules) delete cfg.validationRules;
+      cfg.validation.push({ schema: testSchema, table: 'users', column: 'email', validate: 'schema.email' });
       await fs.writeFile(configPath, JSON.stringify(cfg, null, 2));
 
       // Define via CLI
       const defineRun = spawn.sync('npm', ['run', 'cli', '--', 'validation', 'define'], { encoding: 'utf-8' });
+      if (defineRun.status !== 0) {
+        // Log outputs for diagnostics
+        console.log('define stdout:', defineRun.stdout);
+        console.log('define stderr:', defineRun.stderr);
+      }
       expect(defineRun.status).toBe(0);
 
       // Helper
