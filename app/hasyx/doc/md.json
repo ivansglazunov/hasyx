@@ -7228,8 +7228,8 @@
           "level": 3
         },
         {
-          "title": "Table-level validation for options view",
-          "url": "/hasyx/doc/VALIDATION#table-level-validation-for-options-view",
+          "title": "Table-level validation for options table",
+          "url": "/hasyx/doc/VALIDATION#table-level-validation-for-options-table",
           "level": 3
         },
         {
@@ -16050,5 +16050,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-09-06T14:42:50.288Z"
+  "lastUpdated": "2025-09-10T15:42:21.423Z"
 }

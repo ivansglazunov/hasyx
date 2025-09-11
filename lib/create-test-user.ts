@@ -21,7 +21,6 @@ export async function createTestUser() {
   const name = `Test User ${uuidv4().slice(0, 8)}`;
 
   try {
-    console.log('[create-test-user] inserting user', { email, name });
     const inserted = await adminClient.insert({
       table: 'users',
       object: {

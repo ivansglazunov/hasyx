@@ -12,7 +12,6 @@ interface DockerComposeService {
 }
 
 interface DockerComposeConfig {
-  version?: string;
   services: Record<string, DockerComposeService>;
 }
 
@@ -77,7 +76,6 @@ const createDockerComposeFile = async (dockerComposePath: string, envVars: Recor
   const projectName = getProjectName();
   
   const dockerComposeConfig: DockerComposeConfig = {
-    version: '3.8',
     services: {
       [projectName]: {
         environment: envVars,

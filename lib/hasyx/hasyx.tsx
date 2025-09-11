@@ -16,6 +16,36 @@ import { AxiosInstance } from 'axios';
 
 const debug = Debug('hasyx:client'); const DEFAULT_POLLING_INTERVAL = 1000;
 
+function formatHasuraErrors(errors: readonly any[] | undefined): string | null {
+  if (!errors || errors.length === 0) return null;
+  try {
+    const parts: string[] = [];
+    for (const e of errors) {
+      const msg = e?.message;
+      const code = e?.extensions?.code;
+      const path = e?.extensions?.path;
+      const internal = e?.extensions?.internal || {};
+      const pgMsg = internal?.error?.message || internal?.message;
+      const hint = internal?.error?.hint || internal?.hint;
+      const detail = internal?.error?.detail || internal?.detail;
+      const stmt = internal?.statement;
+      const row = [
+        code ? `code=${code}` : null,
+        path ? `path=${path}` : null,
+        msg || null,
+        pgMsg ? `pg=${pgMsg}` : null,
+        detail ? `detail=${detail}` : null,
+        hint ? `hint=${hint}` : null,
+        stmt ? `stmt=${stmt}` : null,
+      ].filter(Boolean).join(' | ');
+      if (row) parts.push(row);
+    }
+    return parts.join('\n');
+  } catch {
+    return null;
+  }
+}
+
 export interface HasyxOptions extends Omit<GenerateOptions, 'operation'> {
   role?: string;
   pollingInterval?: number;
@@ -106,7 +136,11 @@ export class Hasyx {
 
       if (result.errors) {
         debug('GraphQL errors during select:', result.errors);
-        throw new ApolloError({ graphQLErrors: result.errors });
+        const extra = formatHasuraErrors(result.errors);
+        if (extra) debug('Hasura/PG details:', extra);
+        const err = new ApolloError({ graphQLErrors: result.errors });
+        (err as any).details = extra;
+        throw err;
       }
       debug('Select successful, raw data:', result.data);
 
@@ -143,7 +177,11 @@ export class Hasyx {
 
       if (result.errors) {
         debug('GraphQL errors during insert:', result.errors);
-        throw new ApolloError({ graphQLErrors: result.errors });
+        const extra = formatHasuraErrors(result.errors);
+        if (extra) debug('Hasura/PG details:', extra);
+        const err = new ApolloError({ graphQLErrors: result.errors });
+        (err as any).details = extra;
+        throw err;
       }
       const rawData = result.data ?? {};
       debug('Insert successful, raw data:', rawData);
@@ -188,7 +226,11 @@ export class Hasyx {
 
       if (result.errors) {
         debug('GraphQL errors during update:', result.errors);
-        throw new ApolloError({ graphQLErrors: result.errors });
+        const extra = formatHasuraErrors(result.errors);
+        if (extra) debug('Hasura/PG details:', extra);
+        const err = new ApolloError({ graphQLErrors: result.errors });
+        (err as any).details = extra;
+        throw err;
       }
       const rawData = result.data ?? {};
       debug('Update successful, raw data:', rawData);
@@ -229,7 +271,11 @@ export class Hasyx {
 
       if (result.errors) {
         debug('GraphQL errors during delete:', result.errors);
-        throw new ApolloError({ graphQLErrors: result.errors });
+        const extra = formatHasuraErrors(result.errors);
+        if (extra) debug('Hasura/PG details:', extra);
+        const err = new ApolloError({ graphQLErrors: result.errors });
+        (err as any).details = extra;
+        throw err;
       }
       const rawData = result.data ?? {};
       debug('Delete successful, raw data:', rawData);

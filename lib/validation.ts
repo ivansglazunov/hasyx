@@ -26,77 +26,41 @@ export type GeneratedSchemas = Record<string, any>;
  * and prints a single JSON to stdout.
  */
 export async function generateProjectJsonSchemas(): Promise<GeneratedSchemas> {
+  // Direct schema generation to avoid import issues
+  // Create temporary file for schema generation
   const projectRoot = process.cwd();
-
-  const inlineTsx = `
-import path from 'path';
+  const tempFile = path.join(projectRoot, 'temp-schema-gen.ts');
+  const tempContent = `
 import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 
-(async () => {
-  async function tryImport(modulePath: string) {
-    try {
-      return await import(modulePath);
-    } catch (e) {
-      return null;
-    }
-  }
+// Import actual schemas from schema.tsx to keep in sync
+import * as projectSchema from './schema.tsx';
+
+const schemas = projectSchema.schema;
+const options = projectSchema.options;
 
   const result: any = { schema: {}, config: {} };
 
-  // Load project schema.tsx
-  const schemaPath = path.resolve(process.cwd(), 'schema.tsx');
-  const schemaModule = await tryImport(schemaPath);
-  if (schemaModule && schemaModule.schema && typeof schemaModule.schema === 'object') {
-    const entries = Object.entries(schemaModule.schema);
-    for (const [key, val] of entries) {
-      if (val && typeof (val as any)._def === 'object') {
-        result.schema[key] = zodToJsonSchema(val as z.ZodTypeAny, { name: \`schema.\${key}\` });
-      }
-    }
-  }
+// Convert schemas to JSON Schema
+for (const [key, val] of Object.entries(schemas)) {
+  result.schema[key] = z.toJSONSchema(val);
+}
 
-  // Load lib/config.tsx (hasyxConfig)
-  const configPath = path.resolve(process.cwd(), 'lib', 'config.tsx');
-  const configModule = await tryImport(configPath);
-  if (configModule && (configModule as any).hasyxConfig) {
-    const hc = (configModule as any).hasyxConfig;
-    // Pick only Zod schemas from hasyxConfig top-level keys
-    for (const key of Object.keys(hc)) {
-      const val = (hc as any)[key];
-      if (val && typeof val === 'object' && typeof (val as any)._def === 'object' && typeof (val as any).parse === 'function') {
-        // Looks like a Zod schema
-        try {
-          result.config[key] = zodToJsonSchema(val as z.ZodTypeAny, { name: \`config.\${key}\` });
-        } catch (e) {
-          // ignore failing schemas; keep generation resilient
-        }
-      }
-    }
-  }
+// Convert options to JSON Schema with proper structure
+result.options = {};
+for (const [tableName, val] of Object.entries(options)) {
+  result.options[tableName] = z.toJSONSchema(val);
+}
 
-  process.stdout.write(JSON.stringify(result));
-})();
+console.log(JSON.stringify(result));
 `;
 
-  // Ensure zod-to-json-schema is available, install if missing
-  let needInstall = false;
+  // Write temporary file
+  await fs.writeFile(tempFile, tempContent);
+
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require.resolve('zod-to-json-schema');
-  } catch {
-    needInstall = true;
-  }
-
-  if (needInstall) {
-    console.log('📦 Installing zod-to-json-schema for validation sync...');
-    const install = spawn.sync('npm', ['install', 'zod-to-json-schema@^3.23.5', '--save-dev'], { stdio: 'inherit', cwd: projectRoot });
-    if (install.status !== 0) {
-      throw new Error('Failed to install zod-to-json-schema');
-    }
-  }
-
-  const run = spawn.sync('npx', ['tsx', '-e', inlineTsx], { cwd: projectRoot, encoding: 'utf-8' });
+    // Using Zod 4's built-in toJSONSchema - no external dependencies needed
+    const run = spawn.sync('npx', ['tsx', tempFile], { cwd: projectRoot, encoding: 'utf-8' });
   if (run.status !== 0) {
     throw new Error(`Failed to generate schemas via tsx: ${run.stderr || run.stdout}`);
   }
@@ -104,13 +68,17 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
   if (!json) throw new Error('Empty schema generation output');
   const parsed = JSON.parse(json);
   return parsed;
+  } finally {
+    // Clean up temporary file
+    try {
+      await fs.unlink(tempFile);
+    } catch (e) {
+      // ignore cleanup errors
+    }
+  }
 }
 
-export async function writeSchemasToFile(schemas: GeneratedSchemas, filePath: string = 'schema.json') {
-  const abs = path.isAbsolute(filePath) ? filePath : path.join(process.cwd(), filePath);
-  await fs.writeJson(abs, schemas, { spaces: 2 });
-  debug(`Wrote schemas to ${abs}`);
-}
+// Removed file writer (schema.json) — schemas are synced directly into DB via validation.project_schemas()
 
 export async function syncSchemasToDatabase(hasura?: Hasura, schemas?: GeneratedSchemas) {
   const hasu = hasura || new Hasura({
@@ -118,30 +86,12 @@ export async function syncSchemasToDatabase(hasura?: Hasura, schemas?: Generated
     secret: process.env.HASURA_ADMIN_SECRET!,
   });
   await hasu.ensureDefaultSource();
-
-  // Ensure schema and tables
+  // Ensure schema exists
   await hasu.sql(`CREATE SCHEMA IF NOT EXISTS validation;`);
-  await hasu.sql(`
-    CREATE TABLE IF NOT EXISTS validation.schemas (
-      name TEXT PRIMARY KEY,
-      content JSONB NOT NULL,
-      updated_at TIMESTAMPTZ DEFAULT NOW()
-    );
-  `);
-
-  await hasu.sql(`
-    CREATE TABLE IF NOT EXISTS validation.table_bindings (
-      schema TEXT NOT NULL,
-      table_name TEXT NOT NULL,
-      schema_path TEXT NOT NULL,
-      schema_set TEXT NOT NULL DEFAULT 'project',
-      updated_at TIMESTAMPTZ DEFAULT NOW(),
-      PRIMARY KEY(schema, table_name)
-    );
-  `);
 
   // Generate or use provided schemas
   let data: GeneratedSchemas = schemas || (await generateProjectJsonSchemas());
+  const originalData = JSON.parse(JSON.stringify(data));
 
   // Try to minimize payload by keeping only required schema paths from config
   try {
@@ -204,11 +154,22 @@ export async function syncSchemasToDatabase(hasura?: Hasura, schemas?: Generated
     // ignore minimization errors
   }
 
-  const payload = JSON.stringify(data).replace(/'/g, "''");
+  // Ensure full project schema set is available (avoid missing keys like schema.optionsProfile)
+  // Merge config-derived schemas into schema namespace so bindings like schema.optionsProfile work
+  if (originalData) {
+    const mergedSchema: any = {};
+    if (originalData.schema && typeof originalData.schema === 'object') Object.assign(mergedSchema, originalData.schema);
+    if (originalData.config && typeof originalData.config === 'object') Object.assign(mergedSchema, originalData.config);
+    if (Object.keys(mergedSchema).length > 0) data.schema = mergedSchema;
+  }
+
+  // Define or update plv8 function that returns the full project schemas JSON
+  const payload = JSON.stringify(data).replace(/\\/g, "\\\\").replace(/\n/g, "\\n");
+  const fnBody = `return ${JSON.stringify(data)};`;
   await hasu.sql(`
-    INSERT INTO validation.schemas (name, content, updated_at)
-    VALUES ('project', '${payload}'::jsonb, NOW())
-    ON CONFLICT (name) DO UPDATE SET content = EXCLUDED.content, updated_at = NOW();
+    CREATE OR REPLACE FUNCTION validation.project_schemas() RETURNS JSONB AS $$
+      ${fnBody}
+    $$ LANGUAGE plv8 IMMUTABLE;
   `);
 }
 
@@ -217,13 +178,15 @@ export async function loadValidationConfigFromFile(): Promise<ValidationConfig |
   if (!(await fs.pathExists(configPath))) return null;
   try {
     const json = await fs.readJson(configPath);
+    const rules: ValidationRule[] = [];
     if (Array.isArray(json.validation)) {
-      return { validation: json.validation } as ValidationConfig;
+      for (const r of json.validation) if (r) rules.push(r as ValidationRule);
     }
     if (json.validationRules && typeof json.validationRules === 'object' && !Array.isArray(json.validationRules)) {
-      const values = Object.values(json.validationRules).filter(Boolean);
-      if (values.length > 0) return { validation: values as ValidationRule[] };
+      const values = Object.values(json.validationRules).filter(Boolean) as ValidationRule[];
+      for (const r of values) rules.push(r);
     }
+    if (rules.length > 0) return { validation: rules } as ValidationConfig;
     return null;
   } catch {
     return null;
@@ -268,21 +231,17 @@ export async function applyValidationRules(hasura: Hasura, config: ValidationCon
     const schemaSet = rule.schemaSet || 'project';
     if (rule.column) {
       const col = rule.column;
-      const triggerName = `hasyx_validation_${sch}_${tbl}_${col}`;
-      await hasura.sql(`
-        DROP TRIGGER IF EXISTS ${triggerName} ON ${sch}.${tbl};
-        CREATE TRIGGER ${triggerName}
-          BEFORE INSERT OR UPDATE OF ${col} ON ${sch}.${tbl}
-          FOR EACH ROW
-          EXECUTE FUNCTION validation.validate_column('${col}', '${pathArg}', '${schemaSet}');
-      `);
+    const triggerName = `hasyx_validation_${sch}_${tbl}_${col}`;
+    await hasura.sql(`
+      DROP TRIGGER IF EXISTS ${triggerName} ON ${sch}.${tbl};
+      CREATE TRIGGER ${triggerName}
+        BEFORE INSERT OR UPDATE OF ${col} ON ${sch}.${tbl}
+        FOR EACH ROW
+        EXECUTE FUNCTION validation.validate_column('${col}', '${pathArg}', '${schemaSet}');
+    `);
     } else {
-      await hasura.sql(`
-        INSERT INTO validation.table_bindings(schema, table_name, schema_path, schema_set, updated_at)
-        VALUES ('${sch}', '${tbl}', '${pathArg}', '${schemaSet}', NOW())
-        ON CONFLICT (schema, table_name)
-        DO UPDATE SET schema_path = EXCLUDED.schema_path, schema_set = EXCLUDED.schema_set, updated_at = NOW();
-      `);
+      // No table bindings in DB storage anymore; options trigger uses fixed path and project_schemas()
+      /* no-op */
     }
   }
 }
@@ -294,11 +253,9 @@ export async function ensureValidationRuntime(hasura: Hasura) {
   // Minimal JSON Schema validator (supports: type, enum, minLength, maxLength, pattern, minimum, maximum, format: email)
   await hasura.sql(`
     CREATE OR REPLACE FUNCTION validation.validate_json(value JSONB, schema_path TEXT, schema_set TEXT DEFAULT 'project') RETURNS VOID AS $$
-      var rows = plv8.execute("SELECT content FROM validation.schemas WHERE name = $1 LIMIT 1", [schema_set]);
-      if (!rows || rows.length === 0) {
-        plv8.elog(ERROR, 'Validation schemas not found in validation.schemas for set: ' + schema_set);
-      }
-      var root = rows[0].content;
+      var rows = plv8.execute("SELECT validation.project_schemas() AS j");
+      if (!rows || rows.length === 0) { plv8.elog(ERROR, 'project_schemas() returned no data'); }
+      var root = rows[0].j;
       function resolvePath(obj, p) {
         var parts = (p || '').split('.');
         var cur = obj;
@@ -310,7 +267,12 @@ export async function ensureValidationRuntime(hasura: Hasura) {
       function isEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '')); }
       // In plv8, jsonb scalar often maps directly to JS scalar; avoid double JSON roundtrips
       var instance = value;
-      function typeOf(v){ if (v === null) return 'null'; if (Array.isArray(v)) return 'array'; return typeof v; }
+      function typeOf(v){ 
+        if (v === null) return 'null'; 
+        if (Array.isArray(v)) return 'array'; 
+        if (typeof v === 'number' && Math.floor(v) === v) return 'integer';
+        return typeof v; 
+      }
       function validate(inst, sch){
         var errs = [];
         var t = sch.type;
@@ -375,14 +337,19 @@ export async function ensureValidationRuntime(hasura: Hasura) {
       if (value === null || typeof value === 'undefined') {
         return NEW;
       }
-      var rows = plv8.execute("SELECT content FROM validation.schemas WHERE name = $1 LIMIT 1", [schema_set]);
-      if (!rows || rows.length === 0) { plv8.elog(ERROR, 'Validation schemas not found'); }
-      var root = rows[0].content;
+      var rows = plv8.execute("SELECT validation.project_schemas() AS j");
+      if (!rows || rows.length === 0) { plv8.elog(ERROR, 'project_schemas() not found'); }
+      var root = rows[0].j;
       function resolvePath(obj, p){ var parts=(p||'').split('.'); var cur=obj; for (var i=0;i<parts.length;i++){ cur=(cur&&cur[parts[i]])||null; } return cur; }
       var schema = resolvePath(root, schema_path);
       if (!schema) { plv8.elog(ERROR, 'Schema not found at path: ' + schema_path); }
       function isEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '')); }
-      function typeOf(v){ if (v === null) return 'null'; if (Array.isArray(v)) return 'array'; return typeof v; }
+      function typeOf(v){ 
+        if (v === null) return 'null'; 
+        if (Array.isArray(v)) return 'array'; 
+        if (typeof v === 'number' && Math.floor(v) === v) return 'integer';
+        return typeof v; 
+      }
       function validate(inst, sch){
         var errs = [];
         var t = sch.type;
@@ -436,21 +403,16 @@ export async function ensureValidationRuntime(hasura: Hasura) {
   `);
 
   await hasura.sql(`
-    CREATE OR REPLACE FUNCTION validation.validate_option_key(view_schema TEXT, view_table TEXT, option_key TEXT) RETURNS VOID AS $$
-      var rows = plv8.execute("SELECT schema_path, schema_set FROM validation.table_bindings WHERE schema = $1 AND table_name = $2 LIMIT 1", [view_schema, view_table]);
-      if (!rows || rows.length === 0) { return; }
-      var binding = rows[0];
-      var rows2 = plv8.execute("SELECT content FROM validation.schemas WHERE name = $1 LIMIT 1", [binding.schema_set]);
-      if (!rows2 || rows2.length === 0) { plv8.elog(ERROR, 'Validation schemas not found for set: ' + binding.schema_set); }
-      var root = rows2[0].content;
+    CREATE OR REPLACE FUNCTION validation.validate_option_key(option_key TEXT, schema_path TEXT DEFAULT 'options.users') RETURNS VOID AS $$
+      var rows = plv8.execute("SELECT validation.project_schemas() AS j");
+      if (!rows || rows.length === 0) { plv8.elog(ERROR, 'project_schemas() not found'); }
+      var root = rows[0].j;
       function resolvePath(obj, p){ var parts=(p||'').split('.'); var cur=obj; for (var i=0;i<parts.length;i++){ cur=(cur&&cur[parts[i]])||null; } return cur; }
-      var schema = resolvePath(root, binding.schema_path);
-      if (!schema) { plv8.elog(ERROR, 'Schema not found at path: ' + binding.schema_path); }
+      var schema = resolvePath(root, schema_path);
+      if (!schema) { plv8.elog(ERROR, 'Schema not found at path: ' + schema_path); }
       var props = (schema && schema.properties) || null;
       if (!props || typeof props !== 'object') { plv8.elog(ERROR, 'Bound schema is not an object with properties'); }
-      if (!Object.prototype.hasOwnProperty.call(props, option_key)) {
-        plv8.elog(ERROR, 'Unknown option key: ' + option_key);
-      }
+      if (!Object.prototype.hasOwnProperty.call(props, option_key)) { plv8.elog(ERROR, 'Unknown option key: ' + option_key); }
     $$ LANGUAGE plv8;
   `);
 }
@@ -466,7 +428,7 @@ export async function processConfiguredValidationDefine(hasura?: Hasura) {
   // Ensure schemas are synced into DB before defining
   await syncSchemasToDatabase(hasu);
   await applyValidationRules(hasu, cfg);
-  console.log('✅ Validation rules defined');
+  debug('✅ Validation rules defined');
 }
 
 export async function processConfiguredValidationUndefine(hasura?: Hasura) {

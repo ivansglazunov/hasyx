@@ -10,7 +10,6 @@ type ComposeService = Dictionary<any>;
 type ComposeVolume = any;
 
 interface ComposeSpec {
-  version: string;
   services: Dictionary<ComposeService>;
   volumes?: Dictionary<ComposeVolume>;
 }
@@ -19,7 +18,6 @@ type ComposeFragment = Partial<ComposeSpec>;
 
 function deepMergeCompose(base: ComposeFragment, fragment: ComposeFragment): ComposeFragment {
   const merged: ComposeFragment = {
-    version: fragment.version || base.version,
     services: { ...(base.services || {}), ...(fragment.services || {}) },
     volumes: { ...(base.volumes || {}), ...(fragment.volumes || {}) },
   };
@@ -28,7 +26,7 @@ function deepMergeCompose(base: ComposeFragment, fragment: ComposeFragment): Com
 
 // === Generic meta-driven composer ===
 function runComposeMeta(resolved: any): ComposeFragment {
-  let out: ComposeFragment = { version: '3.8', services: {}, volumes: {} };
+  let out: ComposeFragment = { services: {}, volumes: {} };
 
   // Helper to merge
   const append = (fragment: ComposeFragment) => {
@@ -81,7 +79,7 @@ export function generateDockerCompose(variant?: string): void {
       `# Variant: (not set) - Generated at ${new Date().toISOString()}`,
       ''
     ].join('\n');
-    const emptySpec: ComposeSpec = { version: '3.8', services: {} };
+    const emptySpec: ComposeSpec = { services: {} };
     fs.writeFileSync(filePath, header + stringify(emptySpec, { indent: 2 }));
     console.log(`⚠️  No variant specified, generated empty docker-compose.yml at ${filePath}`);
     return;
@@ -99,7 +97,7 @@ export function generateDockerCompose(variant?: string): void {
       `# Variant: (incomplete) - Generated at ${new Date().toISOString()}`,
       ''
     ].join('\n');
-    const emptySpec: ComposeSpec = { version: '3.8', services: {} };
+    const emptySpec: ComposeSpec = { services: {} };
     fs.writeFileSync(filePath, header + stringify(emptySpec, { indent: 2 }));
     console.log(`⚠️  Incomplete variant, generated empty docker-compose.yml at ${filePath}`);
     return;
@@ -110,7 +108,6 @@ export function generateDockerCompose(variant?: string): void {
 
   // Finalize spec
   const spec: ComposeSpec = {
-    version: aggregate.version || '3.8',
     services: aggregate.services || {},
     ...(aggregate.volumes && Object.keys(aggregate.volumes).length ? { volumes: aggregate.volumes } : {}),
   };

@@ -4,13 +4,17 @@ import { down } from 'hasyx/lib/options/down-options';
 dotenv.config();
 
 // Run the down migration with same names as up migration
-down({
-  optionsViewTable: 'options',
-  numbersTable: 'options_numbers',
-  stringsTable: 'options_strings',
-  objectsTable: 'options_objects',
-  booleansTable: 'options_booleans'
-});
+(async () => {
+  try {
+    await down({
+      optionsTable: 'options'
+    });
+    console.log('✅ Options down migration completed successfully');
+  } catch (error) {
+    console.error('❌ Options down migration failed:', error);
+    process.exit(1);
+  }
+})();
 
 
 

@@ -4058,6 +4058,8 @@ export type Github_Issues_Variance_Fields = {
 /** columns and relationships of "groups" */
 export type Groups = {
   __typename?: "groups";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Who can delete group */
   allow_delete_group_users: Scalars["jsonb"]["output"];
   /** Who can send invites */
@@ -4253,6 +4255,8 @@ export type Groups_Avg_Fields = {
 /** Boolean expression to filter rows from the table "groups". All fields are combined with a logical 'AND'. */
 export type Groups_Bool_Exp = {
   _and?: InputMaybe<Array<Groups_Bool_Exp>>;
+  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
+  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Groups_Bool_Exp>;
   _or?: InputMaybe<Array<Groups_Bool_Exp>>;
   allow_delete_group_users?: InputMaybe<Jsonb_Comparison_Exp>;
@@ -4413,6 +4417,8 @@ export type Groups_Insert_Input = {
 /** aggregate max on columns */
 export type Groups_Max_Fields = {
   __typename?: "groups_max_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Optional avatar file id */
   avatar_file_id?: Maybe<Scalars["uuid"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -4441,6 +4447,8 @@ export type Groups_Max_Fields = {
 /** aggregate min on columns */
 export type Groups_Min_Fields = {
   __typename?: "groups_min_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   /** Optional avatar file id */
   avatar_file_id?: Maybe<Scalars["uuid"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -4491,6 +4499,8 @@ export type Groups_On_Conflict = {
 
 /** Ordering options when selecting data from "groups". */
 export type Groups_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   allow_delete_group_users?: InputMaybe<Order_By>;
   allow_invite_users?: InputMaybe<Order_By>;
   allow_join_users?: InputMaybe<Order_By>;
@@ -4547,6 +4557,10 @@ export type Groups_Prepend_Input = {
 
 /** select columns of table "groups" */
 export enum Groups_Select_Column {
+  /** column name */
+  HasyxSchemaName = "_hasyx_schema_name",
+  /** column name */
+  HasyxTableName = "_hasyx_table_name",
   /** column name */
   AllowDeleteGroupUsers = "allow_delete_group_users",
   /** column name */
@@ -4669,6 +4683,8 @@ export type Groups_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Groups_Stream_Cursor_Value_Input = {
+  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
+  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   /** Who can delete group */
   allow_delete_group_users?: InputMaybe<Scalars["jsonb"]["input"]>;
   /** Who can send invites */
@@ -4810,6 +4826,8 @@ export type Groups_Variance_Fields = {
 /** columns and relationships of "invitations" */
 export type Invitations = {
   __typename?: "invitations";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at: Scalars["bigint"]["output"];
   /** Expiration in ms */
   expires_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -4915,6 +4933,8 @@ export type Invitations_Avg_Order_By = {
 /** Boolean expression to filter rows from the table "invitations". All fields are combined with a logical 'AND'. */
 export type Invitations_Bool_Exp = {
   _and?: InputMaybe<Array<Invitations_Bool_Exp>>;
+  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
+  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Invitations_Bool_Exp>;
   _or?: InputMaybe<Array<Invitations_Bool_Exp>>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
@@ -4970,6 +4990,8 @@ export type Invitations_Insert_Input = {
 /** aggregate max on columns */
 export type Invitations_Max_Fields = {
   __typename?: "invitations_max_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Expiration in ms */
   expires_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -4989,6 +5011,8 @@ export type Invitations_Max_Fields = {
 
 /** order by max() on columns of table "invitations" */
 export type Invitations_Max_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   /** Expiration in ms */
   expires_at?: InputMaybe<Order_By>;
@@ -5009,6 +5033,8 @@ export type Invitations_Max_Order_By = {
 /** aggregate min on columns */
 export type Invitations_Min_Fields = {
   __typename?: "invitations_min_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Expiration in ms */
   expires_at?: Maybe<Scalars["bigint"]["output"]>;
@@ -5028,6 +5054,8 @@ export type Invitations_Min_Fields = {
 
 /** order by min() on columns of table "invitations" */
 export type Invitations_Min_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   /** Expiration in ms */
   expires_at?: InputMaybe<Order_By>;
@@ -5063,6 +5091,8 @@ export type Invitations_On_Conflict = {
 
 /** Ordering options when selecting data from "invitations". */
 export type Invitations_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   expires_at?: InputMaybe<Order_By>;
   group?: InputMaybe<Groups_Order_By>;
@@ -5084,6 +5114,10 @@ export type Invitations_Pk_Columns_Input = {
 
 /** select columns of table "invitations" */
 export enum Invitations_Select_Column {
+  /** column name */
+  HasyxSchemaName = "_hasyx_schema_name",
+  /** column name */
+  HasyxTableName = "_hasyx_table_name",
   /** column name */
   CreatedAt = "created_at",
   /** column name */
@@ -5184,6 +5218,8 @@ export type Invitations_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Invitations_Stream_Cursor_Value_Input = {
+  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
+  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   /** Expiration in ms */
   expires_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -6628,6 +6664,8 @@ export type Logs_States_Variance_Fields = {
 /** columns and relationships of "memberships" */
 export type Memberships = {
   __typename?: "memberships";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at: Scalars["bigint"]["output"];
   /** An object relationship */
   created_by: Users;
@@ -6731,6 +6769,8 @@ export type Memberships_Avg_Order_By = {
 /** Boolean expression to filter rows from the table "memberships". All fields are combined with a logical 'AND'. */
 export type Memberships_Bool_Exp = {
   _and?: InputMaybe<Array<Memberships_Bool_Exp>>;
+  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
+  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Memberships_Bool_Exp>;
   _or?: InputMaybe<Array<Memberships_Bool_Exp>>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
@@ -6786,6 +6826,8 @@ export type Memberships_Insert_Input = {
 /** aggregate max on columns */
 export type Memberships_Max_Fields = {
   __typename?: "memberships_max_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** User who created the membership record */
   created_by_id?: Maybe<Scalars["uuid"]["output"]>;
@@ -6805,6 +6847,8 @@ export type Memberships_Max_Fields = {
 
 /** order by max() on columns of table "memberships" */
 export type Memberships_Max_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   /** User who created the membership record */
   created_by_id?: InputMaybe<Order_By>;
@@ -6825,6 +6869,8 @@ export type Memberships_Max_Order_By = {
 /** aggregate min on columns */
 export type Memberships_Min_Fields = {
   __typename?: "memberships_min_fields";
+  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
+  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   /** User who created the membership record */
   created_by_id?: Maybe<Scalars["uuid"]["output"]>;
@@ -6844,6 +6890,8 @@ export type Memberships_Min_Fields = {
 
 /** order by min() on columns of table "memberships" */
 export type Memberships_Min_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   /** User who created the membership record */
   created_by_id?: InputMaybe<Order_By>;
@@ -6879,6 +6927,8 @@ export type Memberships_On_Conflict = {
 
 /** Ordering options when selecting data from "memberships". */
 export type Memberships_Order_By = {
+  _hasyx_schema_name?: InputMaybe<Order_By>;
+  _hasyx_table_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   created_by?: InputMaybe<Users_Order_By>;
   created_by_id?: InputMaybe<Order_By>;
@@ -6901,6 +6951,10 @@ export type Memberships_Pk_Columns_Input = {
 
 /** select columns of table "memberships" */
 export enum Memberships_Select_Column {
+  /** column name */
+  HasyxSchemaName = "_hasyx_schema_name",
+  /** column name */
+  HasyxTableName = "_hasyx_table_name",
   /** column name */
   CreatedAt = "created_at",
   /** column name */
@@ -6989,6 +7043,8 @@ export type Memberships_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Memberships_Stream_Cursor_Value_Input = {
+  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
+  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   /** User who created the membership record */
   created_by_id?: InputMaybe<Scalars["uuid"]["input"]>;
@@ -7767,22 +7823,10 @@ export type Mutation_Root = {
   delete_notifications?: Maybe<Notifications_Mutation_Response>;
   /** delete single row from the table: "notifications" */
   delete_notifications_by_pk?: Maybe<Notifications>;
-  /** delete data from the table: "options_booleans" */
-  delete_options_booleans?: Maybe<Options_Booleans_Mutation_Response>;
-  /** delete single row from the table: "options_booleans" */
-  delete_options_booleans_by_pk?: Maybe<Options_Booleans>;
-  /** delete data from the table: "options_numbers" */
-  delete_options_numbers?: Maybe<Options_Numbers_Mutation_Response>;
-  /** delete single row from the table: "options_numbers" */
-  delete_options_numbers_by_pk?: Maybe<Options_Numbers>;
-  /** delete data from the table: "options_objects" */
-  delete_options_objects?: Maybe<Options_Objects_Mutation_Response>;
-  /** delete single row from the table: "options_objects" */
-  delete_options_objects_by_pk?: Maybe<Options_Objects>;
-  /** delete data from the table: "options_strings" */
-  delete_options_strings?: Maybe<Options_Strings_Mutation_Response>;
-  /** delete single row from the table: "options_strings" */
-  delete_options_strings_by_pk?: Maybe<Options_Strings>;
+  /** delete data from the table: "options" */
+  delete_options?: Maybe<Options_Mutation_Response>;
+  /** delete single row from the table: "options" */
+  delete_options_by_pk?: Maybe<Options>;
   /** delete data from the table: "payments.methods" */
   delete_payments_methods?: Maybe<Payments_Methods_Mutation_Response>;
   /** delete single row from the table: "payments.methods" */
@@ -7911,22 +7955,10 @@ export type Mutation_Root = {
   insert_notifications?: Maybe<Notifications_Mutation_Response>;
   /** insert a single row into the table: "notifications" */
   insert_notifications_one?: Maybe<Notifications>;
-  /** insert data into the table: "options_booleans" */
-  insert_options_booleans?: Maybe<Options_Booleans_Mutation_Response>;
-  /** insert a single row into the table: "options_booleans" */
-  insert_options_booleans_one?: Maybe<Options_Booleans>;
-  /** insert data into the table: "options_numbers" */
-  insert_options_numbers?: Maybe<Options_Numbers_Mutation_Response>;
-  /** insert a single row into the table: "options_numbers" */
-  insert_options_numbers_one?: Maybe<Options_Numbers>;
-  /** insert data into the table: "options_objects" */
-  insert_options_objects?: Maybe<Options_Objects_Mutation_Response>;
-  /** insert a single row into the table: "options_objects" */
-  insert_options_objects_one?: Maybe<Options_Objects>;
-  /** insert data into the table: "options_strings" */
-  insert_options_strings?: Maybe<Options_Strings_Mutation_Response>;
-  /** insert a single row into the table: "options_strings" */
-  insert_options_strings_one?: Maybe<Options_Strings>;
+  /** insert data into the table: "options" */
+  insert_options?: Maybe<Options_Mutation_Response>;
+  /** insert a single row into the table: "options" */
+  insert_options_one?: Maybe<Options>;
   /** insert data into the table: "payments.methods" */
   insert_payments_methods?: Maybe<Payments_Methods_Mutation_Response>;
   /** insert a single row into the table: "payments.methods" */
@@ -7971,12 +8003,6 @@ export type Mutation_Root = {
   insert_verification_codes?: Maybe<Verification_Codes_Mutation_Response>;
   /** insert a single row into the table: "verification_codes" */
   insert_verification_codes_one?: Maybe<Verification_Codes>;
-  /** execute VOLATILE function "options_delete" which returns "options_strings" */
-  options_delete: Array<Options_Strings>;
-  /** execute VOLATILE function "options_insert" which returns "options_strings" */
-  options_insert: Array<Options_Strings>;
-  /** execute VOLATILE function "options_update" which returns "options_strings" */
-  options_update: Array<Options_Strings>;
   /** update single row of the table: "storage.buckets" */
   updateBucket?: Maybe<Buckets>;
   /** update data of the table: "storage.buckets" */
@@ -8113,38 +8139,12 @@ export type Mutation_Root = {
   update_notifications_many?: Maybe<
     Array<Maybe<Notifications_Mutation_Response>>
   >;
-  /** update data of the table: "options_booleans" */
-  update_options_booleans?: Maybe<Options_Booleans_Mutation_Response>;
-  /** update single row of the table: "options_booleans" */
-  update_options_booleans_by_pk?: Maybe<Options_Booleans>;
-  /** update multiples rows of table: "options_booleans" */
-  update_options_booleans_many?: Maybe<
-    Array<Maybe<Options_Booleans_Mutation_Response>>
-  >;
-  /** update data of the table: "options_numbers" */
-  update_options_numbers?: Maybe<Options_Numbers_Mutation_Response>;
-  /** update single row of the table: "options_numbers" */
-  update_options_numbers_by_pk?: Maybe<Options_Numbers>;
-  /** update multiples rows of table: "options_numbers" */
-  update_options_numbers_many?: Maybe<
-    Array<Maybe<Options_Numbers_Mutation_Response>>
-  >;
-  /** update data of the table: "options_objects" */
-  update_options_objects?: Maybe<Options_Objects_Mutation_Response>;
-  /** update single row of the table: "options_objects" */
-  update_options_objects_by_pk?: Maybe<Options_Objects>;
-  /** update multiples rows of table: "options_objects" */
-  update_options_objects_many?: Maybe<
-    Array<Maybe<Options_Objects_Mutation_Response>>
-  >;
-  /** update data of the table: "options_strings" */
-  update_options_strings?: Maybe<Options_Strings_Mutation_Response>;
-  /** update single row of the table: "options_strings" */
-  update_options_strings_by_pk?: Maybe<Options_Strings>;
-  /** update multiples rows of table: "options_strings" */
-  update_options_strings_many?: Maybe<
-    Array<Maybe<Options_Strings_Mutation_Response>>
-  >;
+  /** update data of the table: "options" */
+  update_options?: Maybe<Options_Mutation_Response>;
+  /** update single row of the table: "options" */
+  update_options_by_pk?: Maybe<Options>;
+  /** update multiples rows of table: "options" */
+  update_options_many?: Maybe<Array<Maybe<Options_Mutation_Response>>>;
   /** update data of the table: "payments.methods" */
   update_payments_methods?: Maybe<Payments_Methods_Mutation_Response>;
   /** update single row of the table: "payments.methods" */
@@ -8440,42 +8440,12 @@ export type Mutation_RootDelete_Notifications_By_PkArgs = {
 };
 
 /** mutation root */
-export type Mutation_RootDelete_Options_BooleansArgs = {
-  where: Options_Booleans_Bool_Exp;
+export type Mutation_RootDelete_OptionsArgs = {
+  where: Options_Bool_Exp;
 };
 
 /** mutation root */
-export type Mutation_RootDelete_Options_Booleans_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Options_NumbersArgs = {
-  where: Options_Numbers_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Options_Numbers_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Options_ObjectsArgs = {
-  where: Options_Objects_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Options_Objects_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Options_StringsArgs = {
-  where: Options_Strings_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Options_Strings_By_PkArgs = {
+export type Mutation_RootDelete_Options_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -8843,51 +8813,15 @@ export type Mutation_RootInsert_Notifications_OneArgs = {
 };
 
 /** mutation root */
-export type Mutation_RootInsert_Options_BooleansArgs = {
-  objects: Array<Options_Booleans_Insert_Input>;
-  on_conflict?: InputMaybe<Options_Booleans_On_Conflict>;
+export type Mutation_RootInsert_OptionsArgs = {
+  objects: Array<Options_Insert_Input>;
+  on_conflict?: InputMaybe<Options_On_Conflict>;
 };
 
 /** mutation root */
-export type Mutation_RootInsert_Options_Booleans_OneArgs = {
-  object: Options_Booleans_Insert_Input;
-  on_conflict?: InputMaybe<Options_Booleans_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Options_NumbersArgs = {
-  objects: Array<Options_Numbers_Insert_Input>;
-  on_conflict?: InputMaybe<Options_Numbers_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Options_Numbers_OneArgs = {
-  object: Options_Numbers_Insert_Input;
-  on_conflict?: InputMaybe<Options_Numbers_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Options_ObjectsArgs = {
-  objects: Array<Options_Objects_Insert_Input>;
-  on_conflict?: InputMaybe<Options_Objects_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Options_Objects_OneArgs = {
-  object: Options_Objects_Insert_Input;
-  on_conflict?: InputMaybe<Options_Objects_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Options_StringsArgs = {
-  objects: Array<Options_Strings_Insert_Input>;
-  on_conflict?: InputMaybe<Options_Strings_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Options_Strings_OneArgs = {
-  object: Options_Strings_Insert_Input;
-  on_conflict?: InputMaybe<Options_Strings_On_Conflict>;
+export type Mutation_RootInsert_Options_OneArgs = {
+  object: Options_Insert_Input;
+  on_conflict?: InputMaybe<Options_On_Conflict>;
 };
 
 /** mutation root */
@@ -9021,36 +8955,6 @@ export type Mutation_RootInsert_Verification_CodesArgs = {
 export type Mutation_RootInsert_Verification_Codes_OneArgs = {
   object: Verification_Codes_Insert_Input;
   on_conflict?: InputMaybe<Verification_Codes_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootOptions_DeleteArgs = {
-  args: Options_Delete_Args;
-  distinct_on?: InputMaybe<Array<Options_Strings_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Strings_Order_By>>;
-  where?: InputMaybe<Options_Strings_Bool_Exp>;
-};
-
-/** mutation root */
-export type Mutation_RootOptions_InsertArgs = {
-  args: Options_Insert_Args;
-  distinct_on?: InputMaybe<Array<Options_Strings_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Strings_Order_By>>;
-  where?: InputMaybe<Options_Strings_Bool_Exp>;
-};
-
-/** mutation root */
-export type Mutation_RootOptions_UpdateArgs = {
-  args: Options_Update_Args;
-  distinct_on?: InputMaybe<Array<Options_Strings_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Strings_Order_By>>;
-  where?: InputMaybe<Options_Strings_Bool_Exp>;
 };
 
 /** mutation root */
@@ -9566,89 +9470,32 @@ export type Mutation_RootUpdate_Notifications_ManyArgs = {
 };
 
 /** mutation root */
-export type Mutation_RootUpdate_Options_BooleansArgs = {
-  _inc?: InputMaybe<Options_Booleans_Inc_Input>;
-  _set?: InputMaybe<Options_Booleans_Set_Input>;
-  where: Options_Booleans_Bool_Exp;
+export type Mutation_RootUpdate_OptionsArgs = {
+  _append?: InputMaybe<Options_Append_Input>;
+  _delete_at_path?: InputMaybe<Options_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Options_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Options_Delete_Key_Input>;
+  _inc?: InputMaybe<Options_Inc_Input>;
+  _prepend?: InputMaybe<Options_Prepend_Input>;
+  _set?: InputMaybe<Options_Set_Input>;
+  where: Options_Bool_Exp;
 };
 
 /** mutation root */
-export type Mutation_RootUpdate_Options_Booleans_By_PkArgs = {
-  _inc?: InputMaybe<Options_Booleans_Inc_Input>;
-  _set?: InputMaybe<Options_Booleans_Set_Input>;
-  pk_columns: Options_Booleans_Pk_Columns_Input;
+export type Mutation_RootUpdate_Options_By_PkArgs = {
+  _append?: InputMaybe<Options_Append_Input>;
+  _delete_at_path?: InputMaybe<Options_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Options_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Options_Delete_Key_Input>;
+  _inc?: InputMaybe<Options_Inc_Input>;
+  _prepend?: InputMaybe<Options_Prepend_Input>;
+  _set?: InputMaybe<Options_Set_Input>;
+  pk_columns: Options_Pk_Columns_Input;
 };
 
 /** mutation root */
-export type Mutation_RootUpdate_Options_Booleans_ManyArgs = {
-  updates: Array<Options_Booleans_Updates>;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Options_NumbersArgs = {
-  _inc?: InputMaybe<Options_Numbers_Inc_Input>;
-  _set?: InputMaybe<Options_Numbers_Set_Input>;
-  where: Options_Numbers_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Options_Numbers_By_PkArgs = {
-  _inc?: InputMaybe<Options_Numbers_Inc_Input>;
-  _set?: InputMaybe<Options_Numbers_Set_Input>;
-  pk_columns: Options_Numbers_Pk_Columns_Input;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Options_Numbers_ManyArgs = {
-  updates: Array<Options_Numbers_Updates>;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Options_ObjectsArgs = {
-  _append?: InputMaybe<Options_Objects_Append_Input>;
-  _delete_at_path?: InputMaybe<Options_Objects_Delete_At_Path_Input>;
-  _delete_elem?: InputMaybe<Options_Objects_Delete_Elem_Input>;
-  _delete_key?: InputMaybe<Options_Objects_Delete_Key_Input>;
-  _inc?: InputMaybe<Options_Objects_Inc_Input>;
-  _prepend?: InputMaybe<Options_Objects_Prepend_Input>;
-  _set?: InputMaybe<Options_Objects_Set_Input>;
-  where: Options_Objects_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Options_Objects_By_PkArgs = {
-  _append?: InputMaybe<Options_Objects_Append_Input>;
-  _delete_at_path?: InputMaybe<Options_Objects_Delete_At_Path_Input>;
-  _delete_elem?: InputMaybe<Options_Objects_Delete_Elem_Input>;
-  _delete_key?: InputMaybe<Options_Objects_Delete_Key_Input>;
-  _inc?: InputMaybe<Options_Objects_Inc_Input>;
-  _prepend?: InputMaybe<Options_Objects_Prepend_Input>;
-  _set?: InputMaybe<Options_Objects_Set_Input>;
-  pk_columns: Options_Objects_Pk_Columns_Input;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Options_Objects_ManyArgs = {
-  updates: Array<Options_Objects_Updates>;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Options_StringsArgs = {
-  _inc?: InputMaybe<Options_Strings_Inc_Input>;
-  _set?: InputMaybe<Options_Strings_Set_Input>;
-  where: Options_Strings_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Options_Strings_By_PkArgs = {
-  _inc?: InputMaybe<Options_Strings_Inc_Input>;
-  _set?: InputMaybe<Options_Strings_Set_Input>;
-  pk_columns: Options_Strings_Pk_Columns_Input;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Options_Strings_ManyArgs = {
-  updates: Array<Options_Strings_Updates>;
+export type Mutation_RootUpdate_Options_ManyArgs = {
+  updates: Array<Options_Updates>;
 };
 
 /** mutation root */
@@ -11402,32 +11249,20 @@ export type Numeric_Comparison_Exp = {
 /** columns and relationships of "options" */
 export type Options = {
   __typename?: "options";
-  boolean?: Maybe<Scalars["Boolean"]["output"]>;
-  boolean_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** An object relationship */
-  boolean_row?: Maybe<Options_Booleans>;
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
+  boolean_value?: Maybe<Scalars["Boolean"]["output"]>;
+  created_at: Scalars["bigint"]["output"];
+  id: Scalars["uuid"]["output"];
   item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key?: Maybe<Scalars["String"]["output"]>;
-  number?: Maybe<Scalars["numeric"]["output"]>;
-  number_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** An object relationship */
-  number_row?: Maybe<Options_Numbers>;
-  object?: Maybe<Scalars["jsonb"]["output"]>;
-  object_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** An object relationship */
-  object_row?: Maybe<Options_Objects>;
-  string?: Maybe<Scalars["String"]["output"]>;
-  string_id?: Maybe<Scalars["uuid"]["output"]>;
-  /** An object relationship */
-  string_row?: Maybe<Options_Strings>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
+  jsonb_value?: Maybe<Scalars["jsonb"]["output"]>;
+  key: Scalars["String"]["output"];
+  number_value?: Maybe<Scalars["numeric"]["output"]>;
+  string_value?: Maybe<Scalars["String"]["output"]>;
+  updated_at: Scalars["bigint"]["output"];
+  user_id: Scalars["uuid"]["output"];
 };
 
 /** columns and relationships of "options" */
-export type OptionsObjectArgs = {
+export type OptionsJsonb_ValueArgs = {
   path?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -11460,11 +11295,16 @@ export type Options_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Options_Append_Input = {
+  jsonb_value?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
 /** aggregate avg on columns */
 export type Options_Avg_Fields = {
   __typename?: "options_avg_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  number?: Maybe<Scalars["Float"]["output"]>;
+  number_value?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -11473,313 +11313,71 @@ export type Options_Bool_Exp = {
   _and?: InputMaybe<Array<Options_Bool_Exp>>;
   _not?: InputMaybe<Options_Bool_Exp>;
   _or?: InputMaybe<Array<Options_Bool_Exp>>;
-  boolean?: InputMaybe<Boolean_Comparison_Exp>;
-  boolean_id?: InputMaybe<Uuid_Comparison_Exp>;
-  boolean_row?: InputMaybe<Options_Booleans_Bool_Exp>;
+  boolean_value?: InputMaybe<Boolean_Comparison_Exp>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
   item_id?: InputMaybe<Uuid_Comparison_Exp>;
+  jsonb_value?: InputMaybe<Jsonb_Comparison_Exp>;
   key?: InputMaybe<String_Comparison_Exp>;
-  number?: InputMaybe<Numeric_Comparison_Exp>;
-  number_id?: InputMaybe<Uuid_Comparison_Exp>;
-  number_row?: InputMaybe<Options_Numbers_Bool_Exp>;
-  object?: InputMaybe<Jsonb_Comparison_Exp>;
-  object_id?: InputMaybe<Uuid_Comparison_Exp>;
-  object_row?: InputMaybe<Options_Objects_Bool_Exp>;
-  string?: InputMaybe<String_Comparison_Exp>;
-  string_id?: InputMaybe<Uuid_Comparison_Exp>;
-  string_row?: InputMaybe<Options_Strings_Bool_Exp>;
+  number_value?: InputMaybe<Numeric_Comparison_Exp>;
+  string_value?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
   user_id?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
-/** columns and relationships of "options_booleans" */
-export type Options_Booleans = {
-  __typename?: "options_booleans";
-  created_at: Scalars["bigint"]["output"];
-  id: Scalars["uuid"]["output"];
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key: Scalars["String"]["output"];
-  updated_at: Scalars["bigint"]["output"];
-  user_id: Scalars["uuid"]["output"];
-  value: Scalars["Boolean"]["output"];
-};
-
-/** aggregated selection of "options_booleans" */
-export type Options_Booleans_Aggregate = {
-  __typename?: "options_booleans_aggregate";
-  aggregate?: Maybe<Options_Booleans_Aggregate_Fields>;
-  nodes: Array<Options_Booleans>;
-};
-
-/** aggregate fields of "options_booleans" */
-export type Options_Booleans_Aggregate_Fields = {
-  __typename?: "options_booleans_aggregate_fields";
-  avg?: Maybe<Options_Booleans_Avg_Fields>;
-  count: Scalars["Int"]["output"];
-  max?: Maybe<Options_Booleans_Max_Fields>;
-  min?: Maybe<Options_Booleans_Min_Fields>;
-  stddev?: Maybe<Options_Booleans_Stddev_Fields>;
-  stddev_pop?: Maybe<Options_Booleans_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Options_Booleans_Stddev_Samp_Fields>;
-  sum?: Maybe<Options_Booleans_Sum_Fields>;
-  var_pop?: Maybe<Options_Booleans_Var_Pop_Fields>;
-  var_samp?: Maybe<Options_Booleans_Var_Samp_Fields>;
-  variance?: Maybe<Options_Booleans_Variance_Fields>;
-};
-
-/** aggregate fields of "options_booleans" */
-export type Options_Booleans_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Options_Booleans_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** aggregate avg on columns */
-export type Options_Booleans_Avg_Fields = {
-  __typename?: "options_booleans_avg_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Boolean expression to filter rows from the table "options_booleans". All fields are combined with a logical 'AND'. */
-export type Options_Booleans_Bool_Exp = {
-  _and?: InputMaybe<Array<Options_Booleans_Bool_Exp>>;
-  _not?: InputMaybe<Options_Booleans_Bool_Exp>;
-  _or?: InputMaybe<Array<Options_Booleans_Bool_Exp>>;
-  created_at?: InputMaybe<Bigint_Comparison_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  item_id?: InputMaybe<Uuid_Comparison_Exp>;
-  key?: InputMaybe<String_Comparison_Exp>;
-  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  user_id?: InputMaybe<Uuid_Comparison_Exp>;
-  value?: InputMaybe<Boolean_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "options_booleans" */
-export enum Options_Booleans_Constraint {
-  /** unique or primary key constraint on columns "key", "item_id" */
-  OptionsBooleansKeyItemIdUnique = "options_booleans_key_item_id_unique",
+/** unique or primary key constraints on table "options" */
+export enum Options_Constraint {
+  /** unique or primary key constraint on columns "user_id", "key" */
+  OptionsKeyUserItemUniqueIdx = "options_key_user_item_unique_idx",
   /** unique or primary key constraint on columns "id" */
-  OptionsBooleansPkey = "options_booleans_pkey",
+  OptionsPkey = "options_pkey",
 }
 
-/** input type for incrementing numeric columns in table "options_booleans" */
-export type Options_Booleans_Inc_Input = {
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Options_Delete_At_Path_Input = {
+  jsonb_value?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Options_Delete_Elem_Input = {
+  jsonb_value?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Options_Delete_Key_Input = {
+  jsonb_value?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** input type for incrementing numeric columns in table "options" */
+export type Options_Inc_Input = {
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  number_value?: InputMaybe<Scalars["numeric"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
 };
 
-/** input type for inserting data into table "options_booleans" */
-export type Options_Booleans_Insert_Input = {
+/** input type for inserting data into table "options" */
+export type Options_Insert_Input = {
+  boolean_value?: InputMaybe<Scalars["Boolean"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   item_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  jsonb_value?: InputMaybe<Scalars["jsonb"]["input"]>;
   key?: InputMaybe<Scalars["String"]["input"]>;
+  number_value?: InputMaybe<Scalars["numeric"]["input"]>;
+  string_value?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** aggregate max on columns */
-export type Options_Booleans_Max_Fields = {
-  __typename?: "options_booleans_max_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** aggregate min on columns */
-export type Options_Booleans_Min_Fields = {
-  __typename?: "options_booleans_min_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** response of any mutation on the table "options_booleans" */
-export type Options_Booleans_Mutation_Response = {
-  __typename?: "options_booleans_mutation_response";
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars["Int"]["output"];
-  /** data from the rows affected by the mutation */
-  returning: Array<Options_Booleans>;
-};
-
-/** on_conflict condition type for table "options_booleans" */
-export type Options_Booleans_On_Conflict = {
-  constraint: Options_Booleans_Constraint;
-  update_columns?: Array<Options_Booleans_Update_Column>;
-  where?: InputMaybe<Options_Booleans_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "options_booleans". */
-export type Options_Booleans_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  item_id?: InputMaybe<Order_By>;
-  key?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  user_id?: InputMaybe<Order_By>;
-  value?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: options_booleans */
-export type Options_Booleans_Pk_Columns_Input = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** select columns of table "options_booleans" */
-export enum Options_Booleans_Select_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  ItemId = "item_id",
-  /** column name */
-  Key = "key",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-  /** column name */
-  Value = "value",
-}
-
-/** input type for updating data in table "options_booleans" */
-export type Options_Booleans_Set_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** aggregate stddev on columns */
-export type Options_Booleans_Stddev_Fields = {
-  __typename?: "options_booleans_stddev_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Options_Booleans_Stddev_Pop_Fields = {
-  __typename?: "options_booleans_stddev_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Options_Booleans_Stddev_Samp_Fields = {
-  __typename?: "options_booleans_stddev_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Streaming cursor of the table "options_booleans" */
-export type Options_Booleans_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Options_Booleans_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Options_Booleans_Stream_Cursor_Value_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** aggregate sum on columns */
-export type Options_Booleans_Sum_Fields = {
-  __typename?: "options_booleans_sum_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** update columns of table "options_booleans" */
-export enum Options_Booleans_Update_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  ItemId = "item_id",
-  /** column name */
-  Key = "key",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-  /** column name */
-  Value = "value",
-}
-
-export type Options_Booleans_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<Options_Booleans_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Options_Booleans_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Options_Booleans_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type Options_Booleans_Var_Pop_Fields = {
-  __typename?: "options_booleans_var_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate var_samp on columns */
-export type Options_Booleans_Var_Samp_Fields = {
-  __typename?: "options_booleans_var_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate variance on columns */
-export type Options_Booleans_Variance_Fields = {
-  __typename?: "options_booleans_variance_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Options_Delete_Args = {
-  _id?: InputMaybe<Scalars["uuid"]["input"]>;
-};
-
-export type Options_Insert_Args = {
-  _key?: InputMaybe<Scalars["String"]["input"]>;
-  _value?: InputMaybe<Scalars["jsonb"]["input"]>;
 };
 
 /** aggregate max on columns */
 export type Options_Max_Fields = {
   __typename?: "options_max_fields";
-  boolean_id?: Maybe<Scalars["uuid"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   item_id?: Maybe<Scalars["uuid"]["output"]>;
   key?: Maybe<Scalars["String"]["output"]>;
-  number?: Maybe<Scalars["numeric"]["output"]>;
-  number_id?: Maybe<Scalars["uuid"]["output"]>;
-  object_id?: Maybe<Scalars["uuid"]["output"]>;
-  string?: Maybe<Scalars["String"]["output"]>;
-  string_id?: Maybe<Scalars["uuid"]["output"]>;
+  number_value?: Maybe<Scalars["numeric"]["output"]>;
+  string_value?: Maybe<Scalars["String"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
@@ -11787,629 +11385,60 @@ export type Options_Max_Fields = {
 /** aggregate min on columns */
 export type Options_Min_Fields = {
   __typename?: "options_min_fields";
-  boolean_id?: Maybe<Scalars["uuid"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   item_id?: Maybe<Scalars["uuid"]["output"]>;
   key?: Maybe<Scalars["String"]["output"]>;
-  number?: Maybe<Scalars["numeric"]["output"]>;
-  number_id?: Maybe<Scalars["uuid"]["output"]>;
-  object_id?: Maybe<Scalars["uuid"]["output"]>;
-  string?: Maybe<Scalars["String"]["output"]>;
-  string_id?: Maybe<Scalars["uuid"]["output"]>;
+  number_value?: Maybe<Scalars["numeric"]["output"]>;
+  string_value?: Maybe<Scalars["String"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
-/** columns and relationships of "options_numbers" */
-export type Options_Numbers = {
-  __typename?: "options_numbers";
-  created_at: Scalars["bigint"]["output"];
-  id: Scalars["uuid"]["output"];
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key: Scalars["String"]["output"];
-  updated_at: Scalars["bigint"]["output"];
-  user_id: Scalars["uuid"]["output"];
-  value: Scalars["Int"]["output"];
-};
-
-/** aggregated selection of "options_numbers" */
-export type Options_Numbers_Aggregate = {
-  __typename?: "options_numbers_aggregate";
-  aggregate?: Maybe<Options_Numbers_Aggregate_Fields>;
-  nodes: Array<Options_Numbers>;
-};
-
-/** aggregate fields of "options_numbers" */
-export type Options_Numbers_Aggregate_Fields = {
-  __typename?: "options_numbers_aggregate_fields";
-  avg?: Maybe<Options_Numbers_Avg_Fields>;
-  count: Scalars["Int"]["output"];
-  max?: Maybe<Options_Numbers_Max_Fields>;
-  min?: Maybe<Options_Numbers_Min_Fields>;
-  stddev?: Maybe<Options_Numbers_Stddev_Fields>;
-  stddev_pop?: Maybe<Options_Numbers_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Options_Numbers_Stddev_Samp_Fields>;
-  sum?: Maybe<Options_Numbers_Sum_Fields>;
-  var_pop?: Maybe<Options_Numbers_Var_Pop_Fields>;
-  var_samp?: Maybe<Options_Numbers_Var_Samp_Fields>;
-  variance?: Maybe<Options_Numbers_Variance_Fields>;
-};
-
-/** aggregate fields of "options_numbers" */
-export type Options_Numbers_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Options_Numbers_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** aggregate avg on columns */
-export type Options_Numbers_Avg_Fields = {
-  __typename?: "options_numbers_avg_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-  value?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Boolean expression to filter rows from the table "options_numbers". All fields are combined with a logical 'AND'. */
-export type Options_Numbers_Bool_Exp = {
-  _and?: InputMaybe<Array<Options_Numbers_Bool_Exp>>;
-  _not?: InputMaybe<Options_Numbers_Bool_Exp>;
-  _or?: InputMaybe<Array<Options_Numbers_Bool_Exp>>;
-  created_at?: InputMaybe<Bigint_Comparison_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  item_id?: InputMaybe<Uuid_Comparison_Exp>;
-  key?: InputMaybe<String_Comparison_Exp>;
-  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  user_id?: InputMaybe<Uuid_Comparison_Exp>;
-  value?: InputMaybe<Int_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "options_numbers" */
-export enum Options_Numbers_Constraint {
-  /** unique or primary key constraint on columns "key", "item_id" */
-  OptionsNumbersKeyItemIdUnique = "options_numbers_key_item_id_unique",
-  /** unique or primary key constraint on columns "id" */
-  OptionsNumbersPkey = "options_numbers_pkey",
-}
-
-/** input type for incrementing numeric columns in table "options_numbers" */
-export type Options_Numbers_Inc_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  value?: InputMaybe<Scalars["Int"]["input"]>;
-};
-
-/** input type for inserting data into table "options_numbers" */
-export type Options_Numbers_Insert_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["Int"]["input"]>;
-};
-
-/** aggregate max on columns */
-export type Options_Numbers_Max_Fields = {
-  __typename?: "options_numbers_max_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-  value?: Maybe<Scalars["Int"]["output"]>;
-};
-
-/** aggregate min on columns */
-export type Options_Numbers_Min_Fields = {
-  __typename?: "options_numbers_min_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-  value?: Maybe<Scalars["Int"]["output"]>;
-};
-
-/** response of any mutation on the table "options_numbers" */
-export type Options_Numbers_Mutation_Response = {
-  __typename?: "options_numbers_mutation_response";
+/** response of any mutation on the table "options" */
+export type Options_Mutation_Response = {
+  __typename?: "options_mutation_response";
   /** number of rows affected by the mutation */
   affected_rows: Scalars["Int"]["output"];
   /** data from the rows affected by the mutation */
-  returning: Array<Options_Numbers>;
+  returning: Array<Options>;
 };
 
-/** on_conflict condition type for table "options_numbers" */
-export type Options_Numbers_On_Conflict = {
-  constraint: Options_Numbers_Constraint;
-  update_columns?: Array<Options_Numbers_Update_Column>;
-  where?: InputMaybe<Options_Numbers_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "options_numbers". */
-export type Options_Numbers_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  item_id?: InputMaybe<Order_By>;
-  key?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  user_id?: InputMaybe<Order_By>;
-  value?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: options_numbers */
-export type Options_Numbers_Pk_Columns_Input = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** select columns of table "options_numbers" */
-export enum Options_Numbers_Select_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  ItemId = "item_id",
-  /** column name */
-  Key = "key",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-  /** column name */
-  Value = "value",
-}
-
-/** input type for updating data in table "options_numbers" */
-export type Options_Numbers_Set_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["Int"]["input"]>;
-};
-
-/** aggregate stddev on columns */
-export type Options_Numbers_Stddev_Fields = {
-  __typename?: "options_numbers_stddev_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-  value?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Options_Numbers_Stddev_Pop_Fields = {
-  __typename?: "options_numbers_stddev_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-  value?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Options_Numbers_Stddev_Samp_Fields = {
-  __typename?: "options_numbers_stddev_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-  value?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Streaming cursor of the table "options_numbers" */
-export type Options_Numbers_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Options_Numbers_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Options_Numbers_Stream_Cursor_Value_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["Int"]["input"]>;
-};
-
-/** aggregate sum on columns */
-export type Options_Numbers_Sum_Fields = {
-  __typename?: "options_numbers_sum_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  value?: Maybe<Scalars["Int"]["output"]>;
-};
-
-/** update columns of table "options_numbers" */
-export enum Options_Numbers_Update_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  ItemId = "item_id",
-  /** column name */
-  Key = "key",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-  /** column name */
-  Value = "value",
-}
-
-export type Options_Numbers_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<Options_Numbers_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Options_Numbers_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Options_Numbers_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type Options_Numbers_Var_Pop_Fields = {
-  __typename?: "options_numbers_var_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-  value?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate var_samp on columns */
-export type Options_Numbers_Var_Samp_Fields = {
-  __typename?: "options_numbers_var_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-  value?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate variance on columns */
-export type Options_Numbers_Variance_Fields = {
-  __typename?: "options_numbers_variance_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-  value?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** columns and relationships of "options_objects" */
-export type Options_Objects = {
-  __typename?: "options_objects";
-  created_at: Scalars["bigint"]["output"];
-  id: Scalars["uuid"]["output"];
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key: Scalars["String"]["output"];
-  updated_at: Scalars["bigint"]["output"];
-  user_id: Scalars["uuid"]["output"];
-  value: Scalars["jsonb"]["output"];
-};
-
-/** columns and relationships of "options_objects" */
-export type Options_ObjectsValueArgs = {
-  path?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-/** aggregated selection of "options_objects" */
-export type Options_Objects_Aggregate = {
-  __typename?: "options_objects_aggregate";
-  aggregate?: Maybe<Options_Objects_Aggregate_Fields>;
-  nodes: Array<Options_Objects>;
-};
-
-/** aggregate fields of "options_objects" */
-export type Options_Objects_Aggregate_Fields = {
-  __typename?: "options_objects_aggregate_fields";
-  avg?: Maybe<Options_Objects_Avg_Fields>;
-  count: Scalars["Int"]["output"];
-  max?: Maybe<Options_Objects_Max_Fields>;
-  min?: Maybe<Options_Objects_Min_Fields>;
-  stddev?: Maybe<Options_Objects_Stddev_Fields>;
-  stddev_pop?: Maybe<Options_Objects_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Options_Objects_Stddev_Samp_Fields>;
-  sum?: Maybe<Options_Objects_Sum_Fields>;
-  var_pop?: Maybe<Options_Objects_Var_Pop_Fields>;
-  var_samp?: Maybe<Options_Objects_Var_Samp_Fields>;
-  variance?: Maybe<Options_Objects_Variance_Fields>;
-};
-
-/** aggregate fields of "options_objects" */
-export type Options_Objects_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Options_Objects_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** append existing jsonb value of filtered columns with new jsonb value */
-export type Options_Objects_Append_Input = {
-  value?: InputMaybe<Scalars["jsonb"]["input"]>;
-};
-
-/** aggregate avg on columns */
-export type Options_Objects_Avg_Fields = {
-  __typename?: "options_objects_avg_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Boolean expression to filter rows from the table "options_objects". All fields are combined with a logical 'AND'. */
-export type Options_Objects_Bool_Exp = {
-  _and?: InputMaybe<Array<Options_Objects_Bool_Exp>>;
-  _not?: InputMaybe<Options_Objects_Bool_Exp>;
-  _or?: InputMaybe<Array<Options_Objects_Bool_Exp>>;
-  created_at?: InputMaybe<Bigint_Comparison_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  item_id?: InputMaybe<Uuid_Comparison_Exp>;
-  key?: InputMaybe<String_Comparison_Exp>;
-  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  user_id?: InputMaybe<Uuid_Comparison_Exp>;
-  value?: InputMaybe<Jsonb_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "options_objects" */
-export enum Options_Objects_Constraint {
-  /** unique or primary key constraint on columns "key", "item_id" */
-  OptionsObjectsKeyItemIdUnique = "options_objects_key_item_id_unique",
-  /** unique or primary key constraint on columns "id" */
-  OptionsObjectsPkey = "options_objects_pkey",
-}
-
-/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type Options_Objects_Delete_At_Path_Input = {
-  value?: InputMaybe<Array<Scalars["String"]["input"]>>;
-};
-
-/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type Options_Objects_Delete_Elem_Input = {
-  value?: InputMaybe<Scalars["Int"]["input"]>;
-};
-
-/** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type Options_Objects_Delete_Key_Input = {
-  value?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-/** input type for incrementing numeric columns in table "options_objects" */
-export type Options_Objects_Inc_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-};
-
-/** input type for inserting data into table "options_objects" */
-export type Options_Objects_Insert_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["jsonb"]["input"]>;
-};
-
-/** aggregate max on columns */
-export type Options_Objects_Max_Fields = {
-  __typename?: "options_objects_max_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** aggregate min on columns */
-export type Options_Objects_Min_Fields = {
-  __typename?: "options_objects_min_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** response of any mutation on the table "options_objects" */
-export type Options_Objects_Mutation_Response = {
-  __typename?: "options_objects_mutation_response";
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars["Int"]["output"];
-  /** data from the rows affected by the mutation */
-  returning: Array<Options_Objects>;
-};
-
-/** on_conflict condition type for table "options_objects" */
-export type Options_Objects_On_Conflict = {
-  constraint: Options_Objects_Constraint;
-  update_columns?: Array<Options_Objects_Update_Column>;
-  where?: InputMaybe<Options_Objects_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "options_objects". */
-export type Options_Objects_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  item_id?: InputMaybe<Order_By>;
-  key?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  user_id?: InputMaybe<Order_By>;
-  value?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: options_objects */
-export type Options_Objects_Pk_Columns_Input = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** prepend existing jsonb value of filtered columns with new jsonb value */
-export type Options_Objects_Prepend_Input = {
-  value?: InputMaybe<Scalars["jsonb"]["input"]>;
-};
-
-/** select columns of table "options_objects" */
-export enum Options_Objects_Select_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  ItemId = "item_id",
-  /** column name */
-  Key = "key",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-  /** column name */
-  Value = "value",
-}
-
-/** input type for updating data in table "options_objects" */
-export type Options_Objects_Set_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["jsonb"]["input"]>;
-};
-
-/** aggregate stddev on columns */
-export type Options_Objects_Stddev_Fields = {
-  __typename?: "options_objects_stddev_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Options_Objects_Stddev_Pop_Fields = {
-  __typename?: "options_objects_stddev_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Options_Objects_Stddev_Samp_Fields = {
-  __typename?: "options_objects_stddev_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Streaming cursor of the table "options_objects" */
-export type Options_Objects_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Options_Objects_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Options_Objects_Stream_Cursor_Value_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["jsonb"]["input"]>;
-};
-
-/** aggregate sum on columns */
-export type Options_Objects_Sum_Fields = {
-  __typename?: "options_objects_sum_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** update columns of table "options_objects" */
-export enum Options_Objects_Update_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  ItemId = "item_id",
-  /** column name */
-  Key = "key",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-  /** column name */
-  Value = "value",
-}
-
-export type Options_Objects_Updates = {
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  _append?: InputMaybe<Options_Objects_Append_Input>;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  _delete_at_path?: InputMaybe<Options_Objects_Delete_At_Path_Input>;
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  _delete_elem?: InputMaybe<Options_Objects_Delete_Elem_Input>;
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  _delete_key?: InputMaybe<Options_Objects_Delete_Key_Input>;
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<Options_Objects_Inc_Input>;
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  _prepend?: InputMaybe<Options_Objects_Prepend_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Options_Objects_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Options_Objects_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type Options_Objects_Var_Pop_Fields = {
-  __typename?: "options_objects_var_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate var_samp on columns */
-export type Options_Objects_Var_Samp_Fields = {
-  __typename?: "options_objects_var_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate variance on columns */
-export type Options_Objects_Variance_Fields = {
-  __typename?: "options_objects_variance_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
+/** on_conflict condition type for table "options" */
+export type Options_On_Conflict = {
+  constraint: Options_Constraint;
+  update_columns?: Array<Options_Update_Column>;
+  where?: InputMaybe<Options_Bool_Exp>;
 };
 
 /** Ordering options when selecting data from "options". */
 export type Options_Order_By = {
-  boolean?: InputMaybe<Order_By>;
-  boolean_id?: InputMaybe<Order_By>;
-  boolean_row?: InputMaybe<Options_Booleans_Order_By>;
+  boolean_value?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   item_id?: InputMaybe<Order_By>;
+  jsonb_value?: InputMaybe<Order_By>;
   key?: InputMaybe<Order_By>;
-  number?: InputMaybe<Order_By>;
-  number_id?: InputMaybe<Order_By>;
-  number_row?: InputMaybe<Options_Numbers_Order_By>;
-  object?: InputMaybe<Order_By>;
-  object_id?: InputMaybe<Order_By>;
-  object_row?: InputMaybe<Options_Objects_Order_By>;
-  string?: InputMaybe<Order_By>;
-  string_id?: InputMaybe<Order_By>;
-  string_row?: InputMaybe<Options_Strings_Order_By>;
+  number_value?: InputMaybe<Order_By>;
+  string_value?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
   user_id?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: options */
+export type Options_Pk_Columns_Input = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Options_Prepend_Input = {
+  jsonb_value?: InputMaybe<Scalars["jsonb"]["input"]>;
 };
 
 /** select columns of table "options" */
 export enum Options_Select_Column {
   /** column name */
-  Boolean = "boolean",
-  /** column name */
-  BooleanId = "boolean_id",
+  BooleanValue = "boolean_value",
   /** column name */
   CreatedAt = "created_at",
   /** column name */
@@ -12417,30 +11446,38 @@ export enum Options_Select_Column {
   /** column name */
   ItemId = "item_id",
   /** column name */
+  JsonbValue = "jsonb_value",
+  /** column name */
   Key = "key",
   /** column name */
-  Number = "number",
+  NumberValue = "number_value",
   /** column name */
-  NumberId = "number_id",
-  /** column name */
-  Object = "object",
-  /** column name */
-  ObjectId = "object_id",
-  /** column name */
-  String = "string",
-  /** column name */
-  StringId = "string_id",
+  StringValue = "string_value",
   /** column name */
   UpdatedAt = "updated_at",
   /** column name */
   UserId = "user_id",
 }
 
+/** input type for updating data in table "options" */
+export type Options_Set_Input = {
+  boolean_value?: InputMaybe<Scalars["Boolean"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  jsonb_value?: InputMaybe<Scalars["jsonb"]["input"]>;
+  key?: InputMaybe<Scalars["String"]["input"]>;
+  number_value?: InputMaybe<Scalars["numeric"]["input"]>;
+  string_value?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
 /** aggregate stddev on columns */
 export type Options_Stddev_Fields = {
   __typename?: "options_stddev_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  number?: Maybe<Scalars["Float"]["output"]>;
+  number_value?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -12448,7 +11485,7 @@ export type Options_Stddev_Fields = {
 export type Options_Stddev_Pop_Fields = {
   __typename?: "options_stddev_pop_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  number?: Maybe<Scalars["Float"]["output"]>;
+  number_value?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -12456,7 +11493,7 @@ export type Options_Stddev_Pop_Fields = {
 export type Options_Stddev_Samp_Fields = {
   __typename?: "options_stddev_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  number?: Maybe<Scalars["Float"]["output"]>;
+  number_value?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -12470,307 +11507,74 @@ export type Options_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Options_Stream_Cursor_Value_Input = {
-  boolean?: InputMaybe<Scalars["Boolean"]["input"]>;
-  boolean_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  boolean_value?: InputMaybe<Scalars["Boolean"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   item_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  jsonb_value?: InputMaybe<Scalars["jsonb"]["input"]>;
   key?: InputMaybe<Scalars["String"]["input"]>;
-  number?: InputMaybe<Scalars["numeric"]["input"]>;
-  number_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  object?: InputMaybe<Scalars["jsonb"]["input"]>;
-  object_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  string?: InputMaybe<Scalars["String"]["input"]>;
-  string_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  number_value?: InputMaybe<Scalars["numeric"]["input"]>;
+  string_value?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-};
-
-/** columns and relationships of "options_strings" */
-export type Options_Strings = {
-  __typename?: "options_strings";
-  created_at: Scalars["bigint"]["output"];
-  id: Scalars["uuid"]["output"];
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key: Scalars["String"]["output"];
-  updated_at: Scalars["bigint"]["output"];
-  user_id: Scalars["uuid"]["output"];
-  value: Scalars["String"]["output"];
-};
-
-/** aggregated selection of "options_strings" */
-export type Options_Strings_Aggregate = {
-  __typename?: "options_strings_aggregate";
-  aggregate?: Maybe<Options_Strings_Aggregate_Fields>;
-  nodes: Array<Options_Strings>;
-};
-
-/** aggregate fields of "options_strings" */
-export type Options_Strings_Aggregate_Fields = {
-  __typename?: "options_strings_aggregate_fields";
-  avg?: Maybe<Options_Strings_Avg_Fields>;
-  count: Scalars["Int"]["output"];
-  max?: Maybe<Options_Strings_Max_Fields>;
-  min?: Maybe<Options_Strings_Min_Fields>;
-  stddev?: Maybe<Options_Strings_Stddev_Fields>;
-  stddev_pop?: Maybe<Options_Strings_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Options_Strings_Stddev_Samp_Fields>;
-  sum?: Maybe<Options_Strings_Sum_Fields>;
-  var_pop?: Maybe<Options_Strings_Var_Pop_Fields>;
-  var_samp?: Maybe<Options_Strings_Var_Samp_Fields>;
-  variance?: Maybe<Options_Strings_Variance_Fields>;
-};
-
-/** aggregate fields of "options_strings" */
-export type Options_Strings_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Options_Strings_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** aggregate avg on columns */
-export type Options_Strings_Avg_Fields = {
-  __typename?: "options_strings_avg_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Boolean expression to filter rows from the table "options_strings". All fields are combined with a logical 'AND'. */
-export type Options_Strings_Bool_Exp = {
-  _and?: InputMaybe<Array<Options_Strings_Bool_Exp>>;
-  _not?: InputMaybe<Options_Strings_Bool_Exp>;
-  _or?: InputMaybe<Array<Options_Strings_Bool_Exp>>;
-  created_at?: InputMaybe<Bigint_Comparison_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  item_id?: InputMaybe<Uuid_Comparison_Exp>;
-  key?: InputMaybe<String_Comparison_Exp>;
-  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  user_id?: InputMaybe<Uuid_Comparison_Exp>;
-  value?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "options_strings" */
-export enum Options_Strings_Constraint {
-  /** unique or primary key constraint on columns "key", "item_id" */
-  OptionsStringsKeyItemIdUnique = "options_strings_key_item_id_unique",
-  /** unique or primary key constraint on columns "id" */
-  OptionsStringsPkey = "options_strings_pkey",
-}
-
-/** input type for incrementing numeric columns in table "options_strings" */
-export type Options_Strings_Inc_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-};
-
-/** input type for inserting data into table "options_strings" */
-export type Options_Strings_Insert_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-/** aggregate max on columns */
-export type Options_Strings_Max_Fields = {
-  __typename?: "options_strings_max_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-  value?: Maybe<Scalars["String"]["output"]>;
-};
-
-/** aggregate min on columns */
-export type Options_Strings_Min_Fields = {
-  __typename?: "options_strings_min_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  item_id?: Maybe<Scalars["uuid"]["output"]>;
-  key?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-  value?: Maybe<Scalars["String"]["output"]>;
-};
-
-/** response of any mutation on the table "options_strings" */
-export type Options_Strings_Mutation_Response = {
-  __typename?: "options_strings_mutation_response";
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars["Int"]["output"];
-  /** data from the rows affected by the mutation */
-  returning: Array<Options_Strings>;
-};
-
-/** on_conflict condition type for table "options_strings" */
-export type Options_Strings_On_Conflict = {
-  constraint: Options_Strings_Constraint;
-  update_columns?: Array<Options_Strings_Update_Column>;
-  where?: InputMaybe<Options_Strings_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "options_strings". */
-export type Options_Strings_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  item_id?: InputMaybe<Order_By>;
-  key?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  user_id?: InputMaybe<Order_By>;
-  value?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: options_strings */
-export type Options_Strings_Pk_Columns_Input = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** select columns of table "options_strings" */
-export enum Options_Strings_Select_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  ItemId = "item_id",
-  /** column name */
-  Key = "key",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-  /** column name */
-  Value = "value",
-}
-
-/** input type for updating data in table "options_strings" */
-export type Options_Strings_Set_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-/** aggregate stddev on columns */
-export type Options_Strings_Stddev_Fields = {
-  __typename?: "options_strings_stddev_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Options_Strings_Stddev_Pop_Fields = {
-  __typename?: "options_strings_stddev_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Options_Strings_Stddev_Samp_Fields = {
-  __typename?: "options_strings_stddev_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Streaming cursor of the table "options_strings" */
-export type Options_Strings_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Options_Strings_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Options_Strings_Stream_Cursor_Value_Input = {
-  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  item_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-  value?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-/** aggregate sum on columns */
-export type Options_Strings_Sum_Fields = {
-  __typename?: "options_strings_sum_fields";
-  created_at?: Maybe<Scalars["bigint"]["output"]>;
-  updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** update columns of table "options_strings" */
-export enum Options_Strings_Update_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  ItemId = "item_id",
-  /** column name */
-  Key = "key",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UserId = "user_id",
-  /** column name */
-  Value = "value",
-}
-
-export type Options_Strings_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<Options_Strings_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Options_Strings_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Options_Strings_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type Options_Strings_Var_Pop_Fields = {
-  __typename?: "options_strings_var_pop_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate var_samp on columns */
-export type Options_Strings_Var_Samp_Fields = {
-  __typename?: "options_strings_var_samp_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate variance on columns */
-export type Options_Strings_Variance_Fields = {
-  __typename?: "options_strings_variance_fields";
-  created_at?: Maybe<Scalars["Float"]["output"]>;
-  updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
 /** aggregate sum on columns */
 export type Options_Sum_Fields = {
   __typename?: "options_sum_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
-  number?: Maybe<Scalars["numeric"]["output"]>;
+  number_value?: Maybe<Scalars["numeric"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
 };
 
-export type Options_Update_Args = {
-  _id?: InputMaybe<Scalars["uuid"]["input"]>;
-  _value?: InputMaybe<Scalars["jsonb"]["input"]>;
+/** update columns of table "options" */
+export enum Options_Update_Column {
+  /** column name */
+  BooleanValue = "boolean_value",
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Id = "id",
+  /** column name */
+  ItemId = "item_id",
+  /** column name */
+  JsonbValue = "jsonb_value",
+  /** column name */
+  Key = "key",
+  /** column name */
+  NumberValue = "number_value",
+  /** column name */
+  StringValue = "string_value",
+  /** column name */
+  UpdatedAt = "updated_at",
+  /** column name */
+  UserId = "user_id",
+}
+
+export type Options_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Options_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Options_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Options_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Options_Delete_Key_Input>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<Options_Inc_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Options_Prepend_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Options_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Options_Bool_Exp;
 };
 
 /** aggregate var_pop on columns */
 export type Options_Var_Pop_Fields = {
   __typename?: "options_var_pop_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  number?: Maybe<Scalars["Float"]["output"]>;
+  number_value?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -12778,7 +11582,7 @@ export type Options_Var_Pop_Fields = {
 export type Options_Var_Samp_Fields = {
   __typename?: "options_var_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  number?: Maybe<Scalars["Float"]["output"]>;
+  number_value?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -12786,7 +11590,7 @@ export type Options_Var_Samp_Fields = {
 export type Options_Variance_Fields = {
   __typename?: "options_variance_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  number?: Maybe<Scalars["Float"]["output"]>;
+  number_value?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
@@ -17304,30 +16108,8 @@ export type Query_Root = {
   options: Array<Options>;
   /** fetch aggregated fields from the table: "options" */
   options_aggregate: Options_Aggregate;
-  /** fetch data from the table: "options_booleans" */
-  options_booleans: Array<Options_Booleans>;
-  /** fetch aggregated fields from the table: "options_booleans" */
-  options_booleans_aggregate: Options_Booleans_Aggregate;
-  /** fetch data from the table: "options_booleans" using primary key columns */
-  options_booleans_by_pk?: Maybe<Options_Booleans>;
-  /** fetch data from the table: "options_numbers" */
-  options_numbers: Array<Options_Numbers>;
-  /** fetch aggregated fields from the table: "options_numbers" */
-  options_numbers_aggregate: Options_Numbers_Aggregate;
-  /** fetch data from the table: "options_numbers" using primary key columns */
-  options_numbers_by_pk?: Maybe<Options_Numbers>;
-  /** fetch data from the table: "options_objects" */
-  options_objects: Array<Options_Objects>;
-  /** fetch aggregated fields from the table: "options_objects" */
-  options_objects_aggregate: Options_Objects_Aggregate;
-  /** fetch data from the table: "options_objects" using primary key columns */
-  options_objects_by_pk?: Maybe<Options_Objects>;
-  /** fetch data from the table: "options_strings" */
-  options_strings: Array<Options_Strings>;
-  /** fetch aggregated fields from the table: "options_strings" */
-  options_strings_aggregate: Options_Strings_Aggregate;
-  /** fetch data from the table: "options_strings" using primary key columns */
-  options_strings_by_pk?: Maybe<Options_Strings>;
+  /** fetch data from the table: "options" using primary key columns */
+  options_by_pk?: Maybe<Options>;
   /** fetch data from the table: "payments.methods" */
   payments_methods: Array<Payments_Methods>;
   /** fetch aggregated fields from the table: "payments.methods" */
@@ -17818,83 +16600,7 @@ export type Query_RootOptions_AggregateArgs = {
   where?: InputMaybe<Options_Bool_Exp>;
 };
 
-export type Query_RootOptions_BooleansArgs = {
-  distinct_on?: InputMaybe<Array<Options_Booleans_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Booleans_Order_By>>;
-  where?: InputMaybe<Options_Booleans_Bool_Exp>;
-};
-
-export type Query_RootOptions_Booleans_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Options_Booleans_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Booleans_Order_By>>;
-  where?: InputMaybe<Options_Booleans_Bool_Exp>;
-};
-
-export type Query_RootOptions_Booleans_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Query_RootOptions_NumbersArgs = {
-  distinct_on?: InputMaybe<Array<Options_Numbers_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Numbers_Order_By>>;
-  where?: InputMaybe<Options_Numbers_Bool_Exp>;
-};
-
-export type Query_RootOptions_Numbers_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Options_Numbers_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Numbers_Order_By>>;
-  where?: InputMaybe<Options_Numbers_Bool_Exp>;
-};
-
-export type Query_RootOptions_Numbers_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Query_RootOptions_ObjectsArgs = {
-  distinct_on?: InputMaybe<Array<Options_Objects_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Objects_Order_By>>;
-  where?: InputMaybe<Options_Objects_Bool_Exp>;
-};
-
-export type Query_RootOptions_Objects_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Options_Objects_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Objects_Order_By>>;
-  where?: InputMaybe<Options_Objects_Bool_Exp>;
-};
-
-export type Query_RootOptions_Objects_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Query_RootOptions_StringsArgs = {
-  distinct_on?: InputMaybe<Array<Options_Strings_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Strings_Order_By>>;
-  where?: InputMaybe<Options_Strings_Bool_Exp>;
-};
-
-export type Query_RootOptions_Strings_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Options_Strings_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Strings_Order_By>>;
-  where?: InputMaybe<Options_Strings_Bool_Exp>;
-};
-
-export type Query_RootOptions_Strings_By_PkArgs = {
+export type Query_RootOptions_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -19554,40 +18260,10 @@ export type Subscription_Root = {
   options: Array<Options>;
   /** fetch aggregated fields from the table: "options" */
   options_aggregate: Options_Aggregate;
-  /** fetch data from the table: "options_booleans" */
-  options_booleans: Array<Options_Booleans>;
-  /** fetch aggregated fields from the table: "options_booleans" */
-  options_booleans_aggregate: Options_Booleans_Aggregate;
-  /** fetch data from the table: "options_booleans" using primary key columns */
-  options_booleans_by_pk?: Maybe<Options_Booleans>;
-  /** fetch data from the table in a streaming manner: "options_booleans" */
-  options_booleans_stream: Array<Options_Booleans>;
-  /** fetch data from the table: "options_numbers" */
-  options_numbers: Array<Options_Numbers>;
-  /** fetch aggregated fields from the table: "options_numbers" */
-  options_numbers_aggregate: Options_Numbers_Aggregate;
-  /** fetch data from the table: "options_numbers" using primary key columns */
-  options_numbers_by_pk?: Maybe<Options_Numbers>;
-  /** fetch data from the table in a streaming manner: "options_numbers" */
-  options_numbers_stream: Array<Options_Numbers>;
-  /** fetch data from the table: "options_objects" */
-  options_objects: Array<Options_Objects>;
-  /** fetch aggregated fields from the table: "options_objects" */
-  options_objects_aggregate: Options_Objects_Aggregate;
-  /** fetch data from the table: "options_objects" using primary key columns */
-  options_objects_by_pk?: Maybe<Options_Objects>;
-  /** fetch data from the table in a streaming manner: "options_objects" */
-  options_objects_stream: Array<Options_Objects>;
+  /** fetch data from the table: "options" using primary key columns */
+  options_by_pk?: Maybe<Options>;
   /** fetch data from the table in a streaming manner: "options" */
   options_stream: Array<Options>;
-  /** fetch data from the table: "options_strings" */
-  options_strings: Array<Options_Strings>;
-  /** fetch aggregated fields from the table: "options_strings" */
-  options_strings_aggregate: Options_Strings_Aggregate;
-  /** fetch data from the table: "options_strings" using primary key columns */
-  options_strings_by_pk?: Maybe<Options_Strings>;
-  /** fetch data from the table in a streaming manner: "options_strings" */
-  options_strings_stream: Array<Options_Strings>;
   /** fetch data from the table: "payments.methods" */
   payments_methods: Array<Payments_Methods>;
   /** fetch aggregated fields from the table: "payments.methods" */
@@ -20222,114 +18898,14 @@ export type Subscription_RootOptions_AggregateArgs = {
   where?: InputMaybe<Options_Bool_Exp>;
 };
 
-export type Subscription_RootOptions_BooleansArgs = {
-  distinct_on?: InputMaybe<Array<Options_Booleans_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Booleans_Order_By>>;
-  where?: InputMaybe<Options_Booleans_Bool_Exp>;
-};
-
-export type Subscription_RootOptions_Booleans_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Options_Booleans_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Booleans_Order_By>>;
-  where?: InputMaybe<Options_Booleans_Bool_Exp>;
-};
-
-export type Subscription_RootOptions_Booleans_By_PkArgs = {
+export type Subscription_RootOptions_By_PkArgs = {
   id: Scalars["uuid"]["input"];
-};
-
-export type Subscription_RootOptions_Booleans_StreamArgs = {
-  batch_size: Scalars["Int"]["input"];
-  cursor: Array<InputMaybe<Options_Booleans_Stream_Cursor_Input>>;
-  where?: InputMaybe<Options_Booleans_Bool_Exp>;
-};
-
-export type Subscription_RootOptions_NumbersArgs = {
-  distinct_on?: InputMaybe<Array<Options_Numbers_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Numbers_Order_By>>;
-  where?: InputMaybe<Options_Numbers_Bool_Exp>;
-};
-
-export type Subscription_RootOptions_Numbers_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Options_Numbers_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Numbers_Order_By>>;
-  where?: InputMaybe<Options_Numbers_Bool_Exp>;
-};
-
-export type Subscription_RootOptions_Numbers_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Subscription_RootOptions_Numbers_StreamArgs = {
-  batch_size: Scalars["Int"]["input"];
-  cursor: Array<InputMaybe<Options_Numbers_Stream_Cursor_Input>>;
-  where?: InputMaybe<Options_Numbers_Bool_Exp>;
-};
-
-export type Subscription_RootOptions_ObjectsArgs = {
-  distinct_on?: InputMaybe<Array<Options_Objects_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Objects_Order_By>>;
-  where?: InputMaybe<Options_Objects_Bool_Exp>;
-};
-
-export type Subscription_RootOptions_Objects_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Options_Objects_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Objects_Order_By>>;
-  where?: InputMaybe<Options_Objects_Bool_Exp>;
-};
-
-export type Subscription_RootOptions_Objects_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Subscription_RootOptions_Objects_StreamArgs = {
-  batch_size: Scalars["Int"]["input"];
-  cursor: Array<InputMaybe<Options_Objects_Stream_Cursor_Input>>;
-  where?: InputMaybe<Options_Objects_Bool_Exp>;
 };
 
 export type Subscription_RootOptions_StreamArgs = {
   batch_size: Scalars["Int"]["input"];
   cursor: Array<InputMaybe<Options_Stream_Cursor_Input>>;
   where?: InputMaybe<Options_Bool_Exp>;
-};
-
-export type Subscription_RootOptions_StringsArgs = {
-  distinct_on?: InputMaybe<Array<Options_Strings_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Strings_Order_By>>;
-  where?: InputMaybe<Options_Strings_Bool_Exp>;
-};
-
-export type Subscription_RootOptions_Strings_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Options_Strings_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Options_Strings_Order_By>>;
-  where?: InputMaybe<Options_Strings_Bool_Exp>;
-};
-
-export type Subscription_RootOptions_Strings_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Subscription_RootOptions_Strings_StreamArgs = {
-  batch_size: Scalars["Int"]["input"];
-  cursor: Array<InputMaybe<Options_Strings_Stream_Cursor_Input>>;
-  where?: InputMaybe<Options_Strings_Bool_Exp>;
 };
 
 export type Subscription_RootPayments_MethodsArgs = {

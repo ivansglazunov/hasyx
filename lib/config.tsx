@@ -419,6 +419,16 @@ hasyxConfig.variant = z.object({
   nextAuthSecrets: nextAuthVariantSelector,
   
   // Additional services
+  smsProvider: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'smsProvider',
+    referenceKey: 'smsProviders', // специальный ключ для комбинированного списка
+    title: 'SMS Provider',
+    description: 'Select SMS provider configuration from available sms.ru and SMSAero configs',
+    emptyMessage: 'No SMS providers available. Create sms.ru or SMSAero configurations first.',
+    backLabel: '< back',
+    descriptionTemplate: (data: any) => data?.type === 'smsru' ? 'sms.ru SMS Service' : 'SMSAero SMS Service'
+  }),
   storage: z.string().optional().meta({
     type: 'reference-selector',
     data: 'storage',
@@ -618,7 +628,7 @@ hasyxConfig.variant = z.object({
     'host', 'hasura', 'telegramBot', 'telegramChannel', 'environment', 'testing',
     'googleOAuth', 'yandexOAuth', 'githubOAuth', 'facebookOAuth', 'vkOAuth', 'telegramLoginOAuth', 'nextAuthSecrets',
     'storage', 'pg', 'docker', 'dockerhub', 'github', 'vercel', 'iosSigning', 'githubTelegramBot',
-    'resend', 'smsru', 'openrouter', 'npm', 'firebase', 'firebasePublic', 'dns', 'cloudflare', 'projectUser', 'githubWebhooks'
+    'resend', 'smsProvider', 'openrouter', 'npm', 'firebase', 'firebasePublic', 'dns', 'cloudflare', 'projectUser', 'githubWebhooks'
   ]
 });
 
@@ -1079,6 +1089,43 @@ hasyxConfig.smsrus = z.record(
   default: ['local', 'dev', 'prod'],
   add: hasyxConfig.smsru,
   descriptionTemplate: (data: any) => `${data?.apiId ? 'api set' : 'no api'}${data?.from ? ' • from set' : ''}`
+});
+
+// SMSAero Schema
+hasyxConfig.smsaero = z.object({
+  email: z.string()
+    .min(1, 'Please enter a valid SMSAero account email')
+    .describe('SMSAero Account Email (SMSAERO_EMAIL). Used for Basic Auth together with API key.'),
+  apiKey: z.string()
+    .min(1, 'Please enter a valid SMSAero API Key')
+    .describe('SMSAero API Key (SMSAERO_API_KEY). Get from SMSAero dashboard.'),
+  sign: z.string()
+    .min(1, 'Please enter an approved SMSAero Sign')
+    .describe('SMSAero Sender Name (SMSAERO_SIGN). Must be approved in SMSAero.'),
+  channel: z.string()
+    .optional()
+    .describe('SMSAero Channel (SMSAERO_CHANNEL). Optional: direct, INTERNATIONAL, DIGITAL, SERVICE.')
+}).meta({
+  type: 'smsaero-config',
+  title: 'SMSAero Configuration',
+  description: 'Configure SMSAero credentials for SMS sending. All fields except channel are required.',
+  envMapping: {
+    email: 'SMSAERO_EMAIL',
+    apiKey: 'SMSAERO_API_KEY',
+    sign: 'SMSAERO_SIGN',
+    channel: 'SMSAERO_CHANNEL'
+  }
+});
+
+hasyxConfig.smsaeros = z.record(
+  z.string(), // smsaero configuration name
+  hasyxConfig.smsaero,
+).meta({
+  data: 'smsaero',
+  type: 'keys',
+  default: ['local', 'dev', 'prod'],
+  add: hasyxConfig.smsaero,
+  descriptionTemplate: (data: any) => `${data?.email || 'no email'}${data?.sign ? ' • ' + data.sign : ''}`
 });
 
 // OpenRouter Schema
@@ -1638,6 +1685,7 @@ hasyxConfig.file = z.object({
   github: hasyxConfig.githubs, // GitHub API
   resend: hasyxConfig.resends, // Resend email
   smsru: hasyxConfig.smsrus, // sms.ru SMS
+  smsaero: hasyxConfig.smsaeros, // SMSAero SMS
   openrouter: hasyxConfig.openrouters, // OpenRouter AI
   npm: hasyxConfig.npms, // NPM (publish token)
   firebase: hasyxConfig.firebases, // Firebase (Admin)

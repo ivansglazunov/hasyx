@@ -42,11 +42,39 @@ function VariantEditor({
   
 
   
-  // Если выбрано поле, показываем ReferenceSelector для этого поля
+  // Если выбрано поле, показываем соответствующий компонент для этого поля
   if (selectedField) {
     const fieldSchema = (schema as z.ZodObject<any>).shape[selectedField];
     const fieldMeta = fieldSchema.meta ? fieldSchema.meta() : {};
     
+    // Если поле имеет тип 'text', используем TextInput
+    if (fieldMeta.type === 'text') {
+      return (
+        <Box flexDirection="column" gap={1}>
+          <Text color="cyan">{fieldMeta.title || selectedField}</Text>
+          {fieldMeta.description && <Text color="gray">{fieldMeta.description}</Text>}
+          <TextInput
+            defaultValue={localConfig[selectedField] || ''}
+            onChange={(value) => {
+              console.log(`VariantEditor TextInput onChange for ${selectedField}:`, value);
+            }}
+            onSubmit={(value) => {
+              console.log(`VariantEditor TextInput onSubmit for ${selectedField}:`, value);
+              const newLocalConfig = { ...localConfig, [selectedField]: value };
+              setLocalConfig(newLocalConfig);
+              // Обновляем глобальную конфигурацию
+              onConfig(newLocalConfig);
+              // Возвращаемся к списку полей после ввода
+              setSelectedField(null);
+            }}
+            placeholder={fieldMeta.placeholder || `Enter ${selectedField}`}
+          />
+          <Text color="gray">Press Enter to save, Ctrl+C to cancel</Text>
+        </Box>
+      );
+    }
+    
+    // Для всех остальных полей используем ReferenceSelector
     return (
       <ReferenceSelector
         schema={fieldSchema}
@@ -79,9 +107,18 @@ function VariantEditor({
     // Получаем описание значения из fullConfig
     let description = currentValue;
     if (fullConfig && fieldMeta.referenceKey) {
-      const refData = fullConfig[fieldMeta.referenceKey]?.[currentValue];
-      if (refData && fieldMeta.descriptionTemplate) {
-        description = fieldMeta.descriptionTemplate(refData);
+      // Специальная обработка для smsProviders
+      if (fieldMeta.referenceKey === 'smsProviders' && currentValue) {
+        if (currentValue.startsWith('smsru.')) {
+          description = `sms.ru (${currentValue.replace('smsru.', '')})`;
+        } else if (currentValue.startsWith('smsaero.')) {
+          description = `SMSAero (${currentValue.replace('smsaero.', '')})`;
+        }
+      } else {
+        const refData = fullConfig[fieldMeta.referenceKey]?.[currentValue];
+        if (refData && fieldMeta.descriptionTemplate) {
+          description = fieldMeta.descriptionTemplate(refData);
+        }
       }
     }
     
@@ -1037,8 +1074,27 @@ function ReferenceSelector({
   onBack?: () => void;
 }) {
   // Получаем список доступных конфигураций из конфига
-  const references = config[meta.referenceKey] || {};
-  const referenceKeys = Object.keys(references);
+  let references = config[meta.referenceKey] || {};
+  let referenceKeys = Object.keys(references);
+  
+  // Специальная обработка для smsProviders - объединяем smsru и smsaero
+  if (meta.referenceKey === 'smsProviders') {
+    references = {};
+    const smsruConfigs = config.smsru || {};
+    const smsaeroConfigs = config.smsaero || {};
+    
+    // Добавляем все sms.ru конфигурации с префиксом
+    Object.keys(smsruConfigs).forEach(key => {
+      references[`smsru.${key}`] = { ...smsruConfigs[key], type: 'smsru', provider: 'sms.ru' };
+    });
+    
+    // Добавляем все SMSAero конфигурации с префиксом  
+    Object.keys(smsaeroConfigs).forEach(key => {
+      references[`smsaero.${key}`] = { ...smsaeroConfigs[key], type: 'smsaero', provider: 'SMSAero' };
+    });
+    
+    referenceKeys = Object.keys(references);
+  }
   
   // Проверяем, является ли поле опциональным
   const isOptional = schema instanceof z.ZodOptional || schema instanceof z.ZodNullable;

@@ -1,6 +1,6 @@
 {
   "name": "hasyx",
-  "version": "0.2.0-alpha.51",
+  "version": "0.2.0-alpha.52",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.vercel.app/",
   "engines": {
@@ -36,7 +36,7 @@
     "unmigrate": "tsx lib/unmigrate.ts",
     "events": "NODE_OPTIONS=\"--experimental-vm-modules\" npx tsx lib/events.ts",
     "schema": "npm run hasura:schema && npm run hasura:types",
-    "validate": "npx hasyx validation define",
+    "validate": "npm run cli -- validation define",
     "hasura:schema": "tsx ./lib/hasura-schema.ts",
     "hasura:types": "graphql-codegen --config ./lib/hasura-types.ts",
     "npm-publish": "npm run build && npm publish",

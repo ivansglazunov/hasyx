@@ -1,64 +1,60 @@
-import { Hasura } from '../hasura/hasura.js';
+import { Hasura } from '../hasura/hasura';
+import Debug from '../debug';
 
-interface DownOptions {
-  optionsViewTable: string;
-  numbersTable: string;
-  stringsTable: string;
-  objectsTable: string;
-  booleansTable: string;
+const debug = Debug('migration:down-options');
+
+export interface OptionsDownParams {
+  schema?: string;
+  optionsTable: string;
 }
 
-export async function down(options: DownOptions) {
-  const hasura = new Hasura({ 
-    url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, 
-    secret: process.env.HASURA_ADMIN_SECRET! 
-  });
-  
-  await hasura.ensureDefaultSource();
-  const schema = 'public';
+export async function down(params: OptionsDownParams, customHasura?: Hasura) {
+  const {
+    schema = 'public',
+    optionsTable,
+  } = params;
 
-  const { optionsViewTable, numbersTable, stringsTable, objectsTable, booleansTable } = options;
-  const baseTables = [numbersTable, stringsTable, objectsTable, booleansTable];
-  const functionNames = [
-    `${optionsViewTable}_insert`,
-    `${optionsViewTable}_update`, 
-    `${optionsViewTable}_delete`
+  const hasura = customHasura || new Hasura({
+    url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!,
+    secret: process.env.HASURA_ADMIN_SECRET!,
+  });
+
+  await hasura.ensureDefaultSource();
+
+  debug(`🚀 Starting Hasura Options migration DOWN for schema: ${schema}`);
+
+  // Drop validation trigger functions
+  const triggerFunctions = [
+    `${optionsTable}_validate`,
+    `${optionsTable}_set_user_id`
   ];
 
-  // Untrack and drop functions
-  for (const funcName of functionNames) {
+  for (const funcName of triggerFunctions) {
     try {
-      await hasura.v1({
-        type: 'pg_untrack_function',
-        args: { 
-          source: 'default', 
-          function: { schema, name: funcName }
-        }
-      });
-    } catch {}
-    
-    try {
-      await hasura.sql(`DROP FUNCTION IF EXISTS "${schema}"."${funcName}" CASCADE;`);
-    } catch {}
+      debug(`🗑️ Dropping trigger function ${funcName}...`);
+      await hasura.undefine({ kind: 'function', schema, name: funcName });
+      debug(`✅ Dropped trigger function ${funcName}`);
+    } catch (e) {
+      debug(`⚠️ Could not drop trigger function ${funcName}: ${e}`);
+    }
   }
 
-  // Untrack and drop view
-  try { 
-    await hasura.untrackView({ schema, name: optionsViewTable }); 
-  } catch {}
-  
-  try { 
-    await hasura.sql(`DROP VIEW IF EXISTS "${schema}"."${optionsViewTable}" CASCADE;`); 
-  } catch {}
-
-  // Untrack and drop base tables
-  for (const tableName of baseTables) {
-    try { 
-      await hasura.untrackTable({ schema, table: tableName }); 
-    } catch {}
-    
-    try { 
-      await hasura.sql(`DROP TABLE IF EXISTS "${schema}"."${tableName}" CASCADE;`); 
-    } catch {}
+  // Untrack and drop table
+  try {
+    debug(`🗑️ Untracking table ${optionsTable}...`);
+    await hasura.untrackTable({ schema, table: optionsTable });
+    debug(`✅ Untracked table ${optionsTable}`);
+  } catch (e) {
+    debug(`⚠️ Could not untrack table ${optionsTable}: ${e}`);
   }
+
+  try {
+    debug(`🗑️ Dropping table ${optionsTable}...`);
+    await hasura.deleteTable({ schema, table: optionsTable, cascade: true });
+    debug(`✅ Dropped table ${optionsTable}`);
+  } catch (e) {
+    debug(`⚠️ Could not drop table ${optionsTable}: ${e}`);
+  }
+
+  debug('✨ All DOWN migrations executed successfully!');
 }

@@ -25,19 +25,26 @@ const debug = Debug('test:validation');
     expect(schemas).toHaveProperty('config');
   }, 30000);
 
-  it('cli validation sync should create validation.schemas row', async () => {
+  it('cli validation sync should define validation.project_schemas()', async () => {
     const hasura = new Hasura({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET! });
     await hasura.ensureDefaultSource();
-    // Ensure table exists (idempotent)
     await hasura.sql(`CREATE SCHEMA IF NOT EXISTS validation;`);
-    await hasura.sql(`CREATE TABLE IF NOT EXISTS validation.schemas (name TEXT PRIMARY KEY, content JSONB NOT NULL, updated_at TIMESTAMPTZ DEFAULT NOW());`);
 
     const run = spawn.sync('npm', ['run', 'cli', '--', 'validation', 'sync'], { encoding: 'utf-8' });
     const ok = run.status === 0;
     expect(ok).toBe(true);
 
-    const row = await hasura.sql(`SELECT name FROM validation.schemas WHERE name='project' LIMIT 1;`);
-    expect(row.result?.[1]?.[0]).toBe('project');
+    const existsFn = await hasura.sql(`SELECT EXISTS (
+      SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+      WHERE n.nspname='validation' AND p.proname='project_schemas'
+    );`);
+    expect(existsFn.result?.[1]?.[0]).toBe('t');
+
+    const ty = await hasura.sql(`SELECT jsonb_typeof(validation.project_schemas()) AS t;`);
+    expect(ty.result?.[1]?.[0]).toBe('object');
+
+    const hasProfile = await hasura.sql(`SELECT (validation.project_schemas()->'schema'->'optionsProfile') IS NOT NULL AS ok;`);
+    expect(hasProfile.result?.[1]?.[0]).toBe('t');
   }, 60000);
 
   it('should validate email column using configured schema path via plv8', async () => {
@@ -52,15 +59,14 @@ const debug = Debug('test:validation');
     const plv8Available = result.result?.[1]?.[0] === 't';
     expect(plv8Available).toBe(true);
 
-    // Prepare runtime and sync minimal schema containing schema.email
+    // Prepare runtime and define project_schemas() with minimal schema containing schema.email
     await ensureValidationRuntime(hasura);
     const sample = { schema: { email: { type: 'string', format: 'email' } } } as any;
     await hasura.sql(`CREATE SCHEMA IF NOT EXISTS validation;`);
-    await hasura.sql(`CREATE TABLE IF NOT EXISTS validation.schemas (name TEXT PRIMARY KEY, content JSONB NOT NULL, updated_at TIMESTAMPTZ DEFAULT NOW());`);
     await hasura.sql(`
-      INSERT INTO validation.schemas (name, content, updated_at)
-      VALUES ('project', '${JSON.stringify(sample).replace(/'/g, "''")}'::jsonb, NOW())
-      ON CONFLICT (name) DO UPDATE SET content = EXCLUDED.content, updated_at = NOW();
+      CREATE OR REPLACE FUNCTION validation.project_schemas() RETURNS JSONB AS $$
+        return ${JSON.stringify(sample)};
+      $$ LANGUAGE plv8 IMMUTABLE;
     `);
 
     const testSchema = `test_validation_${uuidv4().replace(/-/g, '_')}`;
@@ -125,16 +131,11 @@ const debug = Debug('test:validation');
       await hasura.defineTable({ schema: testSchema, table: 'users', id: 'id', type: ColumnType.UUID });
       await hasura.defineColumn({ schema: testSchema, table: 'users', name: 'email', type: ColumnType.TEXT });
 
-      // Sync schemas to DB (baseline)
-      const syncRun = spawn.sync('npm', ['run', 'cli', '--', 'validation', 'sync'], { encoding: 'utf-8' });
-      expect(syncRun.status).toBe(0);
-
-      // Enrich project content with a test schema path schema._test_email
+      // Define project schemas with test path schema._test_email
       await hasura.sql(`
-        UPDATE validation.schemas
-        SET content = jsonb_set(content, '{schema,_test_email}', '{"type":"string","format":"email"}'::jsonb, true),
-            updated_at = NOW()
-        WHERE name = 'project';
+        CREATE OR REPLACE FUNCTION validation.project_schemas() RETURNS JSONB AS $$
+          return { schema: { _test_email: { type: 'string', format: 'email' } } };
+        $$ LANGUAGE plv8 IMMUTABLE;
       `);
 
       // Add rule to hasyx.config.json for our test table/column using the injected path
@@ -175,7 +176,7 @@ const debug = Debug('test:validation');
       const bad2 = await hasura.sql(`SELECT "${testSchema}".try_sql($q$INSERT INTO "${testSchema}".users (email) VALUES ('invalid');$q$);`);
       expect(bad2.result?.[1]?.[0]).toBe('ok');
     } finally {
-      // Restore hasyx.config.json and resync to clean DB content
+      // Restore hasyx.config.json and resync plv8 function from project sources
       await fs.writeFile(configPath, originalConfig);
       spawn.sync('npm', ['run', 'cli', '--', 'validation', 'sync'], { encoding: 'utf-8' });
       await hasura.deleteSchema({ schema: testSchema, cascade: true });

@@ -39,7 +39,7 @@ Hasyx provides a robust starting point and a set of tools for building applicati
 [![Docker Hub Publishing Documentation](https://img.shields.io/badge/Docker%20Hub-MD-blue)](DOCKER.md)
 [![URL Query State Management Documentation](https://img.shields.io/badge/Use%20Query%20Hook-MD-lightblue)](USE-QUERY.md)
 [![Files Storage Documentation](https://img.shields.io/badge/Files%20Storage-MD-darkgreen)](FILES.md)
-[![plv8 Extension Documentation](https://img.shields.io/badge/plv8%20Extension-MD-darkred)](PLV8.md) [![Validation (plv8+Zod) Docs](https://img.shields.io/badge/Validation-MD-darkred)](VALIDATION.md)
+[![plv8 Extension Documentation](https://img.shields.io/badge/plv8%20Extension-MD-darkred)](PLV8.md) [![Validation (plv8+Zod) Docs](https://img.shields.io/badge/Validation-MD-darkred)](VALIDATION.md) [![Options System](https://img.shields.io/badge/Options%20System-MD-darkgreen)](OPTIONS.md)
 [![Fastlane Integration Documentation](https://img.shields.io/badge/Fastlane%20Integration-MD-orange)](FASTLANE.md)
 
 ## Technologies Used
@@ -579,8 +579,8 @@ When running `init`, Hasyx automatically patches your Next.js project for WebSoc
 ├── ✨ .npmignore               # NPM ignore patterns (from _lib/.npmignore)
 ├── ✨ .npmrc                   # NPM configuration (from _lib/.npmrc)
 ├── ✨ Dockerfile               # Docker container configuration
+├── ✨ Dockerfile.postgres      # PostgreSQL Docker container with PLV8 and PostGIS
 ├── ✨ .dockerignore            # Docker ignore patterns
-├── ✨ DOCKER.md                # Docker documentation and usage guide
 ├── ✨ vercel.json              # Vercel deployment configuration
 ├── ✨ babel.jest.config.mjs    # Babel configuration for Jest
 ├── ✨ jest.config.mjs          # Jest testing configuration

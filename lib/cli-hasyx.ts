@@ -109,7 +109,7 @@ import { processConfiguredDiffs } from './logs/logs-diffs';
 import { processConfiguredStates } from './logs/logs-states';
 import { envCommand } from './env';
 import { 
-  generateProjectJsonSchemas, writeSchemasToFile, syncSchemasToDatabase,
+  generateProjectJsonSchemas, syncSchemasToDatabase,
   processConfiguredValidationDefine, processConfiguredValidationUndefine
 } from './validation';
 
@@ -743,6 +743,7 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'public/logo.svg': 'public/logo.svg',
     'public/hasura-schema.json': 'public/hasura-schema.json',
     'Dockerfile': 'Dockerfile',
+    'Dockerfile.postgres': 'Dockerfile.postgres',
     '.dockerignore': '.dockerignore',
     'vercel.json': 'vercel.json',
     'babel.jest.config.mjs': 'babel.jest.config.mjs',
@@ -2362,10 +2363,9 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
   const validationGroup = program.command('validation').description('Validation: sync schemas and define/undefine DB validation');
   validationGroup
     .command('sync')
-    .description('Generate schema.json from Zod and sync into DB (validation.schemas)')
+    .description('Generate project JSON Schemas from Zod and sync into DB via plv8 (validation.project_schemas)')
     .action(async () => {
-      const schemas = await generateProjectJsonSchemas();
-      await writeSchemasToFile(schemas, 'schema.json');
+      await generateProjectJsonSchemas();
       await syncSchemasToDatabase();
       console.log('✅ validation: sync done');
     });

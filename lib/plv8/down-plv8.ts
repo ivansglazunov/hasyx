@@ -54,13 +54,15 @@ export async function down(customHasura?: Hasura) {
     await hasura.ensureDefaultSource();
     
     await dropPlv8TestSchema(hasura);
-    // Validation cleanup: drop our triggers and functions (keep validation.schemas content)
+    // Validation cleanup: drop our triggers and functions
     try {
       await removeAllValidationTriggers(hasura);
     } catch {}
     try {
       await hasura.sql(`DROP FUNCTION IF EXISTS validation.validate_column() CASCADE;`);
       await hasura.sql(`DROP FUNCTION IF EXISTS validation.validate_json(JSONB, TEXT, TEXT) CASCADE;`);
+      await hasura.sql(`DROP FUNCTION IF EXISTS validation.project_schemas() CASCADE;`);
+      await hasura.sql(`DROP FUNCTION IF EXISTS validation.validate_option_key(TEXT, TEXT) CASCADE;`);
     } catch {}
     // Drop validation schema entirely
     try {

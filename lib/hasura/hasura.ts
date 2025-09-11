@@ -310,8 +310,35 @@ export class Hasura {
             cascade,
           },
         });
+        const data = response.data;
+
+        // Detect and surface Hasura/PG errors even if HTTP status is 2xx/4xx (axios validateStatus allows 4xx)
+        // Typical error shapes from Hasura run_sql:
+        // { error: string, code: string, internal: { error?: { message?: string }, statement?: string } }
+        // Success shape typically contains { result_type: 'TuplesOk' | 'CommandOk', result?: any[][] }
+        const hasExplicitError = !!(data && (data.error || data.code === 'postgres-error'));
+        const internalError = data?.internal?.error || (Array.isArray(data?.internal) ? data.internal[0]?.error : undefined);
+        if (hasExplicitError || internalError) {
+          const errMsg = (
+            internalError?.message || data?.internal?.statement || data?.error || 'Unknown SQL error'
+          );
+          const formatted = `❌ Hasura run_sql error: ${errMsg}`;
+          debug(formatted, data);
+          throw new Error(formatted);
+        }
+
+        // If neither result_type nor result present, but there is a message that indicates error, surface it
+        if (!('result_type' in (data || {})) && !('result' in (data || {}))) {
+          const maybeMessage: string | undefined = data?.message || data?.error;
+          if (maybeMessage && /error|exception|failed/i.test(String(maybeMessage))) {
+            const formatted = `❌ Hasura run_sql anomaly: ${maybeMessage}`;
+            debug(formatted, data);
+            throw new Error(formatted);
+          }
+        }
+
         debug('✅ SQL executed successfully.');
-        return response.data;
+        return data;
       } catch (error: any) {
         const errorMessage = `❌ Error executing SQL: ${error.response?.data?.error || error.message}`;
         debug(errorMessage, error.response?.data || error);

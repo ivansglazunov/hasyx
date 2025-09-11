@@ -26,7 +26,7 @@ function resolveVariant(variant: string, config: any) {
   const optionalConfigs = [
     'telegramBot', 'telegramChannel', 'environment',
     'googleOAuth', 'yandexOAuth', 'githubOAuth', 'facebookOAuth', 'vkOAuth', 'telegramLoginOAuth',
-    'storage', 'pg', 'docker', 'dockerhub', 'github', 'resend', 'smsru', 'openrouter', 'npm', 'firebase', 'firebasePublic',
+    'storage', 'pg', 'docker', 'dockerhub', 'github', 'resend', 'smsru', 'smsaero', 'openrouter', 'npm', 'firebase', 'firebasePublic',
     'nextAuthSecrets', 'dns', 'cloudflare', 'projectUser', 'vercel', 'githubWebhooks', 'githubTelegramBot',
     'testing',
   ];
@@ -230,6 +230,22 @@ function generateEnvFile(config: any, variant: string): string {
 
   for (const { name, enabled } of flags) {
     envVars.push(`${name}=${enabled ? '1' : '0'}`);
+  }
+
+  // Variant-level SMS provider selection (sets SMS_PROVIDER)
+  if ((config?.variants?.[variant] || {}).smsProvider) {
+    const smsProvider = String(config.variants[variant].smsProvider || '');
+    
+    // Парсим формат "smsru.prod" или "smsaero.prod"
+    if (smsProvider.startsWith('smsru.')) {
+      envVars.push(`SMS_PROVIDER=smsru`);
+    } else if (smsProvider.startsWith('smsaero.')) {
+      envVars.push(`SMS_PROVIDER=smsaero`);
+    }
+    // Для обратной совместимости с простыми значениями
+    else if (smsProvider === 'smsru' || smsProvider === 'smsaero') {
+      envVars.push(`SMS_PROVIDER=${smsProvider}`);
+    }
   }
 
   // Автоматически включать JWT auth для client builds

@@ -7,9 +7,16 @@ export interface SmsOptions {
   text: string;
 }
 
-// Environment-driven configuration for sms.ru
+// Environment-driven configuration for sms providers
+const smsProvider = (process.env.SMS_PROVIDER || '').toLowerCase(); // 'smsru' | 'smsaero'
+// sms.ru
 const smsRuApiId = process.env.SMSRU_API_ID; // main api_id
 const smsRuFrom = process.env.SMSRU_FROM; // optional approved sender name
+// SMSAero
+const smsAeroEmail = process.env.SMSAERO_EMAIL;
+const smsAeroApiKey = process.env.SMSAERO_API_KEY;
+const smsAeroSign = process.env.SMSAERO_SIGN;
+const smsAeroChannel = process.env.SMSAERO_CHANNEL; // optional
 
 // Normalize phone to sms.ru expected format: digits only, no leading '+'
 function normalizePhoneNumber(input: string): string {
@@ -25,12 +32,53 @@ export async function sendSms(options: SmsOptions): Promise<boolean> {
   console.log('SMS to %s: %s', to, text);
   debug('Prepared SMS to=%s text=%s', to, text);
 
-  // If credentials are missing, do not fail the flow in development; return success after logging
+  const provider = smsProvider || (smsRuApiId ? 'smsru' : (smsAeroEmail && smsAeroApiKey && smsAeroSign ? 'smsaero' : ''));
+  if (provider === 'smsaero') {
+    // Send via SMSAero
+    if (!smsAeroEmail || !smsAeroApiKey || !smsAeroSign) {
+      console.warn('⚠️ SMSAero is not fully configured. Set SMSAERO_EMAIL, SMSAERO_API_KEY, SMSAERO_SIGN.');
+      return true;
+    }
+    try {
+      const number = normalizePhoneNumber(to);
+      const url = new URL('https://gate.smsaero.ru/v2/sms/send');
+      url.searchParams.set('number', number);
+      url.searchParams.set('text', text);
+      url.searchParams.set('sign', smsAeroSign);
+      if (smsAeroChannel) url.searchParams.set('channel', smsAeroChannel);
+
+      const auth = Buffer.from(`${smsAeroEmail}:${smsAeroApiKey}`).toString('base64');
+      debug('Sending SMS via SMSAero number=%s sign=%s channel=%s', number, smsAeroSign, smsAeroChannel || '');
+      const resp = await fetch(url.toString(), {
+        method: 'GET',
+        headers: { Authorization: `Basic ${auth}`, Accept: 'application/json' },
+      });
+      const json = await resp.json().catch(() => ({} as any));
+      if (!resp.ok) {
+        console.error('SMSAero HTTP error:', resp.status, json);
+        debug('SMSAero HTTP error %s %o', resp.status, json);
+        return false;
+      }
+      const success = Boolean((json as any)?.success);
+      if (!success) {
+        console.error('SMSAero API error response:', json);
+        debug('SMSAero API error %o', json);
+        return false;
+      }
+      debug('SMSAero sent successfully %o', (json as any)?.data || json);
+      return true;
+    } catch (error: any) {
+      console.error('Failed to send SMS via SMSAero:', error?.message || error);
+      debug('Exception sending SMS %o', error);
+      return false;
+    }
+  }
+
+  // Default to sms.ru
   if (!smsRuApiId) {
     console.warn('⚠️ sms.ru is not configured. Set SMSRU_API_ID to enable real SMS sending.');
     return true;
   }
-
   try {
     const number = normalizePhoneNumber(to);
     const url = new URL('https://sms.ru/sms/send');
@@ -41,22 +89,13 @@ export async function sendSms(options: SmsOptions): Promise<boolean> {
     if (smsRuFrom) url.searchParams.set('from', smsRuFrom);
 
     debug('Sending SMS via sms.ru number=%s from=%s', number, smsRuFrom || '');
-
-    const resp = await fetch(url.toString(), {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-      },
-    });
-
+    const resp = await fetch(url.toString(), { method: 'GET', headers: { Accept: 'application/json' } });
     const json = await resp.json().catch(() => ({} as any));
     if (!resp.ok) {
       console.error('sms.ru HTTP error:', resp.status, json);
       debug('sms.ru HTTP error %s %o', resp.status, json);
       return false;
     }
-
-    // sms.ru json has structure { status: 'OK' | 'ERROR', status_code, sms: {...} }
     const status = (json as any)?.status;
     const ok = status === 'OK';
     if (!ok) {
@@ -64,7 +103,6 @@ export async function sendSms(options: SmsOptions): Promise<boolean> {
       debug('sms.ru API error %o', json);
       return false;
     }
-
     debug('sms.ru sent successfully %o', json);
     return true;
   } catch (error: any) {
