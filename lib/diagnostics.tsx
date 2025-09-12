@@ -4,6 +4,7 @@ import { SidebarData } from "hasyx/components/sidebar";
 import { SidebarLayout } from "hasyx/components/sidebar/layout";
 import { AuthActionsCard } from "hasyx/components/auth/auth-actions-card";
 import { CredentialsSignInCard } from "hasyx/components/auth/credentials-signin-card";
+import { OtpSignInCard } from "hasyx/components/auth/otp-signin-card";
 import { SessionCard } from "hasyx/components/auth/session-card";
 import { JwtDebugCard } from "hasyx/components/auth/jwt-debug-card";
 import { HasuraCard } from "hasyx/components/hasura/card";
@@ -30,6 +31,7 @@ export default function Diagnostics({ serverSession, sidebarData }: DiagnosticsP
         <div className="grid auto-rows-min gap-4 md:grid-cols-2">
           <HasuraCard />
           <ProxyCard />
+          <OtpSignInCard />
           <CredentialsSignInCard />
           <AuthActionsCard />
           <SessionCard serverSession={serverSession} />

@@ -1,6 +1,8 @@
 import 'dotenv/config';
-import Debug from 'hasyx/lib/debug';
-import { Hasyx, createApolloClient, Generator } from 'hasyx';
+import Debug from './debug';
+import { Hasyx } from './hasyx/hasyx';
+import { createApolloClient } from './apollo/apollo';
+import { Generator } from './generator';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import schema from '../public/hasura-schema.json';

@@ -226,21 +226,22 @@ npx hasyx docker define 3000
 
 **⚠️ Важно:** Никогда не редактируйте `.env` и `docker-compose.yml` вручную! Используйте только `npx hasyx config`.
 
-## 🔐 Система аутентификации и авторизации
+## 🔐 Authentication and Authorization
 
-### Поддерживаемые провайдеры
+### Supported Providers
 
-Hasyx поддерживает множественные провайдеры аутентификации через NextAuth.js:
+Hasyx supports multiple authentication providers via NextAuth.js. Important change: the Credentials flow is split into two independent scenarios — OTP and password-based sign-in.
 
 ```
-// Доступные провайдеры (настраиваются через npx hasyx config)
-- ✅ **Credentials** — Email/password аутентификация
-- ✅ **Google OAuth** — Google аккаунты
-- ✅ **Yandex OAuth** — Яндекс аккаунты  
-- ✅ **GitHub OAuth** — GitHub аккаунты
-- ✅ **Telegram WebApp** — Интеграция с Telegram Bot API
-- ✅ **JWT Auth** — Собственные JWT токены
-- 🔄 **Facebook, VK, ...** — В разработке
+// Available providers (configured via npx hasyx config)
+- ✅ **OTP (email/phone)** — verification code sign-in (no password)
+- ✅ **Credentials (email/phone + password)** — classic login/password
+- ✅ **Google OAuth** — Google accounts
+- ✅ **Yandex OAuth** — Yandex accounts  
+- ✅ **GitHub OAuth** — GitHub accounts
+- ✅ **Telegram WebApp** — Telegram Bot API integration
+- ✅ **JWT Auth** — Custom JWT tokens
+- 🔄 **Facebook, VK, ...** — In progress
 ```
 
 ### Базовая настройка аутентификации
@@ -290,6 +291,20 @@ function AuthComponent() {
   );
 }
 ```
+
+### New sign-in scheme: OTP vs Password
+
+- OTP sign-in (no password):
+  - Start: `POST /api/auth/credentials/start` with `{ provider: 'email'|'phone', identifier }`
+  - Verify: `POST /api/auth/otp/verify` with `{ attemptId, code }`
+  - After successful verification the client calls `signIn('credentials', { userId })` to establish a session
+- Password sign-in:
+  - Unauthenticated users: `signIn('credentials', { providerType, identifier, password })`
+  - Authenticated users: manage password via `POST /api/auth/credentials/set` and check status via `GET /api/auth/credentials/status`
+
+Diagnostics components:
+- `OtpSignInCard` — pure OTP flow (send code + input OTP)
+- `CredentialsSignInCard` — password sign-in and password management when authenticated
 
 ### Роли и разрешения
 

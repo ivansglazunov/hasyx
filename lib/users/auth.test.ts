@@ -323,3 +323,131 @@ describe('Real getTokenFromRequest Function Tests', () => {
     debug('✅ Real getTokenFromRequest: Verified null return for expired Bearer token.');
   });
 }); 
+
+// --- OTP and Credentials flows ---
+describe('OTP and Credentials flows', () => {
+  it('should start OTP and return attemptId', async () => {
+    const email = `otp-start-${uuidv4()}@example.com`;
+    const req = new NextRequest('http://localhost/api/auth/credentials/start', {
+      method: 'POST',
+      body: JSON.stringify({ provider: 'email', identifier: email }) as any,
+      headers: { 'Content-Type': 'application/json' },
+    } as any);
+
+    const { handleCredentialsStart } = await import('../auth/credentials-start');
+    const resp = await handleCredentialsStart(req);
+    const json = await (resp as any).json();
+    expect(json.attemptId).toBeDefined();
+    expect(json.expiresAt).toBeDefined();
+  });
+
+  it('should verify OTP (no password) and create user/account', async () => {
+    const admin = createAdminHasyx();
+    const email = `otp-verify-${uuidv4()}@example.com`;
+    let createdUserId: string | null = null;
+    try {
+      const { createAttempt } = await import('../verification-codes');
+      const attempt = await createAttempt({ provider: 'email', identifier: email });
+
+      const req = new NextRequest('http://localhost/api/auth/otp/verify', {
+        method: 'POST',
+        body: JSON.stringify({ attemptId: attempt.attemptId, code: attempt.code }) as any,
+        headers: { 'Content-Type': 'application/json' },
+      } as any);
+
+      const { handleOtpVerify } = await import('../auth/credentials');
+      const resp = await handleOtpVerify(req);
+      const json = await (resp as any).json();
+      expect(json.userId).toBeDefined();
+      createdUserId = json.userId;
+
+      const accounts = await admin.select<any>({
+        table: 'accounts',
+        where: { provider: { _eq: 'email' }, provider_account_id: { _eq: email } },
+        returning: ['user_id', 'credential_hash'],
+        limit: 1,
+      });
+      expect(accounts?.length).toBe(1);
+      expect(accounts[0].user_id).toBe(createdUserId);
+      expect(accounts[0].credential_hash).toBeNull();
+    } finally {
+      if (createdUserId) {
+        await admin.delete({ table: 'accounts', where: { user_id: { _eq: createdUserId } } });
+        await admin.delete({ table: 'users', where: { id: { _eq: createdUserId } } });
+      }
+      cleanupHasyx(admin, 'otp verify');
+    }
+  });
+
+  it('should verify credentials with password using OTP attempt (existing account)', async () => {
+    const admin = createAdminHasyx();
+    const email = `cred-verify-${uuidv4()}@example.com`;
+    const passwordPlain = 'P@ssw0rd!';
+    let createdUserId: string | null = null;
+    try {
+      const user = await admin.insert<any>({ table: 'users', object: { hasura_role: 'user' }, returning: ['id'] });
+      createdUserId = user.id;
+      const credentialHash = await hashPassword(passwordPlain);
+      await admin.insert({ table: 'accounts', object: { user_id: createdUserId, provider: 'email', provider_account_id: email, type: 'credentials', credential_hash: credentialHash } });
+
+      const { createAttempt } = await import('../verification-codes');
+      const attempt = await createAttempt({ provider: 'email', identifier: email });
+      const req = new NextRequest('http://localhost/api/auth/credentials/verify', {
+        method: 'POST',
+        body: JSON.stringify({ attemptId: attempt.attemptId, code: attempt.code, password: passwordPlain }) as any,
+        headers: { 'Content-Type': 'application/json' },
+      } as any);
+      const { handleCredentialsVerify } = await import('../auth/credentials');
+      const resp = await handleCredentialsVerify(req);
+      const json = await (resp as any).json();
+      expect(json.userId).toBe(createdUserId);
+      expect(json.action).toBe('signed-in');
+    } finally {
+      if (createdUserId) {
+        await admin.delete({ table: 'accounts', where: { user_id: { _eq: createdUserId } } });
+        await admin.delete({ table: 'users', where: { id: { _eq: createdUserId } } });
+      }
+      cleanupHasyx(admin, 'credentials verify');
+    }
+  });
+
+  it('should authorize via CredentialsProvider with providerType/identifier/password when password set', async () => {
+    const admin = createAdminHasyx();
+    const email = `cred-provider-${uuidv4()}@example.com`;
+    const passwordPlain = 'P@ssw0rd!';
+    let createdUserId: string | null = null;
+    try {
+      const user = await admin.insert<any>({ table: 'users', object: { hasura_role: 'user', email }, returning: ['id'] });
+      createdUserId = user.id;
+      const credentialHash = await hashPassword(passwordPlain);
+      await admin.insert({ table: 'accounts', object: { user_id: createdUserId, provider: 'email', provider_account_id: email, type: 'credentials', credential_hash: credentialHash } });
+
+      const { authorizeCredentials } = await import('../credentials');
+      const userObj = await authorizeCredentials(admin as any, { providerType: 'email', identifier: email, password: passwordPlain } as any);
+      expect(userObj?.id).toBe(createdUserId);
+    } finally {
+      if (createdUserId) {
+        await admin.delete({ table: 'accounts', where: { user_id: { _eq: createdUserId } } });
+        await admin.delete({ table: 'users', where: { id: { _eq: createdUserId } } });
+      }
+      cleanupHasyx(admin, 'credentials provider');
+    }
+  });
+
+  it('credentials set/status should return 401 when not authenticated', async () => {
+    const email = `cred-unauth-${uuidv4()}@example.com`;
+    const statusReq = new NextRequest(`http://localhost/api/auth/credentials/status?providerType=email&identifier=${encodeURIComponent(email)}`);
+    const { handleCredentialsStatus } = await import('../auth/credentials');
+    const statusResp = await handleCredentialsStatus(statusReq);
+    expect((statusResp as any).status).toBe(401);
+
+    const setReq = new NextRequest('http://localhost/api/auth/credentials/set', {
+      method: 'POST',
+      body: JSON.stringify({ providerType: 'email', identifier: email, newPassword: 'x', confirmNewPassword: 'x' }) as any,
+      headers: { 'Content-Type': 'application/json' },
+    } as any);
+    const { handleCredentialsSet } = await import('../auth/credentials');
+    const setResp = await handleCredentialsSet(setReq);
+    expect((setResp as any).status).toBe(401);
+  });
+});

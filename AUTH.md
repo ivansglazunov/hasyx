@@ -2,7 +2,7 @@
 
 Authentication Helpers (`AUTH.md`)
 
-This document describes the authentication helper utilities provided in `lib/auth.tsx`, primarily focused on WebSocket authentication and retrieving user tokens from requests.
+This document describes the authentication helper utilities provided in `lib/auth.tsx`, primarily focused on WebSocket authentication and retrieving user tokens from requests. It also outlines the split credentials flow: OTP vs password.
 
 ## Purpose
 
@@ -25,6 +25,25 @@ Configuration note:
 </details>
 
 ## Usage
+### Split Credentials Flow (OTP and Password)
+
+Hasyx splits the Credentials sign-in into two independent parts:
+
+1) OTP sign-in (email/phone)
+- Start code: `POST /api/auth/credentials/start` with `{ provider: 'email'|'phone', identifier }`
+- Verify code: `POST /api/auth/otp/verify` with `{ attemptId, code }`
+- Result: returns `userId`; the client calls `signIn('credentials', { userId })` to establish a stable session
+
+2) Password sign-in (email/phone + password)
+- Unauthenticated sign-in: `signIn('credentials', { providerType: 'email'|'phone', identifier, password })`
+- Password management (authenticated only):
+  - Status: `GET /api/auth/credentials/status?providerType&identifier` → `{ linked, hasPassword }`
+  - Set/change: `POST /api/auth/credentials/set` with `{ providerType, identifier, newPassword, confirmNewPassword, oldPassword? }`
+
+Diagnostics UI (`/hasyx/diagnostics`):
+- `OtpSignInCard` — pure OTP sign-in
+- `CredentialsSignInCard` — password sign-in and password management when authenticated
+
 
 ### `WsClientsManager` (WebSocket Authentication)
 

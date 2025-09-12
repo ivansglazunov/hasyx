@@ -1,4 +1,4 @@
-import Debug from 'hasyx/lib/debug';
+import Debug from './debug';
 
 const debug = Debug('sms');
 

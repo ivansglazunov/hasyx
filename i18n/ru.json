@@ -72,6 +72,10 @@
     "labels": {
       "email": "Email",
       "password": "Пароль",
+      "phone": "Телефон",
+      "oldPassword": "Старый пароль",
+      "newPassword": "Новый пароль",
+      "confirmNewPassword": "Повторите новый пароль",
       "name": "Имя",
       "title": "Заголовок",
       "description": "Описание"
@@ -124,6 +128,21 @@
     "continueWith": "Продолжить через {provider}",
     "connectedAccounts": "Подключённые аккаунты",
     "addAccountDescription": "Выберите провайдера для привязки нового аккаунта к вашему профилю",
+    "otp": {
+      "title": "Вход по коду",
+      "sendCode": "Отправить код",
+      "enterCode": "Введите код подтверждения",
+      "codeSent": "Код отправлен. Введите его ниже."
+    },
+    "password": {
+      "set": "Пароль задан",
+      "notSet": "Пароль не задан"
+    },
+    "credentials": {
+      "title": "Пароль",
+      "manageDescription": "Управление паролем для email/телефона",
+      "willLinkIdentifier": "идентификатор будет привязан к вашему аккаунту"
+    },
     "oauth": {
       "checkingOptions": "Проверяем доступные способы аутентификации..."
     },

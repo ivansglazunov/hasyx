@@ -72,6 +72,10 @@
     "labels": {
       "email": "Email",
       "password": "Password",
+      "phone": "Phone",
+      "oldPassword": "Old password",
+      "newPassword": "New password",
+      "confirmNewPassword": "Confirm new password",
       "name": "Name",
       "title": "Title",
       "description": "Description"
@@ -124,6 +128,21 @@
     "continueWith": "Continue with {provider}",
     "connectedAccounts": "Connected Accounts",
     "addAccountDescription": "Choose a provider to link a new account to your profile",
+    "otp": {
+      "title": "OTP Sign-in",
+      "sendCode": "Send code",
+      "enterCode": "Enter verification code",
+      "codeSent": "Code sent. Enter it below."
+    },
+    "password": {
+      "set": "Password set",
+      "notSet": "Password not set"
+    },
+    "credentials": {
+      "title": "Password",
+      "manageDescription": "Manage password for your email/phone",
+      "willLinkIdentifier": "identifier will be linked to your account"
+    },
     "oauth": {
       "checkingOptions": "Checking authentication options..."
     },

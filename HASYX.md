@@ -79,7 +79,11 @@ function UserComponent() {
 The framework re-exports `useSession` from NextAuth for consistency:
 
 ```typescript
-// Use this instead of importing from 'next-auth/react'
+// Auth flows overview (OTP vs Password)
+
+- OTP flow: `/api/auth/credentials/start` → `/api/auth/otp/verify` → `signIn('credentials', { userId })`
+- Password flow: `signIn('credentials', { providerType, identifier, password })`
+- Manage password (authorized): `/api/auth/credentials/status`, `/api/auth/credentials/set`
 import { useSession } from 'hasyx';
 
 function MyComponent() {
