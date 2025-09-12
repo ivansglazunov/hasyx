@@ -649,6 +649,72 @@ export const ensureWebSocketSupport = (projectRoot: string): void => {
   }
 };
 
+// Generate Docker-specific configuration (similar to generateGitpodConfig)
+async function generateDockerConfig() {
+  // Generate secure random secrets
+  const crypto = await import('crypto');
+  const generateSecret = (length: number = 32) => crypto.randomBytes(length).toString('hex');
+  
+  return {
+    variant: 'docker',
+    variants: {
+      docker: {
+        host: 'docker',
+        hasura: 'docker',
+        pg: 'docker',
+        storage: 'docker',
+        nextAuthSecrets: 'docker'
+      }
+    },
+    hosts: {
+      docker: {
+        port: 3000,
+        url: 'http://localhost:3000',
+        clientOnly: false,
+        jwtAuth: false,
+        jwtForce: false,
+        watchtower: true
+      }
+    },
+    hasura: {
+      docker: {
+        url: 'http://localhost:8080/v1/graphql',
+        secret: generateSecret(32),
+        jwtSecret: JSON.stringify({
+          type: 'HS256',
+          key: generateSecret(32)
+        }),
+        eventSecret: generateSecret(32)
+      }
+    },
+    pg: {
+      docker: {
+        url: 'postgres://postgres:postgrespassword@postgres:5432/hasyx?sslmode=disable'
+      }
+    },
+    storage: {
+      docker: {
+        provider: 'minio',
+        bucket: 'hasyx',
+        region: 'us-east-1',
+        useLocal: true,
+        endpoint: 'http://hasyx-minio:9000',
+        accessKeyId: 'minioadmin',
+        secretAccessKey: 'minioadmin',
+        forcePathStyle: true,
+        useAntivirus: false,
+        useImageManipulation: false
+      }
+    },
+    nextAuthSecrets: {
+      docker: {
+        secret: generateSecret(32),
+        url: 'http://localhost:3000'
+      }
+    }
+  };
+}
+
 // Command implementations
 export const initCommand = async (options: any, packageName: string = 'hasyx') => {
   debug('Executing "init" command.');
@@ -1273,6 +1339,26 @@ vscode:
   } else {
     console.log(`✅ ${packageName} package is up to date.`);
     debug(`npm install ${packageName}@latest --save successful.`);
+  }
+
+  // Create hasyx.config.json if it doesn't exist
+  const configPath = path.join(projectRoot, 'hasyx.config.json');
+  if (!fs.existsSync(configPath)) {
+    console.log('📝 Creating hasyx.config.json with Docker configuration...');
+    try {
+      const dockerConfig = await generateDockerConfig();
+      await fs.writeJson(configPath, dockerConfig, { spaces: 2 });
+      console.log('✅ hasyx.config.json created successfully');
+      
+      // Generate .env and docker-compose.yml using existing functions
+      console.log('📝 Generating .env and docker-compose.yml...');
+      await generateEnvAndDockerCompose();
+    } catch (error) {
+      console.warn('⚠️ Failed to create hasyx.config.json:', error);
+      debug(`Error creating hasyx.config.json: ${error}`);
+    }
+  } else {
+    debug('hasyx.config.json already exists, skipping creation');
   }
 
   // Build documentation for the project

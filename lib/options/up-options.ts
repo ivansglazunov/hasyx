@@ -31,6 +31,8 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
   await hasura.defineColumn({ schema, table: optionsTable, name: 'key', type: ColumnType.TEXT, postfix: 'NOT NULL' });
   await hasura.defineColumn({ schema, table: optionsTable, name: 'user_id', type: ColumnType.UUID, postfix: 'NOT NULL' });
   await hasura.defineColumn({ schema, table: optionsTable, name: 'item_id', type: ColumnType.UUID });
+  // File reference column (optional): points to storage.files.id when present
+  await hasura.defineColumn({ schema, table: optionsTable, name: 'file_id', type: ColumnType.UUID });
   
   // Value columns - exactly one should be non-null
   await hasura.defineColumn({ schema, table: optionsTable, name: 'string_value', type: ColumnType.TEXT });
@@ -68,6 +70,7 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
       IF NEW.number_value IS NOT NULL THEN value_count := value_count + 1; END IF;
       IF NEW.boolean_value IS NOT NULL THEN value_count := value_count + 1; END IF;
       IF NEW.jsonb_value IS NOT NULL THEN value_count := value_count + 1; END IF;
+      IF NEW.file_id IS NOT NULL THEN value_count := value_count + 1; END IF;
       
       IF value_count != 1 THEN
         RAISE EXCEPTION 'Exactly one value field must be set, got %', value_count;
@@ -140,8 +143,11 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
         v_value := to_jsonb(NEW.number_value);
       ELSIF NEW.boolean_value IS NOT NULL THEN
         v_value := to_jsonb(NEW.boolean_value);
-      ELSE
+      ELSIF NEW.jsonb_value IS NOT NULL THEN
         v_value := NEW.jsonb_value;
+      ELSE
+        -- file_id provided: validate as string (uuid)
+        v_value := to_jsonb(NEW.file_id::text);
       END IF;
 
       -- Validate against schema for this key using the determined schema path
@@ -207,6 +213,22 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
     ON "${schema}"."${optionsTable}" ("key", "user_id", COALESCE("item_id", '00000000-0000-0000-0000-000000000000'::uuid));
   `);
 
+  // Remove strict FK to storage.files to allow referencing arbitrary UUIDs; validation handles type only
+  await hasura.sql(`
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1 FROM information_schema.table_constraints tc
+        WHERE tc.table_schema = '${schema}'
+          AND tc.table_name = '${optionsTable}'
+          AND tc.constraint_name = 'fk_${optionsTable}_file_id_storage_files_id'
+      ) THEN
+        ALTER TABLE "${schema}"."${optionsTable}"
+        DROP CONSTRAINT IF EXISTS "fk_${optionsTable}_file_id_storage_files_id";
+      END IF;
+    END$$;
+  `);
+
   // Track the table
   await hasura.trackTable({ schema, table: optionsTable });
 
@@ -224,7 +246,7 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
   // Users can manage their own options
   const ownerFilter = { user_id: { _eq: 'X-Hasura-User-Id' } } as any;
   // Explicit column lists to avoid metadata column resolution issues
-  const editableColumns = ['key','item_id','string_value','number_value','boolean_value','jsonb_value'];
+  const editableColumns = ['key','item_id','file_id','string_value','number_value','boolean_value','jsonb_value'];
   await hasura.definePermission({ 
     schema, table: optionsTable, operation: 'select', role: 'user', filter: ownerFilter, columns: true 
   });

@@ -28,6 +28,12 @@ export async function handleUpload(request: NextRequest): Promise<NextResponse> 
     const isPublic = formData.get('isPublic') === 'true';
     const bucket = (formData.get('bucket') as string) || undefined;
     if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    // Simple MIME/extension guard similar to storage defaults
+    const forbidden = ['application/x-msdownload', 'application/x-msdos-program'];
+    const lowerName = (file.name || '').toLowerCase();
+    if (forbidden.includes(file.type) || lowerName.endsWith('.exe')) {
+      return NextResponse.json({ error: 'Forbidden file type' }, { status: 415 });
+    }
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     const result = await uploadFile(fileBuffer, file.name, file.type, { userId, isPublic, bucket });
     if (!result.success) return NextResponse.json({ error: result.error }, { status: 500 });

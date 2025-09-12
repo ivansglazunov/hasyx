@@ -26,6 +26,7 @@ export type Scalars = {
   Int: { input: number; output: number };
   Float: { input: number; output: number };
   bigint: { input: number; output: number };
+  bytea: { input: any; output: any };
   geography: { input: any; output: any };
   geometry: { input: any; output: any };
   jsonb: { input: any; output: any };
@@ -1420,6 +1421,19 @@ export type Buckets_Variance_Fields = {
   minUploadFileSize?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** Boolean expression to compare columns of type "bytea". All fields are combined with logical 'AND'. */
+export type Bytea_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars["bytea"]["input"]>;
+  _gt?: InputMaybe<Scalars["bytea"]["input"]>;
+  _gte?: InputMaybe<Scalars["bytea"]["input"]>;
+  _in?: InputMaybe<Array<Scalars["bytea"]["input"]>>;
+  _is_null?: InputMaybe<Scalars["Boolean"]["input"]>;
+  _lt?: InputMaybe<Scalars["bytea"]["input"]>;
+  _lte?: InputMaybe<Scalars["bytea"]["input"]>;
+  _neq?: InputMaybe<Scalars["bytea"]["input"]>;
+  _nin?: InputMaybe<Array<Scalars["bytea"]["input"]>>;
+};
+
 /** ordering argument of a cursor */
 export enum Cursor_Ordering {
   /** ascending ordering of the cursor */
@@ -2350,6 +2364,137 @@ export type Files = {
 /** columns and relationships of "storage.files" */
 export type FilesMetadataArgs = {
   path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** columns and relationships of "storage.files_blob" */
+export type FilesBlob = {
+  __typename?: "filesBlob";
+  content: Scalars["bytea"]["output"];
+  fileId: Scalars["uuid"]["output"];
+};
+
+/** aggregated selection of "storage.files_blob" */
+export type FilesBlob_Aggregate = {
+  __typename?: "filesBlob_aggregate";
+  aggregate?: Maybe<FilesBlob_Aggregate_Fields>;
+  nodes: Array<FilesBlob>;
+};
+
+/** aggregate fields of "storage.files_blob" */
+export type FilesBlob_Aggregate_Fields = {
+  __typename?: "filesBlob_aggregate_fields";
+  count: Scalars["Int"]["output"];
+  max?: Maybe<FilesBlob_Max_Fields>;
+  min?: Maybe<FilesBlob_Min_Fields>;
+};
+
+/** aggregate fields of "storage.files_blob" */
+export type FilesBlob_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<FilesBlob_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+/** Boolean expression to filter rows from the table "storage.files_blob". All fields are combined with a logical 'AND'. */
+export type FilesBlob_Bool_Exp = {
+  _and?: InputMaybe<Array<FilesBlob_Bool_Exp>>;
+  _not?: InputMaybe<FilesBlob_Bool_Exp>;
+  _or?: InputMaybe<Array<FilesBlob_Bool_Exp>>;
+  content?: InputMaybe<Bytea_Comparison_Exp>;
+  fileId?: InputMaybe<Uuid_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "storage.files_blob" */
+export enum FilesBlob_Constraint {
+  /** unique or primary key constraint on columns "file_id" */
+  FilesBlobPkey = "files_blob_pkey",
+}
+
+/** input type for inserting data into table "storage.files_blob" */
+export type FilesBlob_Insert_Input = {
+  content?: InputMaybe<Scalars["bytea"]["input"]>;
+  fileId?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** aggregate max on columns */
+export type FilesBlob_Max_Fields = {
+  __typename?: "filesBlob_max_fields";
+  fileId?: Maybe<Scalars["uuid"]["output"]>;
+};
+
+/** aggregate min on columns */
+export type FilesBlob_Min_Fields = {
+  __typename?: "filesBlob_min_fields";
+  fileId?: Maybe<Scalars["uuid"]["output"]>;
+};
+
+/** response of any mutation on the table "storage.files_blob" */
+export type FilesBlob_Mutation_Response = {
+  __typename?: "filesBlob_mutation_response";
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars["Int"]["output"];
+  /** data from the rows affected by the mutation */
+  returning: Array<FilesBlob>;
+};
+
+/** on_conflict condition type for table "storage.files_blob" */
+export type FilesBlob_On_Conflict = {
+  constraint: FilesBlob_Constraint;
+  update_columns?: Array<FilesBlob_Update_Column>;
+  where?: InputMaybe<FilesBlob_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "storage.files_blob". */
+export type FilesBlob_Order_By = {
+  content?: InputMaybe<Order_By>;
+  fileId?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: storage.files_blob */
+export type FilesBlob_Pk_Columns_Input = {
+  fileId: Scalars["uuid"]["input"];
+};
+
+/** select columns of table "storage.files_blob" */
+export enum FilesBlob_Select_Column {
+  /** column name */
+  Content = "content",
+  /** column name */
+  FileId = "fileId",
+}
+
+/** input type for updating data in table "storage.files_blob" */
+export type FilesBlob_Set_Input = {
+  content?: InputMaybe<Scalars["bytea"]["input"]>;
+  fileId?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** Streaming cursor of the table "filesBlob" */
+export type FilesBlob_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: FilesBlob_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type FilesBlob_Stream_Cursor_Value_Input = {
+  content?: InputMaybe<Scalars["bytea"]["input"]>;
+  fileId?: InputMaybe<Scalars["uuid"]["input"]>;
+};
+
+/** update columns of table "storage.files_blob" */
+export enum FilesBlob_Update_Column {
+  /** column name */
+  Content = "content",
+  /** column name */
+  FileId = "fileId",
+}
+
+export type FilesBlob_Updates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<FilesBlob_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: FilesBlob_Bool_Exp;
 };
 
 /** aggregated selection of "storage.files" */
@@ -7745,8 +7890,12 @@ export type Mutation_Root = {
   deleteBuckets?: Maybe<Buckets_Mutation_Response>;
   /** delete single row from the table: "storage.files" */
   deleteFile?: Maybe<Files>;
+  /** delete single row from the table: "storage.files_blob" */
+  deleteFileBlob?: Maybe<FilesBlob>;
   /** delete data from the table: "storage.files" */
   deleteFiles?: Maybe<Files_Mutation_Response>;
+  /** delete data from the table: "storage.files_blob" */
+  deleteFilesBlobs?: Maybe<FilesBlob_Mutation_Response>;
   /** delete single row from the table: "storage.virus" */
   deleteVirus?: Maybe<Virus>;
   /** delete data from the table: "storage.virus" */
@@ -7877,8 +8026,12 @@ export type Mutation_Root = {
   insertBuckets?: Maybe<Buckets_Mutation_Response>;
   /** insert a single row into the table: "storage.files" */
   insertFile?: Maybe<Files>;
+  /** insert a single row into the table: "storage.files_blob" */
+  insertFileBlob?: Maybe<FilesBlob>;
   /** insert data into the table: "storage.files" */
   insertFiles?: Maybe<Files_Mutation_Response>;
+  /** insert data into the table: "storage.files_blob" */
+  insertFilesBlobs?: Maybe<FilesBlob_Mutation_Response>;
   /** insert a single row into the table: "storage.virus" */
   insertVirus?: Maybe<Virus>;
   /** insert data into the table: "storage.virus" */
@@ -8041,6 +8194,12 @@ export type Mutation_Root = {
   update_events_by_pk?: Maybe<Events>;
   /** update multiples rows of table: "events" */
   update_events_many?: Maybe<Array<Maybe<Events_Mutation_Response>>>;
+  /** update data of the table: "storage.files_blob" */
+  update_filesBlob?: Maybe<FilesBlob_Mutation_Response>;
+  /** update single row of the table: "storage.files_blob" */
+  update_filesBlob_by_pk?: Maybe<FilesBlob>;
+  /** update multiples rows of table: "storage.files_blob" */
+  update_filesBlob_many?: Maybe<Array<Maybe<FilesBlob_Mutation_Response>>>;
   /** update multiples rows of table: "storage.files" */
   update_files_many?: Maybe<Array<Maybe<Files_Mutation_Response>>>;
   /** update data of the table: "geo.features" */
@@ -8245,8 +8404,18 @@ export type Mutation_RootDeleteFileArgs = {
 };
 
 /** mutation root */
+export type Mutation_RootDeleteFileBlobArgs = {
+  fileId: Scalars["uuid"]["input"];
+};
+
+/** mutation root */
 export type Mutation_RootDeleteFilesArgs = {
   where: Files_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootDeleteFilesBlobsArgs = {
+  where: FilesBlob_Bool_Exp;
 };
 
 /** mutation root */
@@ -8579,9 +8748,21 @@ export type Mutation_RootInsertFileArgs = {
 };
 
 /** mutation root */
+export type Mutation_RootInsertFileBlobArgs = {
+  object: FilesBlob_Insert_Input;
+  on_conflict?: InputMaybe<FilesBlob_On_Conflict>;
+};
+
+/** mutation root */
 export type Mutation_RootInsertFilesArgs = {
   objects: Array<Files_Insert_Input>;
   on_conflict?: InputMaybe<Files_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsertFilesBlobsArgs = {
+  objects: Array<FilesBlob_Insert_Input>;
+  on_conflict?: InputMaybe<FilesBlob_On_Conflict>;
 };
 
 /** mutation root */
@@ -9126,6 +9307,23 @@ export type Mutation_RootUpdate_Events_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Events_ManyArgs = {
   updates: Array<Events_Updates>;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_FilesBlobArgs = {
+  _set?: InputMaybe<FilesBlob_Set_Input>;
+  where: FilesBlob_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_FilesBlob_By_PkArgs = {
+  _set?: InputMaybe<FilesBlob_Set_Input>;
+  pk_columns: FilesBlob_Pk_Columns_Input;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_FilesBlob_ManyArgs = {
+  updates: Array<FilesBlob_Updates>;
 };
 
 /** mutation root */
@@ -11251,6 +11449,7 @@ export type Options = {
   __typename?: "options";
   boolean_value?: Maybe<Scalars["Boolean"]["output"]>;
   created_at: Scalars["bigint"]["output"];
+  file_id?: Maybe<Scalars["uuid"]["output"]>;
   id: Scalars["uuid"]["output"];
   item_id?: Maybe<Scalars["uuid"]["output"]>;
   jsonb_value?: Maybe<Scalars["jsonb"]["output"]>;
@@ -11315,6 +11514,7 @@ export type Options_Bool_Exp = {
   _or?: InputMaybe<Array<Options_Bool_Exp>>;
   boolean_value?: InputMaybe<Boolean_Comparison_Exp>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
+  file_id?: InputMaybe<Uuid_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
   item_id?: InputMaybe<Uuid_Comparison_Exp>;
   jsonb_value?: InputMaybe<Jsonb_Comparison_Exp>;
@@ -11359,6 +11559,7 @@ export type Options_Inc_Input = {
 export type Options_Insert_Input = {
   boolean_value?: InputMaybe<Scalars["Boolean"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  file_id?: InputMaybe<Scalars["uuid"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   item_id?: InputMaybe<Scalars["uuid"]["input"]>;
   jsonb_value?: InputMaybe<Scalars["jsonb"]["input"]>;
@@ -11373,6 +11574,7 @@ export type Options_Insert_Input = {
 export type Options_Max_Fields = {
   __typename?: "options_max_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
+  file_id?: Maybe<Scalars["uuid"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   item_id?: Maybe<Scalars["uuid"]["output"]>;
   key?: Maybe<Scalars["String"]["output"]>;
@@ -11386,6 +11588,7 @@ export type Options_Max_Fields = {
 export type Options_Min_Fields = {
   __typename?: "options_min_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
+  file_id?: Maybe<Scalars["uuid"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   item_id?: Maybe<Scalars["uuid"]["output"]>;
   key?: Maybe<Scalars["String"]["output"]>;
@@ -11415,6 +11618,7 @@ export type Options_On_Conflict = {
 export type Options_Order_By = {
   boolean_value?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
+  file_id?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   item_id?: InputMaybe<Order_By>;
   jsonb_value?: InputMaybe<Order_By>;
@@ -11442,6 +11646,8 @@ export enum Options_Select_Column {
   /** column name */
   CreatedAt = "created_at",
   /** column name */
+  FileId = "file_id",
+  /** column name */
   Id = "id",
   /** column name */
   ItemId = "item_id",
@@ -11463,6 +11669,7 @@ export enum Options_Select_Column {
 export type Options_Set_Input = {
   boolean_value?: InputMaybe<Scalars["Boolean"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  file_id?: InputMaybe<Scalars["uuid"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   item_id?: InputMaybe<Scalars["uuid"]["input"]>;
   jsonb_value?: InputMaybe<Scalars["jsonb"]["input"]>;
@@ -11509,6 +11716,7 @@ export type Options_Stream_Cursor_Input = {
 export type Options_Stream_Cursor_Value_Input = {
   boolean_value?: InputMaybe<Scalars["Boolean"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  file_id?: InputMaybe<Scalars["uuid"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   item_id?: InputMaybe<Scalars["uuid"]["input"]>;
   jsonb_value?: InputMaybe<Scalars["jsonb"]["input"]>;
@@ -11533,6 +11741,8 @@ export enum Options_Update_Column {
   BooleanValue = "boolean_value",
   /** column name */
   CreatedAt = "created_at",
+  /** column name */
+  FileId = "file_id",
   /** column name */
   Id = "id",
   /** column name */
@@ -16016,10 +16226,16 @@ export type Query_Root = {
   events_by_pk?: Maybe<Events>;
   /** fetch data from the table: "storage.files" using primary key columns */
   file?: Maybe<Files>;
+  /** fetch data from the table: "storage.files_blob" using primary key columns */
+  fileBlob?: Maybe<FilesBlob>;
   /** An array relationship */
   files: Array<Files>;
   /** fetch aggregated fields from the table: "storage.files" */
   filesAggregate: Files_Aggregate;
+  /** fetch aggregated fields from the table: "storage.files_blob" */
+  filesBlob_aggregate: FilesBlob_Aggregate;
+  /** fetch data from the table: "storage.files_blob" */
+  filesBlobs: Array<FilesBlob>;
   /** fetch data from the table: "geo.features" */
   geo_features: Array<Geo_Features>;
   /** fetch aggregated fields from the table: "geo.features" */
@@ -16288,6 +16504,10 @@ export type Query_RootFileArgs = {
   id: Scalars["uuid"]["input"];
 };
 
+export type Query_RootFileBlobArgs = {
+  fileId: Scalars["uuid"]["input"];
+};
+
 export type Query_RootFilesArgs = {
   distinct_on?: InputMaybe<Array<Files_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -16302,6 +16522,22 @@ export type Query_RootFilesAggregateArgs = {
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   order_by?: InputMaybe<Array<Files_Order_By>>;
   where?: InputMaybe<Files_Bool_Exp>;
+};
+
+export type Query_RootFilesBlob_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<FilesBlob_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<FilesBlob_Order_By>>;
+  where?: InputMaybe<FilesBlob_Bool_Exp>;
+};
+
+export type Query_RootFilesBlobsArgs = {
+  distinct_on?: InputMaybe<Array<FilesBlob_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<FilesBlob_Order_By>>;
+  where?: InputMaybe<FilesBlob_Bool_Exp>;
 };
 
 export type Query_RootGeo_FeaturesArgs = {
@@ -18138,10 +18374,18 @@ export type Subscription_Root = {
   events_stream: Array<Events>;
   /** fetch data from the table: "storage.files" using primary key columns */
   file?: Maybe<Files>;
+  /** fetch data from the table: "storage.files_blob" using primary key columns */
+  fileBlob?: Maybe<FilesBlob>;
   /** An array relationship */
   files: Array<Files>;
   /** fetch aggregated fields from the table: "storage.files" */
   filesAggregate: Files_Aggregate;
+  /** fetch aggregated fields from the table: "storage.files_blob" */
+  filesBlob_aggregate: FilesBlob_Aggregate;
+  /** fetch data from the table in a streaming manner: "storage.files_blob" */
+  filesBlob_stream: Array<FilesBlob>;
+  /** fetch data from the table: "storage.files_blob" */
+  filesBlobs: Array<FilesBlob>;
   /** fetch data from the table in a streaming manner: "storage.files" */
   files_stream: Array<Files>;
   /** fetch data from the table: "geo.features" */
@@ -18496,6 +18740,10 @@ export type Subscription_RootFileArgs = {
   id: Scalars["uuid"]["input"];
 };
 
+export type Subscription_RootFileBlobArgs = {
+  fileId: Scalars["uuid"]["input"];
+};
+
 export type Subscription_RootFilesArgs = {
   distinct_on?: InputMaybe<Array<Files_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -18510,6 +18758,28 @@ export type Subscription_RootFilesAggregateArgs = {
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   order_by?: InputMaybe<Array<Files_Order_By>>;
   where?: InputMaybe<Files_Bool_Exp>;
+};
+
+export type Subscription_RootFilesBlob_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<FilesBlob_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<FilesBlob_Order_By>>;
+  where?: InputMaybe<FilesBlob_Bool_Exp>;
+};
+
+export type Subscription_RootFilesBlob_StreamArgs = {
+  batch_size: Scalars["Int"]["input"];
+  cursor: Array<InputMaybe<FilesBlob_Stream_Cursor_Input>>;
+  where?: InputMaybe<FilesBlob_Bool_Exp>;
+};
+
+export type Subscription_RootFilesBlobsArgs = {
+  distinct_on?: InputMaybe<Array<FilesBlob_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<FilesBlob_Order_By>>;
+  where?: InputMaybe<FilesBlob_Bool_Exp>;
 };
 
 export type Subscription_RootFiles_StreamArgs = {

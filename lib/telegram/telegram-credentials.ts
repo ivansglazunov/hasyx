@@ -6,6 +6,16 @@ import crypto from 'crypto';
 
 const debug = Debug("auth:telegram");
 
+// Global object to track already shown warnings to avoid spam
+const shownWarnings = new Set<string>();
+
+function warnOnce(key: string, message: string) {
+  if (!shownWarnings.has(key)) {
+    shownWarnings.add(key);
+    console.warn(message);
+  }
+}
+
 interface TelegramUserData {
   id: number;
   first_name?: string;
@@ -54,12 +64,12 @@ function verifyTelegramHash(data: Omit<TelegramUserData, 'hash'>, botToken: stri
 export function TelegramProvider({ hasyx }: { hasyx: Hasyx }) {
   if (!process.env.TELEGRAM_LOGIN_BOT_TOKEN) {
     debug("TELEGRAM_LOGIN_BOT_TOKEN not set. Telegram Login disabled.");
-    console.warn("⚠️ TELEGRAM_LOGIN_BOT_TOKEN not set. Telegram Login disabled.");
+    warnOnce("TELEGRAM_LOGIN_BOT_TOKEN", "⚠️ TELEGRAM_LOGIN_BOT_TOKEN not set. Telegram Login disabled.");
     return null; 
   }
   if (!process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME) {
     debug("NEXT_PUBLIC_TELEGRAM_BOT_USERNAME not set. Telegram Login client-side might fail.");
-    console.warn("⚠️ NEXT_PUBLIC_TELEGRAM_BOT_USERNAME not set. Telegram Login client-side might fail.");
+    warnOnce("NEXT_PUBLIC_TELEGRAM_BOT_USERNAME", "⚠️ NEXT_PUBLIC_TELEGRAM_BOT_USERNAME not set. Telegram Login client-side might fail.");
   }
   
   return CredentialsProvider({

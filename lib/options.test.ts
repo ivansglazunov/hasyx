@@ -7,7 +7,7 @@ import { Generator } from './generator';
 // @ts-ignore
 import schema from '../public/hasura-schema.json';
 import { createTestUser } from './create-test-user';
-import { processConfiguredValidationDefine } from './validation';
+import { processConfiguredValidationDefine, syncSchemasToDatabase } from './validation';
 import { gql } from '@apollo/client/core';
 
 // Ensure environment variables are loaded for Jest
@@ -295,6 +295,80 @@ dotenv.config();
     expect(notificationsInserted?.key).toBe('notifications');
     expect(notificationsInserted?.jsonb_value).toEqual({ email: true, push: false, sms: true });
     expect(notificationsInserted?.item_id).toBe(targetUser.id);
+  }, 30000);
+
+  it('should accept avatar (file_id uuid) option for users', async () => {
+    // Обновим validation.project_schemas() в БД, чтобы содержал свежие options.users.avatar
+    await syncSchemasToDatabase();
+    const admin = new Hasyx(
+      createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET!, ws: false }),
+      Generator(schema as any)
+    );
+
+    const user = await createTestUser();
+    const { hasyx: userClient } = await admin._authorize(user.id, { ws: false });
+    const targetUser = await createTestUser();
+
+    // 1) Подготовим реальный файл в таблицах storage.files (+ storage.files_blob для database-бэкенда)
+    const fileId = uuidv4();
+    const fileName = 'avatar-test.txt';
+    const fileBytes = Buffer.from(`avatar for options test ${fileId}`);
+    const base64 = fileBytes.toString('base64');
+
+    // Вставка метаданных файла
+    const insertedFile = await admin.insert<any>({
+      table: 'insertFiles',
+      objects: [{
+        id: fileId,
+        bucketId: 'default',
+        name: fileName,
+        size: fileBytes.length,
+        mimeType: 'text/plain',
+        etag: base64.slice(0, 32),
+        isUploaded: true,
+        uploadedByUserId: user.id,
+      }],
+      returning: ['id']
+    });
+
+    expect(insertedFile?.returning?.[0]?.id ?? insertedFile?.id).toBe(fileId);
+
+    // Вставка содержимого (актуально для FILES_BACKEND=database; для storage не повредит)
+    try {
+      await admin.insert<any>({
+        table: 'insertFilesBlobs',
+        objects: [{ fileId, content: base64 }],
+        returning: ['fileId']
+      });
+    } catch {
+      // Если таблица не трекнута в текущем окружении — пропускаем, опции ссылаются только на id
+    }
+
+    // 2) Ставим опцию avatar, ссылаясь на реальный file_id
+    const option = await userClient.insert<any>({
+      table: 'options',
+      object: {
+        key: 'avatar',
+        item_id: targetUser.id,
+        file_id: fileId,
+      },
+      returning: ['id', 'key', 'file_id', 'user_id', 'item_id']
+    });
+
+    expect(option?.key).toBe('avatar');
+    expect(option?.file_id).toBe(fileId);
+    expect(option?.item_id).toBe(targetUser.id);
+
+    // 3) Уборка (каждый it сам за собой): удалим опцию и файл
+    try {
+      await admin.delete<any>({ table: 'deleteOptions', where: { id: { _eq: option?.id } } });
+    } catch {}
+    try {
+      await admin.delete<any>({ table: 'deleteFilesBlobs', where: { fileId: { _eq: fileId } } });
+    } catch {}
+    try {
+      await admin.delete<any>({ table: 'deleteFiles', where: { id: { _eq: fileId } } });
+    } catch {}
   }, 30000);
 
 });

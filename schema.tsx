@@ -16,6 +16,8 @@ export const options = {
     fio: z.string().min(1).max(200),
     displayName: z.string().min(1).max(100),
     timezone: z.string().min(1).max(50),
+    // Ссылка на файл-аватар (uuid из storage.files)
+    avatar: z.string().uuid().describe('User avatar file id (uuid from storage.files)').meta({ widget: 'file-id' }),
     notifications: z.object({
       email: z.boolean(),
       push: z.boolean(),

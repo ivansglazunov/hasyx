@@ -616,7 +616,20 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
             onChange={(value) => {
               console.log(`Enum Select onChange for ${key}:`, value);
               handleFieldChange(value);
-              // Явный переход к следующему полю после выбора
+              // Если форма состоит из одного enum-поля (как files.backend) — сохраняем сразу,
+              // чтобы избежать гонок со стейтом и повторных перезаписей
+              if (fields.length <= 1) {
+                try {
+                  const immediateData: Record<string, any> = {};
+                  Object.entries(formData).forEach(([k, st]) => {
+                    immediateData[k] = k === key ? value : (st as FieldState).value;
+                  });
+                  if (!(key in immediateData)) immediateData[key] = value;
+                  void onSubmit(immediateData);
+                } catch {}
+                return;
+              }
+              // Иначе переходим к следующему полю
               setTimeout(() => {
                 handleFieldSubmit();
               }, 100);

@@ -71,6 +71,12 @@ async function migration_000001_create_initial_tables(hasura: Hasura) {
       uploaded_by_user_id uuid
     );
 
+    -- Optional raw content table for database backend
+    CREATE TABLE IF NOT EXISTS storage.files_blob (
+      file_id uuid PRIMARY KEY REFERENCES storage.files(id) ON DELETE CASCADE,
+      content bytea NOT NULL
+    );
+
     -- constraints
     DO $$
     BEGIN
@@ -97,6 +103,8 @@ async function migration_000001_create_initial_tables(hasura: Hasura) {
       BEFORE UPDATE ON storage.files
       FOR EACH ROW
       EXECUTE FUNCTION storage.set_current_timestamp_updated_at ();
+
+    -- No updated_at for files_blob; content is immutable per file version in this simple setup
 
     DROP TRIGGER IF EXISTS check_default_bucket_delete ON storage.buckets;
     CREATE TRIGGER check_default_bucket_delete
@@ -268,6 +276,30 @@ async function trackStorageTables(hasura: Hasura) {
           is_uploaded: 'isUploaded',
           uploaded_by_user_id: 'uploadedByUserId',
           metadata: 'metadata'
+        }
+      }
+    }
+  });
+
+  // Track files_blob table (internal), expose minimal fields
+  await hasura.v1({
+    type: 'pg_track_table',
+    args: {
+      source: 'default',
+      table: { schema: 'storage', name: 'files_blob' },
+      configuration: {
+        custom_name: 'filesBlob',
+        custom_root_fields: {
+          select: 'filesBlobs',
+          select_by_pk: 'fileBlob',
+          insert: 'insertFilesBlobs',
+          insert_one: 'insertFileBlob',
+          delete: 'deleteFilesBlobs',
+          delete_by_pk: 'deleteFileBlob'
+        },
+        custom_column_names: {
+          file_id: 'fileId',
+          content: 'content'
         }
       }
     }

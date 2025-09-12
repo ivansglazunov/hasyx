@@ -141,6 +141,33 @@ hasyxConfig.host = z.object({
   }
 });
 
+// Files backend configuration
+hasyxConfig.files = z.object({
+  backend: z
+    .enum(['storage', 'database'])
+    .default('storage')
+    .describe('Files backend strategy (FILES_BACKEND): hasura-storage or database (bytea).')
+    .meta({ options: ['storage', 'database'] }),
+}).meta({
+  type: 'files-config',
+  title: 'Files Backend',
+  description: 'Choose how /api/files stores content: storage (Hasura Storage service) or database (PostgreSQL bytea).',
+  envMapping: {
+    backend: 'FILES_BACKEND'
+  }
+});
+
+hasyxConfig.filesList = z.record(
+  z.string(),
+  hasyxConfig.files,
+).meta({
+  data: 'files',
+  type: 'keys',
+  default: ['default'],
+  add: hasyxConfig.files,
+  descriptionTemplate: (data: any) => data?.backend || 'storage'
+});
+
 hasyxConfig.hosts = z.record(
   z.string(), // host name (local, dev, prod, test)
   hasyxConfig.host,
@@ -309,6 +336,16 @@ hasyxConfig.variant = z.object({
     emptyMessage: 'No hasura configurations available. Create hasura configurations first.',
     backLabel: '< back',
     descriptionTemplate: (data: any) => data?.url || 'no url'
+  }),
+  files: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'files',
+    referenceKey: 'files',
+    title: 'Files Backend',
+    description: 'Select files backend strategy (optional)',
+    emptyMessage: 'No files backend configs. Create one first.',
+    backLabel: '< back',
+    descriptionTemplate: (data: any) => data?.backend || 'storage'
   }),
   
   // Primary optional configurations
@@ -625,7 +662,7 @@ hasyxConfig.variant = z.object({
   title: 'Variant Configuration',
   description: 'Configure variant settings',
   fields: [
-    'host', 'hasura', 'telegramBot', 'telegramChannel', 'environment', 'testing',
+    'host', 'hasura', 'files', 'telegramBot', 'telegramChannel', 'environment', 'testing',
     'googleOAuth', 'yandexOAuth', 'githubOAuth', 'facebookOAuth', 'vkOAuth', 'telegramLoginOAuth', 'nextAuthSecrets',
     'storage', 'pg', 'docker', 'dockerhub', 'github', 'vercel', 'iosSigning', 'githubTelegramBot',
     'resend', 'smsProvider', 'openrouter', 'npm', 'firebase', 'firebasePublic', 'dns', 'cloudflare', 'projectUser', 'githubWebhooks'
@@ -1679,6 +1716,7 @@ hasyxConfig.file = z.object({
   
   // дополнительные конфигурации из assist-файлов
   storage: hasyxConfig.storages, // файловое хранилище
+  files: hasyxConfig.filesList, // files backend strategy
   pg: hasyxConfig.pgs, // PostgreSQL
   docker: hasyxConfig.dockers, // Docker
   dockerhub: dockerHubs, // Docker Hub credentials

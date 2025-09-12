@@ -46,6 +46,7 @@ You can add more tables and their option keys by adding more top-level keys to `
 - `number_value numeric`
 - `boolean_value boolean`
 - `jsonb_value jsonb`
+- `file_id uuid` (optional, reference to `storage.files.id` when present)
 
 Constraints and indexes:
 
@@ -64,7 +65,7 @@ The migration defines a plpgsql trigger function `public.options_validate` that 
 - Ensures `key` is not empty
 - Requires `item_id`
 - Dynamically determines the target table for `item_id` by scanning all `options[tableName]` declared in `schema.tsx` and checking `public.<tableName>(id)` for existence
-- Builds a JSON value from the chosen column and validates it (if validation runtime is installed) against `validation.project_schemas()` at path `options.<tableName>.properties.<key>`
+- Builds a JSON value from the chosen column and validates it (if validation runtime is installed) against `validation.project_schemas()` at path `options.<tableName>.properties.<key>`. When `file_id` is used, it is validated as a UUID string (compatible with `z.string().uuid()` in `schema.tsx`).
 
 The trigger relies on the plv8 validation runtime to be synchronized via the CLI (`validation sync/define`). If the runtime is not present, it still enforces key existence with `validation.validate_option_key` and the “one-of” value rule.
 
@@ -98,6 +99,20 @@ const inserted = await userClient.insert({
     string_value: 'Alice',
   },
   returning: ['id', 'key', 'string_value', 'user_id', 'item_id']
+});
+```
+
+Insert an avatar file reference (users.avatar):
+
+```ts
+const inserted = await userClient.insert({
+  table: 'options',
+  object: {
+    key: 'avatar',
+    item_id: targetUser.id,
+    file_id: someFileId, // uuid from storage.files.id
+  },
+  returning: ['id', 'key', 'file_id', 'user_id', 'item_id']
 });
 ```
 

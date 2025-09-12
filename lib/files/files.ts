@@ -129,91 +129,103 @@ export async function uploadFile(
 
     debug(`File size: ${fileSize} bytes`);
 
-    // Upload directly to hasura-storage
-    debug(`Uploading to hasura-storage...`);
-    const storageUrl = process.env.NEXT_PUBLIC_HASURA_STORAGE_URL || 'http://localhost:3001';
+    const backend = (process.env.FILES_BACKEND || 'storage').toLowerCase();
+    debug(`Files backend: ${backend}`);
     
-    const formData = new FormData();
-    formData.append('file', new Blob([fileBuffer], { type: mimeType }), fileName);
-    formData.append('bucketId', bucket);
-    
-    // Try to pass user_id as form data parameter
-    if (userId) {
-      formData.append('userId', userId);
-      debug(`📤 Adding userId to form data: ${userId}`);
-    }
-    
-    const jwtToken = await generateStorageJWT(userId);
-    debug(`🔐 Using JWT token for user: ${userId || 'anonymous'}`);
-    
-    const headers: Record<string, string> = {
-      'Authorization': `Bearer ${jwtToken}`,
-    };
-    
-    // Try to pass user_id as HTTP header
-    if (userId) {
-      headers['X-Hasura-User-ID'] = userId;
-      debug(`📤 Adding X-User-ID header: ${userId}`);
-    }
-    
-    const uploadResponse = await fetch(`${storageUrl}/v1/files/`, {
-      method: 'POST',
-      body: formData,
-      headers,
-    });
-
-    if (!uploadResponse.ok) {
-      const errorText = await uploadResponse.text();
-      debug(`Upload failed with status ${uploadResponse.status}: ${errorText}`);
-      throw new Error(`Failed to upload file to storage: ${uploadResponse.statusText}`);
-    }
-
-    const uploadResult = await uploadResponse.json();
-    debug(`Upload successful:`, uploadResult);
-    debug(`🔍 Response from hasura-storage:`, {
-      id: uploadResult.id,
-      name: uploadResult.name,
-      uploadedByUserId: uploadResult.uploadedByUserId,
-      isUploaded: uploadResult.isUploaded
-    });
-
-    // 🔧 FIX: Update uploaded_by_user_id in database
-    // because hasura-storage doesn't extract it from JWT token
-    if (userId && uploadResult.id) {
-      debug(`🔄 Updating uploaded_by_user_id in database for file: ${uploadResult.id}`);
-      
-      try {
-        const hasyx = createFilesHasyx();
-        await hasyx.update({
-          table: 'updateFiles',  // Use custom name from migration
-          where: { id: { _eq: uploadResult.id } },
-          _set: { uploadedByUserId: userId },
-          returning: ['id', 'uploadedByUserId']
-        });
-        debug(`✅ Successfully updated uploaded_by_user_id: ${userId}`);
-      } catch (updateError: any) {
-        debug(`❌ Failed to update uploaded_by_user_id:`, updateError);
-        // Don't interrupt execution since file is already uploaded
+    if (backend === 'database') {
+      // Store metadata in storage.files and content in storage.files_blob
+      const hasyx = createFilesHasyx();
+      const id = uuidv4();
+      const etag = generateEtag(fileBuffer);
+      await hasyx.insert({
+        table: 'insertFiles',
+        objects: [{
+          id,
+          bucketId: bucket,
+          name: fileName,
+          size: fileSize,
+          mimeType: mimeType,
+          etag,
+          isUploaded: true,
+          uploadedByUserId: userId || null
+        }],
+        returning: ['id']
+      });
+      await hasyx.insert({
+        table: 'insertFilesBlobs',
+        objects: [{
+          fileId: id,
+          content: fileBuffer.toString('base64')
+        }],
+        returning: ['fileId']
+      });
+      return {
+        success: true,
+        file: {
+          id,
+          name: fileName,
+          bucketId: bucket,
+          mimeType,
+          size: fileSize,
+          etag,
+          isUploaded: true,
+          uploadedByUserId: userId
+        }
+      };
+    } else {
+      // Upload via hasura-storage
+      debug(`Uploading to hasura-storage...`);
+      const storageUrl = process.env.NEXT_PUBLIC_HASURA_STORAGE_URL || 'http://localhost:3001';
+      const formData = new FormData();
+      formData.append('file', new Blob([fileBuffer], { type: mimeType }), fileName);
+      formData.append('bucketId', bucket);
+      if (userId) {
+        formData.append('userId', userId);
+        debug(`📤 Adding userId to form data: ${userId}`);
       }
+      const jwtToken = await generateStorageJWT(userId);
+      debug(`🔐 Using JWT token for user: ${userId || 'anonymous'}`);
+      const headers: Record<string, string> = {
+        'Authorization': `Bearer ${jwtToken}`,
+      };
+      if (userId) headers['X-Hasura-User-ID'] = userId;
+      const uploadResponse = await fetch(`${storageUrl}/v1/files/`, { method: 'POST', body: formData, headers });
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        debug(`Upload failed with status ${uploadResponse.status}: ${errorText}`);
+        throw new Error(`Failed to upload file to storage: ${uploadResponse.statusText}`);
+      }
+      const uploadResult = await uploadResponse.json();
+      // Update uploadedByUserId if needed
+      if (userId && uploadResult.id) {
+        try {
+          const hasyx = createFilesHasyx();
+          await hasyx.update({
+            table: 'updateFiles',
+            where: { id: { _eq: uploadResult.id } },
+            _set: { uploadedByUserId: userId },
+            returning: ['id']
+          });
+        } catch {}
+      }
+      return {
+        success: true,
+        file: {
+          id: uploadResult.id,
+          name: uploadResult.name || fileName,
+          bucketId: uploadResult.bucketId || bucket,
+          mimeType: uploadResult.mimeType || mimeType,
+          size: uploadResult.size || fileSize,
+          etag: uploadResult.etag,
+          createdAt: uploadResult.createdAt,
+          updatedAt: uploadResult.updatedAt,
+          isUploaded: true,
+          uploadedByUserId: userId
+        },
+        url: uploadResult.url,
+        presignedUrl: uploadResult.presignedUrl
+      };
     }
-
-    return {
-      success: true,
-      file: {
-        id: uploadResult.id,
-        name: uploadResult.name || fileName,
-        bucketId: uploadResult.bucketId || bucket,
-        mimeType: uploadResult.mimeType || mimeType,
-        size: uploadResult.size || fileSize,
-        etag: uploadResult.etag,
-        createdAt: uploadResult.createdAt,
-        updatedAt: uploadResult.updatedAt,
-        isUploaded: true,
-        uploadedByUserId: userId  // Return correct userId
-      },
-      url: uploadResult.url,
-      presignedUrl: uploadResult.presignedUrl
-    };
 
   } catch (error: any) {
     debug('Upload error:', error);
@@ -258,42 +270,66 @@ export async function downloadFile(
       };
     }
     
-    // Download file content from Hasura Storage
-    const storageUrl = process.env.HASURA_STORAGE_URL || process.env.NEXT_PUBLIC_HASURA_STORAGE_URL;
-    const downloadUrl = `${storageUrl}/v1/files/${fileId}`;
-    debug(`Downloading file content from: ${downloadUrl}`);
-
-    try {
-      const response = await fetch(downloadUrl, {
-        method: 'GET',
-        headers: {
-          'Accept': '*/*'
-        }
+    const backend = (process.env.FILES_BACKEND || 'storage').toLowerCase();
+    if (backend === 'database') {
+      const hasyx = createFilesHasyx();
+      const [blob] = await hasyx.select<any[]>({
+        table: 'filesBlobs',
+        where: { fileId: { _eq: fileId } },
+        returning: ['fileId', 'content']
       });
-      
+      if (!blob?.content) {
+        return { success: false, error: 'File not found' };
+      }
+      const rawContent: string = String(blob.content);
+      // Hasura/Postgres bytea often comes as hex ("\\x...").
+      // В cloud.hasura.io мы фактически сохраняем base64-строку в bytea,
+      // поэтому на чтении нужно декодировать дважды: hex -> ascii base64 -> bytes.
+      let fileContent: Buffer;
+      const looksBase64 = (s: string): boolean => /^[A-Za-z0-9+/]+={0,2}$/.test(s) && (s.length % 4 === 0);
+      if (/^\\x[0-9a-fA-F]+$/.test(rawContent)) {
+        const hexDecoded = Buffer.from(rawContent.slice(2), 'hex');
+        const asString = hexDecoded.toString('utf8');
+        if (looksBase64(asString)) {
+          try {
+            fileContent = Buffer.from(asString, 'base64');
+          } catch {
+            fileContent = hexDecoded;
+          }
+        } else {
+          fileContent = hexDecoded;
+        }
+      } else if (/^[0-9a-fA-F]+$/.test(rawContent)) {
+        const hexDecoded = Buffer.from(rawContent, 'hex');
+        const asString = hexDecoded.toString('utf8');
+        if (looksBase64(asString)) {
+          try {
+            fileContent = Buffer.from(asString, 'base64');
+          } catch {
+            fileContent = hexDecoded;
+          }
+        } else {
+          fileContent = hexDecoded;
+        }
+      } else if (looksBase64(rawContent)) {
+        fileContent = Buffer.from(rawContent, 'base64');
+      } else {
+        // Fallback: treat as utf8 bytes
+        fileContent = Buffer.from(rawContent, 'utf8');
+      }
+      return { success: true, file, fileContent, mimeType: file.mimeType };
+    } else {
+      const storageUrl = process.env.HASURA_STORAGE_URL || process.env.NEXT_PUBLIC_HASURA_STORAGE_URL;
+      const downloadUrl = `${storageUrl}/v1/files/${fileId}`;
+      debug(`Downloading file content from: ${downloadUrl}`);
+      const response = await fetch(downloadUrl, { method: 'GET', headers: { 'Accept': '*/*' } });
       if (!response.ok) {
         const errorText = await response.text();
         debug(`Download failed with status ${response.status}: ${errorText}`);
         throw new Error(`Failed to download file: ${response.status} ${response.statusText}`);
       }
-      
       const fileContent = Buffer.from(await response.arrayBuffer());
-      
-      debug(`File content downloaded, size: ${fileContent.length} bytes`);
-      
-      return {
-        success: true,
-        file,
-        fileContent,
-        mimeType: file.mimeType
-      };
-      
-    } catch (fetchError: any) {
-      debug('Error fetching file from storage:', fetchError);
-      return {
-        success: false,
-        error: `Failed to download file from storage: ${fetchError.message}`
-      };
+      return { success: true, file, fileContent, mimeType: file.mimeType };
     }
     
   } catch (error: any) {
@@ -344,8 +380,13 @@ export async function deleteFile(
       table: 'deleteFiles',
       where: { id: { _eq: fileId } }
     });
-
-    // Clean up fallback storage, if any
+    // Clean up database blob if any (CASCADE handles it, but call for safety in metadata)
+    try {
+      await hasyx.delete({
+        table: 'deleteFilesBlobs',
+        where: { fileId: { _eq: fileId } }
+      });
+    } catch {}
     
     debug(`File deleted from database: ${fileId}`);
     

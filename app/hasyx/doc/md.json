@@ -4541,6 +4541,59 @@
       "level": 1
     },
     {
+      "title": "Options System",
+      "url": "/hasyx/doc/OPTIONS",
+      "collapse": true,
+      "items": [
+        {
+          "title": "What the Options system is",
+          "url": "/hasyx/doc/OPTIONS#what-the-options-system-is",
+          "level": 3
+        },
+        {
+          "title": "Authoritative source: `schema.tsx`",
+          "url": "/hasyx/doc/OPTIONS#authoritative-source-schematsx",
+          "level": 3
+        },
+        {
+          "title": "Database shape (created by migration)",
+          "url": "/hasyx/doc/OPTIONS#database-shape-created-by-migration",
+          "level": 3
+        },
+        {
+          "title": "Validation trigger (dynamic schema detection)",
+          "url": "/hasyx/doc/OPTIONS#validation-trigger-dynamic-schema-detection",
+          "level": 3
+        },
+        {
+          "title": "Keeping validation in sync",
+          "url": "/hasyx/doc/OPTIONS#keeping-validation-in-sync",
+          "level": 3
+        },
+        {
+          "title": "Using from Hasyx client",
+          "url": "/hasyx/doc/OPTIONS#using-from-hasyx-client",
+          "level": 3
+        },
+        {
+          "title": "Tests",
+          "url": "/hasyx/doc/OPTIONS#tests",
+          "level": 3
+        },
+        {
+          "title": "Migrations",
+          "url": "/hasyx/doc/OPTIONS#migrations",
+          "level": 3
+        },
+        {
+          "title": "FAQ",
+          "url": "/hasyx/doc/OPTIONS#faq",
+          "level": 3
+        }
+      ],
+      "level": 2
+    },
+    {
       "title": "plv8 Extension Support",
       "url": "/hasyx/doc/PLV8",
       "collapse": true,
@@ -7228,8 +7281,8 @@
           "level": 3
         },
         {
-          "title": "Table-level validation for options table",
-          "url": "/hasyx/doc/VALIDATION#table-level-validation-for-options-table",
+          "title": "Options table validation (built-in)",
+          "url": "/hasyx/doc/VALIDATION#options-table-validation-built-in",
           "level": 3
         },
         {
@@ -16050,5 +16103,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-09-10T15:42:21.423Z"
+  "lastUpdated": "2025-09-11T18:14:32.680Z"
 }
