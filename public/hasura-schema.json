@@ -49272,6 +49272,114 @@
               "deprecationReason": null
             },
             {
+              "name": "delete_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+              "description": "delete data from the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "where",
+                  "description": "filter the rows which have to be deleted",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_mutation_response",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "delete_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_by_pk",
+              "description": "delete single row from the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "id",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "uuid",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "delete_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+              "description": "delete data from the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "where",
+                  "description": "filter the rows which have to be deleted",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_mutation_response",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "delete_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_by_pk",
+              "description": "delete single row from the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "id",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "uuid",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "delete_users",
               "description": "delete data from the table: \"users\"",
               "args": [
@@ -51998,6 +52106,170 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "schedule",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "insert_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+              "description": "insert data into the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "objects",
+                  "description": "the rows to be inserted",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                          "kind": "INPUT_OBJECT",
+                          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_insert_input",
+                          "ofType": null
+                        }
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "on_conflict",
+                  "description": "upsert condition",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_on_conflict",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_mutation_response",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "insert_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_one",
+              "description": "insert a single row into the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "object",
+                  "description": "the row to be inserted",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_insert_input",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "on_conflict",
+                  "description": "upsert condition",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_on_conflict",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "insert_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+              "description": "insert data into the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "objects",
+                  "description": "the rows to be inserted",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                          "kind": "INPUT_OBJECT",
+                          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_insert_input",
+                          "ofType": null
+                        }
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "on_conflict",
+                  "description": "upsert condition",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_on_conflict",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_mutation_response",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "insert_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_one",
+              "description": "insert a single row into the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "object",
+                  "description": "the row to be inserted",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_insert_input",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "on_conflict",
+                  "description": "upsert condition",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_on_conflict",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -58438,6 +58710,272 @@
                 "ofType": {
                   "kind": "OBJECT",
                   "name": "schedule_mutation_response",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "update_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+              "description": "update data of the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "_inc",
+                  "description": "increments the numeric columns with given value of the filtered values",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_inc_input",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "_set",
+                  "description": "sets the columns of the filtered rows to the given values",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_set_input",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows which have to be updated",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_mutation_response",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "update_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_by_pk",
+              "description": "update single row of the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "_inc",
+                  "description": "increments the numeric columns with given value of the filtered values",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_inc_input",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "_set",
+                  "description": "sets the columns of the filtered rows to the given values",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_set_input",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "pk_columns",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_pk_columns_input",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "update_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_many",
+              "description": "update multiples rows of table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "updates",
+                  "description": "updates to execute, in order",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                          "kind": "INPUT_OBJECT",
+                          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_updates",
+                          "ofType": null
+                        }
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_mutation_response",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "update_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+              "description": "update data of the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "_inc",
+                  "description": "increments the numeric columns with given value of the filtered values",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_inc_input",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "_set",
+                  "description": "sets the columns of the filtered rows to the given values",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_set_input",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows which have to be updated",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_mutation_response",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "update_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_by_pk",
+              "description": "update single row of the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "_inc",
+                  "description": "increments the numeric columns with given value of the filtered values",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_inc_input",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "_set",
+                  "description": "sets the columns of the filtered rows to the given values",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_set_input",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "pk_columns",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_pk_columns_input",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "update_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_many",
+              "description": "update multiples rows of table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "updates",
+                  "description": "updates to execute, in order",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                          "kind": "INPUT_OBJECT",
+                          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_updates",
+                          "ofType": null
+                        }
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_mutation_response",
                   "ofType": null
                 }
               },
@@ -67764,12 +68302,6 @@
           "inputFields": null,
           "interfaces": null,
           "enumValues": [
-            {
-              "name": "options_key_user_item_unique_idx",
-              "description": "unique or primary key constraint on columns \"user_id\", \"key\"",
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
             {
               "name": "options_pkey",
               "description": "unique or primary key constraint on columns \"id\"",
@@ -100680,6 +101212,408 @@
               "deprecationReason": null
             },
             {
+              "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+              "description": "fetch data from the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "distinct_on",
+                  "description": "distinct select on columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_select_column",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "limit",
+                  "description": "limit the number of rows returned",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "offset",
+                  "description": "skip the first n rows. Use only with order_by",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "order_by",
+                  "description": "sort the rows by one or more columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_order_by",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows returned",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_aggregate",
+              "description": "fetch aggregated fields from the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "distinct_on",
+                  "description": "distinct select on columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_select_column",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "limit",
+                  "description": "limit the number of rows returned",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "offset",
+                  "description": "skip the first n rows. Use only with order_by",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "order_by",
+                  "description": "sort the rows by one or more columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_order_by",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows returned",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_aggregate",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_by_pk",
+              "description": "fetch data from the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\" using primary key columns",
+              "args": [
+                {
+                  "name": "id",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "uuid",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+              "description": "fetch data from the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "distinct_on",
+                  "description": "distinct select on columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_select_column",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "limit",
+                  "description": "limit the number of rows returned",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "offset",
+                  "description": "skip the first n rows. Use only with order_by",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "order_by",
+                  "description": "sort the rows by one or more columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_order_by",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows returned",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_aggregate",
+              "description": "fetch aggregated fields from the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "distinct_on",
+                  "description": "distinct select on columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_select_column",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "limit",
+                  "description": "limit the number of rows returned",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "offset",
+                  "description": "skip the first n rows. Use only with order_by",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "order_by",
+                  "description": "sort the rows by one or more columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_order_by",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows returned",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_aggregate",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_by_pk",
+              "description": "fetch data from the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\" using primary key columns",
+              "args": [
+                {
+                  "name": "id",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "uuid",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "users",
               "description": "fetch data from the table: \"users\"",
               "args": [
@@ -117662,6 +118596,542 @@
               "deprecationReason": null
             },
             {
+              "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+              "description": "fetch data from the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "distinct_on",
+                  "description": "distinct select on columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_select_column",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "limit",
+                  "description": "limit the number of rows returned",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "offset",
+                  "description": "skip the first n rows. Use only with order_by",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "order_by",
+                  "description": "sort the rows by one or more columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_order_by",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows returned",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_aggregate",
+              "description": "fetch aggregated fields from the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "distinct_on",
+                  "description": "distinct select on columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_select_column",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "limit",
+                  "description": "limit the number of rows returned",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "offset",
+                  "description": "skip the first n rows. Use only with order_by",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "order_by",
+                  "description": "sort the rows by one or more columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_order_by",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows returned",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_aggregate",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_by_pk",
+              "description": "fetch data from the table: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\" using primary key columns",
+              "args": [
+                {
+                  "name": "id",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "uuid",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stream",
+              "description": "fetch data from the table in a streaming manner: \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+              "args": [
+                {
+                  "name": "batch_size",
+                  "description": "maximum number of rows returned in a single batch",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "Int",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "cursor",
+                  "description": "cursor to stream the results returned by the query",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stream_cursor_input",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows returned",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+              "description": "fetch data from the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "distinct_on",
+                  "description": "distinct select on columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_select_column",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "limit",
+                  "description": "limit the number of rows returned",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "offset",
+                  "description": "skip the first n rows. Use only with order_by",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "order_by",
+                  "description": "sort the rows by one or more columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_order_by",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows returned",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_aggregate",
+              "description": "fetch aggregated fields from the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "distinct_on",
+                  "description": "distinct select on columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_select_column",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "limit",
+                  "description": "limit the number of rows returned",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "offset",
+                  "description": "skip the first n rows. Use only with order_by",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "order_by",
+                  "description": "sort the rows by one or more columns",
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_order_by",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows returned",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_aggregate",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_by_pk",
+              "description": "fetch data from the table: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\" using primary key columns",
+              "args": [
+                {
+                  "name": "id",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "uuid",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stream",
+              "description": "fetch data from the table in a streaming manner: \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+              "args": [
+                {
+                  "name": "batch_size",
+                  "description": "maximum number of rows returned in a single batch",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "Int",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "cursor",
+                  "description": "cursor to stream the results returned by the query",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "INPUT_OBJECT",
+                        "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stream_cursor_input",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "where",
+                  "description": "filter the rows returned",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "users",
               "description": "fetch data from the table: \"users\"",
               "args": [
@@ -118461,6 +119931,2662 @@
                   "name": "virus_aggregate",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+          "description": "columns and relationships of \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "bigint",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "uuid",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "bigint",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_aggregate",
+          "description": "aggregated selection of \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+          "fields": [
+            {
+              "name": "aggregate",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_aggregate_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "nodes",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_aggregate_fields",
+          "description": "aggregate fields of \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+          "fields": [
+            {
+              "name": "avg",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_avg_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "count",
+              "description": null,
+              "args": [
+                {
+                  "name": "columns",
+                  "description": null,
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_select_column",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "distinct",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "max",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_max_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "min",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_min_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "stddev",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stddev_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "stddev_pop",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stddev_pop_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "stddev_samp",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stddev_samp_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "sum",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_sum_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "var_pop",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_var_pop_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "var_samp",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_var_samp_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "variance",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_variance_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_avg_fields",
+          "description": "aggregate avg on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+          "description": "Boolean expression to filter rows from the table \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\". All fields are combined with a logical 'AND'.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "_and",
+              "description": null,
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                    "ofType": null
+                  }
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "_not",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "_or",
+              "description": null,
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                    "ofType": null
+                  }
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "bigint_comparison_exp",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "uuid_comparison_exp",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "bigint_comparison_exp",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_constraint",
+          "description": "unique or primary key constraints on table \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "users_pkey",
+              "description": "unique or primary key constraint on columns \"id\"",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_inc_input",
+          "description": "input type for incrementing numeric columns in table \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_insert_input",
+          "description": "input type for inserting data into table \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "uuid",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_max_fields",
+          "description": "aggregate max on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "uuid",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_min_fields",
+          "description": "aggregate min on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "uuid",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_mutation_response",
+          "description": "response of any mutation on the table \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+          "fields": [
+            {
+              "name": "affected_rows",
+              "description": "number of rows affected by the mutation",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "returning",
+              "description": "data from the rows affected by the mutation",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_on_conflict",
+          "description": "on_conflict condition type for table \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "constraint",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_constraint",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "update_columns",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_update_column",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "defaultValue": "[]"
+            },
+            {
+              "name": "where",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_order_by",
+          "description": "Ordering options when selecting data from \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\".",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_pk_columns_input",
+          "description": "primary key columns input for table: test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "uuid",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_select_column",
+          "description": "select columns of table \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "created_at",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_set_input",
+          "description": "input type for updating data in table \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "uuid",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stddev_fields",
+          "description": "aggregate stddev on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stddev_pop_fields",
+          "description": "aggregate stddev_pop on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stddev_samp_fields",
+          "description": "aggregate stddev_samp on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stream_cursor_input",
+          "description": "Streaming cursor of the table \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users\"",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "initial_value",
+              "description": "Stream column input with initial value",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stream_cursor_value_input",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "ordering",
+              "description": "cursor ordering",
+              "type": {
+                "kind": "ENUM",
+                "name": "cursor_ordering",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stream_cursor_value_input",
+          "description": "Initial value of the column from where the streaming should start",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "uuid",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_sum_fields",
+          "description": "aggregate sum on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_update_column",
+          "description": "update columns of table \"test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users\"",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "created_at",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_updates",
+          "description": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "_inc",
+              "description": "increments the numeric columns with given value of the filtered values",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_inc_input",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "_set",
+              "description": "sets the columns of the filtered rows to the given values",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_set_input",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "where",
+              "description": "filter the rows which have to be updated",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_bool_exp",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_var_pop_fields",
+          "description": "aggregate var_pop on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_var_samp_fields",
+          "description": "aggregate var_samp on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_variance_fields",
+          "description": "aggregate variance on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+          "description": "columns and relationships of \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "bigint",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "uuid",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "bigint",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_aggregate",
+          "description": "aggregated selection of \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+          "fields": [
+            {
+              "name": "aggregate",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_aggregate_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "nodes",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_aggregate_fields",
+          "description": "aggregate fields of \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+          "fields": [
+            {
+              "name": "avg",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_avg_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "count",
+              "description": null,
+              "args": [
+                {
+                  "name": "columns",
+                  "description": null,
+                  "type": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "ENUM",
+                        "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_select_column",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "distinct",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "max",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_max_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "min",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_min_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "stddev",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stddev_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "stddev_pop",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stddev_pop_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "stddev_samp",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stddev_samp_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "sum",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_sum_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "var_pop",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_var_pop_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "var_samp",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_var_samp_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "variance",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_variance_fields",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_avg_fields",
+          "description": "aggregate avg on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+          "description": "Boolean expression to filter rows from the table \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\". All fields are combined with a logical 'AND'.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "_and",
+              "description": null,
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                    "ofType": null
+                  }
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "_not",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "_or",
+              "description": null,
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                    "ofType": null
+                  }
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "bigint_comparison_exp",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "uuid_comparison_exp",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "bigint_comparison_exp",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "Int_comparison_exp",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_constraint",
+          "description": "unique or primary key constraints on table \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "t_pkey",
+              "description": "unique or primary key constraint on columns \"id\"",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_inc_input",
+          "description": "input type for incrementing numeric columns in table \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_insert_input",
+          "description": "input type for inserting data into table \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "uuid",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_max_fields",
+          "description": "aggregate max on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "uuid",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_min_fields",
+          "description": "aggregate min on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "uuid",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_mutation_response",
+          "description": "response of any mutation on the table \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+          "fields": [
+            {
+              "name": "affected_rows",
+              "description": "number of rows affected by the mutation",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "returning",
+              "description": "data from the rows affected by the mutation",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "OBJECT",
+                      "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_on_conflict",
+          "description": "on_conflict condition type for table \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "constraint",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "ENUM",
+                  "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_constraint",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "update_columns",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_update_column",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "defaultValue": "[]"
+            },
+            {
+              "name": "where",
+              "description": null,
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_order_by",
+          "description": "Ordering options when selecting data from \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\".",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "type": {
+                "kind": "ENUM",
+                "name": "order_by",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_pk_columns_input",
+          "description": "primary key columns input for table: test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "uuid",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_select_column",
+          "description": "select columns of table \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "created_at",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_set_input",
+          "description": "input type for updating data in table \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "uuid",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stddev_fields",
+          "description": "aggregate stddev on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stddev_pop_fields",
+          "description": "aggregate stddev_pop on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stddev_samp_fields",
+          "description": "aggregate stddev_samp on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stream_cursor_input",
+          "description": "Streaming cursor of the table \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t\"",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "initial_value",
+              "description": "Stream column input with initial value",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stream_cursor_value_input",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "ordering",
+              "description": "cursor ordering",
+              "type": {
+                "kind": "ENUM",
+                "name": "cursor_ordering",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stream_cursor_value_input",
+          "description": "Initial value of the column from where the streaming should start",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "id",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "uuid",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_sum_fields",
+          "description": "aggregate sum on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_update_column",
+          "description": "update columns of table \"test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t\"",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "created_at",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": "column name",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_updates",
+          "description": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "_inc",
+              "description": "increments the numeric columns with given value of the filtered values",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_inc_input",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "_set",
+              "description": "sets the columns of the filtered rows to the given values",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_set_input",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "where",
+              "description": "filter the rows which have to be updated",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_bool_exp",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_var_pop_fields",
+          "description": "aggregate var_pop on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_var_samp_fields",
+          "description": "aggregate var_samp on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_variance_fields",
+          "description": "aggregate variance on columns",
+          "fields": [
+            {
+              "name": "created_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -125257,6 +129383,14 @@
         "schema": "public",
         "table": "schedule"
       },
+      "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users": {
+        "schema": "public",
+        "table": "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users"
+      },
+      "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t": {
+        "schema": "public",
+        "table": "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t"
+      },
       "users": {
         "schema": "public",
         "table": "users"
@@ -125918,7 +130052,7 @@
         }
       }
     },
-    "timestamp": 1757614443933,
+    "timestamp": 1757941853260,
     "version": "1.0.0"
   }
 }

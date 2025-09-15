@@ -46,10 +46,30 @@ for (const [key, val] of Object.entries(schemas)) {
   result.schema[key] = z.toJSONSchema(val);
 }
 
-// Convert options to JSON Schema with proper structure
+// Convert options to JSON Schema with proper structure and include x-meta from Zod .meta()
 result.options = {};
-for (const [tableName, val] of Object.entries(options)) {
-  result.options[tableName] = z.toJSONSchema(val);
+for (const [tableName, zodObj] of Object.entries(options as any)) {
+  const json: any = z.toJSONSchema(zodObj as any);
+  try {
+    // Extract per-key meta from Zod shape
+    const shape = typeof (zodObj as any)?._def?.shape === 'function' ? (zodObj as any)._def.shape() : (zodObj as any)?._def?.shape;
+    if (shape && json && typeof json === 'object') {
+      json.properties = json.properties || {};
+      for (const key of Object.keys(json.properties || {})) {
+        const zodType = shape[key];
+        if (zodType && zodType._def) {
+          const meta = (zodType._def.meta ?? zodType._def.metadata ?? null) as any;
+          if (meta && typeof meta === 'object') {
+            // Attach meta under non-standard extension key to keep JSON Schema valid
+            json.properties[key]['x-meta'] = meta;
+          }
+        }
+      }
+    }
+  } catch {
+    // If meta extraction fails, proceed with plain schema
+  }
+  result.options[tableName] = json;
 }
 
 console.log(JSON.stringify(result));

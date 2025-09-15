@@ -455,6 +455,11 @@
           "level": 2
         },
         {
+          "title": "Split Credentials Flow (OTP and Password)",
+          "url": "/hasyx/doc/AUTH#split-credentials-flow-otp-and-password",
+          "level": 3
+        },
+        {
           "title": "`WsClientsManager` (WebSocket Authentication)",
           "url": "/hasyx/doc/AUTH#wsclientsmanager-websocket-authentication",
           "level": 3
@@ -3113,13 +3118,13 @@
           "level": 3
         },
         {
-          "title": "🔐 Система аутентификации и авторизации",
-          "url": "/hasyx/doc/GUIDE#",
+          "title": "🔐 Authentication and Authorization",
+          "url": "/hasyx/doc/GUIDE#authentication-and-authorization",
           "level": 2
         },
         {
-          "title": "Поддерживаемые провайдеры",
-          "url": "/hasyx/doc/GUIDE#",
+          "title": "Supported Providers",
+          "url": "/hasyx/doc/GUIDE#supported-providers",
           "level": 3
         },
         {
@@ -16103,5 +16108,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-09-11T18:14:32.680Z"
+  "lastUpdated": "2025-09-15T11:52:48.463Z"
 }

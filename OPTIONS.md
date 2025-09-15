@@ -10,6 +10,8 @@ This document explains how the Options system works end-to-end, how it is config
   - Only allowed keys (those declared in `options[tableName]`) are accepted
   - Exactly one value column among `string_value`, `number_value`, `boolean_value`, `jsonb_value` must be set
   - `item_id` must reference an existing record in one of the declared `options[tableName]` tables; the trigger auto-detects which table it belongs to
+  - **Multiple options**: Respects `meta.multiple` - prevents duplicates by default, allows multiple entries when `multiple: true`
+  - **Reference validation**: Validates UUIDs against specified tables when `meta.tables` is defined
 
 ### Authoritative source: `schema.tsx`
 
@@ -23,6 +25,18 @@ export const options = {
     fio: z.string().min(1).max(200),
     displayName: z.string().min(1).max(100),
     timezone: z.string().min(1).max(50),
+    // File reference with table validation
+    avatar: z
+      .string()
+      .uuid()
+      .describe('User avatar file id (uuid from storage.files)')
+      .meta({ widget: 'file-id', tables: ['storage.files'] }),
+    // Multiple references with table validation
+    friend_id: z
+      .string()
+      .uuid()
+      .describe('Friend user id (uuid from public.users)')
+      .meta({ multiple: true, tables: ['users'] }),
     notifications: z.object({
       email: z.boolean(),
       push: z.boolean(),
@@ -50,12 +64,16 @@ You can add more tables and their option keys by adding more top-level keys to `
 
 Constraints and indexes:
 
-- Unique index on `(key, user_id, COALESCE(item_id, '00000000-0000-0000-0000-000000000000'))`
+- **No unique constraints** - multiple options with the same `(key, item_id)` are allowed when `meta.multiple: true` is set
 
 Permissions (by default):
 
-- Role `anonymous`: select all
-- Role `user`: full CRUD with row filter `user_id = X-Hasura-User-Id`
+- Role `anonymous`: select all options
+- Role `user`: 
+  - **select**: read all options (no filter)
+  - **insert**: can only create options where `item_id = X-Hasura-User-Id`
+  - **update**: can only modify options where `item_id = X-Hasura-User-Id`
+  - **delete**: can only delete options where `item_id = X-Hasura-User-Id`
 
 ### Validation trigger (dynamic schema detection)
 
@@ -64,7 +82,9 @@ The migration defines a plpgsql trigger function `public.options_validate` that 
 - Ensures exactly one of the value columns is set
 - Ensures `key` is not empty
 - Requires `item_id`
-- Dynamically determines the target table for `item_id` by scanning all `options[tableName]` declared in `schema.tsx` and checking `public.<tableName>(id)` for existence
+- **Multiple options support**: Checks `meta.multiple` from schema - if `false` (default), prevents duplicate `(key, item_id)` pairs; if `true`, allows multiple entries
+- **Reference validation**: Checks `meta.tables` from schema - validates that `item_id` (or `file_id`) exists in one of the specified tables
+- Dynamically determines the target table for `item_id` by scanning all `options[tableName]` declared in `schema.tsx` and checking the appropriate table for existence
 - Builds a JSON value from the chosen column and validates it (if validation runtime is installed) against `validation.project_schemas()` at path `options.<tableName>.properties.<key>`. When `file_id` is used, it is validated as a UUID string (compatible with `z.string().uuid()` in `schema.tsx`).
 
 The trigger relies on the plv8 validation runtime to be synchronized via the CLI (`validation sync/define`). If the runtime is not present, it still enforces key existence with `validation.validate_option_key` and the “one-of” value rule.
@@ -102,7 +122,7 @@ const inserted = await userClient.insert({
 });
 ```
 
-Insert an avatar file reference (users.avatar):
+Insert an avatar file reference (users.avatar with table validation):
 
 ```ts
 const inserted = await userClient.insert({
@@ -110,9 +130,35 @@ const inserted = await userClient.insert({
   object: {
     key: 'avatar',
     item_id: targetUser.id,
-    file_id: someFileId, // uuid from storage.files.id
+    file_id: someFileId, // uuid from storage.files.id - validated against storage.files table
   },
   returning: ['id', 'key', 'file_id', 'user_id', 'item_id']
+});
+```
+
+Insert multiple friend references (users.friend_id with multiple: true):
+
+```ts
+// First friend
+const friend1 = await userClient.insert({
+  table: 'options',
+  object: {
+    key: 'friend_id',
+    item_id: targetUser.id,
+    string_value: friend1UserId, // uuid validated against users table
+  },
+  returning: ['id', 'key', 'string_value', 'user_id', 'item_id']
+});
+
+// Second friend (allowed because friend_id has meta.multiple: true)
+const friend2 = await userClient.insert({
+  table: 'options',
+  object: {
+    key: 'friend_id',
+    item_id: targetUser.id,
+    string_value: friend2UserId, // uuid validated against users table
+  },
+  returning: ['id', 'key', 'string_value', 'user_id', 'item_id']
 });
 ```
 
@@ -135,8 +181,9 @@ Invalid keys or keys not present under the detected `options[tableName]` will be
 
 ### Migrations
 
-- `lib/options/up-options.ts` creates the table, triggers, functions, permissions, and unique index.
-- `lib/options/down-options.ts` removes them (dropping the table also removes the index/trigger).
+- `lib/options/up-options.ts` creates the table, triggers, and functions.
+- `lib/options/down-options.ts` removes them (dropping the table also removes triggers).
+- **Permissions** are defined directly in `migrations/.../up.ts` and `migrations/.../down.ts` to ensure strict access control during migration.
 
 To apply just this migration set in development:
 
@@ -151,5 +198,13 @@ DEBUG="hasyx*" npm run migrate options
   - A: No. It is an optional artifact for debugging or CI snapshots. Runtime validation reads from `validation.project_schemas()` in the database.
 - Q: How do I add options for a new table?
   - A: Add a new key under `export const options` in `schema.tsx`, run `npm run validate` to sync, and the trigger will automatically validate against the new table via `item_id`.
+- Q: How do I allow multiple options with the same key for one item?
+  - A: Add `.meta({ multiple: true })` to your Zod schema definition. For example: `friend_id: z.string().uuid().meta({ multiple: true, tables: ['users'] })`.
+- Q: How do I validate that a UUID option references an existing record?
+  - A: Use `.meta({ tables: ['table_name'] })` in your Zod schema. The trigger will verify that the UUID exists in one of the specified tables. Supports `schema.table` format like `['storage.files']`.
+- Q: Can users read options created by other users?
+  - A: Yes, by default users can **read** all options (no filter), but can only **create/modify/delete** options where `item_id` matches their own user ID (`X-Hasura-User-Id`).
+- Q: What happens if I try to create duplicate options for a non-multiple key?
+  - A: The trigger will reject the insert/update with an error message about duplicate options for that `(key, item_id)` combination.
 
 

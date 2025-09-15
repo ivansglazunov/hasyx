@@ -8012,6 +8012,14 @@ export type Mutation_Root = {
   delete_schedule?: Maybe<Schedule_Mutation_Response>;
   /** delete single row from the table: "schedule" */
   delete_schedule_by_pk?: Maybe<Schedule>;
+  /** delete data from the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  delete_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Mutation_Response>;
+  /** delete single row from the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  delete_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_by_pk?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users>;
+  /** delete data from the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  delete_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Mutation_Response>;
+  /** delete single row from the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  delete_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_by_pk?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T>;
   /** delete data from the table: "users" */
   delete_users?: Maybe<Users_Mutation_Response>;
   /** delete single row from the table: "users" */
@@ -8148,6 +8156,14 @@ export type Mutation_Root = {
   insert_schedule?: Maybe<Schedule_Mutation_Response>;
   /** insert a single row into the table: "schedule" */
   insert_schedule_one?: Maybe<Schedule>;
+  /** insert data into the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  insert_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Mutation_Response>;
+  /** insert a single row into the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  insert_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_one?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users>;
+  /** insert data into the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  insert_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Mutation_Response>;
+  /** insert a single row into the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  insert_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_one?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T>;
   /** insert data into the table: "users" */
   insert_users?: Maybe<Users_Mutation_Response>;
   /** insert a single row into the table: "users" */
@@ -8370,6 +8386,26 @@ export type Mutation_Root = {
   update_schedule_by_pk?: Maybe<Schedule>;
   /** update multiples rows of table: "schedule" */
   update_schedule_many?: Maybe<Array<Maybe<Schedule_Mutation_Response>>>;
+  /** update data of the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  update_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Mutation_Response>;
+  /** update single row of the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  update_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_by_pk?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users>;
+  /** update multiples rows of table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  update_test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_many?: Maybe<
+    Array<
+      Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Mutation_Response>
+    >
+  >;
+  /** update data of the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  update_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Mutation_Response>;
+  /** update single row of the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  update_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_by_pk?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T>;
+  /** update multiples rows of table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  update_test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_many?: Maybe<
+    Array<
+      Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Mutation_Response>
+    >
+  >;
   /** update data of the table: "users" */
   update_users?: Maybe<Users_Mutation_Response>;
   /** update single row of the table: "users" */
@@ -8708,6 +8744,30 @@ export type Mutation_RootDelete_ScheduleArgs = {
 export type Mutation_RootDelete_Schedule_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
+
+/** mutation root */
+export type Mutation_RootDelete_Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_UsersArgs =
+  {
+    where: Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp;
+  };
+
+/** mutation root */
+export type Mutation_RootDelete_Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_By_PkArgs =
+  {
+    id: Scalars["uuid"]["input"];
+  };
+
+/** mutation root */
+export type Mutation_RootDelete_Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_TArgs =
+  {
+    where: Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp;
+  };
+
+/** mutation root */
+export type Mutation_RootDelete_Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_By_PkArgs =
+  {
+    id: Scalars["uuid"]["input"];
+  };
 
 /** mutation root */
 export type Mutation_RootDelete_UsersArgs = {
@@ -9113,6 +9173,34 @@ export type Mutation_RootInsert_Schedule_OneArgs = {
   object: Schedule_Insert_Input;
   on_conflict?: InputMaybe<Schedule_On_Conflict>;
 };
+
+/** mutation root */
+export type Mutation_RootInsert_Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_UsersArgs =
+  {
+    objects: Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Insert_Input>;
+    on_conflict?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_On_Conflict>;
+  };
+
+/** mutation root */
+export type Mutation_RootInsert_Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_OneArgs =
+  {
+    object: Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Insert_Input;
+    on_conflict?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_On_Conflict>;
+  };
+
+/** mutation root */
+export type Mutation_RootInsert_Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_TArgs =
+  {
+    objects: Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Insert_Input>;
+    on_conflict?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_On_Conflict>;
+  };
+
+/** mutation root */
+export type Mutation_RootInsert_Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_OneArgs =
+  {
+    object: Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Insert_Input;
+    on_conflict?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_On_Conflict>;
+  };
 
 /** mutation root */
 export type Mutation_RootInsert_UsersArgs = {
@@ -9948,6 +10036,50 @@ export type Mutation_RootUpdate_Schedule_By_PkArgs = {
 export type Mutation_RootUpdate_Schedule_ManyArgs = {
   updates: Array<Schedule_Updates>;
 };
+
+/** mutation root */
+export type Mutation_RootUpdate_Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_UsersArgs =
+  {
+    _inc?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Inc_Input>;
+    _set?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Set_Input>;
+    where: Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp;
+  };
+
+/** mutation root */
+export type Mutation_RootUpdate_Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_By_PkArgs =
+  {
+    _inc?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Inc_Input>;
+    _set?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Set_Input>;
+    pk_columns: Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Pk_Columns_Input;
+  };
+
+/** mutation root */
+export type Mutation_RootUpdate_Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_ManyArgs =
+  {
+    updates: Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Updates>;
+  };
+
+/** mutation root */
+export type Mutation_RootUpdate_Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_TArgs =
+  {
+    _inc?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Inc_Input>;
+    _set?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Set_Input>;
+    where: Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp;
+  };
+
+/** mutation root */
+export type Mutation_RootUpdate_Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_By_PkArgs =
+  {
+    _inc?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Inc_Input>;
+    _set?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Set_Input>;
+    pk_columns: Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Pk_Columns_Input;
+  };
+
+/** mutation root */
+export type Mutation_RootUpdate_Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_ManyArgs =
+  {
+    updates: Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Updates>;
+  };
 
 /** mutation root */
 export type Mutation_RootUpdate_UsersArgs = {
@@ -11527,8 +11659,6 @@ export type Options_Bool_Exp = {
 
 /** unique or primary key constraints on table "options" */
 export enum Options_Constraint {
-  /** unique or primary key constraint on columns "user_id", "key" */
-  OptionsKeyUserItemUniqueIdx = "options_key_user_item_unique_idx",
   /** unique or primary key constraint on columns "id" */
   OptionsPkey = "options_pkey",
 }
@@ -16380,6 +16510,18 @@ export type Query_Root = {
   schedule_aggregate: Schedule_Aggregate;
   /** fetch data from the table: "schedule" using primary key columns */
   schedule_by_pk?: Maybe<Schedule>;
+  /** fetch data from the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users: Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users>;
+  /** fetch aggregated fields from the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_aggregate: Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Aggregate;
+  /** fetch data from the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" using primary key columns */
+  test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_by_pk?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users>;
+  /** fetch data from the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t: Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T>;
+  /** fetch aggregated fields from the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_aggregate: Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Aggregate;
+  /** fetch data from the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" using primary key columns */
+  test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_by_pk?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T>;
   /** fetch data from the table: "users" */
   users: Array<Users>;
   /** fetch aggregated fields from the table: "users" */
@@ -17027,6 +17169,68 @@ export type Query_RootSchedule_AggregateArgs = {
 export type Query_RootSchedule_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
+
+export type Query_RootTest_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_UsersArgs =
+  {
+    distinct_on?: InputMaybe<
+      Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Select_Column>
+    >;
+    limit?: InputMaybe<Scalars["Int"]["input"]>;
+    offset?: InputMaybe<Scalars["Int"]["input"]>;
+    order_by?: InputMaybe<
+      Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Order_By>
+    >;
+    where?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp>;
+  };
+
+export type Query_RootTest_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_AggregateArgs =
+  {
+    distinct_on?: InputMaybe<
+      Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Select_Column>
+    >;
+    limit?: InputMaybe<Scalars["Int"]["input"]>;
+    offset?: InputMaybe<Scalars["Int"]["input"]>;
+    order_by?: InputMaybe<
+      Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Order_By>
+    >;
+    where?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp>;
+  };
+
+export type Query_RootTest_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_By_PkArgs =
+  {
+    id: Scalars["uuid"]["input"];
+  };
+
+export type Query_RootTest_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_TArgs =
+  {
+    distinct_on?: InputMaybe<
+      Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Select_Column>
+    >;
+    limit?: InputMaybe<Scalars["Int"]["input"]>;
+    offset?: InputMaybe<Scalars["Int"]["input"]>;
+    order_by?: InputMaybe<
+      Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Order_By>
+    >;
+    where?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp>;
+  };
+
+export type Query_RootTest_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_AggregateArgs =
+  {
+    distinct_on?: InputMaybe<
+      Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Select_Column>
+    >;
+    limit?: InputMaybe<Scalars["Int"]["input"]>;
+    offset?: InputMaybe<Scalars["Int"]["input"]>;
+    order_by?: InputMaybe<
+      Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Order_By>
+    >;
+    where?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp>;
+  };
+
+export type Query_RootTest_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_By_PkArgs =
+  {
+    id: Scalars["uuid"]["input"];
+  };
 
 export type Query_RootUsersArgs = {
   distinct_on?: InputMaybe<Array<Users_Select_Column>>;
@@ -18580,6 +18784,22 @@ export type Subscription_Root = {
   schedule_by_pk?: Maybe<Schedule>;
   /** fetch data from the table in a streaming manner: "schedule" */
   schedule_stream: Array<Schedule>;
+  /** fetch data from the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users: Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users>;
+  /** fetch aggregated fields from the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_aggregate: Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Aggregate;
+  /** fetch data from the table: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" using primary key columns */
+  test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_by_pk?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users>;
+  /** fetch data from the table in a streaming manner: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+  test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stream: Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users>;
+  /** fetch data from the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t: Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T>;
+  /** fetch aggregated fields from the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_aggregate: Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Aggregate;
+  /** fetch data from the table: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" using primary key columns */
+  test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_by_pk?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T>;
+  /** fetch data from the table in a streaming manner: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+  test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stream: Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T>;
   /** fetch data from the table: "users" */
   users: Array<Users>;
   /** fetch aggregated fields from the table: "users" */
@@ -19425,6 +19645,86 @@ export type Subscription_RootSchedule_StreamArgs = {
   where?: InputMaybe<Schedule_Bool_Exp>;
 };
 
+export type Subscription_RootTest_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_UsersArgs =
+  {
+    distinct_on?: InputMaybe<
+      Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Select_Column>
+    >;
+    limit?: InputMaybe<Scalars["Int"]["input"]>;
+    offset?: InputMaybe<Scalars["Int"]["input"]>;
+    order_by?: InputMaybe<
+      Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Order_By>
+    >;
+    where?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp>;
+  };
+
+export type Subscription_RootTest_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_AggregateArgs =
+  {
+    distinct_on?: InputMaybe<
+      Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Select_Column>
+    >;
+    limit?: InputMaybe<Scalars["Int"]["input"]>;
+    offset?: InputMaybe<Scalars["Int"]["input"]>;
+    order_by?: InputMaybe<
+      Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Order_By>
+    >;
+    where?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp>;
+  };
+
+export type Subscription_RootTest_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_By_PkArgs =
+  {
+    id: Scalars["uuid"]["input"];
+  };
+
+export type Subscription_RootTest_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_StreamArgs =
+  {
+    batch_size: Scalars["Int"]["input"];
+    cursor: Array<
+      InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Stream_Cursor_Input>
+    >;
+    where?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp>;
+  };
+
+export type Subscription_RootTest_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_TArgs =
+  {
+    distinct_on?: InputMaybe<
+      Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Select_Column>
+    >;
+    limit?: InputMaybe<Scalars["Int"]["input"]>;
+    offset?: InputMaybe<Scalars["Int"]["input"]>;
+    order_by?: InputMaybe<
+      Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Order_By>
+    >;
+    where?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp>;
+  };
+
+export type Subscription_RootTest_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_AggregateArgs =
+  {
+    distinct_on?: InputMaybe<
+      Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Select_Column>
+    >;
+    limit?: InputMaybe<Scalars["Int"]["input"]>;
+    offset?: InputMaybe<Scalars["Int"]["input"]>;
+    order_by?: InputMaybe<
+      Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Order_By>
+    >;
+    where?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp>;
+  };
+
+export type Subscription_RootTest_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_By_PkArgs =
+  {
+    id: Scalars["uuid"]["input"];
+  };
+
+export type Subscription_RootTest_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_StreamArgs =
+  {
+    batch_size: Scalars["Int"]["input"];
+    cursor: Array<
+      InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Stream_Cursor_Input>
+    >;
+    where?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp>;
+  };
+
 export type Subscription_RootUsersArgs = {
   distinct_on?: InputMaybe<Array<Users_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -19502,6 +19802,520 @@ export type Subscription_RootVirusesAggregateArgs = {
   order_by?: InputMaybe<Array<Virus_Order_By>>;
   where?: InputMaybe<Virus_Bool_Exp>;
 };
+
+/** columns and relationships of "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users = {
+  __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users";
+  created_at: Scalars["bigint"]["output"];
+  id: Scalars["uuid"]["output"];
+  updated_at: Scalars["bigint"]["output"];
+};
+
+/** aggregated selection of "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Aggregate =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_aggregate";
+    aggregate?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Aggregate_Fields>;
+    nodes: Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users>;
+  };
+
+/** aggregate fields of "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Aggregate_Fields =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_aggregate_fields";
+    avg?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Avg_Fields>;
+    count: Scalars["Int"]["output"];
+    max?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Max_Fields>;
+    min?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Min_Fields>;
+    stddev?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Stddev_Fields>;
+    stddev_pop?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Stddev_Pop_Fields>;
+    stddev_samp?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Stddev_Samp_Fields>;
+    sum?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Sum_Fields>;
+    var_pop?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Var_Pop_Fields>;
+    var_samp?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Var_Samp_Fields>;
+    variance?: Maybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Variance_Fields>;
+  };
+
+/** aggregate fields of "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Aggregate_FieldsCountArgs =
+  {
+    columns?: InputMaybe<
+      Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Select_Column>
+    >;
+    distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+  };
+
+/** aggregate avg on columns */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Avg_Fields =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_avg_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** Boolean expression to filter rows from the table "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users". All fields are combined with a logical 'AND'. */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp =
+  {
+    _and?: InputMaybe<
+      Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp>
+    >;
+    _not?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp>;
+    _or?: InputMaybe<
+      Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp>
+    >;
+    created_at?: InputMaybe<Bigint_Comparison_Exp>;
+    id?: InputMaybe<Uuid_Comparison_Exp>;
+    updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+  };
+
+/** unique or primary key constraints on table "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export enum Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Constraint {
+  /** unique or primary key constraint on columns "id" */
+  UsersPkey = "users_pkey",
+}
+
+/** input type for incrementing numeric columns in table "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Inc_Input =
+  {
+    created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  };
+
+/** input type for inserting data into table "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Insert_Input =
+  {
+    created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    id?: InputMaybe<Scalars["uuid"]["input"]>;
+    updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  };
+
+/** aggregate max on columns */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Max_Fields =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_max_fields";
+    created_at?: Maybe<Scalars["bigint"]["output"]>;
+    id?: Maybe<Scalars["uuid"]["output"]>;
+    updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  };
+
+/** aggregate min on columns */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Min_Fields =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_min_fields";
+    created_at?: Maybe<Scalars["bigint"]["output"]>;
+    id?: Maybe<Scalars["uuid"]["output"]>;
+    updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  };
+
+/** response of any mutation on the table "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Mutation_Response =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: Scalars["Int"]["output"];
+    /** data from the rows affected by the mutation */
+    returning: Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users>;
+  };
+
+/** on_conflict condition type for table "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_On_Conflict =
+  {
+    constraint: Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Constraint;
+    update_columns?: Array<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Update_Column>;
+    where?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp>;
+  };
+
+/** Ordering options when selecting data from "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users". */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Order_By =
+  {
+    created_at?: InputMaybe<Order_By>;
+    id?: InputMaybe<Order_By>;
+    updated_at?: InputMaybe<Order_By>;
+  };
+
+/** primary key columns input for table: test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Pk_Columns_Input =
+  {
+    id: Scalars["uuid"]["input"];
+  };
+
+/** select columns of table "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export enum Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Select_Column {
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Id = "id",
+  /** column name */
+  UpdatedAt = "updated_at",
+}
+
+/** input type for updating data in table "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Set_Input =
+  {
+    created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    id?: InputMaybe<Scalars["uuid"]["input"]>;
+    updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  };
+
+/** aggregate stddev on columns */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Stddev_Fields =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stddev_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** aggregate stddev_pop on columns */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Stddev_Pop_Fields =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stddev_pop_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** aggregate stddev_samp on columns */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Stddev_Samp_Fields =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_stddev_samp_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** Streaming cursor of the table "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users" */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Stream_Cursor_Input =
+  {
+    /** Stream column input with initial value */
+    initial_value: Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Stream_Cursor_Value_Input;
+    /** cursor ordering */
+    ordering?: InputMaybe<Cursor_Ordering>;
+  };
+
+/** Initial value of the column from where the streaming should start */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Stream_Cursor_Value_Input =
+  {
+    created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    id?: InputMaybe<Scalars["uuid"]["input"]>;
+    updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  };
+
+/** aggregate sum on columns */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Sum_Fields =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_sum_fields";
+    created_at?: Maybe<Scalars["bigint"]["output"]>;
+    updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  };
+
+/** update columns of table "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012.users" */
+export enum Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Update_Column {
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Id = "id",
+  /** column name */
+  UpdatedAt = "updated_at",
+}
+
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Updates =
+  {
+    /** increments the numeric columns with given value of the filtered values */
+    _inc?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Inc_Input>;
+    /** sets the columns of the filtered rows to the given values */
+    _set?: InputMaybe<Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Set_Input>;
+    /** filter the rows which have to be updated */
+    where: Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Bool_Exp;
+  };
+
+/** aggregate var_pop on columns */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Var_Pop_Fields =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_var_pop_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** aggregate var_samp on columns */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Var_Samp_Fields =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_var_samp_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** aggregate variance on columns */
+export type Test_Inconsistent_24155e2e_8239_4e0f_Bd28_048fd2fc7012_Users_Variance_Fields =
+  {
+    __typename?: "test_inconsistent_24155e2e_8239_4e0f_bd28_048fd2fc7012_users_variance_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** columns and relationships of "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T = {
+  __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t";
+  created_at: Scalars["bigint"]["output"];
+  id: Scalars["uuid"]["output"];
+  updated_at: Scalars["bigint"]["output"];
+  value?: Maybe<Scalars["Int"]["output"]>;
+};
+
+/** aggregated selection of "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Aggregate =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_aggregate";
+    aggregate?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Aggregate_Fields>;
+    nodes: Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T>;
+  };
+
+/** aggregate fields of "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Aggregate_Fields =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_aggregate_fields";
+    avg?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Avg_Fields>;
+    count: Scalars["Int"]["output"];
+    max?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Max_Fields>;
+    min?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Min_Fields>;
+    stddev?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Stddev_Fields>;
+    stddev_pop?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Stddev_Pop_Fields>;
+    stddev_samp?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Stddev_Samp_Fields>;
+    sum?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Sum_Fields>;
+    var_pop?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Var_Pop_Fields>;
+    var_samp?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Var_Samp_Fields>;
+    variance?: Maybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Variance_Fields>;
+  };
+
+/** aggregate fields of "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Aggregate_FieldsCountArgs =
+  {
+    columns?: InputMaybe<
+      Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Select_Column>
+    >;
+    distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+  };
+
+/** aggregate avg on columns */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Avg_Fields =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_avg_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+    value?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** Boolean expression to filter rows from the table "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t". All fields are combined with a logical 'AND'. */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp =
+  {
+    _and?: InputMaybe<
+      Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp>
+    >;
+    _not?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp>;
+    _or?: InputMaybe<
+      Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp>
+    >;
+    created_at?: InputMaybe<Bigint_Comparison_Exp>;
+    id?: InputMaybe<Uuid_Comparison_Exp>;
+    updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+    value?: InputMaybe<Int_Comparison_Exp>;
+  };
+
+/** unique or primary key constraints on table "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export enum Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Constraint {
+  /** unique or primary key constraint on columns "id" */
+  TPkey = "t_pkey",
+}
+
+/** input type for incrementing numeric columns in table "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Inc_Input =
+  {
+    created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    value?: InputMaybe<Scalars["Int"]["input"]>;
+  };
+
+/** input type for inserting data into table "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Insert_Input =
+  {
+    created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    id?: InputMaybe<Scalars["uuid"]["input"]>;
+    updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    value?: InputMaybe<Scalars["Int"]["input"]>;
+  };
+
+/** aggregate max on columns */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Max_Fields =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_max_fields";
+    created_at?: Maybe<Scalars["bigint"]["output"]>;
+    id?: Maybe<Scalars["uuid"]["output"]>;
+    updated_at?: Maybe<Scalars["bigint"]["output"]>;
+    value?: Maybe<Scalars["Int"]["output"]>;
+  };
+
+/** aggregate min on columns */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Min_Fields =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_min_fields";
+    created_at?: Maybe<Scalars["bigint"]["output"]>;
+    id?: Maybe<Scalars["uuid"]["output"]>;
+    updated_at?: Maybe<Scalars["bigint"]["output"]>;
+    value?: Maybe<Scalars["Int"]["output"]>;
+  };
+
+/** response of any mutation on the table "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Mutation_Response =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_mutation_response";
+    /** number of rows affected by the mutation */
+    affected_rows: Scalars["Int"]["output"];
+    /** data from the rows affected by the mutation */
+    returning: Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T>;
+  };
+
+/** on_conflict condition type for table "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_On_Conflict =
+  {
+    constraint: Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Constraint;
+    update_columns?: Array<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Update_Column>;
+    where?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp>;
+  };
+
+/** Ordering options when selecting data from "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t". */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Order_By =
+  {
+    created_at?: InputMaybe<Order_By>;
+    id?: InputMaybe<Order_By>;
+    updated_at?: InputMaybe<Order_By>;
+    value?: InputMaybe<Order_By>;
+  };
+
+/** primary key columns input for table: test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Pk_Columns_Input =
+  {
+    id: Scalars["uuid"]["input"];
+  };
+
+/** select columns of table "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export enum Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Select_Column {
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Id = "id",
+  /** column name */
+  UpdatedAt = "updated_at",
+  /** column name */
+  Value = "value",
+}
+
+/** input type for updating data in table "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Set_Input =
+  {
+    created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    id?: InputMaybe<Scalars["uuid"]["input"]>;
+    updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    value?: InputMaybe<Scalars["Int"]["input"]>;
+  };
+
+/** aggregate stddev on columns */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Stddev_Fields =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stddev_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+    value?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** aggregate stddev_pop on columns */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Stddev_Pop_Fields =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stddev_pop_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+    value?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** aggregate stddev_samp on columns */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Stddev_Samp_Fields =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_stddev_samp_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+    value?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** Streaming cursor of the table "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t" */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Stream_Cursor_Input =
+  {
+    /** Stream column input with initial value */
+    initial_value: Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Stream_Cursor_Value_Input;
+    /** cursor ordering */
+    ordering?: InputMaybe<Cursor_Ordering>;
+  };
+
+/** Initial value of the column from where the streaming should start */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Stream_Cursor_Value_Input =
+  {
+    created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    id?: InputMaybe<Scalars["uuid"]["input"]>;
+    updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+    value?: InputMaybe<Scalars["Int"]["input"]>;
+  };
+
+/** aggregate sum on columns */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Sum_Fields =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_sum_fields";
+    created_at?: Maybe<Scalars["bigint"]["output"]>;
+    updated_at?: Maybe<Scalars["bigint"]["output"]>;
+    value?: Maybe<Scalars["Int"]["output"]>;
+  };
+
+/** update columns of table "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d.t" */
+export enum Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Update_Column {
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Id = "id",
+  /** column name */
+  UpdatedAt = "updated_at",
+  /** column name */
+  Value = "value",
+}
+
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Updates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Inc_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Bool_Exp;
+};
+
+/** aggregate var_pop on columns */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Var_Pop_Fields =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_var_pop_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+    value?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** aggregate var_samp on columns */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Var_Samp_Fields =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_var_samp_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+    value?: Maybe<Scalars["Float"]["output"]>;
+  };
+
+/** aggregate variance on columns */
+export type Test_Plv8_Tr_Diag_50cf149b_B861_4711_Bad5_701ca485a83d_T_Variance_Fields =
+  {
+    __typename?: "test_plv8_tr_diag_50cf149b_b861_4711_bad5_701ca485a83d_t_variance_fields";
+    created_at?: Maybe<Scalars["Float"]["output"]>;
+    updated_at?: Maybe<Scalars["Float"]["output"]>;
+    value?: Maybe<Scalars["Float"]["output"]>;
+  };
 
 /** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
 export type Timestamptz_Comparison_Exp = {

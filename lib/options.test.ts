@@ -13,11 +13,11 @@ import { gql } from '@apollo/client/core';
 // Ensure environment variables are loaded for Jest
 dotenv.config();
 
-(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('options table + validation', () => {
+describe('options table + validation', () => {
   // ВАЖНО: по правилам проекта каждый it сам себе готовит окружение и чистит за собой
   // Здесь никаких before/after не используем
 
-  it('should support user options with valid item_id', async () => {
+  it('should support user options with valid item_id (acting user only)', async () => {
     const admin = new Hasyx(
       createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET!, ws: false }),
       Generator(schema as any)
@@ -26,15 +26,12 @@ dotenv.config();
     const user = await createTestUser();
     const { hasyx: userClient } = await admin._authorize(user.id, { ws: false });
 
-    // Create target user to use as item_id
-    const targetUser = await createTestUser();
-
     // Test user option (fio)
     const inserted = await userClient.insert<any>({
       table: 'options',
       object: { 
         key: 'fio', 
-        item_id: targetUser.id,
+        item_id: user.id,
         string_value: 'Иван Иванович Петров' 
       },
       returning: ['id', 'key', 'string_value', 'user_id', 'item_id']
@@ -42,13 +39,13 @@ dotenv.config();
 
     expect(inserted?.key).toBe('fio');
     expect(inserted?.string_value).toBe('Иван Иванович Петров');
-    expect(inserted?.item_id).toBe(targetUser.id);
+    expect(inserted?.item_id).toBe(user.id);
 
     const rows = await userClient.select<any[]>({
       table: 'options',
       where: { 
         key: { _eq: 'fio' },
-        item_id: { _eq: targetUser.id }
+        item_id: { _eq: user.id }
       },
       returning: ['key', 'string_value', 'item_id']
     });
@@ -56,7 +53,7 @@ dotenv.config();
     const row = Array.isArray(rows) ? rows[0] : rows;
     expect(row?.key).toBe('fio');
     expect(row?.string_value).toBe('Иван Иванович Петров');
-    expect(row?.item_id).toBe(targetUser.id);
+    expect(row?.item_id).toBe(user.id);
   }, 30000);
   it('should allow known keys and reject unknown keys', async () => {
     const admin = new Hasyx(
@@ -73,7 +70,7 @@ dotenv.config();
       table: 'options',
       object: { 
         key: 'displayName', 
-        item_id: targetUser.id,
+        item_id: user.id,
         string_value: 'Иван Петров' 
       },
       returning: ['id', 'key', 'string_value', 'user_id', 'item_id']
@@ -81,14 +78,14 @@ dotenv.config();
 
     expect(ok?.key).toBe('displayName');
     expect(ok?.string_value).toBe('Иван Петров');
-    expect(ok?.item_id).toBe(targetUser.id);
+    expect(ok?.item_id).toBe(user.id);
 
     // Test invalid key should fail due to validation trigger
     await expect(userClient.insert<any>({
       table: 'options',
       object: { 
         key: 'unknown_key', 
-        item_id: targetUser.id,
+        item_id: user.id,
         string_value: 'oops' 
       },
       returning: ['id']
@@ -115,7 +112,7 @@ dotenv.config();
       table: 'options',
       object: { 
         key: 'notifications', 
-        item_id: targetUser.id,
+        item_id: user.id,
         jsonb_value: notificationSettings 
       },
       returning: ['id', 'key', 'jsonb_value', 'user_id', 'item_id']
@@ -123,13 +120,13 @@ dotenv.config();
 
     expect(inserted?.key).toBe('notifications');
     expect(inserted?.jsonb_value).toEqual(notificationSettings);
-    expect(inserted?.item_id).toBe(targetUser.id);
+    expect(inserted?.item_id).toBe(user.id);
 
     const rows = await userClient.select<any[]>({
       table: 'options',
       where: { 
         key: { _eq: 'notifications' },
-        item_id: { _eq: targetUser.id }
+        item_id: { _eq: user.id }
       },
       returning: ['key', 'jsonb_value', 'item_id']
     });
@@ -153,7 +150,7 @@ dotenv.config();
       table: 'options',
       object: { 
         key: 'displayName', 
-        item_id: targetUser.id,
+        item_id: user.id,
         string_value: 'Первое имя' 
       },
       returning: ['id']
@@ -164,7 +161,7 @@ dotenv.config();
       table: 'options',
       object: { 
         key: 'displayName', 
-        item_id: targetUser.id,
+        item_id: user.id,
         string_value: 'Другое имя' 
       },
       returning: ['id']
@@ -230,7 +227,7 @@ dotenv.config();
       table: 'options',
       object: { 
         key: 'invalid_key_name',
-        item_id: targetUser.id,
+        item_id: user.id,
         string_value: 'Should Fail' 
       },
       returning: ['id']
@@ -241,7 +238,7 @@ dotenv.config();
       table: 'options',
       object: { 
         key: 'nonexistent_option',
-        item_id: targetUser.id,
+        item_id: user.id,
         string_value: 'Should Also Fail' 
       },
       returning: ['id']
@@ -270,7 +267,7 @@ dotenv.config();
         table: 'options',
         object: { 
           key: option.key,
-          item_id: targetUser.id,
+          item_id: user.id,
           string_value: option.value
         },
         returning: ['id', 'key', 'string_value', 'item_id']
@@ -278,7 +275,7 @@ dotenv.config();
 
       expect(inserted?.key).toBe(option.key);
       expect(inserted?.string_value).toBe(option.value);
-      expect(inserted?.item_id).toBe(targetUser.id);
+      expect(inserted?.item_id).toBe(user.id);
     }
 
     // Test notifications (jsonb_value)
@@ -286,7 +283,7 @@ dotenv.config();
       table: 'options',
       object: { 
         key: 'notifications',
-        item_id: targetUser.id,
+        item_id: user.id,
         jsonb_value: { email: true, push: false, sms: true }
       },
       returning: ['id', 'key', 'jsonb_value', 'item_id']
@@ -294,7 +291,7 @@ dotenv.config();
 
     expect(notificationsInserted?.key).toBe('notifications');
     expect(notificationsInserted?.jsonb_value).toEqual({ email: true, push: false, sms: true });
-    expect(notificationsInserted?.item_id).toBe(targetUser.id);
+    expect(notificationsInserted?.item_id).toBe(user.id);
   }, 30000);
 
   it('should accept avatar (file_id uuid) option for users', async () => {
@@ -349,7 +346,7 @@ dotenv.config();
       table: 'options',
       object: {
         key: 'avatar',
-        item_id: targetUser.id,
+        item_id: user.id,
         file_id: fileId,
       },
       returning: ['id', 'key', 'file_id', 'user_id', 'item_id']
@@ -357,7 +354,7 @@ dotenv.config();
 
     expect(option?.key).toBe('avatar');
     expect(option?.file_id).toBe(fileId);
-    expect(option?.item_id).toBe(targetUser.id);
+    expect(option?.item_id).toBe(user.id);
 
     // 3) Уборка (каждый it сам за собой): удалим опцию и файл
     try {
@@ -369,6 +366,45 @@ dotenv.config();
     try {
       await admin.delete<any>({ table: 'deleteFiles', where: { id: { _eq: fileId } } });
     } catch {}
+  }, 30000);
+
+  it('should allow multiple friend_id options for same item (meta.multiple)', async () => {
+    await syncSchemasToDatabase();
+    const admin = new Hasyx(
+      createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET!, ws: false }),
+      Generator(schema as any)
+    );
+
+    const user = await createTestUser();
+    const friendA = await createTestUser();
+    const friendB = await createTestUser();
+    const { hasyx: userClient } = await admin._authorize(user.id, { ws: false });
+
+    const first = await userClient.insert<any>({
+      table: 'options',
+      object: {
+        key: 'friend_id',
+        item_id: user.id,
+        string_value: friendA.id
+      },
+      returning: ['id','key','string_value','item_id']
+    });
+    expect(first?.key).toBe('friend_id');
+
+    const second = await userClient.insert<any>({
+      table: 'options',
+      object: {
+        key: 'friend_id',
+        item_id: user.id,
+        string_value: friendB.id
+      },
+      returning: ['id','key','string_value','item_id']
+    });
+    expect(second?.key).toBe('friend_id');
+
+    // cleanup created options
+    try { await admin.delete<any>({ table: 'deleteOptions', where: { id: { _eq: first?.id } } }); } catch {}
+    try { await admin.delete<any>({ table: 'deleteOptions', where: { id: { _eq: second?.id } } }); } catch {}
   }, 30000);
 
 });

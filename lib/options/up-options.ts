@@ -40,7 +40,7 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
   await hasura.defineColumn({ schema, table: optionsTable, name: 'boolean_value', type: ColumnType.BOOLEAN });
   await hasura.defineColumn({ schema, table: optionsTable, name: 'jsonb_value', type: ColumnType.JSONB });
 
-  // Constraint: unique (key, user_id, item_id) - prevent duplicate keys per user/item
+  // FK to users for user_id (owner of the option record)
   await hasura.defineForeignKey({
     from: { schema, table: optionsTable, column: 'user_id' },
     to: { schema: 'public', table: 'users', column: 'id' },
@@ -64,6 +64,11 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
       found_in_table text := NULL;
       schemas_data jsonb;
       rows_found integer := 0;
+      meta jsonb := NULL;
+      is_multiple boolean := false;
+      ref_tables text[] := NULL;
+      ref_ok boolean := false;
+      ref_id uuid;
     BEGIN
       -- Check that exactly one value field is set
       IF NEW.string_value IS NOT NULL THEN value_count := value_count + 1; END IF;
@@ -150,6 +155,86 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
         v_value := to_jsonb(NEW.file_id::text);
       END IF;
 
+      -- Read meta for the option key (multiple, tables) - Zod 4 puts meta directly in schema, not x-meta
+      BEGIN
+        IF schemas_data IS NULL THEN
+          SELECT validation.project_schemas() INTO schemas_data;
+        END IF;
+        -- Try x-meta first (if we had custom logic), then fallback to direct properties (Zod 4 behavior)
+        meta := jsonb_extract_path(schemas_data, 'options', found_in_table, 'properties', NEW.key, 'x-meta');
+        IF meta IS NULL THEN
+          meta := jsonb_extract_path(schemas_data, 'options', found_in_table, 'properties', NEW.key);
+        END IF;
+        
+        IF meta IS NOT NULL THEN
+          IF (meta ? 'multiple') THEN
+            is_multiple := COALESCE((meta->>'multiple')::boolean, false);
+          END IF;
+          IF (meta ? 'tables') THEN
+            SELECT array_agg(value::text) INTO ref_tables FROM jsonb_array_elements_text(meta->'tables');
+          END IF;
+        END IF;
+      EXCEPTION WHEN OTHERS THEN
+        -- ignore meta errors
+        NULL;
+      END;
+
+      -- Enforce uniqueness for non-multiple keys: no duplicates per (key, item_id)
+      IF NOT is_multiple THEN
+        PERFORM 1 FROM "${schema}"."${optionsTable}" t
+         WHERE t.key = NEW.key AND t.item_id = NEW.item_id AND (TG_OP = 'INSERT' OR t.id <> NEW.id)
+         LIMIT 1;
+        IF FOUND THEN
+          RAISE EXCEPTION 'Duplicate option for key % and item_id % is not allowed', NEW.key, NEW.item_id;
+        END IF;
+      END IF;
+
+      -- If meta.tables provided, ensure referenced value exists in any of the listed tables
+      IF ref_tables IS NOT NULL AND jsonb_typeof(v_value) = 'string' THEN
+        -- Extract plain text from jsonb scalar string and cast to UUID
+        DECLARE
+          v_text text;
+        BEGIN
+          v_text := TRIM('"' FROM v_value::text);
+          BEGIN
+            ref_id := v_text::uuid;
+          EXCEPTION WHEN OTHERS THEN
+            ref_id := NULL;
+          END;
+        END;
+        IF ref_id IS NULL THEN
+          RAISE EXCEPTION 'Referenced id for key % must be uuid string', NEW.key;
+        END IF;
+
+        ref_ok := false;
+        FOREACH table_name IN ARRAY ref_tables
+        LOOP
+          BEGIN
+            IF position('.' IN table_name) > 0 THEN
+              -- format schema.table
+              EXECUTE format('SELECT COUNT(1) FROM %s WHERE id = $1', table_name)
+              INTO rows_found
+              USING ref_id;
+            ELSE
+              -- default to public schema
+              EXECUTE format('SELECT COUNT(1) FROM public.%I WHERE id = $1', table_name)
+              INTO rows_found
+              USING ref_id;
+            END IF;
+            IF rows_found > 0 THEN
+              ref_ok := true; EXIT;
+            END IF;
+          EXCEPTION WHEN undefined_table THEN
+            CONTINUE;
+          WHEN OTHERS THEN
+            CONTINUE;
+          END;
+        END LOOP;
+        IF NOT ref_ok THEN
+          RAISE EXCEPTION 'Referenced id % for key % not found in allowed tables %', ref_id, NEW.key, array_to_string(ref_tables, ', ');
+        END IF;
+      END IF;
+
       -- Validate against schema for this key using the determined schema path
       BEGIN
         PERFORM validation.validate_json(v_value, v_schema_path || '.properties.' || NEW.key, 'project');
@@ -207,12 +292,6 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
 
   if (tableHandler) await tableHandler(optionsTable);
 
-  // Add unique index (expression) to prevent duplicate key+user_id+item_id (treat NULL item_id as fixed UUID)
-  await hasura.sql(`
-    CREATE UNIQUE INDEX IF NOT EXISTS "${optionsTable}_key_user_item_unique_idx"
-    ON "${schema}"."${optionsTable}" ("key", "user_id", COALESCE("item_id", '00000000-0000-0000-0000-000000000000'::uuid));
-  `);
-
   // Remove strict FK to storage.files to allow referencing arbitrary UUIDs; validation handles type only
   await hasura.sql(`
     DO $$
@@ -231,36 +310,21 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
 
   // Track the table
   await hasura.trackTable({ schema, table: optionsTable });
-
-  // Set up permissions
-  // Anonymous can read all options
-  await hasura.definePermission({ 
-    schema, 
-    table: optionsTable, 
-    operation: 'select', 
-    role: 'anonymous', 
-    filter: {}, 
-    columns: true 
-  });
-
-  // Users can manage their own options
-  const ownerFilter = { user_id: { _eq: 'X-Hasura-User-Id' } } as any;
-  // Explicit column lists to avoid metadata column resolution issues
-  const editableColumns = ['key','item_id','file_id','string_value','number_value','boolean_value','jsonb_value'];
-  await hasura.definePermission({ 
-    schema, table: optionsTable, operation: 'select', role: 'user', filter: ownerFilter, columns: true 
-  });
-  await hasura.definePermission({ 
-    schema, table: optionsTable, operation: 'insert', role: 'user', filter: ownerFilter, columns: editableColumns, set: { user_id: 'X-Hasura-User-Id' } 
-  });
-  await hasura.definePermission({ 
-    schema, table: optionsTable, operation: 'update', role: 'user', filter: ownerFilter, columns: editableColumns, set: { user_id: 'X-Hasura-User-Id' } 
-  });
-  await hasura.definePermission({ 
-    schema, table: optionsTable, operation: 'delete', role: 'user', filter: ownerFilter, columns: true 
-  });
-
   debug('✅ Options table created with validation triggers and permissions');
 }
+
+// Export permission specs to be applied strictly in migrations up.ts/down.ts
+export const OPTIONS_EDITABLE_COLUMNS = ['key','item_id','file_id','string_value','number_value','boolean_value','jsonb_value'] as const;
+export const OPTIONS_PERMISSIONS = {
+  anonymous: {
+    select: { filter: {}, columns: true }
+  },
+  user: {
+    select: { filter: {}, columns: true },
+    insert: { check: { item_id: { _eq: 'X-Hasura-User-Id' } }, set: { user_id: 'X-Hasura-User-Id' }, columns: OPTIONS_EDITABLE_COLUMNS },
+    update: { filter: { item_id: { _eq: 'X-Hasura-User-Id' } }, set: { user_id: 'X-Hasura-User-Id' }, columns: OPTIONS_EDITABLE_COLUMNS },
+    delete: { filter: { item_id: { _eq: 'X-Hasura-User-Id' } }, columns: true }
+  }
+} as const;
 
 
