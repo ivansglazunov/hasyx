@@ -294,7 +294,7 @@ describe('options table + validation', () => {
     expect(notificationsInserted?.item_id).toBe(user.id);
   }, 30000);
 
-  it('should accept avatar (file_id uuid) option for users', async () => {
+  it('should accept avatar (to_id uuid) option for users', async () => {
     // Обновим validation.project_schemas() в БД, чтобы содержал свежие options.users.avatar
     await syncSchemasToDatabase();
     const admin = new Hasyx(
@@ -341,19 +341,19 @@ describe('options table + validation', () => {
       // Если таблица не трекнута в текущем окружении — пропускаем, опции ссылаются только на id
     }
 
-    // 2) Ставим опцию avatar, ссылаясь на реальный file_id
+    // 2) Ставим опцию avatar, ссылаясь на реальный to_id
     const option = await userClient.insert<any>({
       table: 'options',
       object: {
         key: 'avatar',
         item_id: user.id,
-        file_id: fileId,
+        to_id: fileId,
       },
-      returning: ['id', 'key', 'file_id', 'user_id', 'item_id']
+      returning: ['id', 'key', 'to_id', 'user_id', 'item_id']
     });
 
     expect(option?.key).toBe('avatar');
-    expect(option?.file_id).toBe(fileId);
+    expect(option?.to_id).toBe(fileId);
     expect(option?.item_id).toBe(user.id);
 
     // 3) Уборка (каждый it сам за собой): удалим опцию и файл
@@ -385,9 +385,9 @@ describe('options table + validation', () => {
       object: {
         key: 'friend_id',
         item_id: user.id,
-        string_value: friendA.id
+        to_id: friendA.id
       },
-      returning: ['id','key','string_value','item_id']
+      returning: ['id','key','to_id','item_id']
     });
     expect(first?.key).toBe('friend_id');
 
@@ -396,15 +396,48 @@ describe('options table + validation', () => {
       object: {
         key: 'friend_id',
         item_id: user.id,
-        string_value: friendB.id
+        to_id: friendB.id
       },
-      returning: ['id','key','string_value','item_id']
+      returning: ['id','key','to_id','item_id']
     });
     expect(second?.key).toBe('friend_id');
 
     // cleanup created options
     try { await admin.delete<any>({ table: 'deleteOptions', where: { id: { _eq: first?.id } } }); } catch {}
     try { await admin.delete<any>({ table: 'deleteOptions', where: { id: { _eq: second?.id } } }); } catch {}
+  }, 30000);
+
+  it('should resolve options.to relation to hasyx view and back to entity', async () => {
+    await syncSchemasToDatabase();
+    const admin = new Hasyx(
+      createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET!, ws: false }),
+      Generator(schema as any)
+    );
+    const user = await createTestUser();
+    const friend = await createTestUser();
+    const { hasyx: userClient } = await admin._authorize(user.id, { ws: false });
+
+    const opt = await userClient.insert<any>({
+      table: 'options',
+      object: { key: 'friend_id', item_id: user.id, to_id: friend.id },
+      returning: ['id','key','to_id','item_id', { to: ['hid','id','id_uuid','schema','table'] }]
+    });
+    expect(opt?.to?.id_uuid ?? null).toBe(friend.id);
+    expect(opt?.to?.schema).toBe('public');
+    expect(opt?.to?.table).toBe('users');
+
+    // back to entity by selecting users_by_pk using to.id_uuid
+    const entity = await admin.select<any>({
+      table: 'users',
+      pk_columns: { id: opt?.to?.id_uuid },
+      returning: ['id']
+    });
+    expect(entity?.id).toBe(friend.id);
+
+    // cleanup
+    try { await admin.delete<any>({ table: 'deleteOptions', where: { id: { _eq: opt?.id } } }); } catch {}
+    try { await admin.delete<any>({ table: 'deleteUsers', where: { id: { _eq: friend.id } } }); } catch {}
+    try { await admin.delete<any>({ table: 'deleteUsers', where: { id: { _eq: user.id } } }); } catch {}
   }, 30000);
 
 });

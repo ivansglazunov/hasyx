@@ -31,8 +31,8 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
   await hasura.defineColumn({ schema, table: optionsTable, name: 'key', type: ColumnType.TEXT, postfix: 'NOT NULL' });
   await hasura.defineColumn({ schema, table: optionsTable, name: 'user_id', type: ColumnType.UUID, postfix: 'NOT NULL' });
   await hasura.defineColumn({ schema, table: optionsTable, name: 'item_id', type: ColumnType.UUID });
-  // File reference column (optional): points to storage.files.id when present
-  await hasura.defineColumn({ schema, table: optionsTable, name: 'file_id', type: ColumnType.UUID });
+  // Unified reference column for UUID-based options (e.g., friend_id, avatar)
+  await hasura.defineColumn({ schema, table: optionsTable, name: 'to_id', type: ColumnType.UUID });
   
   // Value columns - exactly one should be non-null
   await hasura.defineColumn({ schema, table: optionsTable, name: 'string_value', type: ColumnType.TEXT });
@@ -70,16 +70,8 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
       ref_ok boolean := false;
       ref_id uuid;
     BEGIN
-      -- Check that exactly one value field is set
-      IF NEW.string_value IS NOT NULL THEN value_count := value_count + 1; END IF;
-      IF NEW.number_value IS NOT NULL THEN value_count := value_count + 1; END IF;
-      IF NEW.boolean_value IS NOT NULL THEN value_count := value_count + 1; END IF;
-      IF NEW.jsonb_value IS NOT NULL THEN value_count := value_count + 1; END IF;
-      IF NEW.file_id IS NOT NULL THEN value_count := value_count + 1; END IF;
-      
-      IF value_count != 1 THEN
-        RAISE EXCEPTION 'Exactly one value field must be set, got %', value_count;
-      END IF;
+      -- value checks will be applied later after meta detection
+      value_count := 0;
 
       -- Basic presence validation for key
       IF NEW.key IS NULL OR NEW.key = '' THEN
@@ -141,19 +133,8 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
         RAISE EXCEPTION 'validation runtime is not installed (validate_option_key)';
       END;
 
-      -- Build JSON value to validate
-      IF NEW.string_value IS NOT NULL THEN
-        v_value := to_jsonb(NEW.string_value);
-      ELSIF NEW.number_value IS NOT NULL THEN
-        v_value := to_jsonb(NEW.number_value);
-      ELSIF NEW.boolean_value IS NOT NULL THEN
-        v_value := to_jsonb(NEW.boolean_value);
-      ELSIF NEW.jsonb_value IS NOT NULL THEN
-        v_value := NEW.jsonb_value;
-      ELSE
-        -- file_id provided: validate as string (uuid)
-        v_value := to_jsonb(NEW.file_id::text);
-      END IF;
+      -- Build JSON value to validate (assigned after meta detection)
+      v_value := NULL;
 
       -- Read meta for the option key (multiple, tables) - Zod 4 puts meta directly in schema, not x-meta
       BEGIN
@@ -189,23 +170,18 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
         END IF;
       END IF;
 
-      -- If meta.tables provided, ensure referenced value exists in any of the listed tables
-      IF ref_tables IS NOT NULL AND jsonb_typeof(v_value) = 'string' THEN
-        -- Extract plain text from jsonb scalar string and cast to UUID
-        DECLARE
-          v_text text;
-        BEGIN
-          v_text := TRIM('"' FROM v_value::text);
-          BEGIN
-            ref_id := v_text::uuid;
-          EXCEPTION WHEN OTHERS THEN
-            ref_id := NULL;
-          END;
-        END;
-        IF ref_id IS NULL THEN
-          RAISE EXCEPTION 'Referenced id for key % must be uuid string', NEW.key;
+      -- Value enforcement and referenced id checks
+      IF ref_tables IS NOT NULL THEN
+        -- For UUID-referenced options: require to_id and no other value columns
+        IF NEW.to_id IS NULL THEN
+          RAISE EXCEPTION 'to_id must be provided for key %', NEW.key;
+        END IF;
+        IF NEW.string_value IS NOT NULL OR NEW.number_value IS NOT NULL OR NEW.boolean_value IS NOT NULL OR NEW.jsonb_value IS NOT NULL THEN
+          RAISE EXCEPTION 'Only to_id is allowed for UUID-referenced key %', NEW.key;
         END IF;
 
+        -- Validate existence of referenced record
+        ref_id := NEW.to_id;
         ref_ok := false;
         FOREACH table_name IN ARRAY ref_tables
         LOOP
@@ -232,6 +208,33 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
         END LOOP;
         IF NOT ref_ok THEN
           RAISE EXCEPTION 'Referenced id % for key % not found in allowed tables %', ref_id, NEW.key, array_to_string(ref_tables, ', ');
+        END IF;
+
+        -- JSON value for schema validation is textual UUID
+        v_value := to_jsonb(NEW.to_id::text);
+      ELSE
+        -- For non-referenced options: exactly one of value columns must be set, to_id must be null
+        value_count := 0;
+        IF NEW.string_value IS NOT NULL THEN value_count := value_count + 1; END IF;
+        IF NEW.number_value IS NOT NULL THEN value_count := value_count + 1; END IF;
+        IF NEW.boolean_value IS NOT NULL THEN value_count := value_count + 1; END IF;
+        IF NEW.jsonb_value IS NOT NULL THEN value_count := value_count + 1; END IF;
+        IF NEW.to_id IS NOT NULL THEN
+          RAISE EXCEPTION 'to_id is not allowed for non-referenced key %', NEW.key;
+        END IF;
+        IF value_count != 1 THEN
+          RAISE EXCEPTION 'Exactly one value field must be set for key %', NEW.key;
+        END IF;
+
+        -- Build v_value from the single provided value column
+        IF NEW.string_value IS NOT NULL THEN
+          v_value := to_jsonb(NEW.string_value);
+        ELSIF NEW.number_value IS NOT NULL THEN
+          v_value := to_jsonb(NEW.number_value);
+        ELSIF NEW.boolean_value IS NOT NULL THEN
+          v_value := to_jsonb(NEW.boolean_value);
+        ELSE
+          v_value := NEW.jsonb_value;
         END IF;
       END IF;
 
@@ -314,7 +317,7 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
 }
 
 // Export permission specs to be applied strictly in migrations up.ts/down.ts
-export const OPTIONS_EDITABLE_COLUMNS = ['key','item_id','file_id','string_value','number_value','boolean_value','jsonb_value'] as const;
+export const OPTIONS_EDITABLE_COLUMNS = ['key','item_id','to_id','string_value','number_value','boolean_value','jsonb_value'] as const;
 export const OPTIONS_PERMISSIONS = {
   anonymous: {
     select: { filter: {}, columns: true }

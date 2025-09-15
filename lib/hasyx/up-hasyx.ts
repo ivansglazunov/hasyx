@@ -244,6 +244,17 @@ export async function up(): Promise<boolean> {
       }
       const pkColumn = pkColumns[0];
 
+      // Determine if PK is uuid to expose id_uuid in the view
+      let pkIsUuid = false;
+      try {
+        const pkTypeRes = await hasura.sql(`SELECT data_type FROM information_schema.columns WHERE table_schema='${schemaName}' AND table_name='${tableName}' AND column_name='${pkColumn}'`);
+        const pkType = pkTypeRes?.result?.[1]?.[0] as string | undefined;
+        pkIsUuid = (pkType === 'uuid');
+      } catch (e) {
+        debug(`⚠️ Could not determine PK type for ${schemaName}.${tableName}.${pkColumn}: ${String(e)}`);
+        pkIsUuid = false;
+      }
+
       if (['pg_catalog', 'information_schema', 'hdb_catalog', 'graphql_public'].includes(schemaName)) {
       
         debug(`Skipping system or internal table: ${schemaName}.${tableName}`);
@@ -273,6 +284,7 @@ export async function up(): Promise<boolean> {
         }
       }
 
+      const idUuidExpr = pkIsUuid ? `"${pkColumn}"::uuid` : `NULL::uuid`;
       viewSqlUnionParts.push(
         `SELECT
           '${hidNamespace}' || '/' || '${currentProjectName}' || '/' || '${schemaName}' || '/' || '${tableName}' || '/' || "${pkColumn}"::text AS hid,
@@ -280,7 +292,8 @@ export async function up(): Promise<boolean> {
           '${currentProjectName}' AS project,
           '${schemaName}' AS schema,
           '${tableName}' AS table,
-          "${pkColumn}"::text AS id
+          "${pkColumn}"::text AS id,
+          ${idUuidExpr} AS id_uuid
         FROM "${schemaName}"."${tableName}"`
       );
     }
@@ -411,6 +424,49 @@ export async function up(): Promise<boolean> {
             debug(`⚠️ Skipping reverse relationship from hasyx to ${schemaName}.${tableName} because view is not tracked`);
           }
         }
+      }
+
+      // Define select permissions on public.hasyx so nested relations resolve for non-admin roles
+      try {
+        debug('Defining select permissions on public.hasyx for anonymous and user');
+        await retryOperation(async () => {
+          await hasura.definePermission({ schema: 'public', table: 'hasyx', operation: 'select', role: 'anonymous', filter: {}, columns: true });
+        });
+        await retryOperation(async () => {
+          await hasura.definePermission({ schema: 'public', table: 'hasyx', operation: 'select', role: 'user', filter: {}, columns: true });
+        });
+        debug('✅ Select permissions set on public.hasyx');
+      } catch (e) {
+        debug(`⚠️ Failed setting hasyx view permissions: ${String(e)}`);
+      }
+
+      // Create relationship from options.to_id -> hasyx.id_uuid (if options table exists)
+      try {
+        const optExists = await hasura.sql(`SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='options')`);
+        if (optExists?.result?.[1]?.[0] === 't') {
+          debug('Creating relationship options.to -> public.hasyx via to_id -> id_uuid');
+          await retryOperation(async () => {
+            await hasura.v1({
+              type: 'pg_create_object_relationship',
+              args: {
+                source: 'default',
+                table: { schema: 'public', name: 'options' },
+                name: 'to',
+                using: {
+                  manual_configuration: {
+                    remote_table: { schema: 'public', name: 'hasyx' },
+                    column_mapping: { to_id: 'id_uuid' }
+                  }
+                }
+              }
+            });
+          });
+          debug('✅ Created relationship options.to');
+        } else {
+          debug('public.options not found; skipping options.to relationship');
+        }
+      } catch (e) {
+        debug(`⚠️ Failed to create options.to relationship: ${String(e)}`);
       }
     } else {
       debug('⚠️ No suitable tables (with assumed PKs) found to include in the hasyx view. View will not be created/updated.');
