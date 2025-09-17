@@ -378,9 +378,7 @@ export async function up(): Promise<boolean> {
                     manual_configuration: {
                       remote_table: { schema: 'public', name: 'hasyx' },
                       column_mapping: {
-                        [pkColumn]: 'id',
-                        '_hasyx_schema_name': 'schema',
-                        '_hasyx_table_name': 'table',
+                        [pkColumn]: 'id_uuid',
                       },
                     },
                   },
@@ -408,7 +406,7 @@ export async function up(): Promise<boolean> {
                       manual_configuration: {
                         remote_table: { schema: schemaName, name: tableName },
                         column_mapping: {
-                          id: pkColumn,
+                          id_uuid: pkColumn,
                         },
                       },
                     },

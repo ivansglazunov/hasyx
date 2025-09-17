@@ -34,4 +34,13 @@ export const options = {
       sms: z.boolean(),
     }),
   }),
+  // Опции для таблицы items (item_id = items.id)
+  items: z.object({
+    // Начальная привязка пользователя к айтему
+    user_id: z.string().uuid().meta({ tables: ['users'] }),
+    // Привязки к geo.features (маркер/маршрут/зона) в одной таблице
+    mark_id: z.string().uuid().meta({ tables: ['geo.features'] }),
+    route_id: z.string().uuid().meta({ tables: ['geo.features'] }),
+    zone_id: z.string().uuid().meta({ tables: ['geo.features'] }),
+  }),
 } as const;

@@ -565,8 +565,8 @@ export class Hasura {
     await this.sql(`
       CREATE TABLE "${schema}"."${table}" (
         "${id}" ${type} PRIMARY KEY ${defaultValue},
-        created_at bigint NOT NULL DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000,
-        updated_at bigint NOT NULL DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000
+        created_ms bigint NOT NULL DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000,
+        updated_ms bigint NOT NULL DEFAULT EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) * 1000
       );
     `);
     debug(`✅ Created table ${schema}.${table}`);

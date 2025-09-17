@@ -29,7 +29,7 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
   // Create single options table with all value types
   await hasura.defineTable({ schema, table: optionsTable, id: 'id', type: ColumnType.UUID });
   await hasura.defineColumn({ schema, table: optionsTable, name: 'key', type: ColumnType.TEXT, postfix: 'NOT NULL' });
-  await hasura.defineColumn({ schema, table: optionsTable, name: 'user_id', type: ColumnType.UUID, postfix: 'NOT NULL' });
+  await hasura.defineColumn({ schema, table: optionsTable, name: 'user_id', type: ColumnType.UUID, postfix: 'NULL' });
   await hasura.defineColumn({ schema, table: optionsTable, name: 'item_id', type: ColumnType.UUID });
   // Unified reference column for UUID-based options (e.g., friend_id, avatar)
   await hasura.defineColumn({ schema, table: optionsTable, name: 'to_id', type: ColumnType.UUID });
@@ -227,14 +227,14 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
         END IF;
 
         -- Build v_value from the single provided value column
-        IF NEW.string_value IS NOT NULL THEN
-          v_value := to_jsonb(NEW.string_value);
-        ELSIF NEW.number_value IS NOT NULL THEN
-          v_value := to_jsonb(NEW.number_value);
-        ELSIF NEW.boolean_value IS NOT NULL THEN
-          v_value := to_jsonb(NEW.boolean_value);
+      IF NEW.string_value IS NOT NULL THEN
+        v_value := to_jsonb(NEW.string_value);
+      ELSIF NEW.number_value IS NOT NULL THEN
+        v_value := to_jsonb(NEW.number_value);
+      ELSIF NEW.boolean_value IS NOT NULL THEN
+        v_value := to_jsonb(NEW.boolean_value);
         ELSE
-          v_value := NEW.jsonb_value;
+        v_value := NEW.jsonb_value;
         END IF;
       END IF;
 
@@ -324,8 +324,8 @@ export const OPTIONS_PERMISSIONS = {
   },
   user: {
     select: { filter: {}, columns: true },
-    insert: { check: { item_id: { _eq: 'X-Hasura-User-Id' } }, set: { user_id: 'X-Hasura-User-Id' }, columns: OPTIONS_EDITABLE_COLUMNS },
-    update: { filter: { item_id: { _eq: 'X-Hasura-User-Id' } }, set: { user_id: 'X-Hasura-User-Id' }, columns: OPTIONS_EDITABLE_COLUMNS },
+    insert: { check: {}, set: {}, columns: OPTIONS_EDITABLE_COLUMNS },
+    update: { filter: { item_id: { _eq: 'X-Hasura-User-Id' } }, set: {}, columns: OPTIONS_EDITABLE_COLUMNS },
     delete: { filter: { item_id: { _eq: 'X-Hasura-User-Id' } }, columns: true }
   }
 } as const;
