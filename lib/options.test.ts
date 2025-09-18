@@ -13,7 +13,7 @@ import { gql } from '@apollo/client/core';
 // Ensure environment variables are loaded for Jest
 dotenv.config();
 
-describe('options table + validation', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('options table + validation', () => {
   // ВАЖНО: по правилам проекта каждый it сам себе готовит окружение и чистит за собой
   // Здесь никаких before/after не используем
 

@@ -13,6 +13,7 @@ import Form from '@rjsf/shadcn';
 import validator from '@rjsf/validator-ajv8';
 import { z } from 'zod';
 import Files from '@/components/files/files';
+import { MultiSelectHasyx } from 'hasyx/components/multi-select-hasyx';
 
 export default function ValidationPage() {
   const t = useTranslations();
@@ -23,8 +24,8 @@ export default function ValidationPage() {
 
   const userSchema = useMemo(() => {
     const schema = (options as any)?.users;
-    console.log('[validation/page] userSchema raw', schema);
-    console.log('[validation/page] userSchema shape', (schema as any)?.def?.shape);
+    // console.log('[validation/page] userSchema raw', schema);
+    // console.log('[validation/page] userSchema shape', (schema as any)?.def?.shape);
     return schema;
   }, []);
 
@@ -34,19 +35,14 @@ export default function ValidationPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  console.log('[validation/page] render', { status, userId, hasUserSchema: Boolean(userSchema) });
-  
-  // Force console output
-  if (typeof window !== 'undefined') {
-    console.warn('VALIDATION PAGE DEBUG - userSchema:', userSchema);
-    console.warn('VALIDATION PAGE DEBUG - userSchema.shape:', userSchema?.shape);
-  }
+  // console.log('[validation/page] render', { status, userId, hasUserSchema: Boolean(userSchema) });
+
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
       if (!userId) return;
-      console.log('[validation/page] load start', { userId });
+      // console.log('[validation/page] load start', { userId });
       setLoading(true);
       setError(null);
       try {
@@ -55,7 +51,7 @@ export default function ValidationPage() {
           where: { item_id: { _eq: userId } },
           returning: ['id','key','string_value','number_value','boolean_value','jsonb_value','to_id']
         });
-        console.log('[validation/page] load rows', rows);
+        // console.log('[validation/page] load rows', rows);
         if (cancelled) return;
         const map: Record<string, any> = {};
         const props: any = (jsonSchema as any)?.properties || {};
@@ -79,14 +75,14 @@ export default function ValidationPage() {
             map[k] = row.boolean_value;
           }
         }
-        console.log('[validation/page] setFormData from load', map);
+        // console.log('[validation/page] setFormData from load', map);
         setFormData(map);
       } catch (e: any) {
         setError(e?.message || 'Failed to load options');
-        console.log('[validation/page] load error', e);
+        // console.log('[validation/page] load error', e);
       } finally {
         if (!cancelled) setLoading(false);
-        console.log('[validation/page] load end');
+        // console.log('[validation/page] load end');
       }
     }
     load();
@@ -108,11 +104,11 @@ export default function ValidationPage() {
             props[key] = { type: 'array', items: { ...rest } };
           }
         });
-        console.log('[validation/page] jsonSchema generated (zod v4)', s);
+        // console.log('[validation/page] jsonSchema generated (zod v4)', s);
         return s;
       }
     } catch (e) {
-      console.log('[validation/page] toJSONSchema failed, falling back', e);
+      // console.log('[validation/page] toJSONSchema failed, falling back', e);
     }
     return { type: 'object', properties: {} } as any;
   }, [userSchema]);
@@ -134,7 +130,7 @@ export default function ValidationPage() {
         }
       });
     } catch {}
-    console.log('[validation/page] uiSchema generated', ui);
+    // console.log('[validation/page] uiSchema generated', ui);
     return ui;
   }, [jsonSchema]);
 
@@ -158,7 +154,7 @@ export default function ValidationPage() {
               multiple={false}
               disabled={disabled}
               onUploadComplete={(fileId) => {
-                console.log('[validation/page] file-id upload complete', fileId);
+                // console.log('[validation/page] file-id upload complete', fileId);
                 onChange?.(fileId);
               }}
               onUploadError={(err) => {
@@ -178,72 +174,116 @@ export default function ValidationPage() {
   const fields = useMemo(() => {
     const AvatarFileField = (props: any) => {
       const { formData, onChange, disabled, schema } = props;
-      const value = formData;
+      const value = formData as string | undefined;
+      const [fileMeta, setFileMeta] = useState<any | null>(null);
+      const isImage = (mime?: string) => typeof mime === 'string' && mime.startsWith('image/');
+
+      useEffect(() => {
+        let active = true;
+        async function fetchMeta() {
+          try {
+            if (!value) { if (active) setFileMeta(null); return; }
+            const row = await hasyx.select<any>({
+              table: 'files',
+              pk_columns: { id: value },
+              returning: ['id','name','size','mimeType','createdAt','isUploaded']
+            });
+            if (active) setFileMeta(row || null);
+          } catch {
+            if (active) setFileMeta(null);
+          }
+        }
+        fetchMeta();
+        return () => { active = false; };
+      }, [value, hasyx]);
+
+      return (
+        <div className="space-y-3">
+          {schema?.title && <div className="font-medium">{schema.title}</div>}
+          {schema?.description && (
+            <div className="text-xs text-muted-foreground">{schema.description}</div>
+          )}
+
+          {value ? (
+            <div className="flex items-center gap-3 bg-card/50 border rounded-lg p-3">
+              {isImage(fileMeta?.mimeType) ? (
+                <img
+                  src={`/api/files/${value}`}
+                  alt={fileMeta?.name || value}
+                  className="w-12 h-12 object-cover rounded border"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded border flex items-center justify-center text-lg">📄</div>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium truncate" title={fileMeta?.name || value}>{fileMeta?.name || value}</div>
+                <div className="text-xs text-muted-foreground">{fileMeta?.mimeType || 'file'}{fileMeta?.size ? ` • ${fileMeta.size} B` : ''}</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Files
+                  multiple={false}
+                  disabled={disabled}
+                  onUploadComplete={(fileId) => onChange?.(fileId)}
+                >
+                  <Button type="button" variant="secondary" disabled={disabled}>Replace</Button>
+                </Files>
+                <Button type="button" variant="ghost" onClick={() => onChange?.(undefined)} disabled={disabled}>Clear</Button>
+              </div>
+            </div>
+          ) : (
+            <Files
+              multiple={false}
+              disabled={disabled}
+              onUploadComplete={(fileId) => onChange?.(fileId)}
+            >
+              <Button type="button" variant="secondary" disabled={disabled}>Upload avatar</Button>
+            </Files>
+          )}
+        </div>
+      );
+    };
+
+    const FriendIdsArrayField = (props: any) => {
+      const { formData, onChange, disabled, schema } = props;
+      const values: string[] = Array.isArray(formData) ? formData : [];
+      // console.log('[validation/page] FriendIdsArrayField render', { 
+      //   values, 
+      //   formData, 
+      //   propsKeys: Object.keys(props),
+      //   schemaTitle: schema?.title 
+      // });
+
       return (
         <div className="space-y-2">
           {schema?.title && <div className="font-medium">{schema.title}</div>}
           {schema?.description && (
             <div className="text-xs text-muted-foreground">{schema.description}</div>
           )}
-          <div className="text-sm text-muted-foreground">{value ? `File ID: ${value}` : 'No file selected'}</div>
-          <div className="flex items-center gap-2">
-            <Files
-              multiple={false}
-              disabled={disabled}
-              onUploadComplete={(fileId) => {
-                console.log('[validation/page] avatar field upload complete', fileId);
-                onChange?.(fileId);
-              }}
-              onUploadError={(err) => {
-                console.error('[validation/page] avatar field upload error', err);
-              }}
-            >
-              <Button type="button" variant="secondary" disabled={disabled}>Upload avatar</Button>
-            </Files>
-            {value && (
-              <Button type="button" variant="ghost" onClick={() => onChange?.(undefined)} disabled={disabled}>Clear</Button>
-            )}
-          </div>
-        </div>
-      );
-    };
-    const FriendIdsArrayField = (props: any) => {
-      const { formData, onChange, disabled } = props;
-      const values: string[] = Array.isArray(formData) ? formData : [];
-      const updateAt = (idx: number, val: string) => {
-        const next = values.slice();
-        next[idx] = val;
-        onChange?.(next);
-      };
-      const removeAt = (idx: number) => {
-        const next = values.slice();
-        next.splice(idx, 1);
-        onChange?.(next);
-      };
-      const add = () => {
-        onChange?.([...(values || []), '']);
-      };
-      return (
-        <div className="space-y-2">
-          {(values || []).map((v, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <input
-                type="text"
-                className="w-full border rounded px-2 py-1"
-                value={v || ''}
-                onChange={(e) => updateAt(i, e.target.value)}
-                placeholder="friend user uuid"
-                disabled={disabled}
-              />
-              <Button type="button" variant="ghost" onClick={() => removeAt(i)} disabled={disabled}>×</Button>
-            </div>
-          ))}
-          <Button type="button" variant="secondary" onClick={add} disabled={disabled}>+ Add friend</Button>
+          <MultiSelectHasyx
+            value={values}
+            onValueChange={(v) => {
+              // console.log('[validation/page] friend_id onValueChange', v);
+              onChange?.(v);
+            }}
+            placeholder="Select friends..."
+            queryGenerator={(search: string) => ({
+              table: 'users',
+              where: search && search.length >= 2 ? { name: { _ilike: `%${search}%` } } : {},
+              returning: ['id','name'],
+              limit: search && search.length >= 2 ? 10 : 50,
+            })}
+            selectedQueryGenerator={(ids: string[]) => ({
+              table: 'users',
+              where: { id: { _in: ids } },
+              returning: ['id','name'],
+              limit: ids.length,
+            })}
+          />
         </div>
       );
     };
     const fields = { 'friend-ids': FriendIdsArrayField, 'avatar-file-id': AvatarFileField };
-    console.log('[validation/page] fields generated', Object.keys(fields));
+    // console.log('[validation/page] fields generated', Object.keys(fields));
     return fields as any;
   }, []);
 
@@ -254,8 +294,8 @@ export default function ValidationPage() {
     setSuccess(null);
     try {
       // Persist per key: delete existing and insert new values
-      const keysToSave = Object.keys((jsonSchema as any)?.properties || {});
-      console.log('[validation/page] save start', { keysToSave, formData });
+      const keysToSave = Object.keys((jsonSchema as any)?.properties || {}).filter((k) => (formData as any)[k] !== undefined);
+      // console.log('[validation/page] save start', { keysToSave, formData });
       if (keysToSave.length === 0) return;
 
       // Prepare inserts (compute payloads first for logging)
@@ -287,39 +327,49 @@ export default function ValidationPage() {
         inserts.push({ key, item_id: userId, string_value: val });
       }
 
-      console.log('[validation/page] inserts', inserts);
+      // console.log('[validation/page] inserts', inserts);
+      // Удаляем отсутствующие ключи в форме (например, avatar = undefined → удалить опцию)
+      const schemaProps: any = (jsonSchema as any)?.properties || {};
+      const allKeys = Object.keys(schemaProps);
+      for (const key of allKeys) {
+        if ((formData as any)[key] === undefined) {
+          // console.log('[validation/page] key missing in formData, deleting existing', key);
+          await hasyx.delete({ table: 'options', where: { item_id: { _eq: userId }, key: { _eq: key } } });
+        }
+      }
+
       if (inserts.length > 0) {
-        // Delete once per key, then insert
+        // Delete once per key that we are inserting, then insert
         const deletedKeys = new Set<string>();
         for (const obj of inserts) {
           try {
             if (!deletedKeys.has(obj.key)) {
-              console.log('[validation/page] deleting existing for key', obj.key);
+              // console.log('[validation/page] deleting existing for key', obj.key);
               await hasyx.delete({
                 table: 'options',
                 where: { item_id: { _eq: userId }, key: { _eq: obj.key } },
               });
               deletedKeys.add(obj.key);
             }
-            console.log('[validation/page] inserting', obj);
+            // console.log('[validation/page] inserting', obj);
             await hasyx.insert({ table: 'options', object: obj, returning: ['id'] });
-            console.log('[validation/page] insert ok', obj.key);
+            // console.log('[validation/page] insert ok', obj.key);
           } catch (e: any) {
             const details = (e && (e.details || e.cause || e.graphQLErrors)) || null;
-            console.log('[validation/page] insert error', obj.key, e?.message, details);
+            // console.log('[validation/page] insert error', obj.key, e?.message, details);
             throw e;
           }
         }
-        console.log('[validation/page] all inserts done');
+        // console.log('[validation/page] all inserts done');
       }
 
       setSuccess('Saved');
     } catch (e: any) {
       setError(e?.message || 'Save failed');
-      console.log('[validation/page] save error', e);
+      // console.log('[validation/page] save error', e);
     } finally {
       setSaving(false);
-      console.log('[validation/page] save end');
+      // console.log('[validation/page] save end');
     }
   };
 

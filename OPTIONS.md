@@ -2,6 +2,8 @@
 
 This document explains how the Options system works end-to-end, how it is configured from your project source (`schema.tsx`), how the database trigger validates data, and how to use it from the Hasyx client and tests.
 
+> **📖 Related Documentation**: For hierarchical option inheritance through items, see [Items System & Option Inheritance](ITEMS.md)
+
 ### What the Options system is
 
 - A single table (default `public.options`) to store key/value options scoped to a specific target entity via `item_id` and owned by a user (`user_id`).
@@ -22,26 +24,28 @@ import { z } from 'zod';
 
 export const options = {
   users: z.object({
-    fio: z.string().min(1).max(200),
-    displayName: z.string().min(1).max(100),
-    timezone: z.string().min(1).max(50),
+    fio: z.string().min(1).max(200).optional(),
+    displayName: z.string().min(1).max(100).optional(),
+    timezone: z.string().min(1).max(50).optional(),
     // File reference with table validation
     avatar: z
       .string()
       .uuid()
       .describe('User avatar file id (uuid from storage.files)')
-      .meta({ widget: 'file-id', tables: ['storage.files'] }),
+      .meta({ widget: 'file-id', tables: ['storage.files'] })
+      .optional(),
     // Multiple references with table validation
     friend_id: z
       .string()
       .uuid()
       .describe('Friend user id (uuid from public.users)')
-      .meta({ multiple: true, tables: ['users'] }),
+      .meta({ multiple: true, tables: ['users'] })
+      .optional(),
     notifications: z.object({
-      email: z.boolean(),
-      push: z.boolean(),
-      sms: z.boolean(),
-    }),
+      email: z.boolean().optional(),
+      push: z.boolean().optional(),
+      sms: z.boolean().optional(),
+    }).partial().optional(),
   }),
   // Options for items table (item_id = items.id)
   items: z.object({
@@ -124,76 +128,76 @@ Notes:
 
 Insert an option for a specific user target:
 
-```ts
-const inserted = await userClient.insert({
+```typescript
+const inserted = await hasyx.insert({
   table: 'options',
-  object: {
+  objects: [{
     key: 'displayName',
     item_id: targetUser.id,
     string_value: 'Alice',
-  },
+  }],
   returning: ['id', 'key', 'string_value', 'user_id', 'item_id']
 });
 ```
 
 Insert an avatar file reference (users.avatar with table validation):
 
-```ts
-const inserted = await userClient.insert({
+```typescript
+const inserted = await hasyx.insert({
   table: 'options',
-  object: {
+  objects: [{
     key: 'avatar',
     item_id: targetUser.id,
     to_id: someFileId, // uuid from storage.files.id - validated against storage.files table
-  },
+  }],
   returning: ['id', 'key', 'to_id', 'user_id', 'item_id']
 });
 ```
 
 Insert multiple friend references (users.friend_id with multiple: true):
 
-```ts
+```typescript
 // First friend
-const friend1 = await userClient.insert({
+const friend1 = await hasyx.insert({
   table: 'options',
-  object: {
+  objects: [{
     key: 'friend_id',
     item_id: targetUser.id,
     to_id: friend1UserId, // uuid validated against users table
-  },
+  }],
   returning: ['id', 'key', 'to_id', 'user_id', 'item_id']
 });
 
 // Second friend (allowed because friend_id has meta.multiple: true)
-const friend2 = await userClient.insert({
+const friend2 = await hasyx.insert({
   table: 'options',
-  object: {
+  objects: [{
     key: 'friend_id',
     item_id: targetUser.id,
     to_id: friend2UserId, // uuid validated against users table
-  },
+  }],
   returning: ['id', 'key', 'to_id', 'user_id', 'item_id']
 });
 ```
 
 Insert options for items (items.user_id with table validation):
 
-```ts
-const inserted = await userClient.insert({
+```typescript
+const inserted = await hasyx.insert({
   table: 'options',
-  object: {
+  objects: [{
     key: 'user_id',
     item_id: targetItem.id, // references items.id
     to_id: ownerUserId, // uuid validated against users table
-  },
+  }],
   returning: ['id', 'key', 'to_id', 'user_id', 'item_id']
 });
 ```
 
 Query options for that target:
 
-```ts
-const rows = await userClient.select({
+```typescript
+const rows = await hasyx.select({
   table: 'options',
   where: { key: { _eq: 'displayName' }, item_id: { _eq: targetUser.id } },
   returning: ['key', 'string_value', 'item_id']
@@ -234,5 +238,36 @@ DEBUG="hasyx*" npm run migrate options
   - A: Yes, by default users can **read** all options (no filter), but can only **create/modify/delete** options where `item_id` matches their own user ID (`X-Hasura-User-Id`).
 - Q: What happens if I try to create duplicate options for a non-multiple key?
   - A: The trigger will reject the insert/update with an error message about duplicate options for that `(key, item_id)` combination.
+
+## Options vs Items Inheritance
+
+The Options system provides direct key-value storage for entities, while the Items system adds **hierarchical inheritance** capabilities:
+
+### Direct Options Usage
+- **Purpose**: Store options directly on specific entities
+- **Query**: `SELECT * FROM options WHERE item_id = 'entity-123'`
+- **Scope**: Only options attached to that specific entity
+- **Use Case**: Entity-specific configuration, user preferences, metadata
+
+### Items Inheritance Usage
+- **Purpose**: Store options with automatic parent-child inheritance
+- **Query**: `SELECT * FROM item_options WHERE item_id = 'entity-123'`
+- **Scope**: Options from entity + all its parents in hierarchy
+- **Use Case**: Cascading configuration, permission inheritance, organizational structure
+
+### When to Choose Each
+
+**Use Direct Options** when:
+- Options are specific to individual entities
+- No inheritance or hierarchy needed
+- Simple key-value storage requirements
+
+**Use Items Inheritance** when:
+- You have hierarchical data structures
+- Configuration should cascade from parents to children
+- Override behavior is needed (child can override parent)
+- Audit trail of option sources is important
+
+**📖 Learn More**: See [Items System & Option Inheritance](ITEMS.md) for detailed documentation on hierarchical option inheritance.
 
 

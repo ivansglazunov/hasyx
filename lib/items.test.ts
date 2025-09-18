@@ -10,7 +10,7 @@ import { syncSchemasToDatabase } from './validation';
 
 dotenv.config();
 
-describe('items table + materialized path', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('items table + materialized path', () => {
   it('should build parents_ids on insert/update and protect field from manual updates', async () => {
     const admin = new Hasyx(
       createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET!, ws: false }),

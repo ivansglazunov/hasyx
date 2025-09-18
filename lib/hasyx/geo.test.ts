@@ -47,11 +47,21 @@ function wktPolygonAround(lon: number, lat: number, sizeDeg = 0.001): string {
     const userId = await ensureUser('geo-client-mark@test.local', 'GeoClientMark');
     const { hasyx, apollo } = await _authorize(userId);
 
-    // Insert via admin SQL (client GraphQL lacks geometry scalar by default)
-    const ins = await adminSql(`INSERT INTO geo.features(user_id, type, props, geom)
-      VALUES ('${userId}', 'mark', '{}'::jsonb, ST_GeomFromText('POLYGON((30 60,30 60.005,30.005 60.005,30.005 60,30 60))',4326))
-      RETURNING id;`);
-    const id = ins?.result?.[1]?.[0] as string;
+    // Insert via Hasyx API (GraphQL with geometry scalar support)
+    const insertResult = await hasyx.insert<any>({
+      table: 'geo_features',
+      objects: [{
+        user_id: userId,
+        type: 'mark',
+        props: {},
+        geom: {
+          type: 'Polygon',
+          coordinates: [[[30, 60], [30, 60.005], [30.005, 60.005], [30.005, 60], [30, 60]]]
+        }
+      }],
+      returning: ['id']
+    });
+    const id = insertResult?.returning?.[0]?.id ?? insertResult?.id;
     expect(typeof id).toBe('string');
 
     // Select
@@ -90,10 +100,20 @@ function wktPolygonAround(lon: number, lat: number, sizeDeg = 0.001): string {
     const userId = await ensureUser('geo-client-path@test.local', 'GeoClientPath');
     const { hasyx, apollo } = await _authorize(userId);
 
-    const ins = await adminSql(`INSERT INTO geo.features(user_id, type, props, geom)
-      VALUES ('${userId}', 'path', '{"speed":10}'::jsonb, ST_GeomFromText('POLYGON((31 61,31 61.003,31.003 61.003,31.003 61,31 61))',4326))
-      RETURNING id;`);
-    const id = ins?.result?.[1]?.[0] as string;
+    const insertResult = await hasyx.insert<any>({
+      table: 'geo_features',
+      objects: [{
+        user_id: userId,
+        type: 'path',
+        props: { speed: 10 },
+        geom: {
+          type: 'Polygon',
+          coordinates: [[[31, 61], [31, 61.003], [31.003, 61.003], [31.003, 61], [31, 61]]]
+        }
+      }],
+      returning: ['id']
+    });
+    const id = insertResult?.returning?.[0]?.id ?? insertResult?.id;
     expect(typeof id).toBe('string');
 
     const sel = await apollo.query<any>({ query: gql`query B($id: uuid!) { geo_features_by_pk(id: $id) { id type } }`, variables: { id }, fetchPolicy: 'network-only' });
@@ -110,10 +130,20 @@ function wktPolygonAround(lon: number, lat: number, sizeDeg = 0.001): string {
     const userId = await ensureUser('geo-client-zone@test.local', 'GeoClientZone');
     const { hasyx, apollo } = await _authorize(userId);
 
-    const ins = await adminSql(`INSERT INTO geo.features(user_id, type, props, geom)
-      VALUES ('${userId}', 'zone', '{"name":"Z"}'::jsonb, ST_GeomFromText('POLYGON((32 62,32 62.006,32.006 62.006,32.006 62,32 62))',4326))
-      RETURNING id;`);
-    const id = ins?.result?.[1]?.[0] as string;
+    const insertResult = await hasyx.insert<any>({
+      table: 'geo_features',
+      objects: [{
+        user_id: userId,
+        type: 'zone',
+        props: { name: 'Z' },
+        geom: {
+          type: 'Polygon',
+          coordinates: [[[32, 62], [32, 62.006], [32.006, 62.006], [32.006, 62], [32, 62]]]
+        }
+      }],
+      returning: ['id']
+    });
+    const id = insertResult?.returning?.[0]?.id ?? insertResult?.id;
     expect(typeof id).toBe('string');
 
     const sel = await apollo.query<any>({ query: gql`query B($id: uuid!) { geo_features_by_pk(id: $id) { id type } }`, variables: { id }, fetchPolicy: 'network-only' });

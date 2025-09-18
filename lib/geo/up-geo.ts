@@ -56,7 +56,12 @@ BEGIN
     END IF;
     NEW.geom := ST_MakeValid(NEW.geom);
     NEW.centroid := ST_Centroid(NEW.geom);
-    NEW.bbox := ST_Envelope(NEW.geom);
+    -- Fix bbox for Point geometries
+    IF ST_GeometryType(NEW.geom) = 'ST_Point' THEN
+      NEW.bbox := ST_Buffer(NEW.geom, 0.0001)::geometry(Polygon, 4326);
+    ELSE
+      NEW.bbox := ST_Envelope(NEW.geom)::geometry(Polygon, 4326);
+    END IF;
     -- Use ST_GeometryType for consistent type names
     CASE ST_GeometryType(NEW.geom)
       WHEN 'ST_Polygon' THEN

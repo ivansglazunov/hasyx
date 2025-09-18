@@ -108,28 +108,51 @@ it('should perform specific operation', async () => {
 -   Please follow the existing code style. ESLint and Prettier should be configured and used.
 -   Use TypeScript for all new code in `lib/`, `components/`, `hooks/`, and `app/`.
 
-## ⚠️ CRITICAL: Table Naming in Hasyx
+## ⚠️ CRITICAL: Schema and Table Naming in Hasyx
 
-**When working with Hasyx client operations, table names MUST use underscore format, NOT dot notation:**
+**Schema and table naming conventions differ between SQL and Hasura/GraphQL layers:**
 
-### ✅ CORRECT - Use underscores:
-```typescript
-await hasyx.select({ table: "payments_providers", ... });
-await hasyx.insert({ table: "users", ... });
+### SQL Level (Migrations, Raw SQL)
+- Use **dot notation** for schema.table references
+- Example: `geo.features`, `payments.providers`, `public.users`
+
+```sql
+-- ✅ CORRECT in SQL migrations and raw queries
+CREATE TABLE geo.features (...);
+INSERT INTO geo.features (...);
+SELECT * FROM payments.providers;
 ```
 
-### ❌ INCORRECT - Do NOT use dots:
+### Hasura/GraphQL Level (Hasyx Client Operations)
+- Use **underscore format** for table names
+- Schema prefixes become part of the table name with underscores
+
 ```typescript
+// ✅ CORRECT - Use underscores in Hasyx operations
+await hasyx.select({ table: "geo_features", ... });
+await hasyx.insert({ table: "payments_providers", ... });
+await hasyx.select({ table: "users", ... }); // public schema tables don't need prefix
+```
+
+```typescript
+// ❌ INCORRECT - Do NOT use dots in Hasyx operations
+await hasyx.select({ table: "geo.features", ... }); // ❌ Wrong!
 await hasyx.select({ table: "payments.providers", ... }); // ❌ Wrong!
 ```
 
 ### Schema to Table Name Mapping:
-- Database: `payments.providers` → Hasyx: `payments_providers`
-- Database: `public.users` → Hasyx: `users`
+- Database SQL: `geo.features` → Hasyx: `geo_features`
+- Database SQL: `payments.providers` → Hasyx: `payments_providers`
+- Database SQL: `public.users` → Hasyx: `users` (public schema omitted)
 
 **This applies to ALL Hasyx client operations:**
 - `hasyx.select()`, `hasyx.insert()`, `hasyx.update()`, `hasyx.delete()`
 - `hasyx.useSubscription()`, `hasyx.useQuery()`
+
+### Why This Difference?
+- **SQL** uses dot notation because it's the native PostgreSQL syntax
+- **Hasura/GraphQL** converts schema.table to schema_table format in the GraphQL schema
+- This ensures GraphQL field names are valid identifiers (dots aren't allowed in GraphQL field names)
 
 ## Commit Messages
 
