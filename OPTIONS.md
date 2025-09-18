@@ -43,6 +43,15 @@ export const options = {
       sms: z.boolean(),
     }),
   }),
+  // Options for items table (item_id = items.id)
+  items: z.object({
+    // User ownership assignment for items
+    user_id: z.string().uuid().meta({ tables: ['users'] }),
+    // Geo-references to features (marker/route/zone) in single table
+    mark_id: z.string().uuid().meta({ tables: ['geo.features'] }),
+    route_id: z.string().uuid().meta({ tables: ['geo.features'] }),
+    zone_id: z.string().uuid().meta({ tables: ['geo.features'] }),
+  }),
 } as const;
 ```
 
@@ -60,11 +69,16 @@ You can add more tables and their option keys by adding more top-level keys to `
 - `number_value numeric`
 - `boolean_value boolean`
 - `jsonb_value jsonb`
-- `file_id uuid` (optional, reference to `storage.files.id` when present)
+- `to_id uuid` (optional, unified reference column for UUID-based options with `meta.tables`)
 
 Constraints and indexes:
 
 - **No unique constraints** - multiple options with the same `(key, item_id)` are allowed when `meta.multiple: true` is set
+
+Relationships:
+
+- `options.to` (object relationship: `options.to_id -> hasyx.id_uuid`) - provides access to the referenced entity through the unified `hasyx` view
+- `options.item` (object relationship: `options.item_id -> items.id`) - nullable, only for options targeting items table
 
 Permissions (by default):
 
@@ -83,9 +97,9 @@ The migration defines a plpgsql trigger function `public.options_validate` that 
 - Ensures `key` is not empty
 - Requires `item_id`
 - **Multiple options support**: Checks `meta.multiple` from schema - if `false` (default), prevents duplicate `(key, item_id)` pairs; if `true`, allows multiple entries
-- **Reference validation**: Checks `meta.tables` from schema - validates that `item_id` (or `file_id`) exists in one of the specified tables
+- **Reference validation**: Checks `meta.tables` from schema - validates that `to_id` exists in one of the specified tables
 - Dynamically determines the target table for `item_id` by scanning all `options[tableName]` declared in `schema.tsx` and checking the appropriate table for existence
-- Builds a JSON value from the chosen column and validates it (if validation runtime is installed) against `validation.project_schemas()` at path `options.<tableName>.properties.<key>`. When `file_id` is used, it is validated as a UUID string (compatible with `z.string().uuid()` in `schema.tsx`).
+- Builds a JSON value from the chosen column and validates it (if validation runtime is installed) against `validation.project_schemas()` at path `options.<tableName>.properties.<key>`. When `to_id` is used, it is validated as a UUID string (compatible with `z.string().uuid()` in `schema.tsx`).
 
 The trigger relies on the plv8 validation runtime to be synchronized via the CLI (`validation sync/define`). If the runtime is not present, it still enforces key existence with `validation.validate_option_key` and the “one-of” value rule.
 
@@ -130,9 +144,9 @@ const inserted = await userClient.insert({
   object: {
     key: 'avatar',
     item_id: targetUser.id,
-    file_id: someFileId, // uuid from storage.files.id - validated against storage.files table
+    to_id: someFileId, // uuid from storage.files.id - validated against storage.files table
   },
-  returning: ['id', 'key', 'file_id', 'user_id', 'item_id']
+  returning: ['id', 'key', 'to_id', 'user_id', 'item_id']
 });
 ```
 
@@ -145,9 +159,9 @@ const friend1 = await userClient.insert({
   object: {
     key: 'friend_id',
     item_id: targetUser.id,
-    string_value: friend1UserId, // uuid validated against users table
+    to_id: friend1UserId, // uuid validated against users table
   },
-  returning: ['id', 'key', 'string_value', 'user_id', 'item_id']
+  returning: ['id', 'key', 'to_id', 'user_id', 'item_id']
 });
 
 // Second friend (allowed because friend_id has meta.multiple: true)
@@ -156,9 +170,23 @@ const friend2 = await userClient.insert({
   object: {
     key: 'friend_id',
     item_id: targetUser.id,
-    string_value: friend2UserId, // uuid validated against users table
+    to_id: friend2UserId, // uuid validated against users table
   },
-  returning: ['id', 'key', 'string_value', 'user_id', 'item_id']
+  returning: ['id', 'key', 'to_id', 'user_id', 'item_id']
+});
+```
+
+Insert options for items (items.user_id with table validation):
+
+```ts
+const inserted = await userClient.insert({
+  table: 'options',
+  object: {
+    key: 'user_id',
+    item_id: targetItem.id, // references items.id
+    to_id: ownerUserId, // uuid validated against users table
+  },
+  returning: ['id', 'key', 'to_id', 'user_id', 'item_id']
 });
 ```
 
@@ -201,7 +229,7 @@ DEBUG="hasyx*" npm run migrate options
 - Q: How do I allow multiple options with the same key for one item?
   - A: Add `.meta({ multiple: true })` to your Zod schema definition. For example: `friend_id: z.string().uuid().meta({ multiple: true, tables: ['users'] })`.
 - Q: How do I validate that a UUID option references an existing record?
-  - A: Use `.meta({ tables: ['table_name'] })` in your Zod schema. The trigger will verify that the UUID exists in one of the specified tables. Supports `schema.table` format like `['storage.files']`.
+  - A: Use `.meta({ tables: ['table_name'] })` in your Zod schema. The trigger will verify that the UUID exists in one of the specified tables. Supports `schema.table` format like `['storage.files']`. The UUID value should be stored in `to_id` column, not in value columns.
 - Q: Can users read options created by other users?
   - A: Yes, by default users can **read** all options (no filter), but can only **create/modify/delete** options where `item_id` matches their own user ID (`X-Hasura-User-Id`).
 - Q: What happens if I try to create duplicate options for a non-multiple key?

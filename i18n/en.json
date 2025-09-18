@@ -538,19 +538,7 @@
     },
     "authenticated": "Authenticated",
     "notAuthenticated": "Not Authenticated"
-  }
-  ,
-  "entities": {
-    "default": {
-      "entityId": "Entity ID",
-      "noAdditional": "No additional data available",
-      "schema": "Schema",
-      "created": "Created",
-      "updated": "Updated",
-      "data": "Data"
-    }
-  }
-  ,
+  },
   "payments": {
     "title": "Payments",
     "tabs": {

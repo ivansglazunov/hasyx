@@ -164,6 +164,8 @@ export async function syncSchemasToDatabase(hasura?: Hasura, schemas?: Generated
       // Ensure structure keys exist
       if (!minimal.schema && data.schema) minimal.schema = {};
       if (!minimal.config && data.config) minimal.config = {};
+      // CRITICAL: Always keep options schemas for runtime options validation
+      if (!minimal.options && data.options) minimal.options = data.options;
       // Prefer minimal if it reduces size significantly or env hints local testing
       const fullStr = JSON.stringify(data);
       const minStr = JSON.stringify(minimal);
