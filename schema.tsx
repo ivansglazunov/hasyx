@@ -28,7 +28,23 @@ export const options = {
       .string()
       .uuid()
       .describe('Friend user id (uuid from public.users)')
-      .meta({ multiple: true, tables: ['users'] })
+      .meta({
+        multiple: true,
+        tables: ['users'],
+        // Permissions for options.users.friend_id
+        // insert: require that the referenced friend (to_id) has an option with key 'fio'
+        permission: {
+          insert: {
+            table: 'options',
+            where: {
+              key: { _eq: 'fio' },
+              item_id: { _eq: '${TO_ID}' }
+            },
+            returning: ['id'],
+            limit: 1
+          }
+        }
+      })
       .optional(),
     notifications: z.object({
       email: z.boolean().optional(),

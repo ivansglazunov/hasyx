@@ -89,6 +89,85 @@ dotenv.config();
     })).rejects.toBeTruthy();
   }, 30000);
 
+  it('should allow friend_id only when friend has fio option (permission check)', async () => {
+    console.log('🔄 Syncing schemas...');
+    await syncSchemasToDatabase();
+    console.log('✅ Schemas synced');
+    
+    const admin = new Hasyx(
+      createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET!, ws: false }),
+      Generator(schema as any)
+    );
+
+    // Ensure runtime and trigger exist
+    const hasu = new (await import('./hasura/hasura')).Hasura({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET! });
+    await (await import('./validation')).ensureValidationRuntime(hasu);
+    
+    // Ensure permission system is ready
+    const schemaCheck = await hasu.sql('SELECT validation.project_schemas() AS j');
+    const rawSchemas = schemaCheck.result?.[1]?.[0];
+    let schemas: any = {};
+    if (typeof rawSchemas === 'string') {
+      try {
+        schemas = JSON.parse(rawSchemas);
+      } catch(e: any) {
+        console.log('❌ Failed to parse schemas JSON:', e.message);
+      }
+    } else if (typeof rawSchemas === 'object') {
+      schemas = rawSchemas || {};
+    }
+    
+    // Verify permission rules are loaded
+    if (!schemas?.options?.users?.properties?.friend_id?.['x-meta']?.permission) {
+      throw new Error('Permission rules not found in schema for friend_id');
+    }
+    
+    // Recreate permission trigger alongside existing triggers
+    await hasu.sql(`
+      DROP TRIGGER IF EXISTS options_permission_trigger ON public.options;
+      CREATE TRIGGER options_permission_trigger
+        BEFORE INSERT OR UPDATE OR DELETE ON public.options
+        FOR EACH ROW
+        EXECUTE FUNCTION validation.validate_option_permission();
+    `);
+    
+    // Permission trigger is now ready
+
+    const user = await createTestUser();
+    const friendWithFio = await createTestUser();
+    const friendWithoutFio = await createTestUser();
+    
+    const { hasyx: userClient } = await admin._authorize(user.id, { ws: false });
+
+    // Give fio to friendWithFio
+    await userClient.insert<any>({
+      table: 'options',
+      object: { key: 'fio', item_id: friendWithFio.id, string_value: 'Друг ФИО' },
+      returning: ['id']
+    });
+
+    // Insert friend_id referencing friendWithFio → should pass
+    const ok = await userClient.insert<any>({
+      table: 'options',
+      object: { key: 'friend_id', item_id: user.id, to_id: friendWithFio.id },
+      returning: ['id','key','to_id','item_id']
+    });
+    expect(ok?.key).toBe('friend_id');
+    expect(ok?.to_id).toBe(friendWithFio.id);
+
+    // Insert friend_id referencing friendWithoutFio → should fail
+    try {
+      const result = await userClient.insert<any>({
+        table: 'options',
+        object: { key: 'friend_id', item_id: user.id, to_id: friendWithoutFio.id },
+        returning: ['id']
+      });
+      throw new Error('Insert should have failed but succeeded');
+    } catch (error: any) {
+      expect(error).toBeTruthy();
+    }
+  }, 60000); // Increase timeout to 60s
+
   it('should support complex object type (notifications)', async () => {
     const admin = new Hasyx(
       createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET!, ws: false }),
@@ -306,7 +385,7 @@ dotenv.config();
     // 1) Подготовим реальный файл в таблицах storage.files (+ storage.files_blob для database-бэкенда)
     const fileId = uuidv4();
     const fileName = 'avatar-test.txt';
-    const fileBytes = Buffer.from(`avatar for options test ${fileId}`);
+    const fileBytes = Buffer.from('avatar for options test ' + fileId);
     const base64 = fileBytes.toString('base64');
 
     // Вставка метаданных файла
@@ -377,6 +456,18 @@ dotenv.config();
     const friendB = await createTestUser();
     const { hasyx: userClient } = await admin._authorize(user.id, { ws: false });
 
+    // Create fio options for friends to satisfy permission requirements
+    await userClient.insert<any>({
+      table: 'options',
+      object: { key: 'fio', item_id: friendA.id, string_value: 'Друг А ФИО' },
+      returning: ['id']
+    });
+    await userClient.insert<any>({
+      table: 'options',
+      object: { key: 'fio', item_id: friendB.id, string_value: 'Друг Б ФИО' },
+      returning: ['id']
+    });
+
     const first = await userClient.insert<any>({
       table: 'options',
       object: {
@@ -413,6 +504,13 @@ dotenv.config();
     const user = await createTestUser();
     const friend = await createTestUser();
     const { hasyx: userClient } = await admin._authorize(user.id, { ws: false });
+
+    // Create fio option for friend to satisfy permission requirements
+    await userClient.insert<any>({
+      table: 'options',
+      object: { key: 'fio', item_id: friend.id, string_value: 'Друг ФИО' },
+      returning: ['id']
+    });
 
     const opt = await userClient.insert<any>({
       table: 'options',

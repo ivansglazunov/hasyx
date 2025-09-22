@@ -99,48 +99,21 @@ export type Accounts = {
   __typename?: "accounts";
   _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
   _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth access token */
-  access_token?: Maybe<Scalars["String"]["output"]>;
   created_at: Scalars["bigint"]["output"];
-  /** Password hash for credentials providers (email/phone) */
-  credential_hash?: Maybe<Scalars["String"]["output"]>;
-  /** Token expiration timestamp */
-  expires_at?: Maybe<Scalars["bigint"]["output"]>;
   /** An object relationship */
   hasyx?: Maybe<Hasyx>;
   id: Scalars["uuid"]["output"];
-  /** OAuth ID token */
-  id_token?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth token */
-  oauth_token?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth token secret */
-  oauth_token_secret?: Maybe<Scalars["String"]["output"]>;
   /** OAuth provider */
   provider: Scalars["String"]["output"];
   /** Provider account ID */
   provider_account_id: Scalars["String"]["output"];
-  /** Additional provider-specific data (e.g., Telegram username, photo_url) */
-  provider_data?: Maybe<Scalars["jsonb"]["output"]>;
   /** OAuth refresh token */
   refresh_token?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth scope */
-  scope?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth session state */
-  session_state?: Maybe<Scalars["String"]["output"]>;
-  /** Token type */
-  token_type?: Maybe<Scalars["String"]["output"]>;
   /** Account type */
   type: Scalars["String"]["output"];
   updated_at: Scalars["bigint"]["output"];
-  /** An object relationship */
-  user: Users;
   /** Reference to users table */
   user_id: Scalars["uuid"]["output"];
-};
-
-/** columns and relationships of "accounts" */
-export type AccountsProvider_DataArgs = {
-  path?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 /** aggregated selection of "accounts" */
@@ -148,17 +121,6 @@ export type Accounts_Aggregate = {
   __typename?: "accounts_aggregate";
   aggregate?: Maybe<Accounts_Aggregate_Fields>;
   nodes: Array<Accounts>;
-};
-
-export type Accounts_Aggregate_Bool_Exp = {
-  count?: InputMaybe<Accounts_Aggregate_Bool_Exp_Count>;
-};
-
-export type Accounts_Aggregate_Bool_Exp_Count = {
-  arguments?: InputMaybe<Array<Accounts_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-  filter?: InputMaybe<Accounts_Bool_Exp>;
-  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "accounts" */
@@ -183,49 +145,11 @@ export type Accounts_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
-/** order by aggregate values of table "accounts" */
-export type Accounts_Aggregate_Order_By = {
-  avg?: InputMaybe<Accounts_Avg_Order_By>;
-  count?: InputMaybe<Order_By>;
-  max?: InputMaybe<Accounts_Max_Order_By>;
-  min?: InputMaybe<Accounts_Min_Order_By>;
-  stddev?: InputMaybe<Accounts_Stddev_Order_By>;
-  stddev_pop?: InputMaybe<Accounts_Stddev_Pop_Order_By>;
-  stddev_samp?: InputMaybe<Accounts_Stddev_Samp_Order_By>;
-  sum?: InputMaybe<Accounts_Sum_Order_By>;
-  var_pop?: InputMaybe<Accounts_Var_Pop_Order_By>;
-  var_samp?: InputMaybe<Accounts_Var_Samp_Order_By>;
-  variance?: InputMaybe<Accounts_Variance_Order_By>;
-};
-
-/** append existing jsonb value of filtered columns with new jsonb value */
-export type Accounts_Append_Input = {
-  /** Additional provider-specific data (e.g., Telegram username, photo_url) */
-  provider_data?: InputMaybe<Scalars["jsonb"]["input"]>;
-};
-
-/** input type for inserting array relation for remote table "accounts" */
-export type Accounts_Arr_Rel_Insert_Input = {
-  data: Array<Accounts_Insert_Input>;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Accounts_On_Conflict>;
-};
-
 /** aggregate avg on columns */
 export type Accounts_Avg_Fields = {
   __typename?: "accounts_avg_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Token expiration timestamp */
-  expires_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by avg() on columns of table "accounts" */
-export type Accounts_Avg_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "accounts". All fields are combined with a logical 'AND'. */
@@ -235,25 +159,14 @@ export type Accounts_Bool_Exp = {
   _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Accounts_Bool_Exp>;
   _or?: InputMaybe<Array<Accounts_Bool_Exp>>;
-  access_token?: InputMaybe<String_Comparison_Exp>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
-  credential_hash?: InputMaybe<String_Comparison_Exp>;
-  expires_at?: InputMaybe<Bigint_Comparison_Exp>;
   hasyx?: InputMaybe<Hasyx_Bool_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
-  id_token?: InputMaybe<String_Comparison_Exp>;
-  oauth_token?: InputMaybe<String_Comparison_Exp>;
-  oauth_token_secret?: InputMaybe<String_Comparison_Exp>;
   provider?: InputMaybe<String_Comparison_Exp>;
   provider_account_id?: InputMaybe<String_Comparison_Exp>;
-  provider_data?: InputMaybe<Jsonb_Comparison_Exp>;
   refresh_token?: InputMaybe<String_Comparison_Exp>;
-  scope?: InputMaybe<String_Comparison_Exp>;
-  session_state?: InputMaybe<String_Comparison_Exp>;
-  token_type?: InputMaybe<String_Comparison_Exp>;
   type?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
-  user?: InputMaybe<Users_Bool_Exp>;
   user_id?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
@@ -261,71 +174,28 @@ export type Accounts_Bool_Exp = {
 export enum Accounts_Constraint {
   /** unique or primary key constraint on columns "id" */
   AccountsPkey = "accounts_pkey",
-  /** unique or primary key constraint on columns "provider", "provider_account_id" */
-  AccountsProviderProviderAccountIdUnique = "accounts_provider_provider_account_id_unique",
 }
-
-/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type Accounts_Delete_At_Path_Input = {
-  /** Additional provider-specific data (e.g., Telegram username, photo_url) */
-  provider_data?: InputMaybe<Array<Scalars["String"]["input"]>>;
-};
-
-/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type Accounts_Delete_Elem_Input = {
-  /** Additional provider-specific data (e.g., Telegram username, photo_url) */
-  provider_data?: InputMaybe<Scalars["Int"]["input"]>;
-};
-
-/** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type Accounts_Delete_Key_Input = {
-  /** Additional provider-specific data (e.g., Telegram username, photo_url) */
-  provider_data?: InputMaybe<Scalars["String"]["input"]>;
-};
 
 /** input type for incrementing numeric columns in table "accounts" */
 export type Accounts_Inc_Input = {
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Scalars["bigint"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
 };
 
 /** input type for inserting data into table "accounts" */
 export type Accounts_Insert_Input = {
-  /** OAuth access token */
-  access_token?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Password hash for credentials providers (email/phone) */
-  credential_hash?: InputMaybe<Scalars["String"]["input"]>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Scalars["bigint"]["input"]>;
   hasyx?: InputMaybe<Hasyx_Obj_Rel_Insert_Input>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** OAuth ID token */
-  id_token?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth token */
-  oauth_token?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth token secret */
-  oauth_token_secret?: InputMaybe<Scalars["String"]["input"]>;
   /** OAuth provider */
   provider?: InputMaybe<Scalars["String"]["input"]>;
   /** Provider account ID */
   provider_account_id?: InputMaybe<Scalars["String"]["input"]>;
-  /** Additional provider-specific data (e.g., Telegram username, photo_url) */
-  provider_data?: InputMaybe<Scalars["jsonb"]["input"]>;
   /** OAuth refresh token */
   refresh_token?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth scope */
-  scope?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth session state */
-  session_state?: InputMaybe<Scalars["String"]["input"]>;
-  /** Token type */
-  token_type?: InputMaybe<Scalars["String"]["input"]>;
   /** Account type */
   type?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   /** Reference to users table */
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
 };
@@ -335,74 +205,19 @@ export type Accounts_Max_Fields = {
   __typename?: "accounts_max_fields";
   _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
   _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth access token */
-  access_token?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Password hash for credentials providers (email/phone) */
-  credential_hash?: Maybe<Scalars["String"]["output"]>;
-  /** Token expiration timestamp */
-  expires_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
-  /** OAuth ID token */
-  id_token?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth token */
-  oauth_token?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth token secret */
-  oauth_token_secret?: Maybe<Scalars["String"]["output"]>;
   /** OAuth provider */
   provider?: Maybe<Scalars["String"]["output"]>;
   /** Provider account ID */
   provider_account_id?: Maybe<Scalars["String"]["output"]>;
   /** OAuth refresh token */
   refresh_token?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth scope */
-  scope?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth session state */
-  session_state?: Maybe<Scalars["String"]["output"]>;
-  /** Token type */
-  token_type?: Maybe<Scalars["String"]["output"]>;
   /** Account type */
   type?: Maybe<Scalars["String"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Reference to users table */
   user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** order by max() on columns of table "accounts" */
-export type Accounts_Max_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  /** OAuth access token */
-  access_token?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  /** Password hash for credentials providers (email/phone) */
-  credential_hash?: InputMaybe<Order_By>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  /** OAuth ID token */
-  id_token?: InputMaybe<Order_By>;
-  /** OAuth token */
-  oauth_token?: InputMaybe<Order_By>;
-  /** OAuth token secret */
-  oauth_token_secret?: InputMaybe<Order_By>;
-  /** OAuth provider */
-  provider?: InputMaybe<Order_By>;
-  /** Provider account ID */
-  provider_account_id?: InputMaybe<Order_By>;
-  /** OAuth refresh token */
-  refresh_token?: InputMaybe<Order_By>;
-  /** OAuth scope */
-  scope?: InputMaybe<Order_By>;
-  /** OAuth session state */
-  session_state?: InputMaybe<Order_By>;
-  /** Token type */
-  token_type?: InputMaybe<Order_By>;
-  /** Account type */
-  type?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** Reference to users table */
-  user_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
@@ -410,74 +225,19 @@ export type Accounts_Min_Fields = {
   __typename?: "accounts_min_fields";
   _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
   _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth access token */
-  access_token?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Password hash for credentials providers (email/phone) */
-  credential_hash?: Maybe<Scalars["String"]["output"]>;
-  /** Token expiration timestamp */
-  expires_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
-  /** OAuth ID token */
-  id_token?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth token */
-  oauth_token?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth token secret */
-  oauth_token_secret?: Maybe<Scalars["String"]["output"]>;
   /** OAuth provider */
   provider?: Maybe<Scalars["String"]["output"]>;
   /** Provider account ID */
   provider_account_id?: Maybe<Scalars["String"]["output"]>;
   /** OAuth refresh token */
   refresh_token?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth scope */
-  scope?: Maybe<Scalars["String"]["output"]>;
-  /** OAuth session state */
-  session_state?: Maybe<Scalars["String"]["output"]>;
-  /** Token type */
-  token_type?: Maybe<Scalars["String"]["output"]>;
   /** Account type */
   type?: Maybe<Scalars["String"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
   /** Reference to users table */
   user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** order by min() on columns of table "accounts" */
-export type Accounts_Min_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  /** OAuth access token */
-  access_token?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  /** Password hash for credentials providers (email/phone) */
-  credential_hash?: InputMaybe<Order_By>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Order_By>;
-  id?: InputMaybe<Order_By>;
-  /** OAuth ID token */
-  id_token?: InputMaybe<Order_By>;
-  /** OAuth token */
-  oauth_token?: InputMaybe<Order_By>;
-  /** OAuth token secret */
-  oauth_token_secret?: InputMaybe<Order_By>;
-  /** OAuth provider */
-  provider?: InputMaybe<Order_By>;
-  /** Provider account ID */
-  provider_account_id?: InputMaybe<Order_By>;
-  /** OAuth refresh token */
-  refresh_token?: InputMaybe<Order_By>;
-  /** OAuth scope */
-  scope?: InputMaybe<Order_By>;
-  /** OAuth session state */
-  session_state?: InputMaybe<Order_By>;
-  /** Token type */
-  token_type?: InputMaybe<Order_By>;
-  /** Account type */
-  type?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  /** Reference to users table */
-  user_id?: InputMaybe<Order_By>;
 };
 
 /** response of any mutation on the table "accounts" */
@@ -507,37 +267,20 @@ export type Accounts_On_Conflict = {
 export type Accounts_Order_By = {
   _hasyx_schema_name?: InputMaybe<Order_By>;
   _hasyx_table_name?: InputMaybe<Order_By>;
-  access_token?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
-  credential_hash?: InputMaybe<Order_By>;
-  expires_at?: InputMaybe<Order_By>;
   hasyx?: InputMaybe<Hasyx_Order_By>;
   id?: InputMaybe<Order_By>;
-  id_token?: InputMaybe<Order_By>;
-  oauth_token?: InputMaybe<Order_By>;
-  oauth_token_secret?: InputMaybe<Order_By>;
   provider?: InputMaybe<Order_By>;
   provider_account_id?: InputMaybe<Order_By>;
-  provider_data?: InputMaybe<Order_By>;
   refresh_token?: InputMaybe<Order_By>;
-  scope?: InputMaybe<Order_By>;
-  session_state?: InputMaybe<Order_By>;
-  token_type?: InputMaybe<Order_By>;
   type?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
-  user?: InputMaybe<Users_Order_By>;
   user_id?: InputMaybe<Order_By>;
 };
 
 /** primary key columns input for table: accounts */
 export type Accounts_Pk_Columns_Input = {
   id: Scalars["uuid"]["input"];
-};
-
-/** prepend existing jsonb value of filtered columns with new jsonb value */
-export type Accounts_Prepend_Input = {
-  /** Additional provider-specific data (e.g., Telegram username, photo_url) */
-  provider_data?: InputMaybe<Scalars["jsonb"]["input"]>;
 };
 
 /** select columns of table "accounts" */
@@ -547,35 +290,15 @@ export enum Accounts_Select_Column {
   /** column name */
   HasyxTableName = "_hasyx_table_name",
   /** column name */
-  AccessToken = "access_token",
-  /** column name */
   CreatedAt = "created_at",
   /** column name */
-  CredentialHash = "credential_hash",
-  /** column name */
-  ExpiresAt = "expires_at",
-  /** column name */
   Id = "id",
-  /** column name */
-  IdToken = "id_token",
-  /** column name */
-  OauthToken = "oauth_token",
-  /** column name */
-  OauthTokenSecret = "oauth_token_secret",
   /** column name */
   Provider = "provider",
   /** column name */
   ProviderAccountId = "provider_account_id",
   /** column name */
-  ProviderData = "provider_data",
-  /** column name */
   RefreshToken = "refresh_token",
-  /** column name */
-  Scope = "scope",
-  /** column name */
-  SessionState = "session_state",
-  /** column name */
-  TokenType = "token_type",
   /** column name */
   Type = "type",
   /** column name */
@@ -586,34 +309,14 @@ export enum Accounts_Select_Column {
 
 /** input type for updating data in table "accounts" */
 export type Accounts_Set_Input = {
-  /** OAuth access token */
-  access_token?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Password hash for credentials providers (email/phone) */
-  credential_hash?: InputMaybe<Scalars["String"]["input"]>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Scalars["bigint"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** OAuth ID token */
-  id_token?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth token */
-  oauth_token?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth token secret */
-  oauth_token_secret?: InputMaybe<Scalars["String"]["input"]>;
   /** OAuth provider */
   provider?: InputMaybe<Scalars["String"]["input"]>;
   /** Provider account ID */
   provider_account_id?: InputMaybe<Scalars["String"]["input"]>;
-  /** Additional provider-specific data (e.g., Telegram username, photo_url) */
-  provider_data?: InputMaybe<Scalars["jsonb"]["input"]>;
   /** OAuth refresh token */
   refresh_token?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth scope */
-  scope?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth session state */
-  session_state?: InputMaybe<Scalars["String"]["input"]>;
-  /** Token type */
-  token_type?: InputMaybe<Scalars["String"]["input"]>;
   /** Account type */
   type?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -625,51 +328,21 @@ export type Accounts_Set_Input = {
 export type Accounts_Stddev_Fields = {
   __typename?: "accounts_stddev_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Token expiration timestamp */
-  expires_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev() on columns of table "accounts" */
-export type Accounts_Stddev_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Accounts_Stddev_Pop_Fields = {
   __typename?: "accounts_stddev_pop_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Token expiration timestamp */
-  expires_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev_pop() on columns of table "accounts" */
-export type Accounts_Stddev_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Accounts_Stddev_Samp_Fields = {
   __typename?: "accounts_stddev_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Token expiration timestamp */
-  expires_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by stddev_samp() on columns of table "accounts" */
-export type Accounts_Stddev_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "accounts" */
@@ -684,34 +357,14 @@ export type Accounts_Stream_Cursor_Input = {
 export type Accounts_Stream_Cursor_Value_Input = {
   _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
   _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth access token */
-  access_token?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Password hash for credentials providers (email/phone) */
-  credential_hash?: InputMaybe<Scalars["String"]["input"]>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Scalars["bigint"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** OAuth ID token */
-  id_token?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth token */
-  oauth_token?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth token secret */
-  oauth_token_secret?: InputMaybe<Scalars["String"]["input"]>;
   /** OAuth provider */
   provider?: InputMaybe<Scalars["String"]["input"]>;
   /** Provider account ID */
   provider_account_id?: InputMaybe<Scalars["String"]["input"]>;
-  /** Additional provider-specific data (e.g., Telegram username, photo_url) */
-  provider_data?: InputMaybe<Scalars["jsonb"]["input"]>;
   /** OAuth refresh token */
   refresh_token?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth scope */
-  scope?: InputMaybe<Scalars["String"]["input"]>;
-  /** OAuth session state */
-  session_state?: InputMaybe<Scalars["String"]["input"]>;
-  /** Token type */
-  token_type?: InputMaybe<Scalars["String"]["input"]>;
   /** Account type */
   type?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
@@ -723,51 +376,21 @@ export type Accounts_Stream_Cursor_Value_Input = {
 export type Accounts_Sum_Fields = {
   __typename?: "accounts_sum_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
-  /** Token expiration timestamp */
-  expires_at?: Maybe<Scalars["bigint"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** order by sum() on columns of table "accounts" */
-export type Accounts_Sum_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "accounts" */
 export enum Accounts_Update_Column {
   /** column name */
-  AccessToken = "access_token",
-  /** column name */
   CreatedAt = "created_at",
   /** column name */
-  CredentialHash = "credential_hash",
-  /** column name */
-  ExpiresAt = "expires_at",
-  /** column name */
   Id = "id",
-  /** column name */
-  IdToken = "id_token",
-  /** column name */
-  OauthToken = "oauth_token",
-  /** column name */
-  OauthTokenSecret = "oauth_token_secret",
   /** column name */
   Provider = "provider",
   /** column name */
   ProviderAccountId = "provider_account_id",
   /** column name */
-  ProviderData = "provider_data",
-  /** column name */
   RefreshToken = "refresh_token",
-  /** column name */
-  Scope = "scope",
-  /** column name */
-  SessionState = "session_state",
-  /** column name */
-  TokenType = "token_type",
   /** column name */
   Type = "type",
   /** column name */
@@ -777,18 +400,8 @@ export enum Accounts_Update_Column {
 }
 
 export type Accounts_Updates = {
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  _append?: InputMaybe<Accounts_Append_Input>;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  _delete_at_path?: InputMaybe<Accounts_Delete_At_Path_Input>;
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  _delete_elem?: InputMaybe<Accounts_Delete_Elem_Input>;
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  _delete_key?: InputMaybe<Accounts_Delete_Key_Input>;
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<Accounts_Inc_Input>;
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  _prepend?: InputMaybe<Accounts_Prepend_Input>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<Accounts_Set_Input>;
   /** filter the rows which have to be updated */
@@ -799,344 +412,21 @@ export type Accounts_Updates = {
 export type Accounts_Var_Pop_Fields = {
   __typename?: "accounts_var_pop_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Token expiration timestamp */
-  expires_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by var_pop() on columns of table "accounts" */
-export type Accounts_Var_Pop_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_samp on columns */
 export type Accounts_Var_Samp_Fields = {
   __typename?: "accounts_var_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Token expiration timestamp */
-  expires_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by var_samp() on columns of table "accounts" */
-export type Accounts_Var_Samp_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
 };
 
 /** aggregate variance on columns */
 export type Accounts_Variance_Fields = {
   __typename?: "accounts_variance_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
-  /** Token expiration timestamp */
-  expires_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** order by variance() on columns of table "accounts" */
-export type Accounts_Variance_Order_By = {
-  created_at?: InputMaybe<Order_By>;
-  /** Token expiration timestamp */
-  expires_at?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-};
-
-/** columns and relationships of "auth_jwt" */
-export type Auth_Jwt = {
-  __typename?: "auth_jwt";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  created_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  created_ms: Scalars["bigint"]["output"];
-  /** An object relationship */
-  hasyx?: Maybe<Hasyx>;
-  id: Scalars["uuid"]["output"];
-  jwt?: Maybe<Scalars["String"]["output"]>;
-  redirect?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  updated_ms: Scalars["bigint"]["output"];
-};
-
-/** aggregated selection of "auth_jwt" */
-export type Auth_Jwt_Aggregate = {
-  __typename?: "auth_jwt_aggregate";
-  aggregate?: Maybe<Auth_Jwt_Aggregate_Fields>;
-  nodes: Array<Auth_Jwt>;
-};
-
-/** aggregate fields of "auth_jwt" */
-export type Auth_Jwt_Aggregate_Fields = {
-  __typename?: "auth_jwt_aggregate_fields";
-  avg?: Maybe<Auth_Jwt_Avg_Fields>;
-  count: Scalars["Int"]["output"];
-  max?: Maybe<Auth_Jwt_Max_Fields>;
-  min?: Maybe<Auth_Jwt_Min_Fields>;
-  stddev?: Maybe<Auth_Jwt_Stddev_Fields>;
-  stddev_pop?: Maybe<Auth_Jwt_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Auth_Jwt_Stddev_Samp_Fields>;
-  sum?: Maybe<Auth_Jwt_Sum_Fields>;
-  var_pop?: Maybe<Auth_Jwt_Var_Pop_Fields>;
-  var_samp?: Maybe<Auth_Jwt_Var_Samp_Fields>;
-  variance?: Maybe<Auth_Jwt_Variance_Fields>;
-};
-
-/** aggregate fields of "auth_jwt" */
-export type Auth_Jwt_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Auth_Jwt_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** aggregate avg on columns */
-export type Auth_Jwt_Avg_Fields = {
-  __typename?: "auth_jwt_avg_fields";
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Boolean expression to filter rows from the table "auth_jwt". All fields are combined with a logical 'AND'. */
-export type Auth_Jwt_Bool_Exp = {
-  _and?: InputMaybe<Array<Auth_Jwt_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
-  _not?: InputMaybe<Auth_Jwt_Bool_Exp>;
-  _or?: InputMaybe<Array<Auth_Jwt_Bool_Exp>>;
-  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
-  created_ms?: InputMaybe<Bigint_Comparison_Exp>;
-  hasyx?: InputMaybe<Hasyx_Bool_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  jwt?: InputMaybe<String_Comparison_Exp>;
-  redirect?: InputMaybe<String_Comparison_Exp>;
-  updated_at?: InputMaybe<Timestamptz_Comparison_Exp>;
-  updated_ms?: InputMaybe<Bigint_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "auth_jwt" */
-export enum Auth_Jwt_Constraint {
-  /** unique or primary key constraint on columns "id" */
-  AuthJwtPkey = "auth_jwt_pkey",
-}
-
-/** input type for incrementing numeric columns in table "auth_jwt" */
-export type Auth_Jwt_Inc_Input = {
-  created_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-};
-
-/** input type for inserting data into table "auth_jwt" */
-export type Auth_Jwt_Insert_Input = {
-  created_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  created_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-  hasyx?: InputMaybe<Hasyx_Obj_Rel_Insert_Input>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  jwt?: InputMaybe<Scalars["String"]["input"]>;
-  redirect?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  updated_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-};
-
-/** aggregate max on columns */
-export type Auth_Jwt_Max_Fields = {
-  __typename?: "auth_jwt_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  created_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  created_ms?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  jwt?: Maybe<Scalars["String"]["output"]>;
-  redirect?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  updated_ms?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** aggregate min on columns */
-export type Auth_Jwt_Min_Fields = {
-  __typename?: "auth_jwt_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  created_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  created_ms?: Maybe<Scalars["bigint"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  jwt?: Maybe<Scalars["String"]["output"]>;
-  redirect?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  updated_ms?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** response of any mutation on the table "auth_jwt" */
-export type Auth_Jwt_Mutation_Response = {
-  __typename?: "auth_jwt_mutation_response";
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars["Int"]["output"];
-  /** data from the rows affected by the mutation */
-  returning: Array<Auth_Jwt>;
-};
-
-/** input type for inserting object relation for remote table "auth_jwt" */
-export type Auth_Jwt_Obj_Rel_Insert_Input = {
-  data: Auth_Jwt_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Auth_Jwt_On_Conflict>;
-};
-
-/** on_conflict condition type for table "auth_jwt" */
-export type Auth_Jwt_On_Conflict = {
-  constraint: Auth_Jwt_Constraint;
-  update_columns?: Array<Auth_Jwt_Update_Column>;
-  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "auth_jwt". */
-export type Auth_Jwt_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  created_ms?: InputMaybe<Order_By>;
-  hasyx?: InputMaybe<Hasyx_Order_By>;
-  id?: InputMaybe<Order_By>;
-  jwt?: InputMaybe<Order_By>;
-  redirect?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  updated_ms?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: auth_jwt */
-export type Auth_Jwt_Pk_Columns_Input = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** select columns of table "auth_jwt" */
-export enum Auth_Jwt_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  CreatedMs = "created_ms",
-  /** column name */
-  Id = "id",
-  /** column name */
-  Jwt = "jwt",
-  /** column name */
-  Redirect = "redirect",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UpdatedMs = "updated_ms",
-}
-
-/** input type for updating data in table "auth_jwt" */
-export type Auth_Jwt_Set_Input = {
-  created_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  created_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  jwt?: InputMaybe<Scalars["String"]["input"]>;
-  redirect?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  updated_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-};
-
-/** aggregate stddev on columns */
-export type Auth_Jwt_Stddev_Fields = {
-  __typename?: "auth_jwt_stddev_fields";
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Auth_Jwt_Stddev_Pop_Fields = {
-  __typename?: "auth_jwt_stddev_pop_fields";
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Auth_Jwt_Stddev_Samp_Fields = {
-  __typename?: "auth_jwt_stddev_samp_fields";
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Streaming cursor of the table "auth_jwt" */
-export type Auth_Jwt_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Auth_Jwt_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Auth_Jwt_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
-  created_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  created_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  jwt?: InputMaybe<Scalars["String"]["input"]>;
-  redirect?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  updated_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-};
-
-/** aggregate sum on columns */
-export type Auth_Jwt_Sum_Fields = {
-  __typename?: "auth_jwt_sum_fields";
-  created_ms?: Maybe<Scalars["bigint"]["output"]>;
-  updated_ms?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** update columns of table "auth_jwt" */
-export enum Auth_Jwt_Update_Column {
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  CreatedMs = "created_ms",
-  /** column name */
-  Id = "id",
-  /** column name */
-  Jwt = "jwt",
-  /** column name */
-  Redirect = "redirect",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UpdatedMs = "updated_ms",
-}
-
-export type Auth_Jwt_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<Auth_Jwt_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Auth_Jwt_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Auth_Jwt_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type Auth_Jwt_Var_Pop_Fields = {
-  __typename?: "auth_jwt_var_pop_fields";
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate var_samp on columns */
-export type Auth_Jwt_Var_Samp_Fields = {
-  __typename?: "auth_jwt_var_samp_fields";
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate variance on columns */
-export type Auth_Jwt_Variance_Fields = {
-  __typename?: "auth_jwt_variance_fields";
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
 };
 
 /** Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'. */
@@ -4466,8 +3756,6 @@ export type Hasyx = {
   /** An object relationship */
   public_accounts?: Maybe<Accounts>;
   /** An object relationship */
-  public_auth_jwt?: Maybe<Auth_Jwt>;
-  /** An object relationship */
   public_debug?: Maybe<Debug>;
   /** An object relationship */
   public_github_issues?: Maybe<Github_Issues>;
@@ -4499,8 +3787,6 @@ export type Hasyx = {
   public_schedule?: Maybe<Schedule>;
   /** An object relationship */
   public_users?: Maybe<Users>;
-  /** An object relationship */
-  public_verification_codes?: Maybe<Verification_Codes>;
   schema?: Maybe<Scalars["String"]["output"]>;
   table?: Maybe<Scalars["String"]["output"]>;
 };
@@ -4543,7 +3829,6 @@ export type Hasyx_Bool_Exp = {
   payments_user_payment_provider_mappings?: InputMaybe<Payments_User_Payment_Provider_Mappings_Bool_Exp>;
   project?: InputMaybe<String_Comparison_Exp>;
   public_accounts?: InputMaybe<Accounts_Bool_Exp>;
-  public_auth_jwt?: InputMaybe<Auth_Jwt_Bool_Exp>;
   public_debug?: InputMaybe<Debug_Bool_Exp>;
   public_github_issues?: InputMaybe<Github_Issues_Bool_Exp>;
   public_groups?: InputMaybe<Groups_Bool_Exp>;
@@ -4560,7 +3845,6 @@ export type Hasyx_Bool_Exp = {
   public_rooms?: InputMaybe<Rooms_Bool_Exp>;
   public_schedule?: InputMaybe<Schedule_Bool_Exp>;
   public_users?: InputMaybe<Users_Bool_Exp>;
-  public_verification_codes?: InputMaybe<Verification_Codes_Bool_Exp>;
   schema?: InputMaybe<String_Comparison_Exp>;
   table?: InputMaybe<String_Comparison_Exp>;
 };
@@ -4579,7 +3863,6 @@ export type Hasyx_Insert_Input = {
   payments_user_payment_provider_mappings?: InputMaybe<Payments_User_Payment_Provider_Mappings_Obj_Rel_Insert_Input>;
   project?: InputMaybe<Scalars["String"]["input"]>;
   public_accounts?: InputMaybe<Accounts_Obj_Rel_Insert_Input>;
-  public_auth_jwt?: InputMaybe<Auth_Jwt_Obj_Rel_Insert_Input>;
   public_debug?: InputMaybe<Debug_Obj_Rel_Insert_Input>;
   public_github_issues?: InputMaybe<Github_Issues_Obj_Rel_Insert_Input>;
   public_groups?: InputMaybe<Groups_Obj_Rel_Insert_Input>;
@@ -4596,7 +3879,6 @@ export type Hasyx_Insert_Input = {
   public_rooms?: InputMaybe<Rooms_Obj_Rel_Insert_Input>;
   public_schedule?: InputMaybe<Schedule_Obj_Rel_Insert_Input>;
   public_users?: InputMaybe<Users_Obj_Rel_Insert_Input>;
-  public_verification_codes?: InputMaybe<Verification_Codes_Obj_Rel_Insert_Input>;
   schema?: InputMaybe<Scalars["String"]["input"]>;
   table?: InputMaybe<Scalars["String"]["input"]>;
 };
@@ -4644,7 +3926,6 @@ export type Hasyx_Order_By = {
   payments_user_payment_provider_mappings?: InputMaybe<Payments_User_Payment_Provider_Mappings_Order_By>;
   project?: InputMaybe<Order_By>;
   public_accounts?: InputMaybe<Accounts_Order_By>;
-  public_auth_jwt?: InputMaybe<Auth_Jwt_Order_By>;
   public_debug?: InputMaybe<Debug_Order_By>;
   public_github_issues?: InputMaybe<Github_Issues_Order_By>;
   public_groups?: InputMaybe<Groups_Order_By>;
@@ -4661,7 +3942,6 @@ export type Hasyx_Order_By = {
   public_rooms?: InputMaybe<Rooms_Order_By>;
   public_schedule?: InputMaybe<Schedule_Order_By>;
   public_users?: InputMaybe<Users_Order_By>;
-  public_verification_codes?: InputMaybe<Verification_Codes_Order_By>;
   schema?: InputMaybe<Order_By>;
   table?: InputMaybe<Order_By>;
 };
@@ -7775,10 +7055,6 @@ export type Mutation_Root = {
   delete_accounts?: Maybe<Accounts_Mutation_Response>;
   /** delete single row from the table: "accounts" */
   delete_accounts_by_pk?: Maybe<Accounts>;
-  /** delete data from the table: "auth_jwt" */
-  delete_auth_jwt?: Maybe<Auth_Jwt_Mutation_Response>;
-  /** delete single row from the table: "auth_jwt" */
-  delete_auth_jwt_by_pk?: Maybe<Auth_Jwt>;
   /** delete data from the table: "debug" */
   delete_debug?: Maybe<Debug_Mutation_Response>;
   /** delete single row from the table: "debug" */
@@ -7879,10 +7155,6 @@ export type Mutation_Root = {
   delete_users?: Maybe<Users_Mutation_Response>;
   /** delete single row from the table: "users" */
   delete_users_by_pk?: Maybe<Users>;
-  /** delete data from the table: "verification_codes" */
-  delete_verification_codes?: Maybe<Verification_Codes_Mutation_Response>;
-  /** delete single row from the table: "verification_codes" */
-  delete_verification_codes_by_pk?: Maybe<Verification_Codes>;
   /** insert a single row into the table: "storage.buckets" */
   insertBucket?: Maybe<Buckets>;
   /** insert data into the table: "storage.buckets" */
@@ -7903,10 +7175,6 @@ export type Mutation_Root = {
   insert_accounts?: Maybe<Accounts_Mutation_Response>;
   /** insert a single row into the table: "accounts" */
   insert_accounts_one?: Maybe<Accounts>;
-  /** insert data into the table: "auth_jwt" */
-  insert_auth_jwt?: Maybe<Auth_Jwt_Mutation_Response>;
-  /** insert a single row into the table: "auth_jwt" */
-  insert_auth_jwt_one?: Maybe<Auth_Jwt>;
   /** insert data into the table: "debug" */
   insert_debug?: Maybe<Debug_Mutation_Response>;
   /** insert a single row into the table: "debug" */
@@ -8007,10 +7275,6 @@ export type Mutation_Root = {
   insert_users?: Maybe<Users_Mutation_Response>;
   /** insert a single row into the table: "users" */
   insert_users_one?: Maybe<Users>;
-  /** insert data into the table: "verification_codes" */
-  insert_verification_codes?: Maybe<Verification_Codes_Mutation_Response>;
-  /** insert a single row into the table: "verification_codes" */
-  insert_verification_codes_one?: Maybe<Verification_Codes>;
   /** update single row of the table: "storage.buckets" */
   updateBucket?: Maybe<Buckets>;
   /** update data of the table: "storage.buckets" */
@@ -8029,12 +7293,6 @@ export type Mutation_Root = {
   update_accounts_by_pk?: Maybe<Accounts>;
   /** update multiples rows of table: "accounts" */
   update_accounts_many?: Maybe<Array<Maybe<Accounts_Mutation_Response>>>;
-  /** update data of the table: "auth_jwt" */
-  update_auth_jwt?: Maybe<Auth_Jwt_Mutation_Response>;
-  /** update single row of the table: "auth_jwt" */
-  update_auth_jwt_by_pk?: Maybe<Auth_Jwt>;
-  /** update multiples rows of table: "auth_jwt" */
-  update_auth_jwt_many?: Maybe<Array<Maybe<Auth_Jwt_Mutation_Response>>>;
   /** update multiples rows of table: "storage.buckets" */
   update_buckets_many?: Maybe<Array<Maybe<Buckets_Mutation_Response>>>;
   /** update data of the table: "debug" */
@@ -8219,14 +7477,6 @@ export type Mutation_Root = {
   update_users_by_pk?: Maybe<Users>;
   /** update multiples rows of table: "users" */
   update_users_many?: Maybe<Array<Maybe<Users_Mutation_Response>>>;
-  /** update data of the table: "verification_codes" */
-  update_verification_codes?: Maybe<Verification_Codes_Mutation_Response>;
-  /** update single row of the table: "verification_codes" */
-  update_verification_codes_by_pk?: Maybe<Verification_Codes>;
-  /** update multiples rows of table: "verification_codes" */
-  update_verification_codes_many?: Maybe<
-    Array<Maybe<Verification_Codes_Mutation_Response>>
-  >;
   /** update multiples rows of table: "storage.virus" */
   update_virus_many?: Maybe<Array<Maybe<Virus_Mutation_Response>>>;
 };
@@ -8278,16 +7528,6 @@ export type Mutation_RootDelete_AccountsArgs = {
 
 /** mutation root */
 export type Mutation_RootDelete_Accounts_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Auth_JwtArgs = {
-  where: Auth_Jwt_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Auth_Jwt_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -8543,16 +7783,6 @@ export type Mutation_RootDelete_Users_By_PkArgs = {
 };
 
 /** mutation root */
-export type Mutation_RootDelete_Verification_CodesArgs = {
-  where: Verification_Codes_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootDelete_Verification_Codes_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** mutation root */
 export type Mutation_RootInsertBucketArgs = {
   object: Buckets_Insert_Input;
   on_conflict?: InputMaybe<Buckets_On_Conflict>;
@@ -8610,18 +7840,6 @@ export type Mutation_RootInsert_AccountsArgs = {
 export type Mutation_RootInsert_Accounts_OneArgs = {
   object: Accounts_Insert_Input;
   on_conflict?: InputMaybe<Accounts_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Auth_JwtArgs = {
-  objects: Array<Auth_Jwt_Insert_Input>;
-  on_conflict?: InputMaybe<Auth_Jwt_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Auth_Jwt_OneArgs = {
-  object: Auth_Jwt_Insert_Input;
-  on_conflict?: InputMaybe<Auth_Jwt_On_Conflict>;
 };
 
 /** mutation root */
@@ -8926,18 +8144,6 @@ export type Mutation_RootInsert_Users_OneArgs = {
 };
 
 /** mutation root */
-export type Mutation_RootInsert_Verification_CodesArgs = {
-  objects: Array<Verification_Codes_Insert_Input>;
-  on_conflict?: InputMaybe<Verification_Codes_On_Conflict>;
-};
-
-/** mutation root */
-export type Mutation_RootInsert_Verification_Codes_OneArgs = {
-  object: Verification_Codes_Insert_Input;
-  on_conflict?: InputMaybe<Verification_Codes_On_Conflict>;
-};
-
-/** mutation root */
 export type Mutation_RootUpdateBucketArgs = {
   _inc?: InputMaybe<Buckets_Inc_Input>;
   _set?: InputMaybe<Buckets_Set_Input>;
@@ -8999,24 +8205,14 @@ export type Mutation_RootUpdateVirusesArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdate_AccountsArgs = {
-  _append?: InputMaybe<Accounts_Append_Input>;
-  _delete_at_path?: InputMaybe<Accounts_Delete_At_Path_Input>;
-  _delete_elem?: InputMaybe<Accounts_Delete_Elem_Input>;
-  _delete_key?: InputMaybe<Accounts_Delete_Key_Input>;
   _inc?: InputMaybe<Accounts_Inc_Input>;
-  _prepend?: InputMaybe<Accounts_Prepend_Input>;
   _set?: InputMaybe<Accounts_Set_Input>;
   where: Accounts_Bool_Exp;
 };
 
 /** mutation root */
 export type Mutation_RootUpdate_Accounts_By_PkArgs = {
-  _append?: InputMaybe<Accounts_Append_Input>;
-  _delete_at_path?: InputMaybe<Accounts_Delete_At_Path_Input>;
-  _delete_elem?: InputMaybe<Accounts_Delete_Elem_Input>;
-  _delete_key?: InputMaybe<Accounts_Delete_Key_Input>;
   _inc?: InputMaybe<Accounts_Inc_Input>;
-  _prepend?: InputMaybe<Accounts_Prepend_Input>;
   _set?: InputMaybe<Accounts_Set_Input>;
   pk_columns: Accounts_Pk_Columns_Input;
 };
@@ -9024,25 +8220,6 @@ export type Mutation_RootUpdate_Accounts_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Accounts_ManyArgs = {
   updates: Array<Accounts_Updates>;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Auth_JwtArgs = {
-  _inc?: InputMaybe<Auth_Jwt_Inc_Input>;
-  _set?: InputMaybe<Auth_Jwt_Set_Input>;
-  where: Auth_Jwt_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Auth_Jwt_By_PkArgs = {
-  _inc?: InputMaybe<Auth_Jwt_Inc_Input>;
-  _set?: InputMaybe<Auth_Jwt_Set_Input>;
-  pk_columns: Auth_Jwt_Pk_Columns_Input;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Auth_Jwt_ManyArgs = {
-  updates: Array<Auth_Jwt_Updates>;
 };
 
 /** mutation root */
@@ -9717,25 +8894,6 @@ export type Mutation_RootUpdate_Users_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Users_ManyArgs = {
   updates: Array<Users_Updates>;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Verification_CodesArgs = {
-  _inc?: InputMaybe<Verification_Codes_Inc_Input>;
-  _set?: InputMaybe<Verification_Codes_Set_Input>;
-  where: Verification_Codes_Bool_Exp;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Verification_Codes_By_PkArgs = {
-  _inc?: InputMaybe<Verification_Codes_Inc_Input>;
-  _set?: InputMaybe<Verification_Codes_Set_Input>;
-  pk_columns: Verification_Codes_Pk_Columns_Input;
-};
-
-/** mutation root */
-export type Mutation_RootUpdate_Verification_Codes_ManyArgs = {
-  updates: Array<Verification_Codes_Updates>;
 };
 
 /** mutation root */
@@ -16189,18 +15347,12 @@ export type Payments_User_Payment_Provider_Mappings_Variance_Order_By = {
 
 export type Query_Root = {
   __typename?: "query_root";
-  /** An array relationship */
+  /** fetch data from the table: "accounts" */
   accounts: Array<Accounts>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "accounts" */
   accounts_aggregate: Accounts_Aggregate;
   /** fetch data from the table: "accounts" using primary key columns */
   accounts_by_pk?: Maybe<Accounts>;
-  /** fetch data from the table: "auth_jwt" */
-  auth_jwt: Array<Auth_Jwt>;
-  /** fetch aggregated fields from the table: "auth_jwt" */
-  auth_jwt_aggregate: Auth_Jwt_Aggregate;
-  /** fetch data from the table: "auth_jwt" using primary key columns */
-  auth_jwt_by_pk?: Maybe<Auth_Jwt>;
   /** fetch data from the table: "storage.buckets" using primary key columns */
   bucket?: Maybe<Buckets>;
   /** fetch data from the table: "storage.buckets" */
@@ -16377,12 +15529,6 @@ export type Query_Root = {
   users_aggregate: Users_Aggregate;
   /** fetch data from the table: "users" using primary key columns */
   users_by_pk?: Maybe<Users>;
-  /** fetch data from the table: "verification_codes" */
-  verification_codes: Array<Verification_Codes>;
-  /** fetch aggregated fields from the table: "verification_codes" */
-  verification_codes_aggregate: Verification_Codes_Aggregate;
-  /** fetch data from the table: "verification_codes" using primary key columns */
-  verification_codes_by_pk?: Maybe<Verification_Codes>;
   /** fetch data from the table: "storage.virus" using primary key columns */
   virus?: Maybe<Virus>;
   /** fetch data from the table: "storage.virus" */
@@ -16408,26 +15554,6 @@ export type Query_RootAccounts_AggregateArgs = {
 };
 
 export type Query_RootAccounts_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Query_RootAuth_JwtArgs = {
-  distinct_on?: InputMaybe<Array<Auth_Jwt_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Auth_Jwt_Order_By>>;
-  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
-};
-
-export type Query_RootAuth_Jwt_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Auth_Jwt_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Auth_Jwt_Order_By>>;
-  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
-};
-
-export type Query_RootAuth_Jwt_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -17028,26 +16154,6 @@ export type Query_RootUsers_AggregateArgs = {
 };
 
 export type Query_RootUsers_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Query_RootVerification_CodesArgs = {
-  distinct_on?: InputMaybe<Array<Verification_Codes_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Verification_Codes_Order_By>>;
-  where?: InputMaybe<Verification_Codes_Bool_Exp>;
-};
-
-export type Query_RootVerification_Codes_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Verification_Codes_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Verification_Codes_Order_By>>;
-  where?: InputMaybe<Verification_Codes_Bool_Exp>;
-};
-
-export type Query_RootVerification_Codes_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -18311,22 +17417,14 @@ export type St_D_Within_Input = {
 
 export type Subscription_Root = {
   __typename?: "subscription_root";
-  /** An array relationship */
+  /** fetch data from the table: "accounts" */
   accounts: Array<Accounts>;
-  /** An aggregate relationship */
+  /** fetch aggregated fields from the table: "accounts" */
   accounts_aggregate: Accounts_Aggregate;
   /** fetch data from the table: "accounts" using primary key columns */
   accounts_by_pk?: Maybe<Accounts>;
   /** fetch data from the table in a streaming manner: "accounts" */
   accounts_stream: Array<Accounts>;
-  /** fetch data from the table: "auth_jwt" */
-  auth_jwt: Array<Auth_Jwt>;
-  /** fetch aggregated fields from the table: "auth_jwt" */
-  auth_jwt_aggregate: Auth_Jwt_Aggregate;
-  /** fetch data from the table: "auth_jwt" using primary key columns */
-  auth_jwt_by_pk?: Maybe<Auth_Jwt>;
-  /** fetch data from the table in a streaming manner: "auth_jwt" */
-  auth_jwt_stream: Array<Auth_Jwt>;
   /** fetch data from the table: "storage.buckets" using primary key columns */
   bucket?: Maybe<Buckets>;
   /** fetch data from the table: "storage.buckets" */
@@ -18563,14 +17661,6 @@ export type Subscription_Root = {
   users_by_pk?: Maybe<Users>;
   /** fetch data from the table in a streaming manner: "users" */
   users_stream: Array<Users>;
-  /** fetch data from the table: "verification_codes" */
-  verification_codes: Array<Verification_Codes>;
-  /** fetch aggregated fields from the table: "verification_codes" */
-  verification_codes_aggregate: Verification_Codes_Aggregate;
-  /** fetch data from the table: "verification_codes" using primary key columns */
-  verification_codes_by_pk?: Maybe<Verification_Codes>;
-  /** fetch data from the table in a streaming manner: "verification_codes" */
-  verification_codes_stream: Array<Verification_Codes>;
   /** fetch data from the table: "storage.virus" using primary key columns */
   virus?: Maybe<Virus>;
   /** fetch data from the table in a streaming manner: "storage.virus" */
@@ -18605,32 +17695,6 @@ export type Subscription_RootAccounts_StreamArgs = {
   batch_size: Scalars["Int"]["input"];
   cursor: Array<InputMaybe<Accounts_Stream_Cursor_Input>>;
   where?: InputMaybe<Accounts_Bool_Exp>;
-};
-
-export type Subscription_RootAuth_JwtArgs = {
-  distinct_on?: InputMaybe<Array<Auth_Jwt_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Auth_Jwt_Order_By>>;
-  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
-};
-
-export type Subscription_RootAuth_Jwt_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Auth_Jwt_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Auth_Jwt_Order_By>>;
-  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
-};
-
-export type Subscription_RootAuth_Jwt_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Subscription_RootAuth_Jwt_StreamArgs = {
-  batch_size: Scalars["Int"]["input"];
-  cursor: Array<InputMaybe<Auth_Jwt_Stream_Cursor_Input>>;
-  where?: InputMaybe<Auth_Jwt_Bool_Exp>;
 };
 
 export type Subscription_RootBucketArgs = {
@@ -19418,32 +18482,6 @@ export type Subscription_RootUsers_StreamArgs = {
   where?: InputMaybe<Users_Bool_Exp>;
 };
 
-export type Subscription_RootVerification_CodesArgs = {
-  distinct_on?: InputMaybe<Array<Verification_Codes_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Verification_Codes_Order_By>>;
-  where?: InputMaybe<Verification_Codes_Bool_Exp>;
-};
-
-export type Subscription_RootVerification_Codes_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Verification_Codes_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Verification_Codes_Order_By>>;
-  where?: InputMaybe<Verification_Codes_Bool_Exp>;
-};
-
-export type Subscription_RootVerification_Codes_By_PkArgs = {
-  id: Scalars["uuid"]["input"];
-};
-
-export type Subscription_RootVerification_Codes_StreamArgs = {
-  batch_size: Scalars["Int"]["input"];
-  cursor: Array<InputMaybe<Verification_Codes_Stream_Cursor_Input>>;
-  where?: InputMaybe<Verification_Codes_Bool_Exp>;
-};
-
 export type Subscription_RootVirusArgs = {
   id: Scalars["uuid"]["input"];
 };
@@ -19488,10 +18526,6 @@ export type Users = {
   __typename?: "users";
   _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
   _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  /** An array relationship */
-  accounts: Array<Accounts>;
-  /** An aggregate relationship */
-  accounts_aggregate: Accounts_Aggregate;
   created_at: Scalars["bigint"]["output"];
   /** User email address */
   email?: Maybe<Scalars["String"]["output"]>;
@@ -19517,24 +18551,6 @@ export type Users = {
   /** An aggregate relationship */
   notification_permissions_aggregate: Notification_Permissions_Aggregate;
   updated_at: Scalars["bigint"]["output"];
-};
-
-/** columns and relationships of "users" */
-export type UsersAccountsArgs = {
-  distinct_on?: InputMaybe<Array<Accounts_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Accounts_Order_By>>;
-  where?: InputMaybe<Accounts_Bool_Exp>;
-};
-
-/** columns and relationships of "users" */
-export type UsersAccounts_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Accounts_Select_Column>>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-  order_by?: InputMaybe<Array<Accounts_Order_By>>;
-  where?: InputMaybe<Accounts_Bool_Exp>;
 };
 
 /** columns and relationships of "users" */
@@ -19618,8 +18634,6 @@ export type Users_Bool_Exp = {
   _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
   _not?: InputMaybe<Users_Bool_Exp>;
   _or?: InputMaybe<Array<Users_Bool_Exp>>;
-  accounts?: InputMaybe<Accounts_Bool_Exp>;
-  accounts_aggregate?: InputMaybe<Accounts_Aggregate_Bool_Exp>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
   email?: InputMaybe<String_Comparison_Exp>;
   email_verified?: InputMaybe<Bigint_Comparison_Exp>;
@@ -19654,7 +18668,6 @@ export type Users_Inc_Input = {
 
 /** input type for inserting data into table "users" */
 export type Users_Insert_Input = {
-  accounts?: InputMaybe<Accounts_Arr_Rel_Insert_Input>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
   /** User email address */
   email?: InputMaybe<Scalars["String"]["input"]>;
@@ -19742,7 +18755,6 @@ export type Users_On_Conflict = {
 export type Users_Order_By = {
   _hasyx_schema_name?: InputMaybe<Order_By>;
   _hasyx_table_name?: InputMaybe<Order_By>;
-  accounts_aggregate?: InputMaybe<Accounts_Aggregate_Order_By>;
   created_at?: InputMaybe<Order_By>;
   email?: InputMaybe<Order_By>;
   email_verified?: InputMaybe<Order_By>;
@@ -19941,419 +18953,6 @@ export type Uuid_Comparison_Exp = {
   _lte?: InputMaybe<Scalars["uuid"]["input"]>;
   _neq?: InputMaybe<Scalars["uuid"]["input"]>;
   _nin?: InputMaybe<Array<Scalars["uuid"]["input"]>>;
-};
-
-/** columns and relationships of "verification_codes" */
-export type Verification_Codes = {
-  __typename?: "verification_codes";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  /** Number of verification attempts */
-  attempts?: Maybe<Scalars["Int"]["output"]>;
-  /** BCrypt hash of the verification code */
-  code_hash: Scalars["String"]["output"];
-  /** When the code was successfully used */
-  consumed_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  created_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  created_ms: Scalars["bigint"]["output"];
-  /** Expiration timestamp of the code */
-  expires_at: Scalars["timestamptz"]["output"];
-  /** An object relationship */
-  hasyx?: Maybe<Hasyx>;
-  id: Scalars["uuid"]["output"];
-  /** Email address or phone number being verified */
-  identifier: Scalars["String"]["output"];
-  /** Provider used for verification (email or phone) */
-  provider: Scalars["String"]["output"];
-  updated_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  updated_ms: Scalars["bigint"]["output"];
-  /** Optional user who initiated verification (may differ from owner) */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** aggregated selection of "verification_codes" */
-export type Verification_Codes_Aggregate = {
-  __typename?: "verification_codes_aggregate";
-  aggregate?: Maybe<Verification_Codes_Aggregate_Fields>;
-  nodes: Array<Verification_Codes>;
-};
-
-/** aggregate fields of "verification_codes" */
-export type Verification_Codes_Aggregate_Fields = {
-  __typename?: "verification_codes_aggregate_fields";
-  avg?: Maybe<Verification_Codes_Avg_Fields>;
-  count: Scalars["Int"]["output"];
-  max?: Maybe<Verification_Codes_Max_Fields>;
-  min?: Maybe<Verification_Codes_Min_Fields>;
-  stddev?: Maybe<Verification_Codes_Stddev_Fields>;
-  stddev_pop?: Maybe<Verification_Codes_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Verification_Codes_Stddev_Samp_Fields>;
-  sum?: Maybe<Verification_Codes_Sum_Fields>;
-  var_pop?: Maybe<Verification_Codes_Var_Pop_Fields>;
-  var_samp?: Maybe<Verification_Codes_Var_Samp_Fields>;
-  variance?: Maybe<Verification_Codes_Variance_Fields>;
-};
-
-/** aggregate fields of "verification_codes" */
-export type Verification_Codes_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Verification_Codes_Select_Column>>;
-  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-/** aggregate avg on columns */
-export type Verification_Codes_Avg_Fields = {
-  __typename?: "verification_codes_avg_fields";
-  /** Number of verification attempts */
-  attempts?: Maybe<Scalars["Float"]["output"]>;
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Boolean expression to filter rows from the table "verification_codes". All fields are combined with a logical 'AND'. */
-export type Verification_Codes_Bool_Exp = {
-  _and?: InputMaybe<Array<Verification_Codes_Bool_Exp>>;
-  _hasyx_schema_name?: InputMaybe<String_Comparison_Exp>;
-  _hasyx_table_name?: InputMaybe<String_Comparison_Exp>;
-  _not?: InputMaybe<Verification_Codes_Bool_Exp>;
-  _or?: InputMaybe<Array<Verification_Codes_Bool_Exp>>;
-  attempts?: InputMaybe<Int_Comparison_Exp>;
-  code_hash?: InputMaybe<String_Comparison_Exp>;
-  consumed_at?: InputMaybe<Timestamptz_Comparison_Exp>;
-  created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
-  created_ms?: InputMaybe<Bigint_Comparison_Exp>;
-  expires_at?: InputMaybe<Timestamptz_Comparison_Exp>;
-  hasyx?: InputMaybe<Hasyx_Bool_Exp>;
-  id?: InputMaybe<Uuid_Comparison_Exp>;
-  identifier?: InputMaybe<String_Comparison_Exp>;
-  provider?: InputMaybe<String_Comparison_Exp>;
-  updated_at?: InputMaybe<Timestamptz_Comparison_Exp>;
-  updated_ms?: InputMaybe<Bigint_Comparison_Exp>;
-  user_id?: InputMaybe<Uuid_Comparison_Exp>;
-};
-
-/** unique or primary key constraints on table "verification_codes" */
-export enum Verification_Codes_Constraint {
-  /** unique or primary key constraint on columns "id" */
-  VerificationCodesPkey = "verification_codes_pkey",
-}
-
-/** input type for incrementing numeric columns in table "verification_codes" */
-export type Verification_Codes_Inc_Input = {
-  /** Number of verification attempts */
-  attempts?: InputMaybe<Scalars["Int"]["input"]>;
-  created_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-  updated_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-};
-
-/** input type for inserting data into table "verification_codes" */
-export type Verification_Codes_Insert_Input = {
-  /** Number of verification attempts */
-  attempts?: InputMaybe<Scalars["Int"]["input"]>;
-  /** BCrypt hash of the verification code */
-  code_hash?: InputMaybe<Scalars["String"]["input"]>;
-  /** When the code was successfully used */
-  consumed_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  created_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  created_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Expiration timestamp of the code */
-  expires_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  hasyx?: InputMaybe<Hasyx_Obj_Rel_Insert_Input>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Email address or phone number being verified */
-  identifier?: InputMaybe<Scalars["String"]["input"]>;
-  /** Provider used for verification (email or phone) */
-  provider?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  updated_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Optional user who initiated verification (may differ from owner) */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-};
-
-/** aggregate max on columns */
-export type Verification_Codes_Max_Fields = {
-  __typename?: "verification_codes_max_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  /** Number of verification attempts */
-  attempts?: Maybe<Scalars["Int"]["output"]>;
-  /** BCrypt hash of the verification code */
-  code_hash?: Maybe<Scalars["String"]["output"]>;
-  /** When the code was successfully used */
-  consumed_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  created_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  created_ms?: Maybe<Scalars["bigint"]["output"]>;
-  /** Expiration timestamp of the code */
-  expires_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Email address or phone number being verified */
-  identifier?: Maybe<Scalars["String"]["output"]>;
-  /** Provider used for verification (email or phone) */
-  provider?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  updated_ms?: Maybe<Scalars["bigint"]["output"]>;
-  /** Optional user who initiated verification (may differ from owner) */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** aggregate min on columns */
-export type Verification_Codes_Min_Fields = {
-  __typename?: "verification_codes_min_fields";
-  _hasyx_schema_name?: Maybe<Scalars["String"]["output"]>;
-  _hasyx_table_name?: Maybe<Scalars["String"]["output"]>;
-  /** Number of verification attempts */
-  attempts?: Maybe<Scalars["Int"]["output"]>;
-  /** BCrypt hash of the verification code */
-  code_hash?: Maybe<Scalars["String"]["output"]>;
-  /** When the code was successfully used */
-  consumed_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  created_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  created_ms?: Maybe<Scalars["bigint"]["output"]>;
-  /** Expiration timestamp of the code */
-  expires_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  id?: Maybe<Scalars["uuid"]["output"]>;
-  /** Email address or phone number being verified */
-  identifier?: Maybe<Scalars["String"]["output"]>;
-  /** Provider used for verification (email or phone) */
-  provider?: Maybe<Scalars["String"]["output"]>;
-  updated_at?: Maybe<Scalars["timestamptz"]["output"]>;
-  updated_ms?: Maybe<Scalars["bigint"]["output"]>;
-  /** Optional user who initiated verification (may differ from owner) */
-  user_id?: Maybe<Scalars["uuid"]["output"]>;
-};
-
-/** response of any mutation on the table "verification_codes" */
-export type Verification_Codes_Mutation_Response = {
-  __typename?: "verification_codes_mutation_response";
-  /** number of rows affected by the mutation */
-  affected_rows: Scalars["Int"]["output"];
-  /** data from the rows affected by the mutation */
-  returning: Array<Verification_Codes>;
-};
-
-/** input type for inserting object relation for remote table "verification_codes" */
-export type Verification_Codes_Obj_Rel_Insert_Input = {
-  data: Verification_Codes_Insert_Input;
-  /** upsert condition */
-  on_conflict?: InputMaybe<Verification_Codes_On_Conflict>;
-};
-
-/** on_conflict condition type for table "verification_codes" */
-export type Verification_Codes_On_Conflict = {
-  constraint: Verification_Codes_Constraint;
-  update_columns?: Array<Verification_Codes_Update_Column>;
-  where?: InputMaybe<Verification_Codes_Bool_Exp>;
-};
-
-/** Ordering options when selecting data from "verification_codes". */
-export type Verification_Codes_Order_By = {
-  _hasyx_schema_name?: InputMaybe<Order_By>;
-  _hasyx_table_name?: InputMaybe<Order_By>;
-  attempts?: InputMaybe<Order_By>;
-  code_hash?: InputMaybe<Order_By>;
-  consumed_at?: InputMaybe<Order_By>;
-  created_at?: InputMaybe<Order_By>;
-  created_ms?: InputMaybe<Order_By>;
-  expires_at?: InputMaybe<Order_By>;
-  hasyx?: InputMaybe<Hasyx_Order_By>;
-  id?: InputMaybe<Order_By>;
-  identifier?: InputMaybe<Order_By>;
-  provider?: InputMaybe<Order_By>;
-  updated_at?: InputMaybe<Order_By>;
-  updated_ms?: InputMaybe<Order_By>;
-  user_id?: InputMaybe<Order_By>;
-};
-
-/** primary key columns input for table: verification_codes */
-export type Verification_Codes_Pk_Columns_Input = {
-  id: Scalars["uuid"]["input"];
-};
-
-/** select columns of table "verification_codes" */
-export enum Verification_Codes_Select_Column {
-  /** column name */
-  HasyxSchemaName = "_hasyx_schema_name",
-  /** column name */
-  HasyxTableName = "_hasyx_table_name",
-  /** column name */
-  Attempts = "attempts",
-  /** column name */
-  CodeHash = "code_hash",
-  /** column name */
-  ConsumedAt = "consumed_at",
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  CreatedMs = "created_ms",
-  /** column name */
-  ExpiresAt = "expires_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  Identifier = "identifier",
-  /** column name */
-  Provider = "provider",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UpdatedMs = "updated_ms",
-  /** column name */
-  UserId = "user_id",
-}
-
-/** input type for updating data in table "verification_codes" */
-export type Verification_Codes_Set_Input = {
-  /** Number of verification attempts */
-  attempts?: InputMaybe<Scalars["Int"]["input"]>;
-  /** BCrypt hash of the verification code */
-  code_hash?: InputMaybe<Scalars["String"]["input"]>;
-  /** When the code was successfully used */
-  consumed_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  created_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  created_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Expiration timestamp of the code */
-  expires_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Email address or phone number being verified */
-  identifier?: InputMaybe<Scalars["String"]["input"]>;
-  /** Provider used for verification (email or phone) */
-  provider?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  updated_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Optional user who initiated verification (may differ from owner) */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-};
-
-/** aggregate stddev on columns */
-export type Verification_Codes_Stddev_Fields = {
-  __typename?: "verification_codes_stddev_fields";
-  /** Number of verification attempts */
-  attempts?: Maybe<Scalars["Float"]["output"]>;
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Verification_Codes_Stddev_Pop_Fields = {
-  __typename?: "verification_codes_stddev_pop_fields";
-  /** Number of verification attempts */
-  attempts?: Maybe<Scalars["Float"]["output"]>;
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Verification_Codes_Stddev_Samp_Fields = {
-  __typename?: "verification_codes_stddev_samp_fields";
-  /** Number of verification attempts */
-  attempts?: Maybe<Scalars["Float"]["output"]>;
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** Streaming cursor of the table "verification_codes" */
-export type Verification_Codes_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Verification_Codes_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Verification_Codes_Stream_Cursor_Value_Input = {
-  _hasyx_schema_name?: InputMaybe<Scalars["String"]["input"]>;
-  _hasyx_table_name?: InputMaybe<Scalars["String"]["input"]>;
-  /** Number of verification attempts */
-  attempts?: InputMaybe<Scalars["Int"]["input"]>;
-  /** BCrypt hash of the verification code */
-  code_hash?: InputMaybe<Scalars["String"]["input"]>;
-  /** When the code was successfully used */
-  consumed_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  created_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  created_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Expiration timestamp of the code */
-  expires_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  id?: InputMaybe<Scalars["uuid"]["input"]>;
-  /** Email address or phone number being verified */
-  identifier?: InputMaybe<Scalars["String"]["input"]>;
-  /** Provider used for verification (email or phone) */
-  provider?: InputMaybe<Scalars["String"]["input"]>;
-  updated_at?: InputMaybe<Scalars["timestamptz"]["input"]>;
-  updated_ms?: InputMaybe<Scalars["bigint"]["input"]>;
-  /** Optional user who initiated verification (may differ from owner) */
-  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
-};
-
-/** aggregate sum on columns */
-export type Verification_Codes_Sum_Fields = {
-  __typename?: "verification_codes_sum_fields";
-  /** Number of verification attempts */
-  attempts?: Maybe<Scalars["Int"]["output"]>;
-  created_ms?: Maybe<Scalars["bigint"]["output"]>;
-  updated_ms?: Maybe<Scalars["bigint"]["output"]>;
-};
-
-/** update columns of table "verification_codes" */
-export enum Verification_Codes_Update_Column {
-  /** column name */
-  Attempts = "attempts",
-  /** column name */
-  CodeHash = "code_hash",
-  /** column name */
-  ConsumedAt = "consumed_at",
-  /** column name */
-  CreatedAt = "created_at",
-  /** column name */
-  CreatedMs = "created_ms",
-  /** column name */
-  ExpiresAt = "expires_at",
-  /** column name */
-  Id = "id",
-  /** column name */
-  Identifier = "identifier",
-  /** column name */
-  Provider = "provider",
-  /** column name */
-  UpdatedAt = "updated_at",
-  /** column name */
-  UpdatedMs = "updated_ms",
-  /** column name */
-  UserId = "user_id",
-}
-
-export type Verification_Codes_Updates = {
-  /** increments the numeric columns with given value of the filtered values */
-  _inc?: InputMaybe<Verification_Codes_Inc_Input>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<Verification_Codes_Set_Input>;
-  /** filter the rows which have to be updated */
-  where: Verification_Codes_Bool_Exp;
-};
-
-/** aggregate var_pop on columns */
-export type Verification_Codes_Var_Pop_Fields = {
-  __typename?: "verification_codes_var_pop_fields";
-  /** Number of verification attempts */
-  attempts?: Maybe<Scalars["Float"]["output"]>;
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate var_samp on columns */
-export type Verification_Codes_Var_Samp_Fields = {
-  __typename?: "verification_codes_var_samp_fields";
-  /** Number of verification attempts */
-  attempts?: Maybe<Scalars["Float"]["output"]>;
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
-};
-
-/** aggregate variance on columns */
-export type Verification_Codes_Variance_Fields = {
-  __typename?: "verification_codes_variance_fields";
-  /** Number of verification attempts */
-  attempts?: Maybe<Scalars["Float"]["output"]>;
-  created_ms?: Maybe<Scalars["Float"]["output"]>;
-  updated_ms?: Maybe<Scalars["Float"]["output"]>;
 };
 
 /** columns and relationships of "storage.virus" */

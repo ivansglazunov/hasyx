@@ -1533,6 +1533,12 @@
   .bg-card {
     background-color: var(--card);
   }
+  .bg-card\/50 {
+    background-color: var(--card);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--card) 50%, transparent);
+    }
+  }
   .bg-cyan-400 {
     background-color: var(--color-cyan-400);
   }

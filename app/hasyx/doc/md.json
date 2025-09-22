@@ -1049,23 +1049,28 @@
           "level": 2
         },
         {
-          "title": "⚠️ CRITICAL: Table Naming in Hasyx",
-          "url": "/hasyx/doc/CONTRIBUTING#critical-table-naming-in-hasyx",
+          "title": "⚠️ CRITICAL: Schema and Table Naming in Hasyx",
+          "url": "/hasyx/doc/CONTRIBUTING#critical-schema-and-table-naming-in-hasyx",
           "level": 2
         },
         {
-          "title": "✅ CORRECT - Use underscores:",
-          "url": "/hasyx/doc/CONTRIBUTING#correct-use-underscores",
+          "title": "SQL Level (Migrations, Raw SQL)",
+          "url": "/hasyx/doc/CONTRIBUTING#sql-level-migrations-raw-sql",
           "level": 3
         },
         {
-          "title": "❌ INCORRECT - Do NOT use dots:",
-          "url": "/hasyx/doc/CONTRIBUTING#incorrect-do-not-use-dots",
+          "title": "Hasura/GraphQL Level (Hasyx Client Operations)",
+          "url": "/hasyx/doc/CONTRIBUTING#hasuragraphql-level-hasyx-client-operations",
           "level": 3
         },
         {
           "title": "Schema to Table Name Mapping:",
           "url": "/hasyx/doc/CONTRIBUTING#schema-to-table-name-mapping",
+          "level": 3
+        },
+        {
+          "title": "Why This Difference?",
+          "url": "/hasyx/doc/CONTRIBUTING#why-this-difference",
           "level": 3
         },
         {
@@ -3523,6 +3528,164 @@
       "level": 1
     },
     {
+      "title": "Items System & Option Inheritance",
+      "url": "/hasyx/doc/ITEMS",
+      "collapse": true,
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/hasyx/doc/ITEMS#overview",
+          "level": 2
+        },
+        {
+          "title": "Core Concepts",
+          "url": "/hasyx/doc/ITEMS#core-concepts",
+          "level": 3
+        },
+        {
+          "title": "Items Table Structure",
+          "url": "/hasyx/doc/ITEMS#items-table-structure",
+          "level": 2
+        },
+        {
+          "title": "Key Fields",
+          "url": "/hasyx/doc/ITEMS#key-fields",
+          "level": 3
+        },
+        {
+          "title": "Options Integration",
+          "url": "/hasyx/doc/ITEMS#options-integration",
+          "level": 2
+        },
+        {
+          "title": "Schema Definition",
+          "url": "/hasyx/doc/ITEMS#schema-definition",
+          "level": 3
+        },
+        {
+          "title": "Item-Options View: The Inheritance Engine",
+          "url": "/hasyx/doc/ITEMS#item-options-view-the-inheritance-engine",
+          "level": 2
+        },
+        {
+          "title": "View Structure",
+          "url": "/hasyx/doc/ITEMS#view-structure",
+          "level": 3
+        },
+        {
+          "title": "Key Features",
+          "url": "/hasyx/doc/ITEMS#key-features",
+          "level": 3
+        },
+        {
+          "title": "How Inheritance Works",
+          "url": "/hasyx/doc/ITEMS#how-inheritance-works",
+          "level": 2
+        },
+        {
+          "title": "1. Direct Options",
+          "url": "/hasyx/doc/ITEMS#1-direct-options",
+          "level": 3
+        },
+        {
+          "title": "2. Inherited Options",
+          "url": "/hasyx/doc/ITEMS#2-inherited-options",
+          "level": 3
+        },
+        {
+          "title": "3. Option Override",
+          "url": "/hasyx/doc/ITEMS#3-option-override",
+          "level": 3
+        },
+        {
+          "title": "Relationships & GraphQL",
+          "url": "/hasyx/doc/ITEMS#relationships-graphql",
+          "level": 2
+        },
+        {
+          "title": "Item-Options Relationships",
+          "url": "/hasyx/doc/ITEMS#item-options-relationships",
+          "level": 3
+        },
+        {
+          "title": "Items to Item-Options",
+          "url": "/hasyx/doc/ITEMS#items-to-item-options",
+          "level": 3
+        },
+        {
+          "title": "Usage Patterns",
+          "url": "/hasyx/doc/ITEMS#usage-patterns",
+          "level": 2
+        },
+        {
+          "title": "1. Configuration Inheritance",
+          "url": "/hasyx/doc/ITEMS#1-configuration-inheritance",
+          "level": 3
+        },
+        {
+          "title": "2. Permission Inheritance",
+          "url": "/hasyx/doc/ITEMS#2-permission-inheritance",
+          "level": 3
+        },
+        {
+          "title": "3. Geographic Hierarchy",
+          "url": "/hasyx/doc/ITEMS#3-geographic-hierarchy",
+          "level": 3
+        },
+        {
+          "title": "Differences from Direct Options Usage",
+          "url": "/hasyx/doc/ITEMS#differences-from-direct-options-usage",
+          "level": 2
+        },
+        {
+          "title": "Direct Options Approach",
+          "url": "/hasyx/doc/ITEMS#direct-options-approach",
+          "level": 3
+        },
+        {
+          "title": "Item-Options Inheritance Approach",
+          "url": "/hasyx/doc/ITEMS#item-options-inheritance-approach",
+          "level": 3
+        },
+        {
+          "title": "Key Advantages",
+          "url": "/hasyx/doc/ITEMS#key-advantages",
+          "level": 3
+        },
+        {
+          "title": "When to Use Each Approach",
+          "url": "/hasyx/doc/ITEMS#when-to-use-each-approach",
+          "level": 3
+        },
+        {
+          "title": "Migration & Setup",
+          "url": "/hasyx/doc/ITEMS#migration-setup",
+          "level": 2
+        },
+        {
+          "title": "Best Practices",
+          "url": "/hasyx/doc/ITEMS#best-practices",
+          "level": 2
+        },
+        {
+          "title": "Troubleshooting",
+          "url": "/hasyx/doc/ITEMS#troubleshooting",
+          "level": 2
+        },
+        {
+          "title": "Common Issues",
+          "url": "/hasyx/doc/ITEMS#common-issues",
+          "level": 3
+        },
+        {
+          "title": "Debugging Queries",
+          "url": "/hasyx/doc/ITEMS#debugging-queries",
+          "level": 3
+        }
+      ],
+      "level": 1
+    },
+    {
       "title": "Hasyx Logs System",
       "url": "/hasyx/doc/LOGS",
       "collapse": true,
@@ -4593,6 +4756,26 @@
         {
           "title": "FAQ",
           "url": "/hasyx/doc/OPTIONS#faq",
+          "level": 3
+        },
+        {
+          "title": "Options vs Items Inheritance",
+          "url": "/hasyx/doc/OPTIONS#options-vs-items-inheritance",
+          "level": 2
+        },
+        {
+          "title": "Direct Options Usage",
+          "url": "/hasyx/doc/OPTIONS#direct-options-usage",
+          "level": 3
+        },
+        {
+          "title": "Items Inheritance Usage",
+          "url": "/hasyx/doc/OPTIONS#items-inheritance-usage",
+          "level": 3
+        },
+        {
+          "title": "When to Choose Each",
+          "url": "/hasyx/doc/OPTIONS#when-to-choose-each",
           "level": 3
         }
       ],
@@ -16108,5 +16291,5 @@
       "level": 1
     }
   ],
-  "lastUpdated": "2025-09-18T02:35:01.698Z"
+  "lastUpdated": "2025-09-22T18:19:07.585Z"
 }

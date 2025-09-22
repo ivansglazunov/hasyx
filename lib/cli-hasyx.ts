@@ -1225,6 +1225,7 @@ vscode:
         "logs-diffs": `npx ${packageName} logs-diffs`,
         "logs-states": `npx ${packageName} logs-states`,
         "config": `npx ${packageName} config`,
+        "validation": `npx ${packageName} validation define`,
         "env": `npx ${packageName} env`,
         "gitpod": `npx ${packageName} gitpod`
       };

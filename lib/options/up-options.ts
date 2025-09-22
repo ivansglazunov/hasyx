@@ -264,6 +264,16 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
     function_name: `${schema}.${optionsTable}_validate`
   });
 
+  // Permission trigger (runs BEFORE validate to fail early)
+  await hasura.defineTrigger({
+    schema,
+    table: optionsTable,
+    name: `${optionsTable}_permission_trigger`,
+    timing: 'BEFORE',
+    event: 'INSERT OR UPDATE OR DELETE',
+    function_name: `validation.validate_option_permission`
+  });
+
   // Auto-set user_id from session using plpgsql
   await hasura.defineFunction({
     schema,

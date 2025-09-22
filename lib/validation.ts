@@ -46,24 +46,33 @@ for (const [key, val] of Object.entries(schemas)) {
   result.schema[key] = z.toJSONSchema(val);
 }
 
-// Convert options to JSON Schema with proper structure and include x-meta from Zod .meta()
+// Convert options to JSON Schema with proper structure and migrate meta-like keys to x-meta
 result.options = {};
 for (const [tableName, zodObj] of Object.entries(options as any)) {
   const json: any = z.toJSONSchema(zodObj as any);
   try {
-    // Extract per-key meta from Zod shape
-    const shape = typeof (zodObj as any)?._def?.shape === 'function' ? (zodObj as any)._def.shape() : (zodObj as any)?._def?.shape;
-    if (shape && json && typeof json === 'object') {
-      json.properties = json.properties || {};
-      for (const key of Object.keys(json.properties || {})) {
-        const zodType = shape[key];
-        if (zodType && zodType._def) {
-          const meta = (zodType._def.meta ?? zodType._def.metadata ?? null) as any;
-          if (meta && typeof meta === 'object') {
-            // Attach meta under non-standard extension key to keep JSON Schema valid
-            json.properties[key]['x-meta'] = meta;
+    // zod-to-json-schema already extracts .meta() data and puts it at property level
+    // We need to move meta-like keys into x-meta to keep JSON Schema valid
+    if (json && typeof json === 'object' && json.properties) {
+      for (const key of Object.keys(json.properties)) {
+        const prop = json.properties[key] || {};
+        const knownMetaKeys = ['multiple', 'tables', 'permission', 'widget'];
+        const xMeta: any = {};
+        let hasMetaData = false;
+        
+        for (const mk of knownMetaKeys) {
+          if (Object.prototype.hasOwnProperty.call(prop, mk)) {
+            xMeta[mk] = prop[mk];
+            delete prop[mk];
+            hasMetaData = true;
           }
         }
+        
+        if (hasMetaData) {
+          prop['x-meta'] = xMeta;
+        }
+        
+        json.properties[key] = prop;
       }
     }
   } catch {
@@ -455,6 +464,135 @@ export async function ensureValidationRuntime(hasura: Hasura) {
       if (!Object.prototype.hasOwnProperty.call(props, option_key)) { plv8.elog(ERROR, 'Unknown option key: ' + option_key); }
     $$ LANGUAGE plv8;
   `);
+
+  // New: permission validation for options
+  await hasura.definePlv8Function({
+    schema: 'validation',
+    name: 'validate_option_permission',
+    jsFunction: function(NEW: any, OLD: any, plv8: any, TG_OP: string) {
+      try {
+        var op = (typeof TG_OP !== 'undefined' && TG_OP) ? String(TG_OP) : 'INSERT';
+        if (!NEW || !NEW.key) {
+          return NEW;
+        }
+        
+        // Skip keys without permission rules
+
+        var rows = plv8.execute("SELECT validation.project_schemas() AS j");
+        if (!rows || rows.length === 0) { plv8.elog('ERROR', 'project_schemas() not found'); }
+        var root = rows[0].j;
+
+        function resolvePath(obj, p){
+          var parts = (p || '').split('.');
+          var cur = obj;
+          for (var i=0;i<parts.length;i++){ cur = (cur && cur[parts[i]]) || null; }
+          return cur;
+        }
+
+        var found_in_table = null as string | null;
+        try {
+          var optionsRoot = (root && root.options) || {};
+          for (var tableName in optionsRoot){
+            try {
+              var cnt = plv8.execute('SELECT COUNT(1) AS c FROM public.' + tableName + ' WHERE id = $1', [NEW.item_id]);
+              if (cnt && cnt.length && Number(cnt[0].c) > 0) { found_in_table = tableName; break; }
+            } catch(e) {}
+          }
+        } catch(e) {}
+        if (!found_in_table) return NEW;
+
+        var key = NEW.key;
+        var permissionPath1 = 'options.' + found_in_table + '.properties.' + key + '.x-meta.permission';
+        var permissionPath2 = 'options.' + found_in_table + '.properties.' + key + '.permission';
+        var permissions = resolvePath(root, permissionPath1) || resolvePath(root, permissionPath2);
+        
+        // Skip keys without permission rules - this allows normal options validation to proceed
+        if (!permissions || typeof permissions !== 'object') return NEW;
+
+        var permObj = permissions[(op === 'INSERT') ? 'insert' : (op === 'UPDATE' ? 'update' : 'delete')];
+        if (!permObj) return NEW;
+
+        function substituteMarkers(val){
+          var M_USER = '$' + '{USER_ID}';
+          var M_OPTION = '$' + '{OPTION_ID}';
+          var M_ITEM = '$' + '{ITEM_ID}';
+          var M_TO = '$' + '{TO_ID}';
+          if (val === M_USER) {
+            try {
+              var sess = plv8.execute("SELECT current_setting('hasura.user', true)")[0];
+              var j = (sess && sess.current_setting) ? JSON.parse(sess.current_setting) : {};
+              return (j && j['x-hasura-user-id']) || null;
+            } catch(e){ return null; }
+          }
+          if (val === 'X-Hasura-User-Id') {
+            try {
+              var sess2 = plv8.execute("SELECT current_setting('hasura.user', true)")[0];
+              var j2 = (sess2 && sess2.current_setting) ? JSON.parse(sess2.current_setting) : {};
+              return (j2 && j2['x-hasura-user-id']) || null;
+            } catch(e){ return null; }
+          }
+          if (val === M_OPTION) return String(NEW.id || '');
+          if (val === M_ITEM) return String(NEW.item_id || '');
+          if (val === M_TO) return String(NEW.to_id || '');
+          return val;
+        }
+
+        function isSafeIdent(s){ return typeof s === 'string' && /^[A-Za-z_][A-Za-z0-9_]*$/.test(s); }
+        function ident(s){ if (!isSafeIdent(s)) { plv8.elog('ERROR', 'Invalid identifier: '+s); } return '"'+s+'"'; }
+        function lit(v){ if (v === null) return 'NULL'; return '\'' + String(v).replace(/'/g, "''") + '\''; }
+
+        function buildCondition(where){
+          if (!where || typeof where !== 'object') return 'TRUE';
+          var parts = [] as string[];
+          for (var k in where){
+            var v = where[k];
+            if (k === '_and' && Array.isArray(v)){
+              var sub = v.map(buildCondition).filter(Boolean).join(' AND ');
+              if (sub) parts.push('('+sub+')');
+            } else if (k === '_or' && Array.isArray(v)){
+              var sub2 = v.map(buildCondition).filter(Boolean).join(' OR ');
+              if (sub2) parts.push('('+sub2+')');
+            } else if (typeof v === 'object' && v !== null) {
+              if (v._eq !== undefined){
+                var val = substituteMarkers(v._eq);
+                if (val === null) parts.push('FALSE'); else parts.push(ident(k) + ' = ' + lit(val));
+              } else if (Array.isArray(v._in)){
+                var arr2 = v._in.map(substituteMarkers).map(function(x){ return lit(x); }).join(',');
+                parts.push(ident(k) + ' IN ('+arr2+')');
+              } else {
+                parts.push('TRUE');
+              }
+            } else {
+              var val2 = substituteMarkers(v);
+              if (val2 === null) parts.push('FALSE'); else parts.push(ident(k) + ' = ' + lit(val2));
+            }
+          }
+          return parts.length ? parts.join(' AND ') : 'TRUE';
+        }
+
+        var table = permObj.table || 'options';
+        var where = permObj.where || {};
+        var cond = buildCondition(where);
+        // Note: Do not add id = NEW.id for INSERT operations as NEW.id doesn't exist yet
+        var limit = Number(permObj.limit || 1);
+        var sql;
+        if (table.indexOf('.') === -1) sql = 'SELECT 1 FROM public.'+ident(table)+' WHERE '+cond+' LIMIT '+limit;
+        else {
+          var parts = table.split('.');
+          var sch = parts[0]; var tbl = parts[1];
+          if (!isSafeIdent(sch) || !isSafeIdent(tbl)) { plv8.elog('ERROR', 'Invalid table name: '+table); }
+          sql = 'SELECT 1 FROM '+ident(sch)+'.'+ident(tbl)+' WHERE '+cond+' LIMIT '+limit;
+        }
+        var res = plv8.execute(sql);
+        if (!res || res.length === 0) { 
+          plv8.elog('ERROR', 'Permission denied for option '+key+' by rule '+JSON.stringify(permObj)+' | SQL: '+sql); 
+        }
+        return NEW;
+      } catch(e) {
+        plv8.elog('ERROR', 'Permission validation error: ' + String(e));
+      }
+    }
+  });
 }
 
 export async function processConfiguredValidationDefine(hasura?: Hasura) {
