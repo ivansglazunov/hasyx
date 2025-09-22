@@ -304,9 +304,14 @@ export async function ensureValidationRuntime(hasura: Hasura) {
         var t = sch.type;
         if (t){
           var ok = false;
-          if (Array.isArray(t)) { ok = t.indexOf(typeOf(inst)) !== -1; }
-          else { ok = typeOf(inst) === t; }
-          if (!ok) errs.push('type mismatch: expected ' + JSON.stringify(t) + ', got ' + typeOf(inst));
+          var instType = typeOf(inst);
+          if (Array.isArray(t)) { 
+            ok = t.indexOf(instType) !== -1; 
+          } else { 
+            // Allow integer for number type (PostgreSQL numeric becomes integer in PLV8)
+            ok = instType === t || (t === 'number' && instType === 'integer');
+          }
+          if (!ok) errs.push('type mismatch: expected ' + JSON.stringify(t) + ', got ' + instType);
         }
         if (sch.enum){
           var ok2 = false; for (var i=0;i<sch.enum.length;i++){ if (JSON.stringify(inst) === JSON.stringify(sch.enum[i])) { ok2 = true; break; } }
@@ -385,9 +390,14 @@ export async function ensureValidationRuntime(hasura: Hasura) {
         var t = sch.type;
         if (t){
           var ok = false;
-          if (Array.isArray(t)) { ok = t.indexOf(typeOf(inst)) !== -1; }
-          else { ok = typeOf(inst) === t; }
-          if (!ok) errs.push('type mismatch: expected ' + JSON.stringify(t) + ', got ' + typeOf(inst));
+          var instType = typeOf(inst);
+          if (Array.isArray(t)) { 
+            ok = t.indexOf(instType) !== -1; 
+          } else { 
+            // Allow integer for number type (PostgreSQL numeric becomes integer in PLV8)
+            ok = instType === t || (t === 'number' && instType === 'integer');
+          }
+          if (!ok) errs.push('type mismatch: expected ' + JSON.stringify(t) + ', got ' + instType);
         }
         if (sch.enum){
           var ok2 = false; for (var i=0;i<sch.enum.length;i++){ if (JSON.stringify(inst) === JSON.stringify(sch.enum[i])) { ok2 = true; break; } }
