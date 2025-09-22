@@ -8,22 +8,22 @@ export const schema = {
   }),
 } as const;
 
-// 🎯 СИСТЕМА ОПЦИЙ ПО ТАБЛИЦАМ
-// Структура: options.tableName.optionKey
+// Options system for tables
+// Structure: options.tableName.optionKey
 export const options = {
-  // Опции для таблицы users (item_id = user.id)
+  // Options for users table (item_id = user.id)
   users: z.object({
     fio: z.string().min(1).max(200).optional(),
     displayName: z.string().min(1).max(100).optional(),
     timezone: z.string().min(1).max(50).optional(),
-    // Ссылка на файл-аватар (uuid из storage.files)
+    // Reference to avatar file (uuid from storage.files)
     avatar: z
       .string()
       .uuid()
       .describe('User avatar file id (uuid from storage.files)')
       .meta({ widget: 'file-id', tables: ['storage.files'] })
       .optional(),
-    // Множественные ссылки на друзей (uuid из users)
+    // Multiple references to friends (uuid from users)
     friend_id: z
       .string()
       .uuid()
@@ -36,13 +36,15 @@ export const options = {
       sms: z.boolean().optional(),
     }).partial().optional(),
   }),
-  // Опции для таблицы items (item_id = items.id)
+  // Options for items table (item_id = items.id)
   items: z.object({
-    // Начальная привязка пользователя к айтему
+    // Initial user binding to item
     user_id: z.string().uuid().meta({ tables: ['users'] }),
-    // Привязки к geo.features (маркер/маршрут/зона) в одной таблице
+    // Bindings to geo.features (marker/route/zone) in one table
     mark_id: z.string().uuid().meta({ tables: ['geo.features'] }),
     route_id: z.string().uuid().meta({ tables: ['geo.features'] }),
     zone_id: z.string().uuid().meta({ tables: ['geo.features'] }),
+    // Add title field to reproduce PLV8 bug with arrays
+    title: z.string().min(1).max(500).optional(),
   }),
 } as const;

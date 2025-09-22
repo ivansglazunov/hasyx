@@ -289,6 +289,10 @@ export async function ensureValidationRuntime(hasura: Hasura) {
       function isEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '')); }
       // In plv8, jsonb scalar often maps directly to JS scalar; avoid double JSON roundtrips
       var instance = value;
+      // Fix PLV8 JSONB→JS conversion: scalars become single-element arrays
+      if (Array.isArray(instance) && instance.length === 1) {
+        instance = instance[0];
+      }
       function typeOf(v){ 
         if (v === null) return 'null'; 
         if (Array.isArray(v)) return 'array'; 
@@ -366,6 +370,10 @@ export async function ensureValidationRuntime(hasura: Hasura) {
       var schema = resolvePath(root, schema_path);
       if (!schema) { plv8.elog(ERROR, 'Schema not found at path: ' + schema_path); }
       function isEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '')); }
+      // Fix PLV8 JSONB→JS conversion: scalars become single-element arrays
+      if (Array.isArray(value) && value.length === 1) {
+        value = value[0];
+      }
       function typeOf(v){ 
         if (v === null) return 'null'; 
         if (Array.isArray(v)) return 'array'; 

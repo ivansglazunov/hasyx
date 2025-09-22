@@ -14,9 +14,6 @@ import { gql } from '@apollo/client/core';
 dotenv.config();
 
 (!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('options table + validation', () => {
-  // ВАЖНО: по правилам проекта каждый it сам себе готовит окружение и чистит за собой
-  // Здесь никаких before/after не используем
-
   it('should support user options with valid item_id (acting user only)', async () => {
     const admin = new Hasyx(
       createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET!, ws: false }),
@@ -437,6 +434,47 @@ dotenv.config();
     // cleanup
     try { await admin.delete<any>({ table: 'deleteOptions', where: { id: { _eq: opt?.id } } }); } catch {}
     try { await admin.delete<any>({ table: 'deleteUsers', where: { id: { _eq: friend.id } } }); } catch {}
+    try { await admin.delete<any>({ table: 'deleteUsers', where: { id: { _eq: user.id } } }); } catch {}
+  }, 30000);
+
+  it('should reproduce kilotons PLV8 validation bug with items.title', async () => {
+    await syncSchemasToDatabase();
+    const admin = new Hasyx(
+      createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET!, ws: false }),
+      Generator(schema as any)
+    );
+
+    const user = await createTestUser();
+    const { hasyx: userClient } = await admin._authorize(user.id, { ws: false });
+
+    // Create an item first
+    const itemInsert = await admin.insert({
+      table: 'items',
+      objects: [{ parent_id: null }],
+      returning: ['id']
+    });
+    const itemId = Array.isArray(itemInsert?.returning) ? itemInsert.returning[0].id : itemInsert.id;
+
+    // Try to insert options for items.title - this should work after PLV8 fix
+    const titleOption = await userClient.insert<any>({
+      table: 'options',
+      object: {
+        key: 'title',
+        item_id: itemId,
+        string_value: 'Test Product Title',
+      },
+      returning: ['id', 'key', 'string_value', 'item_id']
+    });
+
+    expect(titleOption?.key).toBe('title');
+    expect(titleOption?.string_value).toBe('Test Product Title');
+    expect(titleOption?.item_id).toBe(itemId);
+
+    // cleanup
+    try { await admin.delete<any>({ table: 'deleteOptions', where: { id: { _eq: titleOption?.id } } }); } catch {}
+
+    // cleanup
+    try { await admin.delete<any>({ table: 'deleteItems', where: { id: { _eq: itemId } } }); } catch {}
     try { await admin.delete<any>({ table: 'deleteUsers', where: { id: { _eq: user.id } } }); } catch {}
   }, 30000);
 
