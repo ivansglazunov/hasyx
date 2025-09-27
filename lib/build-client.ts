@@ -4,7 +4,6 @@ import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 import { glob } from 'glob';
-import { buildDocumentation } from './doc-public';
 
 const execAsync = promisify(exec);
 const projectRoot = process.cwd();
@@ -175,13 +174,7 @@ export async function buildClient() {
   let apiWasMoved = false; // Flag to track if we moved the directory
 
   try {
-    // 0.0 Build documentation before client build so md.json and index are present
-    try {
-      console.log('📚 Building documentation before client build...');
-      buildDocumentation(projectRoot);
-    } catch (docError) {
-      console.warn('⚠️ Failed to build documentation (continuing):', docError);
-    }
+    // Documentation generation removed
 
     // 0. Автоматически включать JWT auth для client build
     console.log('🔐 Enabling JWT auth for client build...');

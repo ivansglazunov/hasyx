@@ -63,20 +63,6 @@ export function Sidebar({ data }: { data: SidebarData }) {
     // Direct URL match
     if (item.url === pathname || item.url === pathname + "/") return true;
     
-    // For Documentation section, check if we're on any doc page
-    if (item.title === "Documentation" && pathname.startsWith("/hasyx/doc")) {
-      return true;
-    }
-    
-    // For individual documents, check if current path matches the document
-    if (pathname.startsWith("/hasyx/doc/") && item.url.startsWith("/hasyx/doc/")) {
-      const currentDoc = pathname.split("/hasyx/doc/")[1]?.split("#")[0];
-      const itemDoc = item.url.split("/hasyx/doc/")[1]?.split("#")[0];
-      if (currentDoc === itemDoc) {
-        return true;
-      }
-    }
-    
     // Check sub-items recursively
     if (item.items) {
       return item.items.some(subItem => isPathInSection(subItem));
@@ -106,21 +92,8 @@ export function Sidebar({ data }: { data: SidebarData }) {
             // User manually expanded this - keep it expanded
             // Don't add to collapsed sections
           } else {
-            // Default behavior: collapse all documents unless we're specifically on that document page
-            // For documents, only expand if we're on the exact document page (not just in /hasyx/doc)
-            if (pathname.startsWith("/hasyx/doc/") && item.url.startsWith("/hasyx/doc/")) {
-              // We're on a specific document page - check if this is the current document
-              const currentDoc = pathname.split("/hasyx/doc/")[1]?.split("#")[0];
-              const itemDoc = item.url.split("/hasyx/doc/")[1]?.split("#")[0];
-              if (currentDoc === itemDoc) {
-                // Don't add to collapsed sections
-              } else {
-                newCollapsedSections.add(item.title);
-              }
-            } else {
-              // We're not on a specific document page, collapse all documents
-              newCollapsedSections.add(item.title);
-            }
+            // Default behavior: collapse collapsible sections unless manually expanded
+            if (!isCurrentSection) newCollapsedSections.add(item.title);
           }
         }
         
@@ -259,8 +232,7 @@ export function Sidebar({ data }: { data: SidebarData }) {
                   } else {
                     // Regular non-collapsible item
                     const isSubItemActive = subItem.url === pathname || 
-                                          subItem.url === pathname + "/" ||
-                                          (pathname.startsWith("/hasyx/doc/") && subItem.url.includes(pathname.split("#")[0]));
+                                          subItem.url === pathname + "/";
                     
                     return (
                       <SidebarMenuItem key={`${subItem.title}-${i}`}>

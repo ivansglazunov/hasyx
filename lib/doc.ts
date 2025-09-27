@@ -89,19 +89,8 @@ export function getMarkdownTitle(content: string): string {
  * Fetches documentation index from public/_doc/index.json
  */
 export async function getDocumentationIndex(): Promise<DocIndex> {
-  try {
-    const response = await fetch('/_doc/index.json');
-    if (!response.ok) {
-      throw new Error(`Failed to fetch documentation index: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.warn('Failed to load documentation index:', error);
-    return {
-      files: [],
-      lastUpdated: new Date().toISOString()
-    };
-  }
+  // Documentation is disabled; return empty index
+  return { files: [], lastUpdated: new Date().toISOString() };
 }
 
 /**
@@ -117,83 +106,14 @@ export async function getMarkdownFiles(): Promise<MarkdownFile[]> {
  * This function is kept for backward compatibility but now uses static data
  */
 export async function createDocNavigation(): Promise<DocSection> {
-  try {
-    // Try to fetch from static md.json file first
-    const response = await fetch('/_doc/md.json');
-    if (response.ok) {
-      const docNavigation: DocNavigation = await response.json();
-      return {
-        title: "Documentation",
-        items: docNavigation.items
-      };
-    }
-  } catch (error) {
-    console.warn('Failed to load static documentation navigation, falling back to dynamic generation:', error);
-  }
-  
-  // Fallback to dynamic generation if static file is not available
-  const markdownFiles = await getMarkdownFiles();
-  
-  const docSection: DocSection = {
-    title: "Documentation",
-    items: []
-  };
-  
-  for (const file of markdownFiles) {
-    const baseUrl = `/hasyx/doc/${encodeURIComponent(file.filename.replace('.md', ''))}`;
-    
-    // Create main item for the file
-    const mainItem = {
-      title: file.title,
-      url: baseUrl,
-      items: [] as { title: string; url: string; }[]
-    };
-    
-    // Add sub-headings as sub-items (only level 2 and 3 headings)
-    for (const heading of file.headings) {
-      if (heading.level >= 2 && heading.level <= 3) {
-        mainItem.items.push({
-          title: heading.text,
-          url: `${baseUrl}#${heading.id}`
-        });
-      }
-    }
-    
-    docSection.items.push(mainItem);
-  }
-  
-  return docSection;
+  // Documentation is disabled; return empty section
+  return { title: "Documentation", items: [] };
 }
 
 /**
  * Gets markdown file by filename
  */
 export async function getMarkdownFile(filename: string): Promise<MarkdownFile | null> {
-  try {
-    const index = await getDocumentationIndex();
-    const fileInfo = index.files.find(file => 
-      file.filename.replace('.md', '') === filename ||
-      file.filename === filename
-    );
-    
-    if (!fileInfo) {
-      return null;
-    }
-    
-    // Fetch the actual content
-    const response = await fetch(`/_doc/${fileInfo.filename}`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch markdown file: ${response.status}`);
-    }
-    
-    const content = await response.text();
-    
-    return {
-      ...fileInfo,
-      content
-    };
-  } catch (error) {
-    console.warn(`Failed to load markdown file: ${filename}`, error);
-    return null;
-  }
-} 
+  // Documentation is disabled
+  return null;
+}

@@ -1,6 +1,6 @@
 {
   "name": "hasyx",
-  "version": "0.2.0-alpha.61",
+  "version": "0.2.0-alpha.62",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.vercel.app/",
   "engines": {
@@ -11,12 +11,11 @@
     "url": "https://github.com/ivansglazunov/hasyx.git"
   },
   "scripts": {
-    "dev": "npm run doc:build && npm run unbuild && NODE_OPTIONS=\"--experimental-vm-modules\" next dev",
-    "build": "npm run build:lib && npm run build:css && npm run doc:build && npm run build:templates && npm run ws && NODE_ENV=production next build",
+    "dev": "npm run unbuild && NODE_OPTIONS=\"--experimental-vm-modules --require dotenv/config\" next dev",
+    "build": "npm run build:lib && npm run build:css && npm run build:templates && npm run ws && NODE_ENV=production NODE_OPTIONS=\"--experimental-vm-modules --require dotenv/config\" next build",
     "build:lib": "tsc -p tsconfig.lib.json",
     "build:templates": "tsx lib/build-templates.ts",
     "build:css": "tailwindcss -i ./app/globals.css -o ./lib/styles.css",
-    "doc:build": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/doc-public.ts",
     "unbuild": "find lib components hooks -type f \\( -name '*.js' -o -name '*.d.ts' \\) -not -path '*/types/*' -print -delete; rm -rf tsconfig.lib.tsbuildinfo _lib _components; echo '✅ Cleaned compiled files (types directory preserved)'",
     "build:next": "next build --turbopack",
     "client": "tsx lib/build-client.ts",
@@ -40,7 +39,7 @@
     "hasura:schema": "tsx ./lib/hasura-schema.ts",
     "hasura:types": "graphql-codegen --config ./lib/hasura-types.ts",
     "npm-publish": "npm run build && npm publish",
-    "prepack": "npm run build:lib && npm run build:css && npm run doc:build && npm run build:templates",
+    "prepack": "npm run build:lib && npm run build:css && npm run build:templates",
     "cli": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx ./lib/cli.ts",
     "ask": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/ask.ts",
     "js": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/js.ts",
@@ -113,6 +112,7 @@
     "@rjsf/core": "^6.0.0-beta.12",
     "@rjsf/shadcn": "^6.0.0-beta.12",
     "@rjsf/utils": "^6.0.0-beta.12",
+    "@rjsf/validator-ajv6": "^5.24.13",
     "@rjsf/validator-ajv8": "^6.0.0-beta.12",
     "@swc/core": "1.11.21",
     "@swc/jest": "0.2.37",
@@ -242,6 +242,7 @@
     "ws": "8.18.2",
     "yaml": "^2.8.0",
     "zod": "^4.0.15",
+    "zod-to-json-schema": "^3.24.6",
     "zustand": "^5.0.6"
   },
   "bin": {
@@ -251,5 +252,11 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "zod-to-json-schema": "^3.24.6"
+  },
+  "overrides": {
+    "zod": "^4.0.15"
+  },
+  "resolutions": {
+    "zod": "^4.0.15"
   }
 }

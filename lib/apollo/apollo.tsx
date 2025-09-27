@@ -103,10 +103,25 @@ export function createApolloClient(options: ApolloOptions = {}): HasyxApolloClie
   });
 
   const authHeaderLink = setContext((_, { headers }) => {
-    // Check for JWT token in localStorage first (for JWT auth mode)
+    // Check for JWT token in localStorage first (for JWT auth mode or JWT force mode)
     let activeToken = token;
-    if (!activeToken && typeof window !== 'undefined' && !!+process.env.NEXT_PUBLIC_JWT_AUTH!) {
+    
+    // Диагностика JWT
+    const jwtAuthEnabled = !!+process.env.NEXT_PUBLIC_JWT_AUTH!;
+    const jwtForceEnabled = !!+process.env.NEXT_PUBLIC_JWT_FORCE!;
+    const shouldCheckLocalStorage = !activeToken && typeof window !== 'undefined' && (jwtAuthEnabled || jwtForceEnabled);
+    
+    console.log('[apollo]', '🔍 JWT diagnostics:', {
+      hasTokenFromOptions: Boolean(token),
+      jwtAuthEnabled,
+      jwtForceEnabled,
+      shouldCheckLocalStorage,
+      isClient: typeof window !== 'undefined'
+    });
+    
+    if (shouldCheckLocalStorage) {
       const jwtToken = localStorage.getItem('nextauth_jwt');
+      debug('apollo', '🔍 JWT from localStorage:', jwtToken ? 'found' : 'not found');
       if (jwtToken) {
         activeToken = jwtToken;
         debug('apollo', '🔓 Using JWT token from localStorage');
@@ -208,7 +223,7 @@ export function createApolloClient(options: ApolloOptions = {}): HasyxApolloClie
 
           // Динамически читаем JWT токен из localStorage при каждом подключении
           let activeToken = token;
-          if (!activeToken && typeof window !== 'undefined' && !!+process.env.NEXT_PUBLIC_JWT_AUTH!) {
+          if (!activeToken && typeof window !== 'undefined' && (!!+process.env.NEXT_PUBLIC_JWT_AUTH! || !!+process.env.NEXT_PUBLIC_JWT_FORCE!)) {
             const jwtToken = localStorage.getItem('nextauth_jwt');
             if (jwtToken) {
               activeToken = jwtToken;

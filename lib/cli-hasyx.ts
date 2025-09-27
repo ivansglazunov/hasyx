@@ -4,7 +4,6 @@ import path from 'path';
 import spawn from 'cross-spawn';
 import Debug from './debug';
 import { createDefaultEventTriggers, syncEventTriggersFromDirectory, syncAllTriggersFromDirectory } from './events';
-import { buildDocumentation } from './doc-public';
 import { printMarkdown } from './markdown-terminal';
 import dotenv from 'dotenv';
 import { buildClient } from './build-client';
@@ -1362,14 +1361,7 @@ vscode:
     debug('hasyx.config.json already exists, skipping creation');
   }
 
-  // Build documentation for the project
-  console.log('📚 Building documentation...');
-  try {
-    buildDocumentation(projectRoot);
-  } catch (error) {
-    console.warn('⚠️ Failed to build documentation:', error);
-    debug(`Documentation build failed: ${error}`);
-  }
+  // Documentation generation removed
 
   console.log(`✨ ${packageName} initialization complete!`);
 
@@ -1385,20 +1377,19 @@ export const devCommand = () => {
   debug('Executing "dev" command.');
   const cwd = process.cwd();
   
-  // Build documentation before starting dev server
-  console.log('📚 Building documentation...');
-  try {
-    buildDocumentation(cwd);
-  } catch (error) {
-    console.warn('⚠️ Failed to build documentation:', error);
-    debug(`Documentation build failed: ${error}`);
-  }
+  // Documentation generation removed
   
   console.log('🚀 Starting development server (using next dev --turbopack)...');
-  debug(`Running command: npx next dev --turbopack in ${cwd}`);
-  const result = spawn.sync('npx', ['next', 'dev', '--turbopack'], {
+  const devArgs = ['next', 'dev', '--turbopack'];
+  const portEnv = process.env.PORT || process.env.NEXT_PORT || process.env.APP_PORT;
+  if (portEnv) {
+    devArgs.push('-p', String(portEnv));
+  }
+  debug(`Running command: npx ${devArgs.join(' ')} in ${cwd}`);
+  const result = spawn.sync('npx', devArgs, {
     stdio: 'inherit',
     cwd: cwd,
+    env: { ...process.env, PORT: portEnv || process.env.PORT },
   });
   debug('next dev --turbopack result:', JSON.stringify(result, null, 2));
   if (result.error) {
@@ -1419,14 +1410,7 @@ export const buildCommand = () => {
   const cwd = process.cwd();
   ensureWebSocketSupport(cwd);
   
-  // Build documentation before building Next.js app
-  console.log('📚 Building documentation...');
-  try {
-    buildDocumentation(cwd);
-  } catch (error) {
-    console.warn('⚠️ Failed to build documentation:', error);
-    debug(`Documentation build failed: ${error}`);
-  }
+  // Documentation generation removed
   
   console.log('🏗️ Building Next.js application...');
   debug(`Running command: npx next build --turbopack in ${cwd}`);
@@ -1454,10 +1438,16 @@ export const startCommand = () => {
   const cwd = process.cwd();
   
   console.log('🛰️ Starting production server (using next start)...');
-  debug(`Running command: npx next start --turbopack in ${cwd}`);
-   const result = spawn.sync('npx', ['next', 'start', '--turbopack'], {
+  const startArgs = ['next', 'start', '--turbopack'];
+  const startPortEnv = process.env.PORT || process.env.NEXT_PORT || process.env.APP_PORT;
+  if (startPortEnv) {
+    startArgs.push('-p', String(startPortEnv));
+  }
+  debug(`Running command: npx ${startArgs.join(' ')} in ${cwd}`);
+  const result = spawn.sync('npx', startArgs, {
     stdio: 'inherit',
     cwd: cwd,
+    env: { ...process.env, PORT: startPortEnv || process.env.PORT },
   });
   debug('next start --turbopack result:', JSON.stringify(result, null, 2));
   if (result.error) {
@@ -1625,16 +1615,7 @@ export const tsxCommand = async (filePath: string | undefined, options: any) => 
 };
 
 // Doc command
-export const docCommand = (options: any) => {
-  debug('Executing "doc" command with options:', options);
-  try {
-    buildDocumentation(options.dir);
-  } catch (error) {
-    console.error('❌ Failed to build documentation:', error);
-    debug(`Documentation build failed: ${error}`);
-    process.exit(1);
-  }
-};
+// doc command removed
 
 // Helper function to validate environment variables for subdomain management
 const validateSubdomainEnv = (): { domain: string; cloudflare: CloudflareConfig } => {
@@ -2344,8 +2325,7 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
   // Schema command
   schemaCommandDescribe(program.command('schema')).action(schemaCommand);
 
-  // Doc command
-  docCommandDescribe(program.command('doc')).action(docCommand);
+  // Doc command removed
 
   // Assets command
   assetsCommandDescribe(program.command('assets')).action(async () => {

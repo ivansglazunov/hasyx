@@ -3,14 +3,6 @@ import pckg from "@/package.json";
 import en from "hasyx/i18n/en.json";
 import ru from "hasyx/i18n/ru.json";
 
-// Import static documentation navigation
-let docNavigation: any = null;
-try {
-  docNavigation = require("./hasyx/doc/md.json");
-} catch (error) {
-  console.warn("Documentation navigation not found, will be populated dynamically");
-}
-
 // Read public locale at build-time so the value is inlined in the client bundle
 const LOCALE = process.env.NEXT_PUBLIC_LOCALE || 'en';
 const NAV_MESSAGES = (LOCALE === 'ru' ? (ru as any) : (en as any)).nav as typeof en.nav;
@@ -91,12 +83,6 @@ export const sidebar: SidebarData = {
           url: "/hasyx/columns",
         },
       ],
-    },
-    // Add documentation section with collapse functionality
-    {
-      title: `📚 ${t('documentation')}`,
-      url: "/hasyx/doc",
-      items: docNavigation?.items || [],
     },
   ],
 };
