@@ -6,6 +6,9 @@ import { Hasura } from './hasura/hasura';
 
 const debug = Debug('validation');
 
+// plv8 ERROR level constant used inside generated JS functions (available at runtime in PostgreSQL)
+declare const ERROR: any;
+
 export interface ValidationRule {
   schema?: string;
   table: string;
@@ -479,7 +482,7 @@ export async function ensureValidationRuntime(hasura: Hasura) {
         // Skip keys without permission rules
 
         var rows = plv8.execute("SELECT validation.project_schemas() AS j");
-        if (!rows || rows.length === 0) { plv8.elog('ERROR', 'project_schemas() not found'); }
+        if (!rows || rows.length === 0) { plv8.elog(ERROR, 'project_schemas() not found'); }
         var root = rows[0].j;
 
         function resolvePath(obj, p){
@@ -538,7 +541,7 @@ export async function ensureValidationRuntime(hasura: Hasura) {
         }
 
         function isSafeIdent(s){ return typeof s === 'string' && /^[A-Za-z_][A-Za-z0-9_]*$/.test(s); }
-        function ident(s){ if (!isSafeIdent(s)) { plv8.elog('ERROR', 'Invalid identifier: '+s); } return '"'+s+'"'; }
+        function ident(s){ if (!isSafeIdent(s)) { plv8.elog(ERROR, 'Invalid identifier: '+s); } return '"'+s+'"'; }
         function lit(v){ if (v === null) return 'NULL'; return '\'' + String(v).replace(/'/g, "''") + '\''; }
 
         function buildCondition(where){
@@ -585,28 +588,132 @@ export async function ensureValidationRuntime(hasura: Hasura) {
         }
         var res = plv8.execute(sql);
         if (!res || res.length === 0) { 
-          plv8.elog('ERROR', 'Permission denied for option '+key+' by rule '+JSON.stringify(permObj)+' | SQL: '+sql); 
+          plv8.elog(ERROR, 'Permission denied for option '+key+' by rule '+JSON.stringify(permObj)+' | SQL: '+sql); 
         }
         return NEW;
       } catch(e) {
-        plv8.elog('ERROR', 'Permission validation error: ' + String(e));
+        plv8.elog(ERROR, 'Permission validation error: ' + String(e));
       }
     }
   });
 }
 
-export async function processConfiguredValidationDefine(hasura?: Hasura) {
-  const hasu = hasura || new Hasura({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET! });
-  await hasu.ensureDefaultSource();
-  const cfg = await loadValidationConfigFromFile();
-  if (!cfg || !cfg.validation || cfg.validation.length === 0) {
-    console.log('⚠️ No validation rules found in hasyx.config.json');
+export async function ensureOptionsValidationTriggers(hasura: Hasura) {
+  // Check if options table exists
+  const optionsExists = await hasura.sql(`
+    SELECT EXISTS (
+      SELECT 1 FROM information_schema.tables 
+      WHERE table_schema='public' AND table_name='options'
+    )
+  `);
+  
+  if (optionsExists?.result?.[1]?.[0] !== 't') {
+    console.log('ℹ️ Table public.options not found, skipping options triggers creation');
     return;
   }
-  // Ensure schemas are synced into DB before defining
+
+  // Always recreate permission trigger to ensure it exists
+  console.log('🔧 Creating/recreating options_permission_trigger...');
+  // Drop trigger via catalog-safe regclass reference, then create explicitly
+  await hasura.sql(`DROP TRIGGER IF EXISTS options_permission_trigger ON public.options;`);
+  await hasura.sql(`
+    CREATE TRIGGER options_permission_trigger
+      BEFORE INSERT OR UPDATE OR DELETE ON public.options
+      FOR EACH ROW
+      EXECUTE FUNCTION validation.validate_option_permission();
+  `);
+  console.log('✅ options_permission_trigger created/updated');
+
+  // Verify trigger was created
+  const verifyTrigger = await hasura.sql(`
+    SELECT EXISTS (
+      SELECT 1 FROM pg_trigger t
+      JOIN pg_class c ON t.tgrelid = c.oid
+      JOIN pg_namespace n ON c.relnamespace = n.oid
+      WHERE n.nspname='public' AND c.relname = 'options' AND t.tgname = 'options_permission_trigger'
+    ) AS trigger_exists
+  `);
+  
+  console.log('ℹ️ verifyTrigger raw:', JSON.stringify(verifyTrigger));
+  if (verifyTrigger?.result?.[1]?.[0] === 't') {
+    console.log('✅ Verified: options_permission_trigger exists in database');
+  } else {
+    console.log('❌ Warning: options_permission_trigger not found after creation');
+  }
+
+  // List triggers on public.options for debugging
+  try {
+    const list = await hasura.sql(`
+      SELECT t.tgname, n.nspname, c.relname
+      FROM pg_trigger t
+      JOIN pg_class c ON t.tgrelid = c.oid
+      JOIN pg_namespace n ON c.relnamespace = n.oid
+      WHERE n.nspname='public' AND c.relname='options' AND NOT t.tgisinternal
+      ORDER BY t.tgname
+    `);
+    console.log('📋 Triggers on public.options:', JSON.stringify(list));
+  } catch {}
+
+  // Check options_validate_trigger (should be created by migration)
+  const validateTriggerExists = await hasura.sql(`
+    SELECT EXISTS (
+      SELECT 1 FROM pg_trigger t
+      JOIN pg_class c ON t.tgrelid = c.oid
+      JOIN pg_namespace n ON c.relnamespace = n.oid
+      WHERE n.nspname='public' AND c.relname = 'options' AND t.tgname = 'options_validate_trigger'
+    )
+  `);
+  
+  if (validateTriggerExists?.result?.[1]?.[0] === 't') {
+    console.log('✅ options_validate_trigger exists');
+  } else {
+    console.log('⚠️ options_validate_trigger not found (should be created by migration)');
+  }
+}
+
+export async function processFullValidationSync(hasura?: Hasura) {
+  const hasu = hasura || new Hasura({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET! });
+  await hasu.ensureDefaultSource();
+  
+  console.log('🔄 Validation sync: schemas + options triggers + config rules...');
+  try {
+    console.log(`ℹ️ Hasura endpoint: ${process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL}`);
+    const dbInfo = await hasu.sql(`SELECT current_database() AS db, current_schema AS schema`);
+    const row = dbInfo?.result?.[1];
+    if (row) {
+      console.log(`ℹ️ DB context: db=${row[0]} schema=${row[1]}`);
+    }
+  } catch {}
+  
+  // 1. Sync schemas from schema.tsx
+  console.log('📋 Syncing schemas from schema.tsx...');
   await syncSchemasToDatabase(hasu);
-  await applyValidationRules(hasu, cfg);
-  debug('✅ Validation rules defined');
+  
+  // 2. Ensure validation runtime (plv8 functions)
+  console.log('🔧 Ensuring validation runtime...');
+  await ensureValidationRuntime(hasu);
+  
+  // 3. Create options triggers (if missing)
+  console.log('🎯 Creating options triggers...');
+  await ensureOptionsValidationTriggers(hasu);
+  
+  // 4. Apply rules from hasyx.config.json (if any)
+  console.log('⚙️ Applying rules from hasyx.config.json...');
+  const cfg = await loadValidationConfigFromFile();
+  if (cfg && cfg.validation && cfg.validation.length > 0) {
+    await applyValidationRules(hasu, cfg);
+    console.log(`✅ Applied ${cfg.validation.length} config rules`);
+  } else {
+    console.log('ℹ️ No rules found in hasyx.config.json');
+  }
+  
+  console.log('✅ Full validation sync completed');
+}
+
+export async function processConfiguredValidationDefine(hasura?: Hasura) {
+  // Deprecated: use processFullValidationSync
+  console.log('⚠️ Command "validation define" is deprecated, use "validation sync"');
+  await processFullValidationSync(hasura);
 }
 
 export async function processConfiguredValidationUndefine(hasura?: Hasura) {

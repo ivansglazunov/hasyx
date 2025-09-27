@@ -122,16 +122,7 @@ dotenv.config();
       throw new Error('Permission rules not found in schema for friend_id');
     }
     
-    // Recreate permission trigger alongside existing triggers
-    await hasu.sql(`
-      DROP TRIGGER IF EXISTS options_permission_trigger ON public.options;
-      CREATE TRIGGER options_permission_trigger
-        BEFORE INSERT OR UPDATE OR DELETE ON public.options
-        FOR EACH ROW
-        EXECUTE FUNCTION validation.validate_option_permission();
-    `);
-    
-    // Permission trigger is now ready
+    // Permission trigger is created by migration up-options; no ad-hoc trigger here
 
     const user = await createTestUser();
     const friendWithFio = await createTestUser();

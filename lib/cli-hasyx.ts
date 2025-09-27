@@ -109,7 +109,8 @@ import { processConfiguredStates } from './logs/logs-states';
 import { envCommand } from './env';
 import { 
   generateProjectJsonSchemas, syncSchemasToDatabase,
-  processConfiguredValidationDefine, processConfiguredValidationUndefine
+  processConfiguredValidationDefine, processConfiguredValidationUndefine,
+  processFullValidationSync
 } from './validation';
 
 export { 
@@ -2427,18 +2428,16 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
   dockerCommandDescribe(program.command('docker'));
 
   // Validation command group
-  const validationGroup = program.command('validation').description('Validation: sync schemas and define/undefine DB validation');
+  const validationGroup = program.command('validation').description('Validation: full sync of schemas, options triggers and config rules');
   validationGroup
     .command('sync')
-    .description('Generate project JSON Schemas from Zod and sync into DB via plv8 (validation.project_schemas)')
+    .description('Full sync: schemas from schema.tsx + options triggers + rules from hasyx.config.json')
     .action(async () => {
-      await generateProjectJsonSchemas();
-      await syncSchemasToDatabase();
-      console.log('✅ validation: sync done');
+      await processFullValidationSync();
     });
   validationGroup
     .command('define')
-    .description('Apply validation rules from hasyx.config.json (ensures sync first)')
+    .description('[DEPRECATED] Use "validation sync" instead of this command')
     .action(async () => {
       await processConfiguredValidationDefine();
     });

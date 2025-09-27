@@ -375,7 +375,7 @@ export default function ValidationPage() {
     setSuccess(null);
     
     // Диагностика перед сохранением
-    console.log('[validation/page] Save diagnostics:', {
+    console.log('[zod-forms] save: diagnostics', {
       userId: userId,
       hasHasyxClient: Boolean(hasyx),
       apolloClientType: hasyx?.constructor?.name,
@@ -384,7 +384,12 @@ export default function ValidationPage() {
     try {
       // Persist per key: delete existing and insert new values
       const keysToSave = Object.keys((jsonSchema as any)?.properties || {}).filter((k) => (formData as any)[k] !== undefined);
-      // console.log('[validation/page] save start', { keysToSave, formData });
+      console.log('[zod-forms] save: start', {
+        keysToSave,
+        formDataSnapshot: formData,
+        friendIdType: Array.isArray((formData as any).friend_id) ? 'array' : typeof (formData as any).friend_id,
+        friendIdLength: Array.isArray((formData as any).friend_id) ? (formData as any).friend_id.length : undefined,
+      });
       if (keysToSave.length === 0) return;
 
       // Prepare inserts (compute payloads first for logging)
@@ -392,11 +397,15 @@ export default function ValidationPage() {
       const props: any = (jsonSchema as any)?.properties || {};
       for (const key of keysToSave) {
         const val = (formData as any)[key];
-        if (val == null || val === '' || (Array.isArray(val) && val.length === 0)) continue;
+        if (val == null || val === '' || (Array.isArray(val) && val.length === 0)) {
+          console.log('[zod-forms] save: skip key (null/empty)', { key, isArrayEmpty: Array.isArray(val) && val.length === 0 });
+          continue;
+        }
 
         const isArray = (props[key] as any)?.type === 'array';
         if (key === 'avatar') {
           inserts.push({ key, item_id: userId, to_id: val });
+          console.log('[zod-forms] save: prepare insert avatar', { key, to_id: val });
           continue;
         }
         if (key === 'friend_id' && isArray) {
@@ -404,25 +413,32 @@ export default function ValidationPage() {
           for (const toId of list) {
             inserts.push({ key, item_id: userId, to_id: toId });
           }
+          console.log('[zod-forms] save: prepare inserts friend_id', { count: list.length, list });
           continue;
         }
 
         if (key === 'notifications') {
           inserts.push({ key, item_id: userId, jsonb_value: val });
+          console.log('[zod-forms] save: prepare insert notifications');
           continue;
         }
 
         // default string field
         inserts.push({ key, item_id: userId, string_value: val });
+        console.log('[zod-forms] save: prepare insert string', { key });
       }
 
-      // console.log('[validation/page] inserts', inserts);
+      console.log('[zod-forms] save: prepared inserts', { count: inserts.length, inserts });
       // Удаляем отсутствующие ключи в форме (например, avatar = undefined → удалить опцию)
       const schemaProps: any = (jsonSchema as any)?.properties || {};
       const allKeys = Object.keys(schemaProps);
       for (const key of allKeys) {
-        if ((formData as any)[key] === undefined) {
-          // console.log('[validation/page] key missing in formData, deleting existing', key);
+        const v = (formData as any)[key];
+        const isUndefined = v === undefined;
+        const isEmptyArray = Array.isArray(v) && v.length === 0;
+        console.log('[zod-forms] save: delete check', { key, isUndefined, isEmptyArray });
+        if (isUndefined || isEmptyArray) {
+          console.log('[zod-forms] save: delete existing', { key, reason: isUndefined ? 'undefined' : 'empty-array' });
           await hasyx.delete({ table: 'options', where: { item_id: { _eq: userId }, key: { _eq: key } } });
         }
       }
@@ -433,32 +449,33 @@ export default function ValidationPage() {
         for (const obj of inserts) {
           try {
             if (!deletedKeys.has(obj.key)) {
-              // console.log('[validation/page] deleting existing for key', obj.key);
+              console.log('[zod-forms] save: pre-delete before insert', obj.key);
               await hasyx.delete({
                 table: 'options',
                 where: { item_id: { _eq: userId }, key: { _eq: obj.key } },
               });
               deletedKeys.add(obj.key);
             }
-            // console.log('[validation/page] inserting', obj);
+            console.log('[zod-forms] save: inserting', obj);
             await hasyx.insert({ table: 'options', object: obj, returning: ['id'] });
-            // console.log('[validation/page] insert ok', obj.key);
+            console.log('[zod-forms] save: insert ok', obj.key);
           } catch (e: any) {
             const details = (e && (e.details || e.cause || e.graphQLErrors)) || null;
-            // console.log('[validation/page] insert error', obj.key, e?.message, details);
+            console.log('[zod-forms] save: insert error', obj.key, e?.message, details);
             throw e;
           }
         }
-        // console.log('[validation/page] all inserts done');
+        console.log('[zod-forms] save: all inserts done');
       }
 
+      console.log('[zod-forms] save: done');
       setSuccess('Saved');
     } catch (e: any) {
       setError(e?.message || 'Save failed');
-      // console.log('[validation/page] save error', e);
+      console.log('[zod-forms] save: error', e);
     } finally {
       setSaving(false);
-      // console.log('[validation/page] save end');
+      console.log('[zod-forms] save: end');
     }
   };
 

@@ -997,15 +997,14 @@ export class Hasura {
   async definePlv8Function(options: { schema: string; name: string; jsFunction: Function; replace?: boolean }): Promise<any> {
     const { schema, name, jsFunction } = options;
 
-    // Ensure function is dropped first (undefine)
-    await this.undefine({ kind: 'function', schema, name }).catch(() => {});
-
     const jsSource = jsFunction.toString();
 
     // Create plv8 trigger function wrapper
     await this.sql(`
       CREATE OR REPLACE FUNCTION "${schema}"."${name}"()
       RETURNS TRIGGER AS $$
+        // Shim for TS helper emitted by transpiler in function.toString()
+        var __name = (typeof __name === 'function') ? __name : function(o,n){ return o; };
         var userFn = (${jsSource});
         try {
           var result = userFn(NEW, OLD, plv8, typeof TG_OP === 'undefined' ? undefined : TG_OP, typeof TG_ARGV === 'undefined' ? undefined : TG_ARGV);

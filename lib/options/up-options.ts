@@ -1,4 +1,5 @@
 import { Hasura, ColumnType } from '../hasura/hasura';
+import { ensureValidationRuntime, syncSchemasToDatabase } from '../validation';
 import Debug from '../debug';
 
 const debug = Debug('migration:up-options');
@@ -46,6 +47,15 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
     to: { schema: 'public', table: 'users', column: 'id' },
     on_delete: 'CASCADE'
   });
+
+  // Ensure validation runtime and project schemas are available BEFORE creating triggers
+  // This guarantees that validation.project_schemas() and validate_option_permission() exist
+  try {
+    await syncSchemasToDatabase(hasura);
+  } catch {}
+  try {
+    await ensureValidationRuntime(hasura);
+  } catch {}
 
   // 🎯 SMART VALIDATION TRIGGER: Auto-detects schema based on item_id
   await hasura.defineFunction({
