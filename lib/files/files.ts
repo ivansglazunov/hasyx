@@ -177,7 +177,10 @@ export async function uploadFile(
       debug(`Uploading to hasura-storage...`);
       const storageUrl = process.env.NEXT_PUBLIC_HASURA_STORAGE_URL || 'http://localhost:3001';
       const formData = new FormData();
-      formData.append('file', new Blob([fileBuffer], { type: mimeType }), fileName);
+      
+      // Convert Buffer to Uint8Array for Blob compatibility
+      const uint8Array = new Uint8Array(fileBuffer);
+      formData.append('file', new Blob([uint8Array], { type: mimeType }), fileName);
       formData.append('bucketId', bucket);
       if (userId) {
         formData.append('userId', userId);

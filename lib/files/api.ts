@@ -49,7 +49,11 @@ export async function handleDownload(request: NextRequest, fileId: string): Prom
     const userId = await getUserIdFromRequest(request);
     const result = await downloadFile(fileId, userId);
     if (!result.success) return NextResponse.json({ error: result.error }, { status: result.error === 'File not found' ? 404 : 403 });
-    return new NextResponse(result.fileContent, { headers: { 'Content-Type': result.mimeType || 'application/octet-stream', 'Content-Disposition': `inline; filename="${result.file?.name || 'file'}"`, 'Cache-Control': 'public, max-age=3600' } });
+    
+    // Convert Buffer to Uint8Array for NextResponse compatibility
+    const fileContent = result.fileContent ? new Uint8Array(result.fileContent) : null;
+    
+    return new NextResponse(fileContent, { headers: { 'Content-Type': result.mimeType || 'application/octet-stream', 'Content-Disposition': `inline; filename="${result.file?.name || 'file'}"`, 'Cache-Control': 'public, max-age=3600' } });
   } catch (error: any) {
     debug('handleDownload error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

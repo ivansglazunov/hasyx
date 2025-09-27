@@ -111,13 +111,13 @@ export function createApolloClient(options: ApolloOptions = {}): HasyxApolloClie
     const jwtForceEnabled = !!+process.env.NEXT_PUBLIC_JWT_FORCE!;
     const shouldCheckLocalStorage = !activeToken && typeof window !== 'undefined' && (jwtAuthEnabled || jwtForceEnabled);
     
-    console.log('[apollo]', '🔍 JWT diagnostics:', {
-      hasTokenFromOptions: Boolean(token),
-      jwtAuthEnabled,
-      jwtForceEnabled,
-      shouldCheckLocalStorage,
-      isClient: typeof window !== 'undefined'
-    });
+    // console.log('[apollo]', '🔍 JWT diagnostics:', {
+    //   hasTokenFromOptions: Boolean(token),
+    //   jwtAuthEnabled,
+    //   jwtForceEnabled,
+    //   shouldCheckLocalStorage,
+    //   isClient: typeof window !== 'undefined'
+    // });
     
     if (shouldCheckLocalStorage) {
       const jwtToken = localStorage.getItem('nextauth_jwt');
