@@ -14,6 +14,7 @@ This document explains how the Options system works end-to-end, how it is config
   - `item_id` must reference an existing record in one of the declared `options[tableName]` tables; the trigger auto-detects which table it belongs to
   - **Multiple options**: Respects `meta.multiple` - prevents duplicates by default, allows multiple entries when `multiple: true`
   - **Reference validation**: Validates UUIDs against specified tables when `meta.tables` is defined
+  - **Permission rules**: Enforces optional `meta.permission` rules (exported to JSON Schema under `x-meta.permission`) via a database trigger
 
 ### Authoritative source: `schema.tsx`
 
@@ -104,6 +105,8 @@ The migration defines a plpgsql trigger function `public.options_validate` that 
 - **Reference validation**: Checks `meta.tables` from schema - validates that `to_id` exists in one of the specified tables
 - Dynamically determines the target table for `item_id` by scanning all `options[tableName]` declared in `schema.tsx` and checking the appropriate table for existence
 - Builds a JSON value from the chosen column and validates it (if validation runtime is installed) against `validation.project_schemas()` at path `options.<tableName>.properties.<key>`. When `to_id` is used, it is validated as a UUID string (compatible with `z.string().uuid()` in `schema.tsx`).
+  
+If present, permission rules are enforced by an additional trigger using `validation.validate_option_permission()` (see Permission rules below).
 
 The trigger relies on the plv8 validation runtime to be synchronized via the CLI (`validation sync/define`). If the runtime is not present, it still enforces key existence with `validation.validate_option_key` and the “one-of” value rule.
 
@@ -122,7 +125,57 @@ npm run validate
 Notes:
 
 - The project uses Zod 4 to generate JSON Schema at build/sync time and embeds it into `validation.project_schemas()`.
+- During generation, Zod `.meta()` keys that are not part of JSON Schema are moved into `x-meta` to keep the schema valid. Known keys: `multiple`, `tables`, `permission`, `widget`.
 - A diagnostic snapshot may be written to `schema.json` at the project root for inspection/debugging (optional; not required at runtime).
+
+### Permission rules (x-meta.permission)
+
+You can attach row-level permission checks to specific option keys via Zod `.meta({ permission: { ... } })`. These rules are exported into JSON Schema under `x-meta.permission` and enforced by the PLV8 trigger `validation.validate_option_permission()`.
+
+- Attach rules under the operation you want to guard: `insert`, `update`, `delete`.
+- Each rule can specify:
+  - `table` (defaults to `options` if omitted)
+  - `where`: a GraphQL-like filter object
+  - `limit` (defaults to `1`)
+
+The `where` object supports placeholders that are substituted at runtime:
+
+- `${USER_ID}` or `'X-Hasura-User-Id'`: current user id from Hasura session
+- `${OPTION_ID}`: the current option id (only for update/delete when available)
+- `${ITEM_ID}`: `NEW.item_id`
+- `${TO_ID}`: `NEW.to_id`
+
+Example (from `options.users.friend_id`) — require that the referenced friend already has a `fio` option:
+
+```ts
+friend_id: z.string().uuid().meta({
+  multiple: true,
+  tables: ['users'],
+  permission: {
+    insert: {
+      table: 'options',
+      where: { key: { _eq: 'fio' }, item_id: { _eq: '${TO_ID}' } },
+      limit: 1,
+    },
+  },
+})
+```
+
+To enable permission enforcement, ensure this trigger exists (migration or setup):
+
+```sql
+DROP TRIGGER IF EXISTS options_permission_trigger ON public.options;
+CREATE TRIGGER options_permission_trigger
+  BEFORE INSERT OR UPDATE OR DELETE ON public.options
+  FOR EACH ROW
+  EXECUTE FUNCTION validation.validate_option_permission();
+```
+
+The PLV8 function reads rules from `validation.project_schemas()` at paths like:
+
+- `options.users.properties.friend_id.x-meta.permission.insert`
+
+If no permission is defined for a key/operation, the check is skipped.
 
 ### Using from Hasyx client
 
