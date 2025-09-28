@@ -12,8 +12,8 @@ import { Button } from "hasyx/components/ui/button";
 import Form from '@rjsf/shadcn';
 import validator from '@rjsf/validator-ajv6';
 import { z } from 'zod';
-// import { zodToJsonSchema } from 'zod-to-json-schema'; // Попробуем встроенный z.toJSONSchema
-import Files from '@/components/files/files';
+// import { zodToJsonSchema } from 'zod-to-json-schema'; // Try built-in z.toJSONSchema
+import Files from 'hasyx/components/files/files';
 import { MultiSelectHasyx } from 'hasyx/components/multi-select-hasyx';
 
 export default function ValidationPage() {
@@ -23,7 +23,7 @@ export default function ValidationPage() {
 
   const userId = session?.user?.id as string | undefined;
   
-  // Диагностика авторизации
+  // Diagnostics
   useEffect(() => {
     console.log('[validation/page] Auth diagnostics:', {
       sessionStatus: status,
@@ -36,7 +36,7 @@ export default function ValidationPage() {
       allLocalStorageKeys: typeof window !== 'undefined' ? Object.keys(localStorage) : 'server-side'
     });
     
-    // Включаем дебаг логи Apollo
+    // Enable Apollo debug logs
     if (typeof window !== 'undefined') {
       localStorage.setItem('debug', 'hasyx:apollo');
       console.log('[validation/page] Apollo debug enabled');
@@ -48,14 +48,14 @@ export default function ValidationPage() {
     console.log('[validation/page] userSchema raw', schema);
     console.log('[validation/page] userSchema constructor', schema?.constructor?.name);
     
-    // Проверим что z.toJSONSchema работает прямо здесь
+    // Check that z.toJSONSchema works directly here
     console.log('[validation/page] Zod info on client:', {
       hasToJSONSchema: typeof (z as any).toJSONSchema,
       hasGlobalRegistry: typeof (z as any).globalRegistry,
       zodKeys: Object.keys(z).filter(k => k.includes('JSON') || k.includes('registry') || k.includes('Registry')),
     });
     
-    // Диагностические тесты убраны - используем прямое извлечение метаданных
+    // Diagnostics tests removed - use direct metadata extraction
     
     return schema;
   }, []);
@@ -120,12 +120,12 @@ export default function ValidationPage() {
     return () => { cancelled = true; };
   }, [userId, hasyx]);
 
-  // Функция для извлечения метаданных напрямую из схемы (обходим проблемы с браузерным реестром)
+  // Function to extract metadata directly from the schema (avoid browser registry issues)
   const extractMetaFromSchema = (schema: any): Record<string, any> => {
     const metaMap: Record<string, any> = {};
     
-    // Читаем метаданные напрямую из schema.tsx определений
-    // Поскольку глобальный реестр не работает в браузере, используем хардкодированные метаданные
+    // Read metadata directly from schema.tsx definitions
+    // Since global registry doesn't work in browser, use hardcoded metadata
     const knownMeta: Record<string, any> = {
       avatar: { widget: 'file-id', tables: ['storage.files'] },
       friend_id: { multiple: true, tables: ['users'] }
@@ -137,16 +137,16 @@ export default function ValidationPage() {
   const jsonSchema = useMemo(() => {
     try {
       if (userSchema) {
-        // Получаем базовую JSON Schema без метаданных
+        // Get base JSON Schema without metadata
         const s: any = (z as any).toJSONSchema(userSchema);
         
-        // Исправляем версию схемы для совместимости с RJSF
+        // Fix schema version for compatibility with RJSF
         if (s && s.$schema) {
           s.$schema = "http://json-schema.org/draft-07/schema#";
         }
         const props: any = s?.properties || {};
         
-        // Добавляем метаданные из нашего определения
+        // Add metadata from our definition
         const metaMap = extractMetaFromSchema(userSchema);
         Object.keys(metaMap).forEach((key) => {
           if (props[key]) {
@@ -373,8 +373,7 @@ export default function ValidationPage() {
     setSaving(true);
     setError(null);
     setSuccess(null);
-    
-    // Диагностика перед сохранением
+
     console.log('[zod-forms] save: diagnostics', {
       userId: userId,
       hasHasyxClient: Boolean(hasyx),
@@ -429,7 +428,6 @@ export default function ValidationPage() {
       }
 
       console.log('[zod-forms] save: prepared inserts', { count: inserts.length, inserts });
-      // Удаляем отсутствующие ключи в форме (например, avatar = undefined → удалить опцию)
       const schemaProps: any = (jsonSchema as any)?.properties || {};
       const allKeys = Object.keys(schemaProps);
       for (const key of allKeys) {

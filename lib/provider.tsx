@@ -54,6 +54,16 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
   const [jwtToken, setJwtToken] = useState<string | null>(null);
   const [jwtUser, setJwtUser] = useState<any>(null);
   const { originalJwt, originalUserInfo, setOriginal, clearOriginal } = useImpersonationStore();
+
+  // Get session and update hasyx user when session changes
+  const { data: session } = useSessionNextAuth();
+
+  // In JWT mode, prefer JWT user over session user
+  const effectiveUser = jwtUser
+    ? jwtUser 
+    : (session?.user || null);
+
+  const _jwtToken = jwtToken || session?.accessToken;
   
   // Check for JWT mode and monitor localStorage changes
   useEffect(() => {
@@ -141,8 +151,8 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
     
     const jwtAuthEnabled = (!!+process.env.NEXT_PUBLIC_JWT_AUTH!);
     const jwtForceEnabled = (!!+process.env.NEXT_PUBLIC_JWT_FORCE!);
-    if (jwtToken || jwtAuthEnabled || jwtForceEnabled) {
-      debug('Creating new Apollo client with JWT token:', jwtToken);
+    if (_jwtToken || jwtAuthEnabled || jwtForceEnabled) {
+      debug('Creating new Apollo client with JWT token:', _jwtToken);
       // When JWT is available, use Hasura GraphQL URL directly for WebSocket support
       apiUrl = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!;
       useWebSockets = true; // Force WebSocket for JWT/force mode
@@ -165,23 +175,20 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
     }
     
     debug(`HasyxProviderCore: Final API URL: ${apiUrl}, isLocalhost: ${isLocalhost}, based on urlOverride: ${urlOverride}`);
-    debug(`HasyxProviderCore: JWT token: ${jwtToken ? 'present' : 'none'}`);
+    debug(`HasyxProviderCore: JWT token: ${_jwtToken ? 'present' : 'none'}`);
     debug(`HasyxProviderCore: WebSocket enabled: ${useWebSockets}`);
     
     const apolloOpts = {
       url: apiUrl,
       ws: useWebSockets,
-      token: jwtToken || undefined, // Use JWT if available
+      token: _jwtToken || undefined, // Use JWT if available
     };
     
     return apolloOpts;
-  }, [urlOverride, jwtToken]));
+  }, [urlOverride, _jwtToken]));
   
   // Keep the generator on Apollo client for compatibility
   apolloClient.hasyxGenerator = generate;
-
-  // Get session and update hasyx user when session changes
-  const { data: session } = useSessionNextAuth();
 
   // Create Hasyx instance when Apollo client changes
   const hasyxInstance = useMemo(() => {
@@ -189,11 +196,6 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
     const hasyxInstance = new HasyxClient(apolloClient, generate);
     // also expose on window for debugging
     try { (window as any).hasyx = hasyxInstance; } catch {}
-    // In JWT mode, prefer JWT user over session user
-    const effectiveUser = jwtUser
-      ? jwtUser 
-      : (session?.user || null);
-      
     hasyxInstance.user = effectiveUser;
     
     
@@ -218,9 +220,9 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
           const payloadJson = atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/'));
           const payload = JSON.parse(payloadJson);
           const name = payload?.name || null;
-          setOriginal(current, { id: jwtUser?.id ?? null, name });
+          setOriginal(current, { id: effectiveUser?.id ?? null, name });
           localStorage.setItem('hasyx_impersonator_jwt', current);
-          localStorage.setItem('hasyx_impersonator_info', JSON.stringify({ id: jwtUser?.id ?? null, name }));
+          localStorage.setItem('hasyx_impersonator_info', JSON.stringify({ id: effectiveUser?.id ?? null, name }));
         }
         const resp = await fetch('/api/auth/get-jwt', {
           method: 'POST',
@@ -288,7 +290,7 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
       }
     };
     return hasyxInstance;
-  }, [apolloClient, generate, session, jwtUser]);
+  }, [apolloClient, generate, session, effectiveUser]);
 
   // @ts-ignore
   global.hasyx = hasyxInstance;
