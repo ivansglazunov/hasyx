@@ -1,6 +1,6 @@
 {
   "name": "hasyx",
-  "version": "0.2.0-alpha.65",
+  "version": "0.2.0-alpha.66",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.vercel.app/",
   "engines": {
@@ -12,10 +12,9 @@
   },
   "scripts": {
     "dev": "npm run unbuild && NODE_OPTIONS=\"--experimental-vm-modules --require dotenv/config\" next dev",
-    "build": "npm run build:lib && npm run build:css && npm run build:templates && npm run ws && NODE_ENV=production NODE_OPTIONS=\"--experimental-vm-modules --require dotenv/config\" next build",
+    "build": "npm run build:lib && npm run build:templates && npm run ws && NODE_ENV=production NODE_OPTIONS=\"--experimental-vm-modules --require dotenv/config\" next build",
     "build:lib": "tsc -p tsconfig.lib.json",
     "build:templates": "tsx lib/build-templates.ts",
-    "build:css": "tailwindcss -i ./app/globals.css -o ./lib/styles.css",
     "unbuild": "find lib components hooks -type f \\( -name '*.js' -o -name '*.d.ts' \\) -not -path '*/types/*' -print -delete; rm -rf tsconfig.lib.tsbuildinfo _lib _components; echo '✅ Cleaned compiled files (types directory preserved)'",
     "build:next": "next build --turbopack",
     "client": "tsx lib/build-client.ts",

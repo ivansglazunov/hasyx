@@ -1200,7 +1200,6 @@ vscode:
         "start": `NODE_ENV=production NODE_OPTIONS=\"--experimental-vm-modules\" npx -y ${packageName} start`,
         "dev": `NODE_OPTIONS=\"--experimental-vm-modules\" npx -y ${packageName} dev`,
         "client": `npx ${packageName} client`,
-        "build:css": "tailwindcss -i ./app/globals.css -o ./lib/styles.css",
         "doc:build": `NODE_OPTIONS=\"--experimental-vm-modules\" npx ${packageName} doc`,
         "ws": "npx --yes next-ws-cli@latest patch -y",
         "postinstall": "npm run ws -- -y",
