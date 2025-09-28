@@ -1,6 +1,5 @@
 import "@/app/globals.css";
 import { AppClientLayout } from '@/lib/app-client-layout';
-import "hasyx/lib/styles.css";
 
 import cytoscape from 'cytoscape';
 import cola from 'cytoscape-cola';

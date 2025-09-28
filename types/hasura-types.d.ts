@@ -7826,6 +7826,10 @@ export type Mutation_Root = {
   delete_notification_permissions?: Maybe<Notification_Permissions_Mutation_Response>;
   /** delete single row from the table: "notification_permissions" */
   delete_notification_permissions_by_pk?: Maybe<Notification_Permissions>;
+  /** delete data from the table: "notifications" */
+  delete_notifications?: Maybe<Notifications_Mutation_Response>;
+  /** delete single row from the table: "notifications" */
+  delete_notifications_by_pk?: Maybe<Notifications>;
   /** delete data from the table: "options" */
   delete_options?: Maybe<Options_Mutation_Response>;
   /** delete single row from the table: "options" */
@@ -7950,6 +7954,10 @@ export type Mutation_Root = {
   insert_notification_permissions?: Maybe<Notification_Permissions_Mutation_Response>;
   /** insert a single row into the table: "notification_permissions" */
   insert_notification_permissions_one?: Maybe<Notification_Permissions>;
+  /** insert data into the table: "notifications" */
+  insert_notifications?: Maybe<Notifications_Mutation_Response>;
+  /** insert a single row into the table: "notifications" */
+  insert_notifications_one?: Maybe<Notifications>;
   /** insert data into the table: "options" */
   insert_options?: Maybe<Options_Mutation_Response>;
   /** insert a single row into the table: "options" */
@@ -8119,6 +8127,14 @@ export type Mutation_Root = {
   /** update multiples rows of table: "notification_permissions" */
   update_notification_permissions_many?: Maybe<
     Array<Maybe<Notification_Permissions_Mutation_Response>>
+  >;
+  /** update data of the table: "notifications" */
+  update_notifications?: Maybe<Notifications_Mutation_Response>;
+  /** update single row of the table: "notifications" */
+  update_notifications_by_pk?: Maybe<Notifications>;
+  /** update multiples rows of table: "notifications" */
+  update_notifications_many?: Maybe<
+    Array<Maybe<Notifications_Mutation_Response>>
   >;
   /** update data of the table: "options" */
   update_options?: Maybe<Options_Mutation_Response>;
@@ -8397,6 +8413,16 @@ export type Mutation_RootDelete_Notification_PermissionsArgs = {
 
 /** mutation root */
 export type Mutation_RootDelete_Notification_Permissions_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** mutation root */
+export type Mutation_RootDelete_NotificationsArgs = {
+  where: Notifications_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootDelete_Notifications_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -8747,6 +8773,18 @@ export type Mutation_RootInsert_Notification_PermissionsArgs = {
 export type Mutation_RootInsert_Notification_Permissions_OneArgs = {
   object: Notification_Permissions_Insert_Input;
   on_conflict?: InputMaybe<Notification_Permissions_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsert_NotificationsArgs = {
+  objects: Array<Notifications_Insert_Input>;
+  on_conflict?: InputMaybe<Notifications_On_Conflict>;
+};
+
+/** mutation root */
+export type Mutation_RootInsert_Notifications_OneArgs = {
+  object: Notifications_Insert_Input;
+  on_conflict?: InputMaybe<Notifications_On_Conflict>;
 };
 
 /** mutation root */
@@ -9290,14 +9328,24 @@ export type Mutation_RootUpdate_Messages_ManyArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdate_Notification_MessagesArgs = {
+  _append?: InputMaybe<Notification_Messages_Append_Input>;
+  _delete_at_path?: InputMaybe<Notification_Messages_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Notification_Messages_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Notification_Messages_Delete_Key_Input>;
   _inc?: InputMaybe<Notification_Messages_Inc_Input>;
+  _prepend?: InputMaybe<Notification_Messages_Prepend_Input>;
   _set?: InputMaybe<Notification_Messages_Set_Input>;
   where: Notification_Messages_Bool_Exp;
 };
 
 /** mutation root */
 export type Mutation_RootUpdate_Notification_Messages_By_PkArgs = {
+  _append?: InputMaybe<Notification_Messages_Append_Input>;
+  _delete_at_path?: InputMaybe<Notification_Messages_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Notification_Messages_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Notification_Messages_Delete_Key_Input>;
   _inc?: InputMaybe<Notification_Messages_Inc_Input>;
+  _prepend?: InputMaybe<Notification_Messages_Prepend_Input>;
   _set?: InputMaybe<Notification_Messages_Set_Input>;
   pk_columns: Notification_Messages_Pk_Columns_Input;
 };
@@ -9334,6 +9382,35 @@ export type Mutation_RootUpdate_Notification_Permissions_By_PkArgs = {
 /** mutation root */
 export type Mutation_RootUpdate_Notification_Permissions_ManyArgs = {
   updates: Array<Notification_Permissions_Updates>;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_NotificationsArgs = {
+  _append?: InputMaybe<Notifications_Append_Input>;
+  _delete_at_path?: InputMaybe<Notifications_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Notifications_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Notifications_Delete_Key_Input>;
+  _inc?: InputMaybe<Notifications_Inc_Input>;
+  _prepend?: InputMaybe<Notifications_Prepend_Input>;
+  _set?: InputMaybe<Notifications_Set_Input>;
+  where: Notifications_Bool_Exp;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Notifications_By_PkArgs = {
+  _append?: InputMaybe<Notifications_Append_Input>;
+  _delete_at_path?: InputMaybe<Notifications_Delete_At_Path_Input>;
+  _delete_elem?: InputMaybe<Notifications_Delete_Elem_Input>;
+  _delete_key?: InputMaybe<Notifications_Delete_Key_Input>;
+  _inc?: InputMaybe<Notifications_Inc_Input>;
+  _prepend?: InputMaybe<Notifications_Prepend_Input>;
+  _set?: InputMaybe<Notifications_Set_Input>;
+  pk_columns: Notifications_Pk_Columns_Input;
+};
+
+/** mutation root */
+export type Mutation_RootUpdate_Notifications_ManyArgs = {
+  updates: Array<Notifications_Updates>;
 };
 
 /** mutation root */
@@ -9664,11 +9741,46 @@ export type Mutation_RootUpdate_Virus_ManyArgs = {
 /** columns and relationships of "notification_messages" */
 export type Notification_Messages = {
   __typename?: "notification_messages";
+  /** Notification body */
+  body: Scalars["String"]["output"];
   created_at: Scalars["bigint"]["output"];
+  /** Additional notification data */
+  data?: Maybe<Scalars["jsonb"]["output"]>;
   id: Scalars["uuid"]["output"];
+  /** An array relationship */
+  notifications: Array<Notifications>;
+  /** An aggregate relationship */
+  notifications_aggregate: Notifications_Aggregate;
   /** Notification title */
   title: Scalars["String"]["output"];
   updated_at: Scalars["bigint"]["output"];
+  /** An object relationship */
+  user: Users;
+  /** Target user for notification */
+  user_id: Scalars["uuid"]["output"];
+};
+
+/** columns and relationships of "notification_messages" */
+export type Notification_MessagesDataArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** columns and relationships of "notification_messages" */
+export type Notification_MessagesNotificationsArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
+/** columns and relationships of "notification_messages" */
+export type Notification_MessagesNotifications_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
 };
 
 /** aggregated selection of "notification_messages" */
@@ -9676,6 +9788,17 @@ export type Notification_Messages_Aggregate = {
   __typename?: "notification_messages_aggregate";
   aggregate?: Maybe<Notification_Messages_Aggregate_Fields>;
   nodes: Array<Notification_Messages>;
+};
+
+export type Notification_Messages_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Notification_Messages_Aggregate_Bool_Exp_Count>;
+};
+
+export type Notification_Messages_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Notification_Messages_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+  filter?: InputMaybe<Notification_Messages_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "notification_messages" */
@@ -9700,6 +9823,34 @@ export type Notification_Messages_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+/** order by aggregate values of table "notification_messages" */
+export type Notification_Messages_Aggregate_Order_By = {
+  avg?: InputMaybe<Notification_Messages_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Notification_Messages_Max_Order_By>;
+  min?: InputMaybe<Notification_Messages_Min_Order_By>;
+  stddev?: InputMaybe<Notification_Messages_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Notification_Messages_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Notification_Messages_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Notification_Messages_Sum_Order_By>;
+  var_pop?: InputMaybe<Notification_Messages_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Notification_Messages_Var_Samp_Order_By>;
+  variance?: InputMaybe<Notification_Messages_Variance_Order_By>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Notification_Messages_Append_Input = {
+  /** Additional notification data */
+  data?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** input type for inserting array relation for remote table "notification_messages" */
+export type Notification_Messages_Arr_Rel_Insert_Input = {
+  data: Array<Notification_Messages_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Notification_Messages_On_Conflict>;
+};
+
 /** aggregate avg on columns */
 export type Notification_Messages_Avg_Fields = {
   __typename?: "notification_messages_avg_fields";
@@ -9707,15 +9858,27 @@ export type Notification_Messages_Avg_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by avg() on columns of table "notification_messages" */
+export type Notification_Messages_Avg_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** Boolean expression to filter rows from the table "notification_messages". All fields are combined with a logical 'AND'. */
 export type Notification_Messages_Bool_Exp = {
   _and?: InputMaybe<Array<Notification_Messages_Bool_Exp>>;
   _not?: InputMaybe<Notification_Messages_Bool_Exp>;
   _or?: InputMaybe<Array<Notification_Messages_Bool_Exp>>;
+  body?: InputMaybe<String_Comparison_Exp>;
   created_at?: InputMaybe<Bigint_Comparison_Exp>;
+  data?: InputMaybe<Jsonb_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
+  notifications?: InputMaybe<Notifications_Bool_Exp>;
+  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Bool_Exp>;
   title?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+  user?: InputMaybe<Users_Bool_Exp>;
+  user_id?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
 /** unique or primary key constraints on table "notification_messages" */
@@ -9723,6 +9886,24 @@ export enum Notification_Messages_Constraint {
   /** unique or primary key constraint on columns "id" */
   NotificationMessagesPkey = "notification_messages_pkey",
 }
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Notification_Messages_Delete_At_Path_Input = {
+  /** Additional notification data */
+  data?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Notification_Messages_Delete_Elem_Input = {
+  /** Additional notification data */
+  data?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Notification_Messages_Delete_Key_Input = {
+  /** Additional notification data */
+  data?: InputMaybe<Scalars["String"]["input"]>;
+};
 
 /** input type for incrementing numeric columns in table "notification_messages" */
 export type Notification_Messages_Inc_Input = {
@@ -9732,31 +9913,73 @@ export type Notification_Messages_Inc_Input = {
 
 /** input type for inserting data into table "notification_messages" */
 export type Notification_Messages_Insert_Input = {
+  /** Notification body */
+  body?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Additional notification data */
+  data?: InputMaybe<Scalars["jsonb"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
+  notifications?: InputMaybe<Notifications_Arr_Rel_Insert_Input>;
   /** Notification title */
   title?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
+  /** Target user for notification */
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
 };
 
 /** aggregate max on columns */
 export type Notification_Messages_Max_Fields = {
   __typename?: "notification_messages_max_fields";
+  /** Notification body */
+  body?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   /** Notification title */
   title?: Maybe<Scalars["String"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** Target user for notification */
+  user_id?: Maybe<Scalars["uuid"]["output"]>;
+};
+
+/** order by max() on columns of table "notification_messages" */
+export type Notification_Messages_Max_Order_By = {
+  /** Notification body */
+  body?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Notification title */
+  title?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** Target user for notification */
+  user_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
 export type Notification_Messages_Min_Fields = {
   __typename?: "notification_messages_min_fields";
+  /** Notification body */
+  body?: Maybe<Scalars["String"]["output"]>;
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   id?: Maybe<Scalars["uuid"]["output"]>;
   /** Notification title */
   title?: Maybe<Scalars["String"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** Target user for notification */
+  user_id?: Maybe<Scalars["uuid"]["output"]>;
+};
+
+/** order by min() on columns of table "notification_messages" */
+export type Notification_Messages_Min_Order_By = {
+  /** Notification body */
+  body?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Notification title */
+  title?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** Target user for notification */
+  user_id?: InputMaybe<Order_By>;
 };
 
 /** response of any mutation on the table "notification_messages" */
@@ -9768,6 +9991,13 @@ export type Notification_Messages_Mutation_Response = {
   returning: Array<Notification_Messages>;
 };
 
+/** input type for inserting object relation for remote table "notification_messages" */
+export type Notification_Messages_Obj_Rel_Insert_Input = {
+  data: Notification_Messages_Insert_Input;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Notification_Messages_On_Conflict>;
+};
+
 /** on_conflict condition type for table "notification_messages" */
 export type Notification_Messages_On_Conflict = {
   constraint: Notification_Messages_Constraint;
@@ -9777,10 +10007,15 @@ export type Notification_Messages_On_Conflict = {
 
 /** Ordering options when selecting data from "notification_messages". */
 export type Notification_Messages_Order_By = {
+  body?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
+  data?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
+  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Order_By>;
   title?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
+  user?: InputMaybe<Users_Order_By>;
+  user_id?: InputMaybe<Order_By>;
 };
 
 /** primary key columns input for table: notification_messages */
@@ -9788,25 +10023,43 @@ export type Notification_Messages_Pk_Columns_Input = {
   id: Scalars["uuid"]["input"];
 };
 
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Notification_Messages_Prepend_Input = {
+  /** Additional notification data */
+  data?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
 /** select columns of table "notification_messages" */
 export enum Notification_Messages_Select_Column {
   /** column name */
+  Body = "body",
+  /** column name */
   CreatedAt = "created_at",
+  /** column name */
+  Data = "data",
   /** column name */
   Id = "id",
   /** column name */
   Title = "title",
   /** column name */
   UpdatedAt = "updated_at",
+  /** column name */
+  UserId = "user_id",
 }
 
 /** input type for updating data in table "notification_messages" */
 export type Notification_Messages_Set_Input = {
+  /** Notification body */
+  body?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Additional notification data */
+  data?: InputMaybe<Scalars["jsonb"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   /** Notification title */
   title?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Target user for notification */
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
 };
 
 /** aggregate stddev on columns */
@@ -9816,6 +10069,12 @@ export type Notification_Messages_Stddev_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev() on columns of table "notification_messages" */
+export type Notification_Messages_Stddev_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_pop on columns */
 export type Notification_Messages_Stddev_Pop_Fields = {
   __typename?: "notification_messages_stddev_pop_fields";
@@ -9823,11 +10082,23 @@ export type Notification_Messages_Stddev_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev_pop() on columns of table "notification_messages" */
+export type Notification_Messages_Stddev_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_samp on columns */
 export type Notification_Messages_Stddev_Samp_Fields = {
   __typename?: "notification_messages_stddev_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev_samp() on columns of table "notification_messages" */
+export type Notification_Messages_Stddev_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "notification_messages" */
@@ -9840,11 +10111,17 @@ export type Notification_Messages_Stream_Cursor_Input = {
 
 /** Initial value of the column from where the streaming should start */
 export type Notification_Messages_Stream_Cursor_Value_Input = {
+  /** Notification body */
+  body?: InputMaybe<Scalars["String"]["input"]>;
   created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Additional notification data */
+  data?: InputMaybe<Scalars["jsonb"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
   /** Notification title */
   title?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Target user for notification */
+  user_id?: InputMaybe<Scalars["uuid"]["input"]>;
 };
 
 /** aggregate sum on columns */
@@ -9854,21 +10131,43 @@ export type Notification_Messages_Sum_Fields = {
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
 };
 
+/** order by sum() on columns of table "notification_messages" */
+export type Notification_Messages_Sum_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** update columns of table "notification_messages" */
 export enum Notification_Messages_Update_Column {
   /** column name */
+  Body = "body",
+  /** column name */
   CreatedAt = "created_at",
+  /** column name */
+  Data = "data",
   /** column name */
   Id = "id",
   /** column name */
   Title = "title",
   /** column name */
   UpdatedAt = "updated_at",
+  /** column name */
+  UserId = "user_id",
 }
 
 export type Notification_Messages_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Notification_Messages_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Notification_Messages_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Notification_Messages_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Notification_Messages_Delete_Key_Input>;
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<Notification_Messages_Inc_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Notification_Messages_Prepend_Input>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<Notification_Messages_Set_Input>;
   /** filter the rows which have to be updated */
@@ -9882,6 +10181,12 @@ export type Notification_Messages_Var_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by var_pop() on columns of table "notification_messages" */
+export type Notification_Messages_Var_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate var_samp on columns */
 export type Notification_Messages_Var_Samp_Fields = {
   __typename?: "notification_messages_var_samp_fields";
@@ -9889,11 +10194,23 @@ export type Notification_Messages_Var_Samp_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by var_samp() on columns of table "notification_messages" */
+export type Notification_Messages_Var_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate variance on columns */
 export type Notification_Messages_Variance_Fields = {
   __typename?: "notification_messages_variance_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by variance() on columns of table "notification_messages" */
+export type Notification_Messages_Variance_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** columns and relationships of "notification_permissions" */
@@ -9905,9 +10222,15 @@ export type Notification_Permissions = {
   /** Device token for push notifications */
   device_token: Scalars["String"]["output"];
   id: Scalars["uuid"]["output"];
+  /** An array relationship */
+  notifications: Array<Notifications>;
+  /** An aggregate relationship */
+  notifications_aggregate: Notifications_Aggregate;
   /** Notification provider (e.g., fcm, apns) */
   provider: Scalars["String"]["output"];
   updated_at: Scalars["bigint"]["output"];
+  /** An object relationship */
+  user: Users;
   /** Reference to users table */
   user_id: Scalars["uuid"]["output"];
 };
@@ -9917,11 +10240,40 @@ export type Notification_PermissionsDevice_InfoArgs = {
   path?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+/** columns and relationships of "notification_permissions" */
+export type Notification_PermissionsNotificationsArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
+/** columns and relationships of "notification_permissions" */
+export type Notification_PermissionsNotifications_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
 /** aggregated selection of "notification_permissions" */
 export type Notification_Permissions_Aggregate = {
   __typename?: "notification_permissions_aggregate";
   aggregate?: Maybe<Notification_Permissions_Aggregate_Fields>;
   nodes: Array<Notification_Permissions>;
+};
+
+export type Notification_Permissions_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Notification_Permissions_Aggregate_Bool_Exp_Count>;
+};
+
+export type Notification_Permissions_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Notification_Permissions_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+  filter?: InputMaybe<Notification_Permissions_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "notification_permissions" */
@@ -9946,10 +10298,32 @@ export type Notification_Permissions_Aggregate_FieldsCountArgs = {
   distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
+/** order by aggregate values of table "notification_permissions" */
+export type Notification_Permissions_Aggregate_Order_By = {
+  avg?: InputMaybe<Notification_Permissions_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Notification_Permissions_Max_Order_By>;
+  min?: InputMaybe<Notification_Permissions_Min_Order_By>;
+  stddev?: InputMaybe<Notification_Permissions_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Notification_Permissions_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Notification_Permissions_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Notification_Permissions_Sum_Order_By>;
+  var_pop?: InputMaybe<Notification_Permissions_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Notification_Permissions_Var_Samp_Order_By>;
+  variance?: InputMaybe<Notification_Permissions_Variance_Order_By>;
+};
+
 /** append existing jsonb value of filtered columns with new jsonb value */
 export type Notification_Permissions_Append_Input = {
   /** Device information */
   device_info?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** input type for inserting array relation for remote table "notification_permissions" */
+export type Notification_Permissions_Arr_Rel_Insert_Input = {
+  data: Array<Notification_Permissions_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Notification_Permissions_On_Conflict>;
 };
 
 /** aggregate avg on columns */
@@ -9957,6 +10331,12 @@ export type Notification_Permissions_Avg_Fields = {
   __typename?: "notification_permissions_avg_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by avg() on columns of table "notification_permissions" */
+export type Notification_Permissions_Avg_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "notification_permissions". All fields are combined with a logical 'AND'. */
@@ -9968,8 +10348,11 @@ export type Notification_Permissions_Bool_Exp = {
   device_info?: InputMaybe<Jsonb_Comparison_Exp>;
   device_token?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
+  notifications?: InputMaybe<Notifications_Bool_Exp>;
+  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Bool_Exp>;
   provider?: InputMaybe<String_Comparison_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+  user?: InputMaybe<Users_Bool_Exp>;
   user_id?: InputMaybe<Uuid_Comparison_Exp>;
 };
 
@@ -10011,9 +10394,11 @@ export type Notification_Permissions_Insert_Input = {
   /** Device token for push notifications */
   device_token?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["uuid"]["input"]>;
+  notifications?: InputMaybe<Notifications_Arr_Rel_Insert_Input>;
   /** Notification provider (e.g., fcm, apns) */
   provider?: InputMaybe<Scalars["String"]["input"]>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  user?: InputMaybe<Users_Obj_Rel_Insert_Input>;
   /** Reference to users table */
   user_id?: InputMaybe<Scalars["uuid"]["input"]>;
 };
@@ -10032,6 +10417,19 @@ export type Notification_Permissions_Max_Fields = {
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
+/** order by max() on columns of table "notification_permissions" */
+export type Notification_Permissions_Max_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Device token for push notifications */
+  device_token?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Notification provider (e.g., fcm, apns) */
+  provider?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** Reference to users table */
+  user_id?: InputMaybe<Order_By>;
+};
+
 /** aggregate min on columns */
 export type Notification_Permissions_Min_Fields = {
   __typename?: "notification_permissions_min_fields";
@@ -10046,6 +10444,19 @@ export type Notification_Permissions_Min_Fields = {
   user_id?: Maybe<Scalars["uuid"]["output"]>;
 };
 
+/** order by min() on columns of table "notification_permissions" */
+export type Notification_Permissions_Min_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Device token for push notifications */
+  device_token?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Notification provider (e.g., fcm, apns) */
+  provider?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+  /** Reference to users table */
+  user_id?: InputMaybe<Order_By>;
+};
+
 /** response of any mutation on the table "notification_permissions" */
 export type Notification_Permissions_Mutation_Response = {
   __typename?: "notification_permissions_mutation_response";
@@ -10053,6 +10464,13 @@ export type Notification_Permissions_Mutation_Response = {
   affected_rows: Scalars["Int"]["output"];
   /** data from the rows affected by the mutation */
   returning: Array<Notification_Permissions>;
+};
+
+/** input type for inserting object relation for remote table "notification_permissions" */
+export type Notification_Permissions_Obj_Rel_Insert_Input = {
+  data: Notification_Permissions_Insert_Input;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Notification_Permissions_On_Conflict>;
 };
 
 /** on_conflict condition type for table "notification_permissions" */
@@ -10068,8 +10486,10 @@ export type Notification_Permissions_Order_By = {
   device_info?: InputMaybe<Order_By>;
   device_token?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
+  notifications_aggregate?: InputMaybe<Notifications_Aggregate_Order_By>;
   provider?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
+  user?: InputMaybe<Users_Order_By>;
   user_id?: InputMaybe<Order_By>;
 };
 
@@ -10124,6 +10544,12 @@ export type Notification_Permissions_Stddev_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev() on columns of table "notification_permissions" */
+export type Notification_Permissions_Stddev_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_pop on columns */
 export type Notification_Permissions_Stddev_Pop_Fields = {
   __typename?: "notification_permissions_stddev_pop_fields";
@@ -10131,11 +10557,23 @@ export type Notification_Permissions_Stddev_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by stddev_pop() on columns of table "notification_permissions" */
+export type Notification_Permissions_Stddev_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate stddev_samp on columns */
 export type Notification_Permissions_Stddev_Samp_Fields = {
   __typename?: "notification_permissions_stddev_samp_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev_samp() on columns of table "notification_permissions" */
+export type Notification_Permissions_Stddev_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Streaming cursor of the table "notification_permissions" */
@@ -10166,6 +10604,12 @@ export type Notification_Permissions_Sum_Fields = {
   __typename?: "notification_permissions_sum_fields";
   created_at?: Maybe<Scalars["bigint"]["output"]>;
   updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** order by sum() on columns of table "notification_permissions" */
+export type Notification_Permissions_Sum_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "notification_permissions" */
@@ -10212,6 +10656,12 @@ export type Notification_Permissions_Var_Pop_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by var_pop() on columns of table "notification_permissions" */
+export type Notification_Permissions_Var_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate var_samp on columns */
 export type Notification_Permissions_Var_Samp_Fields = {
   __typename?: "notification_permissions_var_samp_fields";
@@ -10219,11 +10669,492 @@ export type Notification_Permissions_Var_Samp_Fields = {
   updated_at?: Maybe<Scalars["Float"]["output"]>;
 };
 
+/** order by var_samp() on columns of table "notification_permissions" */
+export type Notification_Permissions_Var_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
 /** aggregate variance on columns */
 export type Notification_Permissions_Variance_Fields = {
   __typename?: "notification_permissions_variance_fields";
   created_at?: Maybe<Scalars["Float"]["output"]>;
   updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by variance() on columns of table "notification_permissions" */
+export type Notification_Permissions_Variance_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** columns and relationships of "notifications" */
+export type Notifications = {
+  __typename?: "notifications";
+  /** Notification configuration */
+  config?: Maybe<Scalars["jsonb"]["output"]>;
+  created_at: Scalars["bigint"]["output"];
+  /** Error message if notification failed */
+  error?: Maybe<Scalars["String"]["output"]>;
+  id: Scalars["uuid"]["output"];
+  /** An object relationship */
+  message: Notification_Messages;
+  /** Reference to notification message */
+  message_id: Scalars["uuid"]["output"];
+  /** An object relationship */
+  permission: Notification_Permissions;
+  /** Reference to notification permission */
+  permission_id: Scalars["uuid"]["output"];
+  /** Notification status */
+  status: Scalars["String"]["output"];
+  updated_at: Scalars["bigint"]["output"];
+};
+
+/** columns and relationships of "notifications" */
+export type NotificationsConfigArgs = {
+  path?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** aggregated selection of "notifications" */
+export type Notifications_Aggregate = {
+  __typename?: "notifications_aggregate";
+  aggregate?: Maybe<Notifications_Aggregate_Fields>;
+  nodes: Array<Notifications>;
+};
+
+export type Notifications_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Notifications_Aggregate_Bool_Exp_Count>;
+};
+
+export type Notifications_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Notifications_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+  filter?: InputMaybe<Notifications_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "notifications" */
+export type Notifications_Aggregate_Fields = {
+  __typename?: "notifications_aggregate_fields";
+  avg?: Maybe<Notifications_Avg_Fields>;
+  count: Scalars["Int"]["output"];
+  max?: Maybe<Notifications_Max_Fields>;
+  min?: Maybe<Notifications_Min_Fields>;
+  stddev?: Maybe<Notifications_Stddev_Fields>;
+  stddev_pop?: Maybe<Notifications_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Notifications_Stddev_Samp_Fields>;
+  sum?: Maybe<Notifications_Sum_Fields>;
+  var_pop?: Maybe<Notifications_Var_Pop_Fields>;
+  var_samp?: Maybe<Notifications_Var_Samp_Fields>;
+  variance?: Maybe<Notifications_Variance_Fields>;
+};
+
+/** aggregate fields of "notifications" */
+export type Notifications_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Notifications_Select_Column>>;
+  distinct?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+/** order by aggregate values of table "notifications" */
+export type Notifications_Aggregate_Order_By = {
+  avg?: InputMaybe<Notifications_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Notifications_Max_Order_By>;
+  min?: InputMaybe<Notifications_Min_Order_By>;
+  stddev?: InputMaybe<Notifications_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Notifications_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Notifications_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Notifications_Sum_Order_By>;
+  var_pop?: InputMaybe<Notifications_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Notifications_Var_Samp_Order_By>;
+  variance?: InputMaybe<Notifications_Variance_Order_By>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type Notifications_Append_Input = {
+  /** Notification configuration */
+  config?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** input type for inserting array relation for remote table "notifications" */
+export type Notifications_Arr_Rel_Insert_Input = {
+  data: Array<Notifications_Insert_Input>;
+  /** upsert condition */
+  on_conflict?: InputMaybe<Notifications_On_Conflict>;
+};
+
+/** aggregate avg on columns */
+export type Notifications_Avg_Fields = {
+  __typename?: "notifications_avg_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by avg() on columns of table "notifications" */
+export type Notifications_Avg_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "notifications". All fields are combined with a logical 'AND'. */
+export type Notifications_Bool_Exp = {
+  _and?: InputMaybe<Array<Notifications_Bool_Exp>>;
+  _not?: InputMaybe<Notifications_Bool_Exp>;
+  _or?: InputMaybe<Array<Notifications_Bool_Exp>>;
+  config?: InputMaybe<Jsonb_Comparison_Exp>;
+  created_at?: InputMaybe<Bigint_Comparison_Exp>;
+  error?: InputMaybe<String_Comparison_Exp>;
+  id?: InputMaybe<Uuid_Comparison_Exp>;
+  message?: InputMaybe<Notification_Messages_Bool_Exp>;
+  message_id?: InputMaybe<Uuid_Comparison_Exp>;
+  permission?: InputMaybe<Notification_Permissions_Bool_Exp>;
+  permission_id?: InputMaybe<Uuid_Comparison_Exp>;
+  status?: InputMaybe<String_Comparison_Exp>;
+  updated_at?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** unique or primary key constraints on table "notifications" */
+export enum Notifications_Constraint {
+  /** unique or primary key constraint on columns "id" */
+  NotificationsPkey = "notifications_pkey",
+}
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type Notifications_Delete_At_Path_Input = {
+  /** Notification configuration */
+  config?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type Notifications_Delete_Elem_Input = {
+  /** Notification configuration */
+  config?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type Notifications_Delete_Key_Input = {
+  /** Notification configuration */
+  config?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+/** input type for incrementing numeric columns in table "notifications" */
+export type Notifications_Inc_Input = {
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+};
+
+/** input type for inserting data into table "notifications" */
+export type Notifications_Insert_Input = {
+  /** Notification configuration */
+  config?: InputMaybe<Scalars["jsonb"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Error message if notification failed */
+  error?: InputMaybe<Scalars["String"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  message?: InputMaybe<Notification_Messages_Obj_Rel_Insert_Input>;
+  /** Reference to notification message */
+  message_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  permission?: InputMaybe<Notification_Permissions_Obj_Rel_Insert_Input>;
+  /** Reference to notification permission */
+  permission_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Notification status */
+  status?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+};
+
+/** aggregate max on columns */
+export type Notifications_Max_Fields = {
+  __typename?: "notifications_max_fields";
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** Error message if notification failed */
+  error?: Maybe<Scalars["String"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  /** Reference to notification message */
+  message_id?: Maybe<Scalars["uuid"]["output"]>;
+  /** Reference to notification permission */
+  permission_id?: Maybe<Scalars["uuid"]["output"]>;
+  /** Notification status */
+  status?: Maybe<Scalars["String"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** order by max() on columns of table "notifications" */
+export type Notifications_Max_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Error message if notification failed */
+  error?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Reference to notification message */
+  message_id?: InputMaybe<Order_By>;
+  /** Reference to notification permission */
+  permission_id?: InputMaybe<Order_By>;
+  /** Notification status */
+  status?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Notifications_Min_Fields = {
+  __typename?: "notifications_min_fields";
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  /** Error message if notification failed */
+  error?: Maybe<Scalars["String"]["output"]>;
+  id?: Maybe<Scalars["uuid"]["output"]>;
+  /** Reference to notification message */
+  message_id?: Maybe<Scalars["uuid"]["output"]>;
+  /** Reference to notification permission */
+  permission_id?: Maybe<Scalars["uuid"]["output"]>;
+  /** Notification status */
+  status?: Maybe<Scalars["String"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** order by min() on columns of table "notifications" */
+export type Notifications_Min_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  /** Error message if notification failed */
+  error?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  /** Reference to notification message */
+  message_id?: InputMaybe<Order_By>;
+  /** Reference to notification permission */
+  permission_id?: InputMaybe<Order_By>;
+  /** Notification status */
+  status?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** response of any mutation on the table "notifications" */
+export type Notifications_Mutation_Response = {
+  __typename?: "notifications_mutation_response";
+  /** number of rows affected by the mutation */
+  affected_rows: Scalars["Int"]["output"];
+  /** data from the rows affected by the mutation */
+  returning: Array<Notifications>;
+};
+
+/** on_conflict condition type for table "notifications" */
+export type Notifications_On_Conflict = {
+  constraint: Notifications_Constraint;
+  update_columns?: Array<Notifications_Update_Column>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
+/** Ordering options when selecting data from "notifications". */
+export type Notifications_Order_By = {
+  config?: InputMaybe<Order_By>;
+  created_at?: InputMaybe<Order_By>;
+  error?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  message?: InputMaybe<Notification_Messages_Order_By>;
+  message_id?: InputMaybe<Order_By>;
+  permission?: InputMaybe<Notification_Permissions_Order_By>;
+  permission_id?: InputMaybe<Order_By>;
+  status?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** primary key columns input for table: notifications */
+export type Notifications_Pk_Columns_Input = {
+  id: Scalars["uuid"]["input"];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type Notifications_Prepend_Input = {
+  /** Notification configuration */
+  config?: InputMaybe<Scalars["jsonb"]["input"]>;
+};
+
+/** select columns of table "notifications" */
+export enum Notifications_Select_Column {
+  /** column name */
+  Config = "config",
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Error = "error",
+  /** column name */
+  Id = "id",
+  /** column name */
+  MessageId = "message_id",
+  /** column name */
+  PermissionId = "permission_id",
+  /** column name */
+  Status = "status",
+  /** column name */
+  UpdatedAt = "updated_at",
+}
+
+/** input type for updating data in table "notifications" */
+export type Notifications_Set_Input = {
+  /** Notification configuration */
+  config?: InputMaybe<Scalars["jsonb"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Error message if notification failed */
+  error?: InputMaybe<Scalars["String"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Reference to notification message */
+  message_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Reference to notification permission */
+  permission_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Notification status */
+  status?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+};
+
+/** aggregate stddev on columns */
+export type Notifications_Stddev_Fields = {
+  __typename?: "notifications_stddev_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev() on columns of table "notifications" */
+export type Notifications_Stddev_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Notifications_Stddev_Pop_Fields = {
+  __typename?: "notifications_stddev_pop_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev_pop() on columns of table "notifications" */
+export type Notifications_Stddev_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Notifications_Stddev_Samp_Fields = {
+  __typename?: "notifications_stddev_samp_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by stddev_samp() on columns of table "notifications" */
+export type Notifications_Stddev_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "notifications" */
+export type Notifications_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Notifications_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Notifications_Stream_Cursor_Value_Input = {
+  /** Notification configuration */
+  config?: InputMaybe<Scalars["jsonb"]["input"]>;
+  created_at?: InputMaybe<Scalars["bigint"]["input"]>;
+  /** Error message if notification failed */
+  error?: InputMaybe<Scalars["String"]["input"]>;
+  id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Reference to notification message */
+  message_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Reference to notification permission */
+  permission_id?: InputMaybe<Scalars["uuid"]["input"]>;
+  /** Notification status */
+  status?: InputMaybe<Scalars["String"]["input"]>;
+  updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
+};
+
+/** aggregate sum on columns */
+export type Notifications_Sum_Fields = {
+  __typename?: "notifications_sum_fields";
+  created_at?: Maybe<Scalars["bigint"]["output"]>;
+  updated_at?: Maybe<Scalars["bigint"]["output"]>;
+};
+
+/** order by sum() on columns of table "notifications" */
+export type Notifications_Sum_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** update columns of table "notifications" */
+export enum Notifications_Update_Column {
+  /** column name */
+  Config = "config",
+  /** column name */
+  CreatedAt = "created_at",
+  /** column name */
+  Error = "error",
+  /** column name */
+  Id = "id",
+  /** column name */
+  MessageId = "message_id",
+  /** column name */
+  PermissionId = "permission_id",
+  /** column name */
+  Status = "status",
+  /** column name */
+  UpdatedAt = "updated_at",
+}
+
+export type Notifications_Updates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<Notifications_Append_Input>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _delete_at_path?: InputMaybe<Notifications_Delete_At_Path_Input>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _delete_elem?: InputMaybe<Notifications_Delete_Elem_Input>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _delete_key?: InputMaybe<Notifications_Delete_Key_Input>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<Notifications_Inc_Input>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<Notifications_Prepend_Input>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<Notifications_Set_Input>;
+  /** filter the rows which have to be updated */
+  where: Notifications_Bool_Exp;
+};
+
+/** aggregate var_pop on columns */
+export type Notifications_Var_Pop_Fields = {
+  __typename?: "notifications_var_pop_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by var_pop() on columns of table "notifications" */
+export type Notifications_Var_Pop_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** aggregate var_samp on columns */
+export type Notifications_Var_Samp_Fields = {
+  __typename?: "notifications_var_samp_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by var_samp() on columns of table "notifications" */
+export type Notifications_Var_Samp_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
+};
+
+/** aggregate variance on columns */
+export type Notifications_Variance_Fields = {
+  __typename?: "notifications_variance_fields";
+  created_at?: Maybe<Scalars["Float"]["output"]>;
+  updated_at?: Maybe<Scalars["Float"]["output"]>;
+};
+
+/** order by variance() on columns of table "notifications" */
+export type Notifications_Variance_Order_By = {
+  created_at?: InputMaybe<Order_By>;
+  updated_at?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to compare columns of type "numeric". All fields are combined with logical 'AND'. */
@@ -15325,18 +16256,24 @@ export type Query_Root = {
   messages_aggregate: Messages_Aggregate;
   /** fetch data from the table: "messages" using primary key columns */
   messages_by_pk?: Maybe<Messages>;
-  /** fetch data from the table: "notification_messages" */
+  /** An array relationship */
   notification_messages: Array<Notification_Messages>;
-  /** fetch aggregated fields from the table: "notification_messages" */
+  /** An aggregate relationship */
   notification_messages_aggregate: Notification_Messages_Aggregate;
   /** fetch data from the table: "notification_messages" using primary key columns */
   notification_messages_by_pk?: Maybe<Notification_Messages>;
-  /** fetch data from the table: "notification_permissions" */
+  /** An array relationship */
   notification_permissions: Array<Notification_Permissions>;
-  /** fetch aggregated fields from the table: "notification_permissions" */
+  /** An aggregate relationship */
   notification_permissions_aggregate: Notification_Permissions_Aggregate;
   /** fetch data from the table: "notification_permissions" using primary key columns */
   notification_permissions_by_pk?: Maybe<Notification_Permissions>;
+  /** An array relationship */
+  notifications: Array<Notifications>;
+  /** An aggregate relationship */
+  notifications_aggregate: Notifications_Aggregate;
+  /** fetch data from the table: "notifications" using primary key columns */
+  notifications_by_pk?: Maybe<Notifications>;
   /** An array relationship */
   options: Array<Options>;
   /** An aggregate relationship */
@@ -15806,6 +16743,26 @@ export type Query_RootNotification_Permissions_AggregateArgs = {
 };
 
 export type Query_RootNotification_Permissions_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+export type Query_RootNotificationsArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
+export type Query_RootNotifications_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
+export type Query_RootNotifications_By_PkArgs = {
   id: Scalars["uuid"]["input"];
 };
 
@@ -17457,22 +18414,30 @@ export type Subscription_Root = {
   messages_by_pk?: Maybe<Messages>;
   /** fetch data from the table in a streaming manner: "messages" */
   messages_stream: Array<Messages>;
-  /** fetch data from the table: "notification_messages" */
+  /** An array relationship */
   notification_messages: Array<Notification_Messages>;
-  /** fetch aggregated fields from the table: "notification_messages" */
+  /** An aggregate relationship */
   notification_messages_aggregate: Notification_Messages_Aggregate;
   /** fetch data from the table: "notification_messages" using primary key columns */
   notification_messages_by_pk?: Maybe<Notification_Messages>;
   /** fetch data from the table in a streaming manner: "notification_messages" */
   notification_messages_stream: Array<Notification_Messages>;
-  /** fetch data from the table: "notification_permissions" */
+  /** An array relationship */
   notification_permissions: Array<Notification_Permissions>;
-  /** fetch aggregated fields from the table: "notification_permissions" */
+  /** An aggregate relationship */
   notification_permissions_aggregate: Notification_Permissions_Aggregate;
   /** fetch data from the table: "notification_permissions" using primary key columns */
   notification_permissions_by_pk?: Maybe<Notification_Permissions>;
   /** fetch data from the table in a streaming manner: "notification_permissions" */
   notification_permissions_stream: Array<Notification_Permissions>;
+  /** An array relationship */
+  notifications: Array<Notifications>;
+  /** An aggregate relationship */
+  notifications_aggregate: Notifications_Aggregate;
+  /** fetch data from the table: "notifications" using primary key columns */
+  notifications_by_pk?: Maybe<Notifications>;
+  /** fetch data from the table in a streaming manner: "notifications" */
+  notifications_stream: Array<Notifications>;
   /** An array relationship */
   options: Array<Options>;
   /** An aggregate relationship */
@@ -18091,6 +19056,32 @@ export type Subscription_RootNotification_Permissions_StreamArgs = {
   where?: InputMaybe<Notification_Permissions_Bool_Exp>;
 };
 
+export type Subscription_RootNotificationsArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
+export type Subscription_RootNotifications_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Notifications_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notifications_Order_By>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
+export type Subscription_RootNotifications_By_PkArgs = {
+  id: Scalars["uuid"]["input"];
+};
+
+export type Subscription_RootNotifications_StreamArgs = {
+  batch_size: Scalars["Int"]["input"];
+  cursor: Array<InputMaybe<Notifications_Stream_Cursor_Input>>;
+  where?: InputMaybe<Notifications_Bool_Exp>;
+};
+
 export type Subscription_RootOptionsArgs = {
   distinct_on?: InputMaybe<Array<Options_Select_Column>>;
   limit?: InputMaybe<Scalars["Int"]["input"]>;
@@ -18480,6 +19471,14 @@ export type Users = {
   is_admin?: Maybe<Scalars["Boolean"]["output"]>;
   /** User display name */
   name?: Maybe<Scalars["String"]["output"]>;
+  /** An array relationship */
+  notification_messages: Array<Notification_Messages>;
+  /** An aggregate relationship */
+  notification_messages_aggregate: Notification_Messages_Aggregate;
+  /** An array relationship */
+  notification_permissions: Array<Notification_Permissions>;
+  /** An aggregate relationship */
+  notification_permissions_aggregate: Notification_Permissions_Aggregate;
   updated_at: Scalars["bigint"]["output"];
 };
 
@@ -18499,6 +19498,42 @@ export type UsersAccounts_AggregateArgs = {
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   order_by?: InputMaybe<Array<Accounts_Order_By>>;
   where?: InputMaybe<Accounts_Bool_Exp>;
+};
+
+/** columns and relationships of "users" */
+export type UsersNotification_MessagesArgs = {
+  distinct_on?: InputMaybe<Array<Notification_Messages_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notification_Messages_Order_By>>;
+  where?: InputMaybe<Notification_Messages_Bool_Exp>;
+};
+
+/** columns and relationships of "users" */
+export type UsersNotification_Messages_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Notification_Messages_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notification_Messages_Order_By>>;
+  where?: InputMaybe<Notification_Messages_Bool_Exp>;
+};
+
+/** columns and relationships of "users" */
+export type UsersNotification_PermissionsArgs = {
+  distinct_on?: InputMaybe<Array<Notification_Permissions_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notification_Permissions_Order_By>>;
+  where?: InputMaybe<Notification_Permissions_Bool_Exp>;
+};
+
+/** columns and relationships of "users" */
+export type UsersNotification_Permissions_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Notification_Permissions_Select_Column>>;
+  limit?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+  order_by?: InputMaybe<Array<Notification_Permissions_Order_By>>;
+  where?: InputMaybe<Notification_Permissions_Bool_Exp>;
 };
 
 /** aggregated selection of "users" */
@@ -18557,6 +19592,10 @@ export type Users_Bool_Exp = {
   image?: InputMaybe<String_Comparison_Exp>;
   is_admin?: InputMaybe<Boolean_Comparison_Exp>;
   name?: InputMaybe<String_Comparison_Exp>;
+  notification_messages?: InputMaybe<Notification_Messages_Bool_Exp>;
+  notification_messages_aggregate?: InputMaybe<Notification_Messages_Aggregate_Bool_Exp>;
+  notification_permissions?: InputMaybe<Notification_Permissions_Bool_Exp>;
+  notification_permissions_aggregate?: InputMaybe<Notification_Permissions_Aggregate_Bool_Exp>;
   updated_at?: InputMaybe<Bigint_Comparison_Exp>;
 };
 
@@ -18594,6 +19633,8 @@ export type Users_Insert_Input = {
   is_admin?: InputMaybe<Scalars["Boolean"]["input"]>;
   /** User display name */
   name?: InputMaybe<Scalars["String"]["input"]>;
+  notification_messages?: InputMaybe<Notification_Messages_Arr_Rel_Insert_Input>;
+  notification_permissions?: InputMaybe<Notification_Permissions_Arr_Rel_Insert_Input>;
   updated_at?: InputMaybe<Scalars["bigint"]["input"]>;
 };
 
@@ -18674,6 +19715,8 @@ export type Users_Order_By = {
   image?: InputMaybe<Order_By>;
   is_admin?: InputMaybe<Order_By>;
   name?: InputMaybe<Order_By>;
+  notification_messages_aggregate?: InputMaybe<Notification_Messages_Aggregate_Order_By>;
+  notification_permissions_aggregate?: InputMaybe<Notification_Permissions_Aggregate_Order_By>;
   updated_at?: InputMaybe<Order_By>;
 };
 

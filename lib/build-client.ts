@@ -212,9 +212,6 @@ export async function buildClient() {
       console.log('    ⚠️ API directory not found, skipping move.');
     }
 
-    // 4. Build CSS (Keep this if needed)
-    await runCommand('npm run build:css');
-
     // 5. Run Next.js build for client target
     console.log('🔨 Running Next.js build for client target...');
     
