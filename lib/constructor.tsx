@@ -22,42 +22,41 @@ import { cn } from 'hasyx/lib/utils';
 function getFieldsForType(graphqlType: any, schema: any): any[] {
   if (!graphqlType?.fields) return [];
   return graphqlType.fields.map((field: any) => {
-    let currentType = field.type;
-    let isList = false;
+    // Support compact schema field format: { name, isList, returnType: { name, kind } }
+    const isCompact = field.returnType && typeof field.type === 'undefined';
+    let currentType = isCompact ? field.returnType : field.type;
+    let isList = isCompact ? !!field.isList : false;
 
-    // Unwrap NON_NULL
-    if (currentType.kind === 'NON_NULL') {
-      currentType = currentType.ofType;
-    }
-
-    // Check for LIST
-    if (currentType.kind === 'LIST') {
-      isList = true;
-      currentType = currentType.ofType; // Unwrap list
+    if (!isCompact) {
       if (currentType.kind === 'NON_NULL') {
-        currentType = currentType.ofType; // Unwrap NON_NULL inside list
+        currentType = currentType.ofType;
+      }
+      if (currentType.kind === 'LIST') {
+        isList = true;
+        currentType = currentType.ofType;
+        if (currentType.kind === 'NON_NULL') {
+          currentType = currentType.ofType;
+        }
       }
     }
 
-    const isObjectRelation = currentType.kind === 'OBJECT';
-    const isRelation = isObjectRelation;
-    const isScalar = currentType.kind === 'SCALAR';
+    const kind = currentType.kind;
+    const name = currentType.name;
+    const isRelation = kind === 'OBJECT';
+    const isScalar = kind === 'SCALAR';
 
-    const typeName = currentType.name;
     let targetTypename: string | undefined = undefined;
-
     if (isRelation) {
-        const tableMappings = schema?.hasyx?.tableMappings;
-        if (tableMappings) {
-            // Find the table mapping where the 'type' matches our GQL type name
-            const mappingKey = Object.keys(tableMappings).find(key => {
-                const mapping = tableMappings[key];
-                return mapping.type === currentType.name;
-            });
-            targetTypename = mappingKey || currentType.name; // The key is the __typename
-        } else {
-            targetTypename = currentType.name;
-        }
+      const tableMappings = schema?.hasyx?.tableMappings;
+      if (tableMappings) {
+        const mappingKey = Object.keys(tableMappings).find(key => {
+          const mapping = tableMappings[key];
+          return mapping.type === name;
+        });
+        targetTypename = mappingKey || name;
+      } else {
+        targetTypename = name;
+      }
     }
     
     return {
@@ -65,7 +64,7 @@ function getFieldsForType(graphqlType: any, schema: any): any[] {
       isRelation,
       isList,
       isScalar,
-      typeName,
+      typeName: name,
       targetTypename,
     };
   });
@@ -76,7 +75,14 @@ function getFieldDetails(schema: any, typename: string): any[] {
   const tableConfig = schema?.hasyx?.tableMappings?.[typename];
   const typeNameFromSchema = tableConfig?.type || typename;
 
-  let graphqlType = schema?.data?.__schema?.types?.find((type: any) => type.name === typeNameFromSchema);
+  // Prefer compact schema types
+  let graphqlType = schema?.hasyx?.generator?.types?.[typeNameFromSchema];
+  if (graphqlType) {
+    // Normalize to a shape with fields similar to introspection for getFieldsForType
+    graphqlType = { fields: graphqlType.fields };
+  } else {
+    graphqlType = schema?.data?.__schema?.types?.find((type: any) => type.name === typeNameFromSchema);
+  }
   
   if (!graphqlType || !graphqlType?.fields) {
     graphqlType = schema?.data?.__schema?.types?.find((type: any) => type.name === typename);
@@ -190,6 +196,11 @@ function getFieldsFromTable(schema: any, tableName: string): FieldInfo[] {
   
   let graphqlType: any = null;
   for (const typeName of possibleTypeNames) {
+    const compact = schema?.hasyx?.generator?.types?.[typeName];
+    if (compact) {
+      graphqlType = { fields: compact.fields };
+      break;
+    }
     graphqlType = schema?.data?.__schema?.types?.find((type: any) => type.name === typeName);
     if (graphqlType) break;
   }
@@ -237,34 +248,26 @@ function getFieldsFromTable(schema: any, tableName: string): FieldInfo[] {
   }
   
   return graphqlType?.fields?.map((field: any) => {
-    let currentType = field.type;
-    let isList = false;
+    const isCompact = field.returnType && typeof field.type === 'undefined';
+    let currentType = isCompact ? field.returnType : field.type;
+    let isList = isCompact ? !!field.isList : false;
 
-    // Unwrap NON_NULL
-    if (currentType.kind === 'NON_NULL') {
-      currentType = currentType.ofType;
-    }
-
-    // Check for LIST
-    if (currentType.kind === 'LIST') {
-      isList = true;
-      currentType = currentType.ofType; // Unwrap list
+    if (!isCompact) {
       if (currentType.kind === 'NON_NULL') {
-        currentType = currentType.ofType; // Unwrap NON_NULL inside list
+        currentType = currentType.ofType;
+      }
+      if (currentType.kind === 'LIST') {
+        isList = true;
+        currentType = currentType.ofType;
+        if (currentType.kind === 'NON_NULL') {
+          currentType = currentType.ofType;
+        }
       }
     }
     
     const isRelation = currentType.kind === 'OBJECT';
+    let typeName = currentType?.name || 'String';
     
-    // Get the type name for display
-    let typeName = 'String'; // default
-    if (currentType?.name) {
-      typeName = currentType.name;
-    } else if (currentType?.ofType?.name) {
-      typeName = currentType.ofType.name;
-    }
-    
-    // Map GraphQL types to simplified types
     if (typeName === 'uuid') typeName = 'UUID';
     if (typeName === 'bigint') typeName = 'Int';
     if (typeName === 'timestamptz') typeName = 'DateTime';
@@ -276,7 +279,7 @@ function getFieldsFromTable(schema: any, tableName: string): FieldInfo[] {
       type: typeName,
       isRelation,
       isList,
-      targetTable: isRelation ? currentType.name : undefined
+      targetTable: isRelation ? (currentType.name) : undefined
     };
   });
 }

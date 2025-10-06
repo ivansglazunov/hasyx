@@ -315,31 +315,30 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
         });
         debug('[test:hasyx:oneoff] create_scheduled_event response:', createRes);
 
-        // Resolve scheduled_event id by payload marker
+        // Resolve scheduled_event id using Hasura API
         let scheduledEventId: string | null = null;
         const resolveEventId = async () => {
-          const sql = `
-            SELECT id, status, scheduled_time
-            FROM hdb_catalog.hdb_scheduled_events
-            WHERE payload ->> 'client_event_id' = '${markerId}'
-            ORDER BY created_at DESC
-            LIMIT 1;
-          `;
-          const res = await adminHasyx.sql(sql);
-          const rows = Array.isArray(res?.result) ? res.result.slice(1) : [];
-          if (rows.length > 0) {
-            scheduledEventId = rows[0][0];
-            const status = rows[0][1];
-            const st = rows[0][2];
-            debug(`[test:hasyx:oneoff] Found event id=${scheduledEventId}, status=${status}, scheduled_time=${st}`);
-            return true;
+          const events = await adminHasyx.hasura!.v1({
+            type: 'get_scheduled_events',
+            args: { type: 'one_off' }
+          });
+          
+          if (events?.events) {
+            const found = events.events.find((e: any) => 
+              e.payload?.client_event_id === markerId
+            );
+            if (found) {
+              scheduledEventId = found.id;
+              debug(`[test:hasyx:oneoff] Found event id=${scheduledEventId}, status=${found.status}, scheduled_time=${found.scheduled_time}`);
+              return true;
+            }
           }
           return false;
         };
 
         const waitFor = async (ms: number) => new Promise(res => setTimeout(res, ms));
 
-        // Poll for the scheduled event row to appear (Hasura writes immediately)
+        // Poll for the scheduled event to appear (Hasura writes immediately)
         {
           const deadline = Date.now() + 30000; // 30s
           while (Date.now() < deadline) {
@@ -359,50 +358,32 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
           await waitFor(toWait);
         }
 
-        // Poll for delivery confirmation: either delivered status or a log row in invocation logs
+        // Poll for delivery confirmation using Hasura API
         let delivered = false;
-        let invocationFound = false;
         {
-          const deadline = Date.now() + 120000; // up to 120s to see delivery/log
+          const deadline = Date.now() + 120000; // up to 120s to see delivery
           while (Date.now() < deadline && scheduledEventId) {
-            // Check status in hdb_scheduled_events
-            const statusSql = `
-              SELECT status, tries, next_retry_at
-              FROM hdb_catalog.hdb_scheduled_events
-              WHERE id = '${scheduledEventId}'
-              LIMIT 1;
-            `;
-            const statusRes = await adminHasyx.sql(statusSql);
-            const statusRows = Array.isArray(statusRes?.result) ? statusRes.result.slice(1) : [];
-            if (statusRows.length > 0) {
-              const status = statusRows[0][0];
-              debug(`[test:hasyx:oneoff] event status = ${status}`);
-              if (status === 'delivered') {
-                delivered = true;
-                break;
+            const events = await adminHasyx.hasura!.v1({
+              type: 'get_scheduled_events',
+              args: { type: 'one_off' }
+            });
+            
+            if (events?.events) {
+              const event = events.events.find((e: any) => e.id === scheduledEventId);
+              if (event) {
+                debug(`[test:hasyx:oneoff] event status = ${event.status}, tries = ${event.tries}`);
+                if (event.status === 'delivered' || event.status === 'error' || event.tries > 0) {
+                  delivered = true;
+                  break;
+                }
               }
-            }
-
-            // Check invocation logs table
-            const logsSql = `
-              SELECT COUNT(*)
-              FROM hdb_catalog.hdb_scheduled_event_invocation_logs
-              WHERE event_id = '${scheduledEventId}';
-            `;
-            const logsRes = await adminHasyx.sql(logsSql);
-            const logsRows = Array.isArray(logsRes?.result) ? logsRes.result.slice(1) : [];
-            const cnt = logsRows.length > 0 ? parseInt(logsRows[0][0], 10) : 0;
-            debug(`[test:hasyx:oneoff] invocation_logs count = ${cnt}`);
-            if (cnt > 0) {
-              invocationFound = true;
-              break;
             }
 
             await waitFor(2000);
           }
         }
 
-        expect(delivered || invocationFound).toBe(true);
+        expect(delivered).toBe(true);
       } finally {
         cleanupHasyx(adminHasyx, 'one-off');
       }
@@ -426,23 +407,23 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
           },
         });
 
-        // Resolve event id by marker
+        // Resolve event id using Hasura API
         const waitFor = async (ms: number) => new Promise(res => setTimeout(res, ms));
         const resolveEventId = async () => {
-          const sql = `
-            SELECT id, status
-            FROM hdb_catalog.hdb_scheduled_events
-            WHERE payload ->> 'client_event_id' = '${markerId}'
-            ORDER BY created_at DESC
-            LIMIT 1;
-          `;
-          const res = await adminHasyx.sql(sql);
-          const rows = Array.isArray(res?.result) ? res.result.slice(1) : [];
-          if (rows.length > 0) {
-            scheduledEventId = rows[0][0];
-            const status = rows[0][1];
-            debug(`[test:hasyx:oneoff-cancel] Found event id=${scheduledEventId}, status=${status}`);
-            return true;
+          const events = await adminHasyx.hasura!.v1({
+            type: 'get_scheduled_events',
+            args: { type: 'one_off' }
+          });
+          
+          if (events?.events) {
+            const found = events.events.find((e: any) => 
+              e.payload?.client_event_id === markerId
+            );
+            if (found) {
+              scheduledEventId = found.id;
+              debug(`[test:hasyx:oneoff-cancel] Found event id=${scheduledEventId}, status=${found.status}`);
+              return true;
+            }
           }
           return false;
         };
@@ -459,21 +440,22 @@ function cleanupHasyx(hasyx: Hasyx, label: string = '') {
         // Cancel the one-off event
         await adminHasyx.hasura!.undefineOneOffEvent({ event_id: scheduledEventId! });
 
-        // Confirm it's gone
+        // Confirm it's gone using Hasura API
         let existsAfterCancel = true;
         {
           const deadline = Date.now() + 30000; // 30s
           while (Date.now() < deadline) {
-            const checkSql = `
-              SELECT COUNT(*)
-              FROM hdb_catalog.hdb_scheduled_events
-              WHERE id = '${scheduledEventId}';
-            `;
-            const res = await adminHasyx.sql(checkSql);
-            const rows = Array.isArray(res?.result) ? res.result.slice(1) : [];
-            const cnt = rows.length > 0 ? parseInt(rows[0][0], 10) : 0;
-            debug(`[test:hasyx:oneoff-cancel] remaining rows for id=${scheduledEventId}: ${cnt}`);
-            if (cnt === 0) { existsAfterCancel = false; break; }
+            const events = await adminHasyx.hasura!.v1({
+              type: 'get_scheduled_events',
+              args: { type: 'one_off' }
+            });
+            
+            const found = events?.events?.find((e: any) => e.id === scheduledEventId);
+            debug(`[test:hasyx:oneoff-cancel] Event exists after cancel: ${!!found}`);
+            if (!found) { 
+              existsAfterCancel = false; 
+              break; 
+            }
             await waitFor(1000);
           }
         }

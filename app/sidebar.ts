@@ -27,31 +27,31 @@ export const sidebar: SidebarData = {
           url: "/hasyx/config",
         },
         {
-          title: `🟡 ${t('pwaDiagnostics')}`,
+          title: `🎛️ ${t('pwaDiagnostics')}`,
           url: "/hasyx/pwa",
         },
         {
-          title: `🟢 ${t('constructor')}`,
+          title: `🏗️ ${t('constructor')}`,
           url: "/hasyx/constructor",
         },
         {
-          title: `🟠 ${t('aframe')}`,
+          title: `⛑️ ${t('aframe')}`,
           url: "/hasyx/aframe",
         },
         {
-          title: `🟢 ${t('cyto')}`,
+          title: `📐 ${t('cyto')}`,
           url: "/hasyx/cyto",
         },
         {
-          title: `🟡 ${t('payments')}`,
+          title: `💸 ${t('payments')}`,
           url: "/hasyx/payments",
         },
         {
-          title: `🟢 ${t('telegram')}`,
+          title: `🪁 ${t('telegram')}`,
           url: "/hasyx/telegram-miniapp",
         },
         {
-          title: `🟠 ${t('roadmap')}`,
+          title: `🏁 ${t('roadmap')}`,
           url: "/hasyx/roadmap",
         },
         {

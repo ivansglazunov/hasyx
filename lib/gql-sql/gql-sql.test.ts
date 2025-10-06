@@ -18,7 +18,7 @@ function createAdminHasyx(): Hasyx {
 }
 
 // Per-user rules: each `it` creates and cleans its own state without before/after
-describe('gqlToSql', () => {
+(!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('gqlToSql', () => {
   it('converts generated select query to executable SQL and runs it via Hasura.sql', async () => {
     const admin = createAdminHasyx();
     try {

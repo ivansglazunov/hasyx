@@ -8,18 +8,18 @@ dotenv.config();
 
 const config: CodegenConfig = {
   overwrite: true,
-  // Specify the path to the schema file that we generate
-  schema: './public/hasura-schema.json',
-  // Can also specify URL and headers if we want to request schema directly
-  // schema: [
-  //   {
-  //     [process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!]: {
-  //       headers: {
-  //         'X-Hasura-Admin-Secret': process.env.HASURA_ADMIN_SECRET!,
-  //       },
-  //     },
-  //   },
-  // ],
+  // Request schema directly from Hasura instead of using generated file
+  schema: [
+    {
+      [process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!]: {
+        headers: {
+          'X-Hasura-Admin-Secret': process.env.HASURA_ADMIN_SECRET!,
+        },
+      },
+    },
+  ],
+  // Fallback to file if direct connection fails
+  // schema: './public/hasura-schema.json',
   documents: undefined, // We don't use separate .graphql files for operations
   generates: {
     // Path to the file where types will be generated
