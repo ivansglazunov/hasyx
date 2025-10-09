@@ -6,6 +6,7 @@ import React from 'react';
 import * as UsersEntity from 'hasyx/components/entities/users';
 import * as AccountsEntity from 'hasyx/components/entities/accounts';
 import * as GitHubIssuesEntity from 'hasyx/components/entities/github_issues';
+import * as OptionsEntity from 'hasyx/components/entities/options';
 import * as DefaultEntity from 'hasyx/components/entities/default';
 
 interface EntityData {
@@ -35,6 +36,7 @@ const ENTITY_REGISTRY = {
   'users': UsersEntity,
   'accounts': AccountsEntity,
   'issues': GitHubIssuesEntity,
+  'options': OptionsEntity,
   'default': DefaultEntity,
   // Add more entities here as they are created
   // 'notifications': NotificationsEntity,

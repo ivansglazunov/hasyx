@@ -32,6 +32,8 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
   await hasura.defineColumn({ schema, table: optionsTable, name: 'key', type: ColumnType.TEXT, postfix: 'NOT NULL' });
   await hasura.defineColumn({ schema, table: optionsTable, name: 'user_id', type: ColumnType.UUID, postfix: 'NULL' });
   await hasura.defineColumn({ schema, table: optionsTable, name: 'item_id', type: ColumnType.UUID });
+  // Private column for plv8 computation results (not exposed in GraphQL)
+  await hasura.defineColumn({ schema, table: optionsTable, name: '_result', type: ColumnType.TEXT });
   // Unified reference column for UUID-based options (e.g., friend_id, avatar)
   await hasura.defineColumn({ schema, table: optionsTable, name: 'to_id', type: ColumnType.UUID });
   
@@ -47,6 +49,47 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
     to: { schema: 'public', table: 'users', column: 'id' },
     on_delete: 'CASCADE'
   });
+
+  // Create relationships
+  // options.item_options (array relationship): options pointing to this option via item_id
+  try {
+    await hasura.v1({
+      type: 'pg_create_array_relationship',
+      args: {
+        source: 'default',
+        table: { schema, name: optionsTable },
+        name: 'item_options',
+        using: {
+          manual_configuration: {
+            remote_table: { schema, name: optionsTable },
+            column_mapping: { id: 'item_id' }
+          }
+        }
+      }
+    });
+  } catch (e) {
+    debug(`⚠️ Could not create item_options relationship: ${e}`);
+  }
+
+  // options.item (object relationship): the option this points to via item_id  
+  try {
+    await hasura.v1({
+      type: 'pg_create_object_relationship',
+      args: {
+        source: 'default',
+        table: { schema, name: optionsTable },
+        name: 'item_option',
+        using: {
+          manual_configuration: {
+            remote_table: { schema, name: optionsTable },
+            column_mapping: { item_id: 'id' }
+          }
+        }
+      }
+    });
+  } catch (e) {
+    debug(`⚠️ Could not create item_option relationship: ${e}`);
+  }
 
   // Ensure validation runtime and project schemas are available BEFORE creating triggers
   // This guarantees that validation.project_schemas() and validate_option_permission() exist
@@ -90,7 +133,17 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
 
       -- 🎯 DYNAMIC SCHEMA DETECTION: Determine which schema to use based on item_id
       IF NEW.item_id IS NULL THEN
-        RAISE EXCEPTION 'item_id is required - options must be tied to a specific entity';
+        -- Allow keys explicitly declared under options[""] (aliased as options.__empty)
+        BEGIN
+          SELECT validation.project_schemas() INTO schemas_data;
+          -- Check that options.__empty exists and key is declared
+          IF jsonb_extract_path(schemas_data, 'options', '__empty', 'properties', NEW.key) IS NULL THEN
+            RAISE EXCEPTION 'item_id is required unless key is declared under options[""] (global options)';
+          END IF;
+          v_schema_path := 'options.__empty';
+        EXCEPTION WHEN OTHERS THEN
+          RAISE EXCEPTION 'Error during global schema detection: %', SQLERRM;
+        END;
       ELSE
         -- Get available table names from project schemas
         BEGIN
@@ -100,6 +153,12 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
           -- Extract table names from options schema
           SELECT array_agg(key) INTO available_tables
           FROM jsonb_each(schemas_data->'options');
+
+          -- Remove special groups from candidate table list
+          IF available_tables IS NOT NULL THEN
+            available_tables := array_remove(available_tables, '__any');
+            available_tables := array_remove(available_tables, '__empty');
+          END IF;
           
           -- Check each available table for the item_id
           FOREACH table_name IN ARRAY available_tables
@@ -136,8 +195,24 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
         END;
       END IF;
 
-      -- Ensure the key exists in the determined schema
+      -- Ensure the key exists in the determined or fallback (options.__any) schema
       BEGIN
+        IF v_schema_path IS NULL OR v_schema_path = '' THEN
+          RAISE EXCEPTION 'Internal error: v_schema_path not set';
+        END IF;
+
+        -- If not global (options.__empty), try table-specific first, then fallback to options.__any
+        IF v_schema_path <> 'options.__empty' THEN
+          -- Load schemas_data if missing
+          IF schemas_data IS NULL THEN SELECT validation.project_schemas() INTO schemas_data; END IF;
+          IF jsonb_extract_path(schemas_data, (string_to_array(v_schema_path, '.'))[1], (string_to_array(v_schema_path, '.'))[2], 'properties', NEW.key) IS NULL THEN
+            -- Try wildcard group
+            IF jsonb_extract_path(schemas_data, 'options', '__any', 'properties', NEW.key) IS NOT NULL THEN
+              v_schema_path := 'options.__any';
+            END IF;
+          END IF;
+        END IF;
+
         PERFORM validation.validate_option_key(NEW.key, v_schema_path);
       EXCEPTION WHEN undefined_function THEN
         RAISE EXCEPTION 'validation runtime is not installed (validate_option_key)';
@@ -152,9 +227,22 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
           SELECT validation.project_schemas() INTO schemas_data;
         END IF;
         -- Try x-meta first (if we had custom logic), then fallback to direct properties (Zod 4 behavior)
-        meta := jsonb_extract_path(schemas_data, 'options', found_in_table, 'properties', NEW.key, 'x-meta');
-        IF meta IS NULL THEN
-          meta := jsonb_extract_path(schemas_data, 'options', found_in_table, 'properties', NEW.key);
+        -- Use correct table name based on v_schema_path
+        IF v_schema_path = 'options.__empty' THEN
+          meta := jsonb_extract_path(schemas_data, 'options', '__empty', 'properties', NEW.key, 'x-meta');
+          IF meta IS NULL THEN
+            meta := jsonb_extract_path(schemas_data, 'options', '__empty', 'properties', NEW.key);
+          END IF;
+        ELSIF v_schema_path = 'options.__any' THEN
+          meta := jsonb_extract_path(schemas_data, 'options', '__any', 'properties', NEW.key, 'x-meta');
+          IF meta IS NULL THEN
+            meta := jsonb_extract_path(schemas_data, 'options', '__any', 'properties', NEW.key);
+          END IF;
+        ELSIF found_in_table IS NOT NULL THEN
+          meta := jsonb_extract_path(schemas_data, 'options', found_in_table, 'properties', NEW.key, 'x-meta');
+          IF meta IS NULL THEN
+            meta := jsonb_extract_path(schemas_data, 'options', found_in_table, 'properties', NEW.key);
+          END IF;
         END IF;
         
         IF meta IS NOT NULL THEN
@@ -173,7 +261,9 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
       -- Enforce uniqueness for non-multiple keys: no duplicates per (key, item_id)
       IF NOT is_multiple THEN
         PERFORM 1 FROM "${schema}"."${optionsTable}" t
-         WHERE t.key = NEW.key AND t.item_id = NEW.item_id AND (TG_OP = 'INSERT' OR t.id <> NEW.id)
+         WHERE t.key = NEW.key
+           AND ((t.item_id IS NULL AND NEW.item_id IS NULL) OR t.item_id = NEW.item_id)
+           AND (TG_OP = 'INSERT' OR t.id <> NEW.id)
          LIMIT 1;
         IF FOUND THEN
           RAISE EXCEPTION 'Duplicate option for key % and item_id % is not allowed', NEW.key, NEW.item_id;
@@ -345,8 +435,25 @@ export const OPTIONS_PERMISSIONS = {
   user: {
     select: { filter: {}, columns: true },
     insert: { check: {}, set: {}, columns: OPTIONS_EDITABLE_COLUMNS },
-    update: { filter: { item_id: { _eq: 'X-Hasura-User-Id' } }, set: {}, columns: OPTIONS_EDITABLE_COLUMNS },
-    delete: { filter: { item_id: { _eq: 'X-Hasura-User-Id' } }, columns: true }
+    update: { 
+      filter: { 
+        _or: [
+          { item_id: { _eq: 'X-Hasura-User-Id' } },
+          { user_id: { _eq: 'X-Hasura-User-Id' } }
+        ]
+      }, 
+      set: {}, 
+      columns: OPTIONS_EDITABLE_COLUMNS 
+    },
+    delete: { 
+      filter: { 
+        _or: [
+          { item_id: { _eq: 'X-Hasura-User-Id' } },
+          { user_id: { _eq: 'X-Hasura-User-Id' } }
+        ]
+      }, 
+      columns: true 
+    }
   }
 } as const;
 

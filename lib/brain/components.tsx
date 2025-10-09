@@ -1,0 +1,686 @@
+"use client";
+
+import React, { useState, useCallback } from 'react';
+import { Textarea } from 'hasyx/components/ui/textarea';
+import { Button } from 'hasyx/components/ui/button';
+import { Check, Loader2, Trash2, ChevronDown } from 'lucide-react';
+import { cn } from 'hasyx/lib/utils';
+import { z } from 'zod';
+import { options as schemaOptions } from '@/schema';
+import { HasyxConstructorButton } from 'hasyx/lib/constructor';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from 'hasyx/components/ui/dropdown-menu';
+
+/**
+ * Available brain option types
+ */
+const BRAIN_OPTION_TYPES = [
+  { key: 'brain_string', label: 'String' },
+  { key: 'brain_number', label: 'Number' },
+  { key: 'brain_object', label: 'Object' },
+  { key: 'brain_formula', label: 'Formula' },
+  { key: 'brain_ask', label: 'Ask' },
+  { key: 'brain_js', label: 'JavaScript' },
+  { key: 'brain_query', label: 'Query' },
+] as const;
+
+/**
+ * Option type selector component
+ */
+function OptionTypeSelector({
+  data,
+  onSelect,
+}: {
+  data: { key: string; [key: string]: any };
+  onSelect: (newKey: string) => void;
+}) {
+  const currentType = BRAIN_OPTION_TYPES.find(t => t.key === data.key);
+  
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-8 w-8 p-0 flex-shrink-0"
+        >
+          <ChevronDown className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-36">
+        {BRAIN_OPTION_TYPES.map((type) => (
+          <DropdownMenuItem
+            key={type.key}
+            onClick={() => onSelect(type.key)}
+            className={cn(
+              "cursor-pointer",
+              data.key === type.key && "bg-accent"
+            )}
+          >
+            {type.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+/**
+ * Wrapper component with dotted background zone and optional header
+ */
+function BrainOptionWrapper({ 
+  children, 
+  className,
+  data,
+}: { 
+  children: React.ReactNode; 
+  className?: string;
+  data?: { id: string; [key: string]: any };
+}) {
+  return (
+    <div 
+      className={cn("relative", className)}
+      style={{
+        pointerEvents: 'none', // Dotted zone doesn't block events
+        backgroundImage: 'radial-gradient(circle, rgba(100, 100, 100, 0.2) 1px, transparent 1px)',
+        backgroundSize: '10px 10px',
+        padding: '20px',
+        paddingTop: '30px', // Extra space for header
+      }}
+    >
+      {/* Header over dotted zone */}
+      {data && (
+        <div 
+          className="absolute top-0 left-0 right-0 px-5 pt-2 pb-1"
+          style={{ pointerEvents: 'all' }}
+        >
+          <span className="text-xs font-mono text-foreground/70">
+            {data.id}
+          </span>
+        </div>
+      )}
+      
+      <div 
+        className="border border-white rounded-md overflow-hidden"
+        style={{ pointerEvents: 'all' }} // Content zone receives events
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Action buttons column (delete + save)
+ */
+function ActionButtons({ 
+  onSave, 
+  onDelete,
+  isSaving 
+}: { 
+  onSave?: () => void; 
+  onDelete?: () => void;
+  isSaving?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      {onDelete && (
+        <Button
+          onClick={onDelete}
+          size="sm"
+          variant="ghost"
+          className="h-8 w-8 p-0 flex-shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      )}
+      {onSave && (
+        <Button
+          onClick={onSave}
+          disabled={isSaving}
+          size="sm"
+          variant="ghost"
+          className="h-8 w-8 p-0 flex-shrink-0"
+        >
+          {isSaving ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Check className="h-4 w-4" />
+          )}
+        </Button>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Brain String Component - editable text area for brain_string options
+ */
+export function BrainStringComponent({ 
+  data,
+  value, 
+  onChange, 
+  onSave,
+  onDelete,
+  onTypeChange,
+  placeholder = "Enter text...",
+  className,
+}: {
+  data: { id: string; key: string; [key: string]: any };
+  value: string;
+  onChange: (value: string) => void;
+  onSave?: () => Promise<void>;
+  onDelete?: () => void;
+  onTypeChange?: (newKey: string) => void;
+  placeholder?: string;
+  className?: string;
+}) {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = useCallback(async () => {
+    if (!onSave) return;
+    setIsSaving(true);
+    try {
+      await onSave();
+    } finally {
+      setIsSaving(false);
+    }
+  }, [onSave]);
+
+  return (
+    <BrainOptionWrapper className={className} data={data}>
+      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+        {onTypeChange && (
+          <div className="flex flex-col gap-1">
+            <OptionTypeSelector data={data} onSelect={onTypeChange} />
+          </div>
+        )}
+        <Textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="flex-1 h-[100px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
+        <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
+      </div>
+    </BrainOptionWrapper>
+  );
+}
+
+/**
+ * Brain Ask Component - prompt editor for brain_ask options
+ */
+export function BrainAskComponent({
+  data,
+  value,
+  onChange,
+  onSave,
+  onDelete,
+  onTypeChange,
+  placeholder = "Enter prompt...",
+  className,
+}: {
+  data: { id: string; key: string; [key: string]: any };
+  value: string;
+  onChange: (value: string) => void;
+  onSave?: () => Promise<void>;
+  onDelete?: () => void;
+  onTypeChange?: (newKey: string) => void;
+  placeholder?: string;
+  className?: string;
+}) {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = useCallback(async () => {
+    if (!onSave) return;
+    setIsSaving(true);
+    try {
+      await onSave();
+    } finally {
+      setIsSaving(false);
+    }
+  }, [onSave]);
+
+  return (
+    <BrainOptionWrapper className={className} data={data}>
+      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+        {onTypeChange && (
+          <div className="flex flex-col gap-1">
+            <OptionTypeSelector data={data} onSelect={onTypeChange} />
+          </div>
+        )}
+        <Textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="flex-1 h-[100px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
+        <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
+      </div>
+    </BrainOptionWrapper>
+  );
+}
+
+/**
+ * Brain JS Component - code editor for brain_js options
+ */
+export function BrainJSComponent({
+  data,
+  value,
+  onChange,
+  onSave,
+  onDelete,
+  onTypeChange,
+  placeholder = "// Enter JavaScript code...",
+  className,
+}: {
+  data: { id: string; key: string; [key: string]: any };
+  value: string;
+  onChange: (value: string) => void;
+  onSave?: () => Promise<void>;
+  onDelete?: () => void;
+  onTypeChange?: (newKey: string) => void;
+  placeholder?: string;
+  className?: string;
+}) {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = useCallback(async () => {
+    if (!onSave) return;
+    setIsSaving(true);
+    try {
+      await onSave();
+    } finally {
+      setIsSaving(false);
+    }
+  }, [onSave]);
+
+  return (
+    <BrainOptionWrapper className={className} data={data}>
+      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+        {onTypeChange && (
+          <div className="flex flex-col gap-1">
+            <OptionTypeSelector data={data} onSelect={onTypeChange} />
+          </div>
+        )}
+        <Textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="flex-1 h-[100px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-xs"
+          spellCheck={false}
+        />
+        <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
+      </div>
+    </BrainOptionWrapper>
+  );
+}
+
+/**
+ * Brain Number Component - for brain_number options
+ */
+export function BrainNumberComponent({
+  data,
+  value,
+  onChange,
+  onSave,
+  onDelete,
+  onTypeChange,
+  className,
+}: {
+  data: { id: string; key: string; [key: string]: any };
+  value: number;
+  onChange: (value: number) => void;
+  onSave?: () => Promise<void>;
+  onDelete?: () => void;
+  onTypeChange?: (newKey: string) => void;
+  className?: string;
+}) {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = useCallback(async () => {
+    if (!onSave) return;
+    setIsSaving(true);
+    try {
+      await onSave();
+    } finally {
+      setIsSaving(false);
+    }
+  }, [onSave]);
+
+  // Determine font size based on number length
+  const numberString = String(value);
+  const fontSize = numberString.length <= 8 ? '2em' : '1em';
+
+  return (
+    <BrainOptionWrapper className={className} data={data}>
+      <div className="flex items-center gap-2 p-2 bg-background w-[300px]">
+        {onTypeChange && (
+          <div className="flex flex-col gap-1">
+            <OptionTypeSelector data={data} onSelect={onTypeChange} />
+          </div>
+        )}
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          className="flex-1 px-3 py-2 bg-transparent border-0 focus-visible:outline-none w-full text-center"
+          style={{ fontSize }}
+        />
+        <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
+      </div>
+    </BrainOptionWrapper>
+  );
+}
+
+/**
+ * Brain Object Component - for brain_object options
+ */
+export function BrainObjectComponent({
+  data,
+  value,
+  onChange,
+  onSave,
+  onDelete,
+  onTypeChange,
+  className,
+}: {
+  data: { id: string; key: string; [key: string]: any };
+  value: any;
+  onChange: (value: any) => void;
+  onSave?: () => Promise<void>;
+  onDelete?: () => void;
+  onTypeChange?: (newKey: string) => void;
+  className?: string;
+}) {
+  const [jsonString, setJsonString] = useState(() => 
+    JSON.stringify(value || {}, null, 2)
+  );
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleChange = (newValue: string) => {
+    setJsonString(newValue);
+    try {
+      const parsed = JSON.parse(newValue);
+      onChange(parsed);
+    } catch {
+      // Invalid JSON, don't update
+    }
+  };
+
+  const handleSave = useCallback(async () => {
+    if (!onSave) return;
+    setIsSaving(true);
+    try {
+      await onSave();
+    } finally {
+      setIsSaving(false);
+    }
+  }, [onSave]);
+
+  return (
+    <BrainOptionWrapper className={className} data={data}>
+      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+        {onTypeChange && (
+          <div className="flex flex-col gap-1">
+            <OptionTypeSelector data={data} onSelect={onTypeChange} />
+          </div>
+        )}
+        <Textarea
+          value={jsonString}
+          onChange={(e) => handleChange(e.target.value)}
+          placeholder='{"key": "value"}'
+          className="flex-1 h-[100px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-xs"
+          spellCheck={false}
+        />
+        <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
+      </div>
+    </BrainOptionWrapper>
+  );
+}
+
+/**
+ * Brain Query Component - uses Constructor for query building
+ */
+export function BrainQueryComponent({
+  data,
+  value,
+  onChange,
+  onDelete,
+  onTypeChange,
+  className,
+}: {
+  data: { id: string; key: string; [key: string]: any };
+  value: any;
+  onChange: (value: any) => void;
+  onDelete?: () => void;
+  onTypeChange?: (newKey: string) => void;
+  className?: string;
+}) {
+  return (
+    <BrainOptionWrapper className={className} data={data}>
+      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+        {onTypeChange && (
+          <div className="flex flex-col gap-1">
+            <OptionTypeSelector data={data} onSelect={onTypeChange} />
+          </div>
+        )}
+        <div className="flex-1">
+          <HasyxConstructorButton
+            value={value || { table: 'users', where: {}, returning: ['id'], role: 'anonymous' }}
+            onChange={onChange}
+            defaultTable="users"
+            className="w-full"
+          >
+            <span className="text-xs">Edit Query</span>
+          </HasyxConstructorButton>
+        </div>
+        <ActionButtons onDelete={onDelete} />
+      </div>
+    </BrainOptionWrapper>
+  );
+}
+
+/**
+ * Brain Formula Component - for brain_formula options
+ */
+export function BrainFormulaComponent({
+  data,
+  value,
+  onChange,
+  onSave,
+  onDelete,
+  onTypeChange,
+  placeholder = "Enter formula...",
+  className,
+}: {
+  data: { id: string; key: string; [key: string]: any };
+  value: string;
+  onChange: (value: string) => void;
+  onSave?: () => Promise<void>;
+  onDelete?: () => void;
+  onTypeChange?: (newKey: string) => void;
+  placeholder?: string;
+  className?: string;
+}) {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = useCallback(async () => {
+    if (!onSave) return;
+    setIsSaving(true);
+    try {
+      await onSave();
+    } finally {
+      setIsSaving(false);
+    }
+  }, [onSave]);
+
+  return (
+    <BrainOptionWrapper className={className} data={data}>
+      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+        {onTypeChange && (
+          <div className="flex flex-col gap-1">
+            <OptionTypeSelector data={data} onSelect={onTypeChange} />
+          </div>
+        )}
+        <Textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="flex-1 h-[100px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-sm"
+        />
+        <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
+      </div>
+    </BrainOptionWrapper>
+  );
+}
+
+/**
+ * Default Brain Component - for other brain option types
+ */
+export function DefaultBrainComponent({
+  data,
+  value,
+  onDelete,
+  className,
+}: {
+  data: { id: string; key: string; [key: string]: any };
+  value: any;
+  onDelete?: () => void;
+  className?: string;
+}) {
+  return (
+    <BrainOptionWrapper className={className} data={data}>
+      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+        <div className="flex-1 text-sm">
+          {typeof value === 'object' ? (
+            <pre className="text-xs overflow-auto">{JSON.stringify(value, null, 2)}</pre>
+          ) : (
+            <span>{String(value || 'No value')}</span>
+          )}
+        </div>
+        <ActionButtons onDelete={onDelete} />
+      </div>
+    </BrainOptionWrapper>
+  );
+}
+
+/**
+ * Component registry - maps option keys to their React components
+ * This is the source of truth for which component to use for each option key
+ */
+const BRAIN_COMPONENT_REGISTRY = {
+  'brain': DefaultBrainComponent,
+  'brain_string': BrainStringComponent,
+  'brain_number': BrainNumberComponent,
+  'brain_object': BrainObjectComponent,
+  'brain_formula': BrainFormulaComponent,
+  'brain_ask': BrainAskComponent,
+  'brain_js': BrainJSComponent,
+  'brain_query': BrainQueryComponent,
+  'brain_prop_id': DefaultBrainComponent,
+  'brain_name': DefaultBrainComponent,
+} as const;
+
+/**
+ * Get the appropriate component for a brain option based on table and key
+ * Reads BrainComponent from schema metadata via z.toJSONSchema()
+ * @param table - The table name (e.g., "*" for wildcard, "" for global)
+ * @param key - The option key (e.g., "brain_string")
+ * @returns The component function or DefaultBrainComponent if not found
+ */
+export function getOptionComponent(table: string, key: string): React.ComponentType<any> {
+  // Normalize table name
+  const schemaKey = table === '*' ? '*' : table === '' ? '' : table;
+  const tableSchema = (schemaOptions as any)[schemaKey];
+  
+  if (!tableSchema) {
+    return DefaultBrainComponent;
+  }
+
+  try {
+    // Convert Zod schema to JSON Schema to extract metadata
+    const jsonSchema = z.toJSONSchema(tableSchema);
+    
+    // Get the property schema
+    const properties = (jsonSchema as any).properties;
+    if (!properties || !properties[key]) {
+      // Fallback to registry for brain options
+      if (isBrainOption(key)) {
+        return (BRAIN_COMPONENT_REGISTRY as any)[key] || DefaultBrainComponent;
+      }
+      return DefaultBrainComponent;
+    }
+    
+    const propertySchema = properties[key];
+    
+    // Check for BrainComponent in metadata
+    const componentName = propertySchema.BrainComponent || propertySchema['x-meta']?.BrainComponent;
+    
+    if (componentName && typeof componentName === 'string') {
+      // Map component name to actual component
+      const componentMap: Record<string, React.ComponentType<any>> = {
+        'BrainStringComponent': BrainStringComponent,
+        'BrainAskComponent': BrainAskComponent,
+        'BrainJSComponent': BrainJSComponent,
+        'BrainNumberComponent': BrainNumberComponent,
+        'BrainObjectComponent': BrainObjectComponent,
+        'BrainQueryComponent': BrainQueryComponent,
+        'BrainFormulaComponent': BrainFormulaComponent,
+        'DefaultBrainComponent': DefaultBrainComponent,
+      };
+      
+      return componentMap[componentName] || DefaultBrainComponent;
+    }
+    
+    // Fallback to registry for brain options
+    if (isBrainOption(key)) {
+      return (BRAIN_COMPONENT_REGISTRY as any)[key] || DefaultBrainComponent;
+    }
+    
+  } catch (e) {
+    console.warn('[getOptionComponent] Error converting schema:', e);
+    // Fallback to registry
+    if (isBrainOption(key)) {
+      return (BRAIN_COMPONENT_REGISTRY as any)[key] || DefaultBrainComponent;
+    }
+  }
+  
+  return DefaultBrainComponent;
+}
+
+/**
+ * Check if an option key is a brain option
+ */
+export function isBrainOption(key: string): boolean {
+  return key.startsWith('brain_') || key === 'brain';
+}
+
+/**
+ * Get all brain option keys from the schema
+ */
+export function getBrainOptionKeys(): string[] {
+  const keys: string[] = [];
+  
+  // Get from global options ("")
+  const globalSchema = (schemaOptions as any)[''];
+  if (globalSchema?.shape) {
+    Object.keys(globalSchema.shape).forEach(key => {
+      if (isBrainOption(key)) keys.push(key);
+    });
+  }
+  
+  // Get from wildcard options ("*")
+  const wildcardSchema = (schemaOptions as any)['*'];
+  if (wildcardSchema?.shape) {
+    Object.keys(wildcardSchema.shape).forEach(key => {
+      if (isBrainOption(key)) keys.push(key);
+    });
+  }
+  
+  return [...new Set(keys)]; // Remove duplicates
+}

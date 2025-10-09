@@ -43,6 +43,10 @@ export const sidebar: SidebarData = {
           url: "/hasyx/cyto",
         },
         {
+          title: `🧠 Brain`,
+          url: "/hasyx/brain",
+        },
+        {
           title: `💸 ${t('payments')}`,
           url: "/hasyx/payments",
         },

@@ -994,27 +994,81 @@ export class Hasura {
    * - Calls user function with (NEW, OLD, plv8, TG_OP, TG_ARGV)
    * - If user function returns undefined, NEW is returned to satisfy trigger contract
    */
-  async definePlv8Function(options: { schema: string; name: string; jsFunction: Function; replace?: boolean }): Promise<any> {
-    const { schema, name, jsFunction } = options;
+  async definePlv8Function(options: { 
+    schema: string; 
+    name: string; 
+    jsFunction: Function; 
+    replace?: boolean; 
+    statementLevel?: boolean;
+    parameters?: Array<{ name: string; type: string }>;
+    returns?: string;
+    volatility?: 'IMMUTABLE' | 'STABLE' | 'VOLATILE';
+    securityDefiner?: boolean;
+  }): Promise<any> {
+    const { 
+      schema, 
+      name, 
+      jsFunction, 
+      statementLevel = false,
+      parameters,
+      returns,
+      volatility = 'VOLATILE',
+      securityDefiner = true
+    } = options;
 
     const jsSource = jsFunction.toString();
+    const secDefiner = securityDefiner ? 'SECURITY DEFINER' : '';
 
-    // Create plv8 trigger function wrapper
-    await this.sql(`
-      CREATE OR REPLACE FUNCTION "${schema}"."${name}"()
-      RETURNS TRIGGER AS $$
-        // Shim for TS helper emitted by transpiler in function.toString()
-        var __name = (typeof __name === 'function') ? __name : function(o,n){ return o; };
-        var userFn = (${jsSource});
-        try {
-          var result = userFn(NEW, OLD, plv8, typeof TG_OP === 'undefined' ? undefined : TG_OP, typeof TG_ARGV === 'undefined' ? undefined : TG_ARGV);
-          return (typeof result === 'undefined') ? NEW : result;
-        } catch (e) {
-          var msg = (e && e.message) ? e.message : String(e);
-          plv8.elog(ERROR, msg);
-        }
-      $$ LANGUAGE plv8;
-    `);
+    // Non-trigger function (has parameters)
+    if (parameters) {
+      const paramStr = parameters.map(p => `${p.name} ${p.type}`).join(', ');
+      const returnType = returns || 'VOID';
+      const argNames = parameters.map(p => p.name).join(', ');
+      
+      await this.sql(`
+        CREATE OR REPLACE FUNCTION "${schema}"."${name}"(${paramStr})
+        RETURNS ${returnType} AS $$
+          var __name = (typeof __name === 'function') ? __name : function(o,n){ return o; };
+          var userFn = (${jsSource});
+          return userFn(${argNames}, plv8);
+        $$ LANGUAGE plv8 ${volatility} ${secDefiner};
+      `);
+    } else if (statementLevel) {
+      // FOR EACH STATEMENT trigger - no NEW/OLD access
+      await this.sql(`
+        CREATE OR REPLACE FUNCTION "${schema}"."${name}"()
+        RETURNS TRIGGER AS $$
+          // Shim for TS helper emitted by transpiler in function.toString()
+          var __name = (typeof __name === 'function') ? __name : function(o,n){ return o; };
+          var userFn = (${jsSource});
+          try {
+            // Call function with plv8 only (NEW/OLD are undefined for STATEMENT triggers)
+            userFn(undefined, undefined, plv8, typeof TG_OP === 'undefined' ? undefined : TG_OP, typeof TG_ARGV === 'undefined' ? undefined : TG_ARGV);
+          } catch (e) {
+            // Silently ignore errors in STATEMENT triggers to avoid breaking transaction
+            // For debugging, uncomment: plv8.elog(NOTICE, 'Error in STATEMENT trigger: ' + ((e && e.message) ? e.message : String(e)));
+          }
+          return null; // STATEMENT triggers don't return row data
+        $$ LANGUAGE plv8 ${secDefiner};
+      `);
+    } else {
+      // FOR EACH ROW trigger (default)
+      await this.sql(`
+        CREATE OR REPLACE FUNCTION "${schema}"."${name}"()
+        RETURNS TRIGGER AS $$
+          // Shim for TS helper emitted by transpiler in function.toString()
+          var __name = (typeof __name === 'function') ? __name : function(o,n){ return o; };
+          var userFn = (${jsSource});
+          try {
+            var result = userFn(NEW, OLD, plv8, typeof TG_OP === 'undefined' ? undefined : TG_OP, typeof TG_ARGV === 'undefined' ? undefined : TG_ARGV);
+            return (typeof result === 'undefined') ? NEW : result;
+          } catch (e) {
+            var msg = (e && e.message) ? e.message : String(e);
+            plv8.elog(ERROR, msg);
+          }
+        $$ LANGUAGE plv8 ${secDefiner};
+      `);
+    }
 
     return { success: true };
   }

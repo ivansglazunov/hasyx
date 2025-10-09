@@ -8,6 +8,41 @@ export const schema = {
   }),
 } as const;
 
+// Prepared brain options.
+export const _brainEnything = {
+  // Acts as registry of Brain participants (multiple allowed for different brain instances)
+  brain: z.string().min(1).max(200).describe('Brain participant identifier').meta({ multiple: true, BrainComponent: 'DefaultBrainComponent' }),
+  // Standalone brain nodes (not attached to specific items)
+  brain_string: z.string().describe('Concrete string for Brain node').meta({ multiple: true, BrainComponent: 'BrainStringComponent' }),
+  brain_number: z.number().describe('Concrete number for Brain node').meta({ multiple: true, BrainComponent: 'BrainNumberComponent' }),
+  brain_object: z.object({}).passthrough().describe('Concrete object for Brain node').meta({ multiple: true, BrainComponent: 'BrainObjectComponent' }),
+  brain_query: z
+    .object({})
+    .passthrough()
+    .describe('Bool_exp query with ${VAR} and ${VAR_id} substitutions from own brain_prop_id names')
+    .meta({ multiple: true, BrainComponent: 'BrainQueryComponent' }),
+  brain_formula: z.string().min(1).describe('Formula to compute value into brain_string').meta({ 
+    multiple: true, 
+    BrainComponent: 'BrainFormulaComponent'
+  }),
+  brain_ask: z.string().min(1).describe('Prompt to compute value into brain_string').meta({ multiple: true, BrainComponent: 'BrainAskComponent' }),
+  brain_js: z.string().min(1).describe('JavaScript code to execute; stdout -> brain_string; result -> brain_object').meta({ multiple: true, BrainComponent: 'BrainJSComponent' }),
+};
+export const _brainAny = {
+  brain_name: z
+    .string()
+    .min(1)
+    .max(200)
+    .describe('Name of brain node')
+    .meta({ BrainComponent: 'DefaultBrainComponent' }),
+  // Brain computation/reference options (require item_id to attach to specific entities)
+  brain_prop_id: z
+    .string()
+    .uuid()
+    .meta({ tables: ['options'], multiple: true, BrainComponent: 'DefaultBrainComponent' })
+    .describe('External dependency pointer to options (can be multiple)'),
+};
+
 // Options system for tables
 // Structure: options.tableName.optionKey
 //
@@ -79,5 +114,12 @@ export const options = {
     zone_id: z.string().uuid().meta({ tables: ['geo.features'] }),
     // Title field example
     title: z.string().min(1).max(500).optional(),
+  }),
+  // Global options (no item_id required): aliased to options.__empty
+  "": z.object(_brainEnything),
+  // Wildcard options for any target table: aliased to options.__any
+  "*": z.object({
+    ..._brainEnything,
+    ..._brainAny,
   }),
 } as const;

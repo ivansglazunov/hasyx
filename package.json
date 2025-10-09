@@ -1,6 +1,6 @@
 {
   "name": "hasyx",
-  "version": "0.2.0-alpha.66",
+  "version": "0.2.0-alpha.67",
   "description": "Modern full-stack framework with real-time GraphQL, AI integration, and seamless development experience",
   "homepage": "https://hasyx.vercel.app/",
   "engines": {
@@ -50,7 +50,9 @@
     "env": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx lib/cli.ts env",
     "config": "npx tsx lib/config.tsx",
     "gitpod": "npx hasyx gitpod",
-    "typedoc": "npx typedoc --out public/typedoc --entryPointStrategy expand --exclude '**/node_modules/**' --exclude '**/.next/**' lib components hooks"
+    "typedoc": "npx typedoc --out public/typedoc --entryPointStrategy expand --exclude '**/node_modules/**' --exclude '**/.next/**' lib components hooks",
+    "install-wstunnel": "tsx lib/install-wstunnel.ts",
+    "tunnel": "tsx lib/wstunnel-client.ts"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -190,6 +192,7 @@
     "lucide-react": "0.488.0",
     "marked": "15.0.12",
     "marked-terminal": "7.3.0",
+    "mathjs": "^14.8.2",
     "mock-local-storage": "^1.1.24",
     "next": "15.3.1",
     "next-auth": "4.24.11",
@@ -225,6 +228,7 @@
     "sonner": "2.0.3",
     "tailwind-merge": "3.2.0",
     "tailwindcss": "4.1.4",
+    "tar": "^7.4.3",
     "ts-essentials": "10.0.4",
     "ts-jest": "29.1.2",
     "ts-node": "10.9.2",

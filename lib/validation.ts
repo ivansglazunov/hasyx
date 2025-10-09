@@ -3,6 +3,7 @@ import path from 'path';
 import spawn from 'cross-spawn';
 import Debug from './debug';
 import { Hasura } from './hasura/hasura';
+import { installMathjsLibrary } from './plv8/up-plv8';
 
 const debug = Debug('validation');
 
@@ -59,7 +60,7 @@ for (const [tableName, zodObj] of Object.entries(options as any)) {
     if (json && typeof json === 'object' && json.properties) {
       for (const key of Object.keys(json.properties)) {
         const prop = json.properties[key] || {};
-        const knownMetaKeys = ['multiple', 'tables', 'permission', 'widget'];
+        const knownMetaKeys = ['multiple', 'tables', 'permission', 'widget', 'plv8', 'BrainComponent'];
         const xMeta: any = {};
         let hasMetaData = false;
         
@@ -82,6 +83,17 @@ for (const [tableName, zodObj] of Object.entries(options as any)) {
     // If meta extraction fails, proceed with plain schema
   }
   result.options[tableName] = json;
+
+  // Aliases for special option groups:
+  // - options["*"]  -> options.__any   (keys applicable to any item table)
+  // - options[""]   -> options.__empty (keys applicable with no item_id)
+  try {
+    if (tableName === '*') {
+      result.options.__any = json;
+    } else if (tableName === '') {
+      result.options.__empty = json;
+    }
+  } catch {}
 }
 
 console.log(JSON.stringify(result));
@@ -177,7 +189,8 @@ export async function syncSchemasToDatabase(hasura?: Hasura, schemas?: Generated
       if (!minimal.schema && data.schema) minimal.schema = {};
       if (!minimal.config && data.config) minimal.config = {};
       // CRITICAL: Always keep options schemas for runtime options validation
-      if (!minimal.options && data.options) minimal.options = data.options;
+      // Force overwrite even if minimal.options exists but is empty
+      if (data.options) minimal.options = data.options;
       // Prefer minimal if it reduces size significantly or env hints local testing
       const fullStr = JSON.stringify(data);
       const minStr = JSON.stringify(minimal);
@@ -205,6 +218,7 @@ export async function syncSchemasToDatabase(hasura?: Hasura, schemas?: Generated
       ${fnBody}
     $$ LANGUAGE plv8 IMMUTABLE;
   `);
+
 }
 
 export async function loadValidationConfigFromFile(): Promise<ValidationConfig | null> {
@@ -283,13 +297,28 @@ export async function applyValidationRules(hasura: Hasura, config: ValidationCon
 export async function ensureValidationRuntime(hasura: Hasura) {
   // Ensure validation schema exists
   await hasura.sql(`CREATE SCHEMA IF NOT EXISTS validation;`);
+  
+  // Install mathjs library for formula evaluation
+  await installMathjsLibrary(hasura);
   // Ensure validate functions exist
   // Minimal JSON Schema validator (supports: type, enum, minLength, maxLength, pattern, minimum, maximum, format: email)
   await hasura.sql(`
     CREATE OR REPLACE FUNCTION validation.validate_json(value JSONB, schema_path TEXT, schema_set TEXT DEFAULT 'project') RETURNS VOID AS $$
+      // Global bypass via plv8.global flag
+      if (typeof plv8 !== 'undefined' && plv8.global && plv8.global.hasyx_skip && plv8.global.hasyx_skip.validation) {
+        return;
+      }
+      // Allow bypass via session flag
+      try {
+        var s = plv8.execute("SELECT current_setting('hasyx.skip_validation', true) AS s");
+        if (s && s.length && String(s[0].s) === '1') { return; }
+      } catch (e) {}
       var rows = plv8.execute("SELECT validation.project_schemas() AS j");
       if (!rows || rows.length === 0) { plv8.elog(ERROR, 'project_schemas() returned no data'); }
       var root = rows[0].j;
+      if (typeof root === 'string') {
+        try { root = JSON.parse(root); } catch(e) { plv8.elog(ERROR, 'Failed to parse schemas: ' + e.message); }
+      }
       function resolvePath(obj, p) {
         var parts = (p || '').split('.');
         var cur = obj;
@@ -383,6 +412,9 @@ export async function ensureValidationRuntime(hasura: Hasura) {
       var rows = plv8.execute("SELECT validation.project_schemas() AS j");
       if (!rows || rows.length === 0) { plv8.elog(ERROR, 'project_schemas() not found'); }
       var root = rows[0].j;
+      if (typeof root === 'string') {
+        try { root = JSON.parse(root); } catch(e) { plv8.elog(ERROR, 'Failed to parse schemas: ' + e.message); }
+      }
       function resolvePath(obj, p){ var parts=(p||'').split('.'); var cur=obj; for (var i=0;i<parts.length;i++){ cur=(cur&&cur[parts[i]])||null; } return cur; }
       var schema = resolvePath(root, schema_path);
       if (!schema) { plv8.elog(ERROR, 'Schema not found at path: ' + schema_path); }
@@ -459,6 +491,9 @@ export async function ensureValidationRuntime(hasura: Hasura) {
       var rows = plv8.execute("SELECT validation.project_schemas() AS j");
       if (!rows || rows.length === 0) { plv8.elog(ERROR, 'project_schemas() not found'); }
       var root = rows[0].j;
+      if (typeof root === 'string') {
+        try { root = JSON.parse(root); } catch(e) { plv8.elog(ERROR, 'Failed to parse schemas: ' + e.message); }
+      }
       function resolvePath(obj, p){ var parts=(p||'').split('.'); var cur=obj; for (var i=0;i<parts.length;i++){ cur=(cur&&cur[parts[i]])||null; } return cur; }
       var schema = resolvePath(root, schema_path);
       if (!schema) { plv8.elog(ERROR, 'Schema not found at path: ' + schema_path); }
@@ -468,12 +503,21 @@ export async function ensureValidationRuntime(hasura: Hasura) {
     $$ LANGUAGE plv8;
   `);
 
-  // New: permission validation for options
+  // Permission validation for options
   await hasura.definePlv8Function({
     schema: 'validation',
     name: 'validate_option_permission',
     jsFunction: function(NEW: any, OLD: any, plv8: any, TG_OP: string) {
       try {
+        // Global bypass via plv8.global flag
+        if (typeof plv8 !== 'undefined' && plv8.global && plv8.global.hasyx_skip && plv8.global.hasyx_skip.permission) {
+          return NEW;
+        }
+        // Allow bypass via session flag
+        try {
+          var s = plv8.execute("SELECT current_setting('hasyx.skip_permission', true) AS s");
+          if (s && s.length && String(s[0].s) === '1') { return NEW; }
+        } catch (e) {}
         var op = (typeof TG_OP !== 'undefined' && TG_OP) ? String(TG_OP) : 'INSERT';
         if (!NEW || !NEW.key) {
           return NEW;
@@ -612,6 +656,9 @@ export async function ensureOptionsValidationTriggers(hasura: Hasura) {
     return;
   }
 
+  // Note: brain_formula computation is now handled via Hasura event triggers -> API route
+  // No plv8 triggers needed for formula computation
+  
   // Always recreate permission trigger to ensure it exists
   console.log('🔧 Creating/recreating options_permission_trigger...');
   // Drop trigger via catalog-safe regclass reference, then create explicitly
