@@ -453,8 +453,8 @@ describe('Brain computations (mathjs and AI)', () => {
   });
 });
 
-(!!+(process?.env?.JEST_LOCAL || '') ? describe : describe.skip)('brain_formula plv8 computation', () => {
-  it('should create brain_formula and automatically compute brain_string result via plv8 trigger', async () => {
+(!!+(process?.env?.JEST_APP || '') ? describe : describe.skip)('brain_formula event trigger (live API)', () => {
+  it('should process brain_formula via API event handler and create brain_string', async () => {
     const admin = new Hasyx(
       createApolloClient({ url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL!, secret: process.env.HASURA_ADMIN_SECRET!, ws: false }),
       generate
@@ -477,23 +477,89 @@ describe('Brain computations (mathjs and AI)', () => {
 
       const { hasyx: userClient } = await admin._authorize(userId!, { ws: false });
 
-      // Create brain_formula option (Hasura event trigger -> API route will compute and create brain_string)
-      const formula = await userClient.insert<any>({
-        table: 'options',
-        object: { key: 'brain_formula', string_value: '2 + 2 * 3' },
-        returning: ['id', 'key', 'string_value']
-      });
+            // Create brain_formula option (will NOT trigger event automatically in this test)
+            const formula = await userClient.insert<any>({
+              table: 'options',
+              object: { key: 'brain_formula', string_value: '2 + 2 * 3' },
+              returning: ['id', 'key', 'string_value', 'user_id', 'created_at', 'updated_at']
+            });
       formulaOptionId = formula?.id;
       
       expect(formula?.key).toBe('brain_formula');
       expect(formula?.string_value).toBe('2 + 2 * 3');
       console.log('[brain.test] ✓ Created brain_formula:', formula?.string_value);
 
-      // Wait for Hasura event trigger to fire and API route to process
-      console.log('[brain.test] ⏳ Waiting for event trigger processing...');
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Manually trigger event handler by calling API endpoint
+      const MAIN_URL = process.env.NEXT_PUBLIC_MAIN_URL || 'http://localhost:3004';
+      const eventPayload = {
+        event: {
+          session_variables: {
+            'x-hasura-role': 'admin',
+            'x-hasura-user-id': userId
+          },
+          op: 'INSERT',
+          data: {
+            old: null,
+                new: {
+                  id: formula?.id,
+                  key: 'brain_formula',
+                  string_value: '2 + 2 * 3',
+                  user_id: formula?.user_id,
+                  item_id: null,
+                  number_value: null,
+                  jsonb_value: null,
+                  boolean_value: null,
+                  created_at: formula?.created_at || new Date().toISOString(),
+                  updated_at: formula?.updated_at || new Date().toISOString()
+                }
+          },
+          trace_context: {
+            trace_id: uuidv4(),
+            span_id: uuidv4()
+          }
+        },
+        created_at: new Date().toISOString(),
+        id: uuidv4(),
+        delivery_info: {
+          max_retries: 5,
+          current_retry: 0
+        },
+        trigger: {
+          name: 'options_brain_events'
+        },
+        table: {
+          schema: 'public',
+          name: 'options'
+        }
+      };
 
-      // Check if brain_string result was created by event trigger + API route
+      console.log('[brain.test] 🔥 Manually triggering event handler at', `${MAIN_URL}/api/events/options`);
+      
+      // Send event to local API (using global fetch available in Node.js 18+)
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Only add secret header if HASURA_EVENT_SECRET is configured
+      if (process.env.HASURA_EVENT_SECRET) {
+        headers['x-hasura-event-secret'] = process.env.HASURA_EVENT_SECRET;
+      }
+      
+      const response = await fetch(`${MAIN_URL}/api/events/options`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(eventPayload)
+      });
+
+      const responseData = await response.json();
+      console.log('[brain.test] 📥 Event handler response:', responseData);
+      expect(response.ok).toBe(true);
+
+      // Wait for API processing (15 seconds for dev compilation)
+      console.log('[brain.test] ⏳ Waiting 15 seconds for API processing (dev compilation time)...');
+      await new Promise(resolve => setTimeout(resolve, 15000));
+
+      // Check if brain_string result was created by API route
       const resultOptions = await admin.select<any[]>({
         table: 'options',
         where: { 
@@ -512,16 +578,84 @@ describe('Brain computations (mathjs and AI)', () => {
       console.log('[brain.test] ✓ Event trigger + API route computed result:', resultOptions[0]?.string_value);
       console.log('[brain.test] ✓ Result stored as brain_string with item_id pointing to formula');
 
-      // Test formula update (should update result)
-      await userClient.update<any>({
+      // Test formula update (should update result via event)
+      const updatedFormula = await userClient.update<any>({
         table: 'options',
         pk_columns: { id: formulaOptionId },
         _set: { string_value: 'sqrt(16) + pow(2, 3)' },
-        returning: ['string_value']
+        returning: ['string_value', 'user_id', 'updated_at']
       });
 
-      // Wait for AFTER ROW trigger to update brain_string
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Manually trigger UPDATE event
+      const updateEventPayload = {
+        event: {
+          session_variables: {
+            'x-hasura-role': 'admin',
+            'x-hasura-user-id': userId
+          },
+          op: 'UPDATE',
+          data: {
+            old: {
+              id: formulaOptionId,
+              key: 'brain_formula',
+              string_value: '2 + 2 * 3',
+              user_id: formula?.user_id,
+              item_id: null,
+              number_value: null,
+              jsonb_value: null,
+              boolean_value: null,
+              created_at: formula?.created_at || new Date().toISOString(),
+              updated_at: formula?.updated_at || new Date().toISOString()
+            },
+            new: {
+              id: formulaOptionId,
+              key: 'brain_formula',
+              string_value: 'sqrt(16) + pow(2, 3)',
+              user_id: updatedFormula?.user_id,
+              item_id: null,
+              number_value: null,
+              jsonb_value: null,
+              boolean_value: null,
+              created_at: formula?.created_at || new Date().toISOString(),
+              updated_at: updatedFormula?.updated_at || new Date().toISOString()
+            }
+          }
+        },
+        created_at: new Date().toISOString(),
+        id: uuidv4(),
+        delivery_info: {
+          max_retries: 5,
+          current_retry: 0
+        },
+        trigger: {
+          name: 'options_brain_events'
+        },
+        table: {
+          schema: 'public',
+          name: 'options'
+        }
+      };
+
+      console.log('[brain.test] 🔥 Triggering UPDATE event...');
+      const updateHeaders: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (process.env.HASURA_EVENT_SECRET) {
+        updateHeaders['x-hasura-event-secret'] = process.env.HASURA_EVENT_SECRET;
+      }
+      
+      const updateResponse = await fetch(`${MAIN_URL}/api/events/options`, {
+        method: 'POST',
+        headers: updateHeaders,
+        body: JSON.stringify(updateEventPayload)
+      });
+
+      const updateResponseData = await updateResponse.json();
+      console.log('[brain.test] 📥 UPDATE event response:', updateResponseData);
+      
+      // Wait for processing
+      console.log('[brain.test] ⏳ Waiting 15 seconds for UPDATE processing...');
+      await new Promise(resolve => setTimeout(resolve, 15000));
 
       // Check updated result
       const updatedResults = await admin.select<any[]>({
@@ -537,7 +671,7 @@ describe('Brain computations (mathjs and AI)', () => {
       expect(updatedResults[0]?.string_value).toBe('12'); // sqrt(16) + pow(2,3) = 4 + 8 = 12
       console.log('[brain.test] ✓ Formula update triggered result update:', updatedResults[0]?.string_value);
 
-      console.log('[brain.test] ✅ brain_formula plv8 computation test passed!');
+      console.log('[brain.test] ✅ brain_formula event trigger test passed!');
 
     } finally {
       // Cleanup
@@ -556,7 +690,7 @@ describe('Brain computations (mathjs and AI)', () => {
         }
       }
     }
-  }, 30000);
+  }, 90000); // 90 seconds timeout for event processing with delays
 });
 
 

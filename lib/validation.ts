@@ -657,7 +657,14 @@ export async function ensureOptionsValidationTriggers(hasura: Hasura) {
   }
 
   // Note: brain_formula computation is now handled via Hasura event triggers -> API route
-  // No plv8 triggers needed for formula computation
+  // Drop old plv8 brain triggers if they exist
+  console.log('🧹 Cleaning up old plv8 brain triggers...');
+  await hasura.sql(`DROP TRIGGER IF EXISTS options_plv8_before_trigger ON public.options;`);
+  await hasura.sql(`DROP TRIGGER IF EXISTS options_plv8_after_trigger ON public.options;`);
+  await hasura.sql(`DROP FUNCTION IF EXISTS validation.compute_option_before();`);
+  await hasura.sql(`DROP FUNCTION IF EXISTS validation.compute_option_after();`);
+  await hasura.sql(`DROP FUNCTION IF EXISTS validation.upsert_brain_string(TEXT, TEXT, UUID, UUID);`);
+  console.log('✅ Old plv8 brain triggers cleaned up');
   
   // Always recreate permission trigger to ensure it exists
   console.log('🔧 Creating/recreating options_permission_trigger...');

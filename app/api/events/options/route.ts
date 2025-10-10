@@ -62,39 +62,94 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
         
         debug('brain_formula: result =', stringResult);
 
-        // Store result in brain_string (same pattern as brain_ask)
-        await hasyx.insert({
+        // Store result in brain_string
+        // First, check if brain_string already exists for this formula
+        const existing = await hasyx.select<any[]>({
           table: 'options',
-          object: {
+          where: {
+            key: { _eq: 'brain_string' },
+            item_id: { _eq: row.id },
+            user_id: { _eq: row.user_id }
+          },
+          returning: ['id'],
+          limit: 1
+        });
+
+        if (existing && existing.length > 0) {
+          // Update existing brain_string
+          await hasyx.update({
+            table: 'options',
+            pk_columns: { id: existing[0].id },
+            _set: {
+              string_value: stringResult
+            }
+          });
+          debug('brain_formula: updated existing brain_string');
+        } else {
+          // Insert new brain_string
+          debug('brain_formula: attempting INSERT with values:', {
             key: 'brain_string',
             string_value: stringResult,
             item_id: row.id,
-            user_id: row.user_id,
-          },
-          on_conflict: {
-            constraint: 'options_pkey',
-            update_columns: ['string_value', 'updated_at']
+            user_id: row.user_id
+          });
+          
+          try {
+            await hasyx.insert({
+              table: 'options',
+              object: {
+                key: 'brain_string',
+                string_value: stringResult,
+                item_id: row.id,
+                user_id: row.user_id,
+              }
+            });
+            debug('brain_formula: inserted new brain_string');
+          } catch (insertError: any) {
+            debug('brain_formula: INSERT failed:', insertError?.message);
+            debug('brain_formula: INSERT error details:', insertError?.details || insertError);
+            throw insertError;
           }
-        });
+        }
 
         debug('brain_formula: stored result in brain_string');
         return { success: true, result: stringResult };
       } catch (evalError: any) {
         debug('brain_formula: evaluation error:', evalError?.message);
         // Store error as result
-        await hasyx.insert({
+        const errorMessage = `Error: ${evalError?.message || 'Formula evaluation failed'}`;
+        
+        const existing = await hasyx.select<any[]>({
           table: 'options',
-          object: {
-            key: 'brain_string',
-            string_value: `Error: ${evalError?.message || 'Formula evaluation failed'}`,
-            item_id: row.id,
-            user_id: row.user_id,
+          where: {
+            key: { _eq: 'brain_string' },
+            item_id: { _eq: row.id },
+            user_id: { _eq: row.user_id }
           },
-          on_conflict: {
-            constraint: 'options_pkey',
-            update_columns: ['string_value', 'updated_at']
-          }
+          returning: ['id'],
+          limit: 1
         });
+
+        if (existing && existing.length > 0) {
+          await hasyx.update({
+            table: 'options',
+            pk_columns: { id: existing[0].id },
+            _set: {
+              string_value: errorMessage
+            }
+          });
+        } else {
+          await hasyx.insert({
+            table: 'options',
+            object: {
+              key: 'brain_string',
+              string_value: errorMessage,
+              item_id: row.id,
+              user_id: row.user_id,
+            }
+          });
+        }
+        
         return { success: true, error: evalError?.message };
       }
     }
@@ -200,7 +255,9 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
     }
   } catch (e: any) {
     debug('Error handling options event:', e?.message || String(e));
-    return { success: false, error: 'brain_handler_failed', details: e?.message };
+    debug('Error stack:', e?.stack);
+    debug('Error details:', JSON.stringify(e?.details || e, null, 2));
+    return { success: false, error: 'brain_handler_failed', details: e?.message || String(e) };
   } finally {
     (apolloClient as any)?.terminate?.();
   }
