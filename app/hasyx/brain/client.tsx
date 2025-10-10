@@ -29,8 +29,8 @@ export default function Client() {
   const userId = useMemo(() => hasyx.userId, [hasyx.userId]);
   const isAuthenticated = useMemo(() => !!userId, [userId]);
 
-  // Subscribe to all brain options
-  const { data: options = [], loading, error } = useSubscription({
+  // Subscribe to all brain options with their result options (item_options)
+  const subscriptionOptions = useMemo(() => ({
     table: 'options',
     where: {
       key: {
@@ -48,12 +48,52 @@ export default function Client() {
         ]
       }
     },
-    returning: ['id', 'key', 'item_id', 'user_id', 'string_value', 'number_value', 'jsonb_value', 'to_id', 'created_at', 'updated_at'],
-  });
+    returning: [
+      'id', 
+      'key', 
+      'item_id', 
+      'user_id', 
+      'string_value', 
+      'number_value', 
+      'jsonb_value', 
+      'to_id', 
+      'created_at', 
+      'updated_at',
+      // Include result options (brain_string) that point to this option via item_id
+      { item_options: ['id', 'key', 'string_value', 'number_value', 'jsonb_value', 'created_at', 'updated_at'] }
+    ],
+  }), []);
 
-  // Debug: log options data
+  const { data: options = [], loading, error } = useSubscription(subscriptionOptions);
+  
+  // Debug: log subscription query on mount
+  useEffect(() => {
+    if (hasyx?.generate) {
+      try {
+        const generated = hasyx.generate({ operation: 'subscription', ...subscriptionOptions });
+        console.log('[Brain Client] 🔍 Generated GraphQL Query:');
+        console.log(generated.queryString);
+        console.log('[Brain Client] 🔍 Variables:', generated.variables);
+      } catch (e) {
+        console.error('[Brain Client] Failed to generate query for debug:', e);
+      }
+    }
+  }, [hasyx, subscriptionOptions]);
+
+  // Debug: log options data and check item_options
   useEffect(() => {
     console.log('[Brain Client] Options received:', options);
+    console.log('[Brain Client] First option:', options[0]);
+    if (options[0]?.item_options) {
+      console.log('[Brain Client] ✅ item_options present:', options[0].item_options);
+    } else {
+      console.log('[Brain Client] ❌ item_options missing in first option');
+    }
+    
+    // Log a sample option to see full structure
+    if (options.length > 0) {
+      console.log('[Brain Client] Sample option keys:', Object.keys(options[0]));
+    }
   }, [options]);
 
   const onGraphLoaded = useCallback((cy: any) => {

@@ -693,7 +693,7 @@ export function Generator(schema: any): Generate { // We take the __schema objec
     };
   };
 
-  const _schema = compact ? adaptCompactToIntrospection(compact) : (schema?.data?.__schema || schema?.__schema || schema);
+  let _schema = compact ? adaptCompactToIntrospection(compact) : (schema?.data?.__schema || schema?.__schema || schema);
 
   // --- Validation moved here ---
   if (!_schema || !_schema.queryType || !_schema.types) {
@@ -704,6 +704,46 @@ export function Generator(schema: any): Generate { // We take the __schema objec
     throw new Error('❌ Invalid schema format passed to Generator. Expected standard introspection __schema object.');
   }
   // --- End validation ---
+
+  // 🔧 Enrich full schema: Add missing args to relationships
+  // This fixes the issue where Hasura introspection doesn't include standard args for relationships
+  if (!compact && tableMappings) {
+    const tables = Object.keys(tableMappings);
+    debug('[generator] Enriching full schema with relationship args for tables:', tables.join(', '));
+    
+    _schema.types = _schema.types.map((type: any) => {
+      if (type.kind !== 'OBJECT' || !tables.includes(type.name)) {
+        return type;
+      }
+      
+      // This is a table type - enrich its relationship fields
+      const enrichedFields = type.fields.map((field: any) => {
+        const fieldType = field.type?.ofType?.name || field.type?.name;
+        const isRelationship = fieldType && tables.includes(fieldType) && field.args && field.args.length === 0;
+        
+        if (isRelationship) {
+          debug(`[generator] Enriching relationship field: ${type.name}.${field.name} -> ${fieldType}`);
+          // Add standard Hasura relationship arguments
+          return {
+            ...field,
+            args: [
+              { name: 'where', type: buildTypeFromString(`${fieldType}_bool_exp`) },
+              { name: 'limit', type: buildTypeFromString('Int') },
+              { name: 'offset', type: buildTypeFromString('Int') },
+              { name: 'order_by', type: buildTypeFromString(`[${fieldType}_order_by!]`) },
+              { name: 'distinct_on', type: buildTypeFromString(`[${fieldType}_select_column!]`) }
+            ]
+          };
+        }
+        
+        return field;
+      });
+      
+      return { ...type, fields: enrichedFields };
+    });
+    
+    debug('[generator] ✅ Full schema enriched with relationship args');
+  }
 
   const queryRootName = _schema.queryType.name;
   const mutationRootName = _schema.mutationType?.name; // May be missing

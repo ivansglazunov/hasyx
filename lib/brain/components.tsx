@@ -193,7 +193,7 @@ export function BrainStringComponent({
 
   return (
     <BrainOptionWrapper className={className} data={data}>
-      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+      <div className="flex items-start gap-2 p-2 bg-card w-[300px]">
         {onTypeChange && (
           <div className="flex flex-col gap-1">
             <OptionTypeSelector data={data} onSelect={onTypeChange} />
@@ -203,7 +203,7 @@ export function BrainStringComponent({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="flex-1 h-[100px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="flex-1 h-[100px] resize-none bg-muted/50 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-2"
         />
         <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
       </div>
@@ -212,7 +212,7 @@ export function BrainStringComponent({
 }
 
 /**
- * Brain Ask Component - prompt editor for brain_ask options
+ * Brain Ask Component - prompt editor for brain_ask options with result display
  */
 export function BrainAskComponent({
   data,
@@ -224,7 +224,7 @@ export function BrainAskComponent({
   placeholder = "Enter prompt...",
   className,
 }: {
-  data: { id: string; key: string; [key: string]: any };
+  data: { id: string; key: string; item_options?: any[]; [key: string]: any };
   value: string;
   onChange: (value: string) => void;
   onSave?: () => Promise<void>;
@@ -245,21 +245,61 @@ export function BrainAskComponent({
     }
   }, [onSave]);
 
+  // Find result option (brain_string with item_id pointing to this option)
+  const resultOption = data.item_options?.find((opt: any) => opt.key === 'brain_string');
+  const resultValue = resultOption?.string_value;
+  
+  // Determine result state
+  let resultState: 'empty' | 'loading' | 'ready' = 'empty';
+  if (!value || value.trim() === '') {
+    resultState = 'empty';
+  } else if (resultValue) {
+    resultState = 'ready';
+  } else {
+    resultState = 'loading';
+  }
+
   return (
     <BrainOptionWrapper className={className} data={data}>
-      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
-        {onTypeChange && (
-          <div className="flex flex-col gap-1">
-            <OptionTypeSelector data={data} onSelect={onTypeChange} />
+      <div className="bg-card w-[300px]">
+        {/* Input area */}
+        <div className="flex items-start gap-2 p-2">
+          {onTypeChange && (
+            <div className="flex flex-col gap-1">
+              <OptionTypeSelector data={data} onSelect={onTypeChange} />
+            </div>
+          )}
+          <Textarea
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="flex-1 h-[100px] resize-none bg-muted/50 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-2"
+          />
+          <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
+        </div>
+        
+        {/* Result area */}
+        <div className="p-2 bg-muted/30">
+          <div className="bg-muted rounded-md p-3 min-h-[60px]">
+            {resultState === 'empty' && (
+              <div className="text-sm text-muted-foreground flex items-center gap-2">
+                <span className="text-lg">❓</span>
+                <span>Вопрос еще не задан</span>
+              </div>
+            )}
+            {resultState === 'loading' && (
+              <div className="text-sm text-muted-foreground flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Генерация ответа</span>
+              </div>
+            )}
+            {resultState === 'ready' && (
+              <div className="text-sm text-foreground whitespace-pre-wrap">
+                {resultValue}
+              </div>
+            )}
           </div>
-        )}
-        <Textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="flex-1 h-[100px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-        />
-        <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
+        </div>
       </div>
     </BrainOptionWrapper>
   );
@@ -301,7 +341,7 @@ export function BrainJSComponent({
 
   return (
     <BrainOptionWrapper className={className} data={data}>
-      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+      <div className="flex items-start gap-2 p-2 bg-card w-[300px]">
         {onTypeChange && (
           <div className="flex flex-col gap-1">
             <OptionTypeSelector data={data} onSelect={onTypeChange} />
@@ -311,7 +351,7 @@ export function BrainJSComponent({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="flex-1 h-[100px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-xs"
+          className="flex-1 h-[100px] resize-none bg-muted/50 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-xs px-3 py-2"
           spellCheck={false}
         />
         <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
@@ -358,7 +398,7 @@ export function BrainNumberComponent({
 
   return (
     <BrainOptionWrapper className={className} data={data}>
-      <div className="flex items-center gap-2 p-2 bg-background w-[300px]">
+      <div className="flex items-center gap-2 p-2 bg-card w-[300px]">
         {onTypeChange && (
           <div className="flex flex-col gap-1">
             <OptionTypeSelector data={data} onSelect={onTypeChange} />
@@ -368,7 +408,7 @@ export function BrainNumberComponent({
           type="number"
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="flex-1 px-3 py-2 bg-transparent border-0 focus-visible:outline-none w-full text-center"
+          className="flex-1 px-3 py-2 bg-muted/50 border-0 focus-visible:outline-none w-full text-center rounded-md"
           style={{ fontSize }}
         />
         <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
@@ -424,7 +464,7 @@ export function BrainObjectComponent({
 
   return (
     <BrainOptionWrapper className={className} data={data}>
-      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+      <div className="flex items-start gap-2 p-2 bg-card w-[300px]">
         {onTypeChange && (
           <div className="flex flex-col gap-1">
             <OptionTypeSelector data={data} onSelect={onTypeChange} />
@@ -434,7 +474,7 @@ export function BrainObjectComponent({
           value={jsonString}
           onChange={(e) => handleChange(e.target.value)}
           placeholder='{"key": "value"}'
-          className="flex-1 h-[100px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-xs"
+          className="flex-1 h-[100px] resize-none bg-muted/50 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-xs px-3 py-2"
           spellCheck={false}
         />
         <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
@@ -463,7 +503,7 @@ export function BrainQueryComponent({
 }) {
   return (
     <BrainOptionWrapper className={className} data={data}>
-      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+      <div className="flex items-start gap-2 p-2 bg-card w-[300px]">
         {onTypeChange && (
           <div className="flex flex-col gap-1">
             <OptionTypeSelector data={data} onSelect={onTypeChange} />
@@ -486,7 +526,7 @@ export function BrainQueryComponent({
 }
 
 /**
- * Brain Formula Component - for brain_formula options
+ * Brain Formula Component - for brain_formula options with result display
  */
 export function BrainFormulaComponent({
   data,
@@ -498,7 +538,7 @@ export function BrainFormulaComponent({
   placeholder = "Enter formula...",
   className,
 }: {
-  data: { id: string; key: string; [key: string]: any };
+  data: { id: string; key: string; item_options?: any[]; [key: string]: any };
   value: string;
   onChange: (value: string) => void;
   onSave?: () => Promise<void>;
@@ -519,21 +559,61 @@ export function BrainFormulaComponent({
     }
   }, [onSave]);
 
+  // Find result option (brain_string with item_id pointing to this option)
+  const resultOption = data.item_options?.find((opt: any) => opt.key === 'brain_string');
+  const resultValue = resultOption?.string_value;
+  
+  // Determine result state
+  let resultState: 'empty' | 'loading' | 'ready' = 'empty';
+  if (!value || value.trim() === '') {
+    resultState = 'empty';
+  } else if (resultValue) {
+    resultState = 'ready';
+  } else {
+    resultState = 'loading';
+  }
+
   return (
     <BrainOptionWrapper className={className} data={data}>
-      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
-        {onTypeChange && (
-          <div className="flex flex-col gap-1">
-            <OptionTypeSelector data={data} onSelect={onTypeChange} />
+      <div className="bg-card w-[300px]">
+        {/* Input area */}
+        <div className="flex items-start gap-2 p-2">
+          {onTypeChange && (
+            <div className="flex flex-col gap-1">
+              <OptionTypeSelector data={data} onSelect={onTypeChange} />
+            </div>
+          )}
+          <Textarea
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="flex-1 h-[100px] resize-none bg-muted/50 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-sm px-3 py-2"
+          />
+          <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
+        </div>
+        
+        {/* Result area */}
+        <div className="p-2 bg-muted/30">
+          <div className="bg-muted rounded-md p-3 min-h-[60px]">
+            {resultState === 'empty' && (
+              <div className="text-sm text-muted-foreground flex items-center gap-2">
+                <span className="text-lg">🔢</span>
+                <span>Формула еще не задана</span>
+              </div>
+            )}
+            {resultState === 'loading' && (
+              <div className="text-sm text-muted-foreground flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Вычисление результата</span>
+              </div>
+            )}
+            {resultState === 'ready' && (
+              <div className="text-sm text-foreground font-mono">
+                = {resultValue}
+              </div>
+            )}
           </div>
-        )}
-        <Textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="flex-1 h-[100px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-sm"
-        />
-        <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
+        </div>
       </div>
     </BrainOptionWrapper>
   );
@@ -555,7 +635,7 @@ export function DefaultBrainComponent({
 }) {
   return (
     <BrainOptionWrapper className={className} data={data}>
-      <div className="flex items-start gap-2 p-2 bg-background w-[300px]">
+      <div className="flex items-start gap-2 p-2 bg-card w-[300px]">
         <div className="flex-1 text-sm">
           {typeof value === 'object' ? (
             <pre className="text-xs overflow-auto">{JSON.stringify(value, null, 2)}</pre>

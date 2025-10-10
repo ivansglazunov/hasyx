@@ -649,6 +649,7 @@
             "key",
             "user_id",
             "item_id",
+            "_result",
             "to_id",
             "string_value",
             "number_value",
@@ -662,6 +663,7 @@
             "key",
             "user_id",
             "item_id",
+            "_result",
             "to_id",
             "string_value",
             "number_value",
@@ -10587,6 +10589,24 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "access_token",
               "isList": false,
               "args": [],
@@ -10801,6 +10821,24 @@
         "auth_jwt": {
           "kind": "OBJECT",
           "fields": [
+            {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
             {
               "name": "created_at",
               "isList": false,
@@ -11033,6 +11071,24 @@
         "debug": {
           "kind": "OBJECT",
           "fields": [
+            {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
             {
               "name": "created_at",
               "isList": false,
@@ -11471,6 +11527,24 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "_user_id",
               "isList": false,
               "args": [],
@@ -11758,6 +11832,24 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "allow_delete_group_users",
               "isList": false,
               "args": [],
@@ -12027,6 +12119,24 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "created_at",
               "isList": false,
               "args": [],
@@ -12178,6 +12288,24 @@
         "invites": {
           "kind": "OBJECT",
           "fields": [
+            {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
             {
               "name": "code",
               "isList": false,
@@ -12425,6 +12553,24 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "created_at",
               "isList": false,
               "args": [],
@@ -12448,15 +12594,6 @@
               "args": [],
               "returnType": {
                 "name": "item_options",
-                "kind": "OBJECT"
-              }
-            },
-            {
-              "name": "options",
-              "isList": true,
-              "args": [],
-              "returnType": {
-                "name": "options",
                 "kind": "OBJECT"
               }
             },
@@ -12648,6 +12785,24 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "created_at",
               "isList": false,
               "args": [],
@@ -12809,6 +12964,24 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "created_at",
               "isList": false,
               "args": [],
@@ -12906,6 +13079,24 @@
         "messages": {
           "kind": "OBJECT",
           "fields": [
+            {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
             {
               "name": "created_at",
               "isList": false,
@@ -13264,6 +13455,24 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "config",
               "isList": false,
               "args": [],
@@ -13398,6 +13607,15 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_result",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "boolean_value",
               "isList": false,
               "args": [],
@@ -13416,15 +13634,6 @@
               }
             },
             {
-              "name": "geo",
-              "isList": false,
-              "args": [],
-              "returnType": {
-                "name": "geo_features",
-                "kind": "OBJECT"
-              }
-            },
-            {
               "name": "id",
               "isList": false,
               "args": [],
@@ -13434,21 +13643,30 @@
               }
             },
             {
-              "name": "item",
-              "isList": false,
-              "args": [],
-              "returnType": {
-                "name": "items",
-                "kind": "OBJECT"
-              }
-            },
-            {
               "name": "item_id",
               "isList": false,
               "args": [],
               "returnType": {
                 "name": "uuid",
                 "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "item_option",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "options",
+                "kind": "OBJECT"
+              }
+            },
+            {
+              "name": "item_options",
+              "isList": true,
+              "args": [],
+              "returnType": {
+                "name": "options",
+                "kind": "OBJECT"
               }
             },
             {
@@ -13558,6 +13776,24 @@
         "payments_methods": {
           "kind": "OBJECT",
           "fields": [
+            {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
             {
               "name": "created_at",
               "isList": false,
@@ -13755,6 +13991,24 @@
         "payments_operations": {
           "kind": "OBJECT",
           "fields": [
+            {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
             {
               "name": "amount",
               "isList": false,
@@ -14007,6 +14261,24 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "active",
               "isList": false,
               "args": [],
@@ -14194,6 +14466,24 @@
         "payments_providers": {
           "kind": "OBJECT",
           "fields": [
+            {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
             {
               "name": "config",
               "isList": false,
@@ -14391,6 +14681,24 @@
         "payments_subscriptions": {
           "kind": "OBJECT",
           "fields": [
+            {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
             {
               "name": "billing_anchor_date",
               "isList": false,
@@ -14804,6 +15112,24 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "created_at",
               "isList": false,
               "args": [],
@@ -14919,6 +15245,24 @@
         "rooms": {
           "kind": "OBJECT",
           "fields": [
+            {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
             {
               "name": "allow_change_users",
               "isList": false,
@@ -15063,6 +15407,24 @@
           "kind": "OBJECT",
           "fields": [
             {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
               "name": "created_at",
               "isList": false,
               "args": [],
@@ -15205,6 +15567,24 @@
         "users": {
           "kind": "OBJECT",
           "fields": [
+            {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
             {
               "name": "accounts",
               "isList": true,
@@ -15357,6 +15737,24 @@
         "verification_codes": {
           "kind": "OBJECT",
           "fields": [
+            {
+              "name": "_hasyx_schema_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
+            {
+              "name": "_hasyx_table_name",
+              "isList": false,
+              "args": [],
+              "returnType": {
+                "name": "String",
+                "kind": "SCALAR"
+              }
+            },
             {
               "name": "attempts",
               "isList": false,
@@ -15624,7 +16022,7 @@
         }
       }
     },
-    "timestamp": 1759952621422,
+    "timestamp": 1760088242358,
     "version": "3.0.0"
   }
 }

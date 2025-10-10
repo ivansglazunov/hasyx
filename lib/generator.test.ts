@@ -1832,4 +1832,45 @@ describe('Upsert Operation Tests', () => {
     expect(result.variables).toEqual(expectedVariables);
     debug('✅ Upsert single (_one) mutation passed');
   });
+
+  it('should handle self-referencing relationship (item_options) with args', () => {
+    debug('\n🧪 Testing self-referencing relationship with item_options');
+    
+    const options: GenerateOptions = {
+      operation: 'subscription',
+      table: 'options',
+      where: { key: { _in: ['brain_formula', 'brain_ask'] } },
+      returning: [
+        'id',
+        'key',
+        'string_value',
+        { item_options: ['id', 'key', 'string_value', 'number_value'] }
+      ]
+    };
+    
+    debug('[generator.test] Generating query for options with item_options relationship...');
+    const result = generate(options);
+    
+    debug('[generator.test] Generated query:\n', result.queryString);
+    debug('[generator.test] Variables:', JSON.stringify(result.variables, null, 2));
+    
+    // The query should be valid and parseable
+    expect(result.query).toBeDefined();
+    expect(result.queryString).toBeDefined();
+    
+    // Check that item_options is included in the query
+    const normalizedQuery = normalizeString(result.queryString);
+    debug('[generator.test] Normalized query:', normalizedQuery);
+    
+    expect(normalizedQuery).toContain('item_options');
+    expect(normalizedQuery).toContain('subscription');
+    
+    // Check the structure
+    expect(normalizedQuery).toMatch(/item_options\s*\{/);
+    
+    // Variables should contain the where condition
+    expect(result.variables.v1).toEqual({ key: { _in: ['brain_formula', 'brain_ask'] } });
+    
+    debug('✅ Self-referencing relationship test passed - item_options relationship works correctly!');
+  });
 });
