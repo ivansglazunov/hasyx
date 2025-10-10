@@ -386,6 +386,132 @@ const generate = Generator(schema as any);
   });
 });
 
+describe('Brain variable parsing and query generation', () => {
+  it('should parse variable names from template expressions', async () => {
+    const { parseBrainNames } = await import('./index');
+    
+    // Simple arithmetic with ${} templates
+    const names1 = await parseBrainNames('${x} + ${y} * 2');
+    expect(names1).toEqual(['x', 'y']);
+    console.log('[brain.test] ✓ Simple template:', names1);
+    
+    // Complex expression with function calls
+    const names2 = await parseBrainNames('sqrt(${temperature}) + ${pressure} * 2');
+    expect(names2).toEqual(['pressure', 'temperature']); // sorted alphabetically
+    console.log('[brain.test] ✓ Complex expression:', names2);
+    
+    // Expression with underscores
+    const names3 = await parseBrainNames('${user_count} + ${total_sum}');
+    expect(names3).toEqual(['total_sum', 'user_count']);
+    console.log('[brain.test] ✓ With underscores:', names3);
+    
+    // Multiple references to same variable
+    const names4 = await parseBrainNames('${radius} * pi * ${radius}');
+    expect(names4).toEqual(['radius']); // deduplicated
+    console.log('[brain.test] ✓ Deduplicates variables:', names4);
+    
+    // Empty or no templates
+    const names5 = await parseBrainNames('');
+    expect(names5).toEqual([]);
+    const names6 = await parseBrainNames('2 + 2');
+    expect(names6).toEqual([]);
+    console.log('[brain.test] ✓ Handles empty/no variables');
+    
+    console.log('[brain.test] ✅ All template parsing tests passed!');
+  });
+
+  it('should substitute variable values in templates', async () => {
+    const { substituteBrainNames } = await import('./index');
+    
+    // Simple substitution
+    const result1 = substituteBrainNames('${x} + ${y} * 2', { x: 5, y: 3 });
+    expect(result1).toBe('5 + 3 * 2');
+    console.log('[brain.test] ✓ Simple substitution:', result1);
+    
+    // AI prompt substitution
+    const result2 = substituteBrainNames('What is ${temperature}?', { temperature: '25°C' });
+    expect(result2).toBe('What is 25°C?');
+    console.log('[brain.test] ✓ AI prompt substitution:', result2);
+    
+    // Partial substitution (missing values kept as placeholders)
+    const result3 = substituteBrainNames('${x} + ${y}', { x: 5 });
+    expect(result3).toBe('5 + ${y}');
+    console.log('[brain.test] ✓ Partial substitution:', result3);
+    
+    // Null/undefined handling
+    const result4 = substituteBrainNames('${x}', { x: null });
+    expect(result4).toBe('${x}'); // null kept as placeholder
+    console.log('[brain.test] ✓ Null handling:', result4);
+    
+    console.log('[brain.test] ✅ Template substitution tests passed!');
+  });
+
+  it('should verify mathjs can use substituted expressions', async () => {
+    const { parseBrainNames, substituteBrainNames } = await import('./index');
+    const mathjs = await import('mathjs');
+    
+    const template = '${x} * 2 + ${y}';
+    const names = await parseBrainNames(template);
+    
+    expect(names).toEqual(['x', 'y']);
+    
+    // Substitute values
+    const values = { x: 5, y: 10 };
+    const expression = substituteBrainNames(template, values);
+    expect(expression).toBe('5 * 2 + 10');
+    
+    // Verify mathjs can evaluate the substituted expression
+    const result = mathjs.evaluate(expression);
+    expect(result).toBe(20); // 5 * 2 + 10 = 20
+    console.log('[brain.test] ✓ Mathjs evaluation with substitution works:', result);
+    
+    console.log('[brain.test] ✅ Mathjs integration test passed!');
+  });
+
+  it('should generate correct query for brain results by names', async () => {
+    const { generateBrainResultsQueryFromNames } = await import('./index');
+    
+    const names = ['temperature', 'pressure'];
+    const query = generateBrainResultsQueryFromNames(names);
+    
+    console.log('[brain.test] Generated query:', JSON.stringify(query, null, 2));
+    
+    // Verify query structure
+    expect(query.table).toBe('options');
+    expect(query.where.key._eq).toBe('brain_string');
+    expect(query.where.item_option.item_options.key._eq).toBe('brain_name');
+    expect(query.where.item_option.item_options.string_value._in).toEqual(['temperature', 'pressure']);
+    
+    // Verify returning includes item_option with nested item_options
+    expect(query.returning).toContain('id');
+    expect(query.returning).toContain('string_value');
+    expect(query.returning).toContain('item_id');
+    
+    const itemOptionField = query.returning.find((r: any) => typeof r === 'object' && r.item_option);
+    expect(itemOptionField).toBeDefined();
+    expect(itemOptionField.item_option).toContain('id');
+    expect(itemOptionField.item_option).toContain('key');
+    
+    const nestedItemOptions = itemOptionField.item_option.find((r: any) => typeof r === 'object' && r.item_options);
+    expect(nestedItemOptions).toBeDefined();
+    expect(nestedItemOptions.item_options.where.key._eq).toBe('brain_name');
+    
+    console.log('[brain.test] ✅ Query structure validation passed!');
+  });
+
+  it('should handle empty names array', async () => {
+    const { generateBrainResultsQueryFromNames } = await import('./index');
+    
+    const query = generateBrainResultsQueryFromNames([]);
+    
+    // Should return a query that never matches
+    expect(query.table).toBe('options');
+    expect(query.where.id._eq).toBe('00000000-0000-0000-0000-000000000000');
+    
+    console.log('[brain.test] ✅ Empty names handling test passed!');
+  });
+});
+
 describe('Brain computations (mathjs and AI)', () => {
   it('should evaluate mathematical formulas using mathjs (without creating options)', async () => {
     console.log('[brain.test] Testing mathjs formula evaluation...');

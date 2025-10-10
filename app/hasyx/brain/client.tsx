@@ -80,6 +80,80 @@ export default function Client() {
     }
   }, [hasyx, subscriptionOptions]);
 
+  // Helper function to extract ${variable} template variables
+  const extractTemplateVars = (expression: string): string[] => {
+    if (!expression) return [];
+    
+    const names = new Set<string>();
+    const templateRegexp = /\$\{([a-zA-Z_][a-zA-Z0-9_\.]*)\}/g;
+    let match;
+    
+    while ((match = templateRegexp.exec(expression)) !== null) {
+      names.add(match[1]);
+    }
+    
+    return Array.from(names).sort();
+  };
+
+  // Analyze brain_ask/brain_formula options to build names, used, and hipotetics
+  const brainAnalysis = useMemo(() => {
+    // names: { name: id } - maps brain_name to brain_ask/brain_formula id
+    const names: Record<string, string> = {};
+
+    // used: { id: string[] } - maps brain_ask/brain_formula id to array of variable names it uses
+    const used: Record<string, string[]> = {};
+
+    // hipotetics: array of potential brain_prop_id entries
+    const hipotetics: Array<{ item_id: string; to_id: string; name: string }> = [];
+
+    // First pass: collect brain_name values from item_options
+    options.forEach((option: any) => {
+      if ((option.key === 'brain_ask' || option.key === 'brain_formula') && option.item_options) {
+        // Look for brain_name in item_options
+        option.item_options.forEach((childOption: any) => {
+          if (childOption.key === 'brain_name' && childOption.string_value) {
+            names[childOption.string_value] = option.id;
+            console.log(`[Brain Analysis] Found brain_name "${childOption.string_value}" for ${option.key} ${option.id}`);
+          }
+        });
+      }
+    });
+
+    // Second pass: extract variable names from brain_ask/brain_formula expressions
+    // Uses ${variable} template syntax
+    options.forEach((option: any) => {
+      if ((option.key === 'brain_ask' || option.key === 'brain_formula') && option.string_value) {
+        // Parse ${variable} templates
+        const varNames = extractTemplateVars(option.string_value);
+        if (varNames.length > 0) {
+          used[option.id] = varNames;
+          console.log(`[Brain Analysis] ${option.key} ${option.id} uses template variables:`, varNames);
+
+          // Create hipotetics for each used variable
+          varNames.forEach(varName => {
+            if (names[varName]) {
+              // Found a matching brain_name
+              hipotetics.push({
+                item_id: option.id,
+                to_id: names[varName],
+                name: varName
+              });
+              console.log(`[Brain Analysis] Hypothetical link: ${option.id} -> ${names[varName]} (${varName})`);
+            }
+          });
+        }
+      }
+    });
+
+    console.log('[Brain Analysis] Summary:', {
+      namesCount: Object.keys(names).length,
+      usedCount: Object.keys(used).length,
+      hipotetics: hipotetics.length
+    });
+
+    return { names, used, hipotetics };
+  }, [options]);
+
   // Debug: log options data and check item_options
   useEffect(() => {
     console.log('[Brain Client] Options received:', options);

@@ -53,6 +53,14 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
       }
 
       try {
+        // Extract variable names from formula
+        const { parseBrainNames } = await import('hasyx/lib/brain');
+        const variableNames = await parseBrainNames(formula);
+        debug('brain_formula: extracted variable names:', variableNames);
+        
+        // TODO: Fetch variable values from brain_name references
+        // For now, evaluate without variables
+        
         // Dynamically import mathjs
         const mathjs = await import('mathjs');
         
@@ -163,6 +171,14 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
       }
 
       debug('brain_ask: processing prompt:', prompt);
+      
+      // Extract variable names from prompt
+      const { parseBrainNames } = await import('hasyx/lib/brain');
+      const variableNames = await parseBrainNames(prompt);
+      debug('brain_ask: extracted variable names:', variableNames);
+      
+      // TODO: Fetch variable values and substitute in prompt
+      // For now, process prompt as-is
 
       // Check for AI provider configuration
       const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
