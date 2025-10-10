@@ -268,8 +268,8 @@ program
     await new Promise(() => {});
   });
 
-// Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Run if called directly (CommonJS compatible check)
+if (typeof require !== 'undefined' && require.main === module) {
   program.parse(process.argv);
 }
 

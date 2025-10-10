@@ -184,8 +184,8 @@ async function installWstunnel(): Promise<void> {
   }
 }
 
-// Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Run if called directly (CommonJS compatible check)
+if (typeof require !== 'undefined' && require.main === module) {
   installWstunnel().catch(console.error);
 }
 
