@@ -5,8 +5,6 @@ import { Generator } from 'hasyx/lib/generator';
 import { AI } from 'hasyx/lib/ai/ai';
 import { OpenRouterProvider } from 'hasyx/lib/ai/providers/openrouter';
 import Debug from 'hasyx/lib/debug';
-// @ts-ignore - unstable_after may be available in our Next runtime even if types lag
-import { unstable_after } from 'next/server';
 import schema from '@/public/hasura-schema.json';
 
 const debug = Debug('api:events:options');
@@ -166,73 +164,138 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
     }
     
     if (key === 'brain_ask') {
-      // Accept immediately; process in background to avoid Vercel timeout
+      // Evaluate prompt using AI provider (synchronous) and return after completion
       const prompt = row?.string_value;
-      if (!prompt) return { success: true, skip: true };
+      if (!prompt) {
+        debug('brain_ask: empty prompt, skipping');
+        return { success: true, skip: true };
+      }
+
       debug('brain_ask: processing prompt:', prompt);
 
-      unstable_after(async () => {
-        try {
-          const bgClient = createApolloClient({ url: HASURA_URL, secret: ADMIN_SECRET, ws: false }) as HasyxApolloClient;
-          const bgHasyx = new Hasyx(bgClient, generate);
-          try {
-            const { parseBrainNames } = await import('hasyx/lib/brain');
-            const variableNames = await parseBrainNames(prompt);
-            debug('brain_ask(bg): extracted variable names:', variableNames);
-          } catch {}
-          const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-          if (!OPENROUTER_API_KEY) {
-            const existing = await bgHasyx.select<any[]>({
-              table: 'options',
-              where: { key: { _eq: 'brain_string' }, item_id: { _eq: row.id }, user_id: { _eq: row.user_id } },
-              returning: ['id'],
-              limit: 1
-            });
-            if (existing && existing.length > 0) {
-              await bgHasyx.update({ table: 'options', pk_columns: { id: existing[0].id }, _set: { string_value: 'Error: AI provider not configured (OPENROUTER_API_KEY missing)' } });
-            } else {
-              await bgHasyx.insert({ table: 'options', object: { key: 'brain_string', string_value: 'Error: AI provider not configured (OPENROUTER_API_KEY missing)', item_id: row.id, user_id: row.user_id } });
-            }
-            (bgClient as any)?.terminate?.();
-            return;
-          }
-          const provider = new OpenRouterProvider({ token: OPENROUTER_API_KEY, model: process.env.OPENROUTER_MODEL || 'deepseek/deepseek-chat-v3-0324:free' });
-          const ai = new AI({ provider, systemPrompt: 'You are a helpful assistant. Provide concise and accurate responses.' });
-          const response = await ai.query({ role: 'user', content: prompt });
-          const existing = await bgHasyx.select<any[]>({
-            table: 'options',
-            where: { key: { _eq: 'brain_string' }, item_id: { _eq: row.id }, user_id: { _eq: row.user_id } },
-            returning: ['id'],
-            limit: 1
-          });
-          if (existing && existing.length > 0) {
-            await bgHasyx.update({ table: 'options', pk_columns: { id: existing[0].id }, _set: { string_value: response } });
-          } else {
-            await bgHasyx.insert({ table: 'options', object: { key: 'brain_string', string_value: response, item_id: row.id, user_id: row.user_id } });
-          }
-          (bgClient as any)?.terminate?.();
-        } catch (aiError: any) {
-          debug('brain_ask(bg): error:', aiError?.message);
-          try {
-            const bgClient = createApolloClient({ url: HASURA_URL, secret: ADMIN_SECRET, ws: false }) as HasyxApolloClient;
-            const bgHasyx = new Hasyx(bgClient, generate);
-            const existing = await bgHasyx.select<any[]>({
-              table: 'options',
-              where: { key: { _eq: 'brain_string' }, item_id: { _eq: row.id }, user_id: { _eq: row.user_id } },
-              returning: ['id'],
-              limit: 1
-            });
-            if (existing && existing.length > 0) {
-              await bgHasyx.update({ table: 'options', pk_columns: { id: existing[0].id }, _set: { string_value: `Error: ${aiError?.message || 'AI query failed'}` } });
-            } else {
-              await bgHasyx.insert({ table: 'options', object: { key: 'brain_string', string_value: `Error: ${aiError?.message || 'AI query failed'}`, item_id: row.id, user_id: row.user_id } });
-            }
-            (bgClient as any)?.terminate?.();
-          } catch {}
-        }
-      });
+      // Extract variable names from prompt (for future substitution)
+      try {
+        const { parseBrainNames } = await import('hasyx/lib/brain');
+        const variableNames = await parseBrainNames(prompt);
+        debug('brain_ask: extracted variable names:', variableNames);
+      } catch {}
 
-      return { success: true, accepted: true };
+      // Check for AI provider configuration
+      const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+      if (!OPENROUTER_API_KEY) {
+        debug('brain_ask: OPENROUTER_API_KEY not configured');
+        // Upsert brain_string manually (same pattern as brain_formula)
+        const existing = await hasyx.select<any[]>({
+          table: 'options',
+          where: {
+            key: { _eq: 'brain_string' },
+            item_id: { _eq: row.id },
+            user_id: { _eq: row.user_id }
+          },
+          returning: ['id'],
+          limit: 1
+        });
+
+        if (existing && existing.length > 0) {
+          await hasyx.update({
+            table: 'options',
+            pk_columns: { id: existing[0].id },
+            _set: { string_value: 'Error: AI provider not configured (OPENROUTER_API_KEY missing)' }
+          });
+        } else {
+          await hasyx.insert({
+            table: 'options',
+            object: {
+              key: 'brain_string',
+              string_value: 'Error: AI provider not configured (OPENROUTER_API_KEY missing)',
+              item_id: row.id,
+              user_id: row.user_id,
+            }
+          });
+        }
+        return { success: true, warning: 'ai_not_configured' };
+      }
+
+      try {
+        // Initialize AI provider without tools
+        const provider = new OpenRouterProvider({
+          token: OPENROUTER_API_KEY,
+          model: process.env.OPENROUTER_MODEL || 'deepseek/deepseek-chat-v3-0324:free'
+        });
+
+        const ai = new AI({ 
+          provider,
+          systemPrompt: 'You are a helpful assistant. Provide concise and accurate responses.'
+        });
+
+        // Query AI
+        const response = await ai.query({ role: 'user', content: prompt });
+        
+        debug('brain_ask: AI response received, length:', response.length);
+
+        // Store result in brain_string (manual upsert to avoid duplicates)
+        const existing = await hasyx.select<any[]>({
+          table: 'options',
+          where: {
+            key: { _eq: 'brain_string' },
+            item_id: { _eq: row.id },
+            user_id: { _eq: row.user_id }
+          },
+          returning: ['id'],
+          limit: 1
+        });
+
+        if (existing && existing.length > 0) {
+          await hasyx.update({
+            table: 'options',
+            pk_columns: { id: existing[0].id },
+            _set: { string_value: response }
+          });
+        } else {
+          await hasyx.insert({
+            table: 'options',
+            object: {
+              key: 'brain_string',
+              string_value: response,
+              item_id: row.id,
+              user_id: row.user_id,
+            }
+          });
+        }
+
+        debug('brain_ask: stored AI response in brain_string');
+      } catch (aiError: any) {
+        debug('brain_ask: AI query error:', aiError?.message);
+        // Store error as result (manual upsert)
+        const existing = await hasyx.select<any[]>({
+          table: 'options',
+          where: {
+            key: { _eq: 'brain_string' },
+            item_id: { _eq: row.id },
+            user_id: { _eq: row.user_id }
+          },
+          returning: ['id'],
+          limit: 1
+        });
+
+        if (existing && existing.length > 0) {
+          await hasyx.update({
+            table: 'options',
+            pk_columns: { id: existing[0].id },
+            _set: { string_value: `Error: ${aiError?.message || 'AI query failed'}` }
+          });
+        } else {
+          await hasyx.insert({
+            table: 'options',
+            object: {
+              key: 'brain_string',
+              string_value: `Error: ${aiError?.message || 'AI query failed'}`,
+              item_id: row.id,
+              user_id: row.user_id,
+            }
+          });
+        }
+      }
 
     } else if (key === 'brain_number') {
       debug('brain_number:', row?.number_value);

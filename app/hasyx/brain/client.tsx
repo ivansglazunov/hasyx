@@ -5,6 +5,7 @@ import { Cyto, CytoStyle } from 'hasyx/lib/cyto';
 import { useSubscription, useHasyx } from 'hasyx';
 import { CytoNode as OptionCytoNode } from 'hasyx/components/entities/options';
 import { toast } from 'sonner';
+import { useBrainContextStore } from 'hasyx/lib/brain/store';
 
 const stylesheet = [
   { selector: 'node', style: { 'background-color': '#0ea5e9', 'label': 'data(label)', 'color': '#111827', 'text-wrap': 'wrap' } },
@@ -33,12 +34,13 @@ export default function Client() {
   const subscriptionOptions = useMemo(() => ({
     table: 'options',
     where: {
+      item_id: { _is_null: true },
       key: {
         _in: [
-          // 'brain',
+          'brain',
           'brain_string',
-          // 'brain_number',
-          // 'brain_object',
+          'brain_number',
+          'brain_object',
           'brain_formula',
           'brain_ask',
           'brain_js',
@@ -65,6 +67,7 @@ export default function Client() {
   }), []);
 
   const { data: options = [], loading, error } = useSubscription(subscriptionOptions);
+  const setAvailableNames = useBrainContextStore(s => s.setAvailableNames);
   
   // Debug: log subscription query on mount
   useEffect(() => {
@@ -95,7 +98,7 @@ export default function Client() {
     return Array.from(names).sort();
   };
 
-  // Analyze brain_ask/brain_formula options to build names, used, and hipotetics
+  // Analyze brain_ask/brain_formula options to build names, used, and hipotetics; also compute global availableNames
   const brainAnalysis = useMemo(() => {
     // names: { name: id } - maps brain_name to brain_ask/brain_formula id
     const names: Record<string, string> = {};
@@ -151,8 +154,11 @@ export default function Client() {
       hipotetics: hipotetics.length
     });
 
+    const availableNames = Object.keys(names).sort();
+    // push to zustand store
+    setAvailableNames(availableNames);
     return { names, used, hipotetics };
-  }, [options]);
+  }, [options, setAvailableNames]);
 
   // Debug: log options data and check item_options
   useEffect(() => {

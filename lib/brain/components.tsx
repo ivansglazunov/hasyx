@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Textarea } from 'hasyx/components/ui/textarea';
 import { Button } from 'hasyx/components/ui/button';
 import { Check, Loader2, Trash2, ChevronDown } from 'lucide-react';
@@ -8,6 +8,9 @@ import { cn } from 'hasyx/lib/utils';
 import { z } from 'zod';
 import { options as schemaOptions } from '@/schema';
 import { HasyxConstructorButton } from 'hasyx/lib/constructor';
+import { useHasyx } from 'hasyx';
+import { useDebounceCallback } from '@react-hook/debounce';
+import { useBrainContextStore } from 'hasyx/lib/brain/store';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,10 +79,12 @@ function BrainOptionWrapper({
   children, 
   className,
   data,
+  headerContent,
 }: { 
   children: React.ReactNode; 
   className?: string;
   data?: { id: string; [key: string]: any };
+  headerContent?: React.ReactNode;
 }) {
   return (
     <div 
@@ -98,9 +103,12 @@ function BrainOptionWrapper({
           className="absolute top-0 left-0 right-0 px-5 pt-2 pb-1"
           style={{ pointerEvents: 'all' }}
         >
-          <span className="text-xs font-mono text-foreground/70">
-            {data.id}
-          </span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-mono text-foreground/70">
+              {data.id}
+            </span>
+            {headerContent}
+          </div>
         </div>
       )}
       
@@ -235,6 +243,55 @@ export function BrainAskComponent({
 }) {
   const [isSaving, setIsSaving] = useState(false);
   const [localUpdatedAt, setLocalUpdatedAt] = useState<number | null>(null);
+  const hasyx = useHasyx();
+
+  // brain_name editor
+  const nameOption = data.item_options?.find((opt: any) => opt.key === 'brain_name');
+  const dbNameValue: string | undefined = nameOption?.string_value || undefined;
+  const [nameInput, setNameInput] = useState<string>(dbNameValue || '');
+  const userTouchedRef = useRef(false);
+  useEffect(() => {
+    if (!userTouchedRef.current && !nameInput && dbNameValue) {
+      setNameInput(dbNameValue);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dbNameValue]);
+  const debouncedUpsertName = useDebounceCallback(async (nextValue: string) => {
+    try {
+      const existing = await hasyx.select<any[]>({
+        table: 'options',
+        where: { key: { _eq: 'brain_name' }, item_id: { _eq: data.id } },
+        returning: ['id'],
+        limit: 1,
+      });
+      if (existing && existing.length > 0) {
+        await hasyx.update({ table: 'options', pk_columns: { id: existing[0].id }, _set: { string_value: nextValue } });
+      } else {
+        await hasyx.insert({ table: 'options', object: { key: 'brain_name', string_value: nextValue, item_id: data.id } });
+      }
+    } catch (e) {
+      // ignore transient errors in background typing
+    }
+  }, 400);
+  const headerStatus = useMemo(() => {
+    if (nameInput === (dbNameValue ?? '')) return (
+      <span className="text-xs text-green-600">✓</span>
+    );
+    return (
+      <span className="text-[10px] text-muted-foreground truncate max-w-[140px]" title={dbNameValue || ''}>{dbNameValue || ''}</span>
+    );
+  }, [nameInput, dbNameValue]);
+  const headerContent = (
+    <div className="flex items-center gap-2 w-full">
+      <input
+        value={nameInput}
+        onChange={(e) => { userTouchedRef.current = true; setNameInput(e.target.value); debouncedUpsertName(e.target.value); }}
+        placeholder="name..."
+        className="flex-1 text-xs bg-muted/50 rounded px-2 py-1 border border-transparent focus:border-border outline-none"
+      />
+      {headerStatus}
+    </div>
+  );
 
   const handleSave = useCallback(async () => {
     if (!onSave) return;
@@ -271,7 +328,7 @@ export function BrainAskComponent({
   }
 
   return (
-    <BrainOptionWrapper className={className} data={data}>
+    <BrainOptionWrapper className={className} data={data} headerContent={headerContent}>
       <div className="bg-card w-[300px]">
         {/* Input area */}
         <div className="flex items-start gap-2 p-2">
@@ -564,6 +621,79 @@ export function BrainFormulaComponent({
   className?: string;
 }) {
   const [isSaving, setIsSaving] = useState(false);
+  const hasyx = useHasyx();
+
+  // brain_name editor
+  const nameOption = data.item_options?.find((opt: any) => opt.key === 'brain_name');
+  const dbNameValue: string | undefined = nameOption?.string_value || undefined;
+  const [nameInput, setNameInput] = useState<string>(dbNameValue || '');
+  const userTouchedRef = useRef(false);
+  useEffect(() => {
+    if (!userTouchedRef.current && !nameInput && dbNameValue) {
+      setNameInput(dbNameValue);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dbNameValue]);
+  const debouncedUpsertName = useDebounceCallback(async (nextValue: string) => {
+    try {
+      const existing = await hasyx.select<any[]>({
+        table: 'options',
+        where: { key: { _eq: 'brain_name' }, item_id: { _eq: data.id }, user_id: { _eq: data.user_id } },
+        returning: ['id'],
+        limit: 1,
+      });
+      if (existing && existing.length > 0) {
+        await hasyx.update({ table: 'options', pk_columns: { id: existing[0].id }, _set: { string_value: nextValue } });
+      } else {
+        await hasyx.insert({ table: 'options', object: { key: 'brain_name', string_value: nextValue, item_id: data.id, user_id: data.user_id } });
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, 400);
+  const headerStatus = useMemo(() => {
+    if (nameInput === (dbNameValue ?? '')) return (
+      <span className="text-xs text-green-600">✓</span>
+    );
+    return (
+      <span className="text-[10px] text-muted-foreground truncate max-w-[140px]" title={dbNameValue || ''}>{dbNameValue || ''}</span>
+    );
+  }, [nameInput, dbNameValue]);
+  const headerContent = (
+    <div className="flex items-center gap-2 w-full">
+      <input
+        value={nameInput}
+        onChange={(e) => { userTouchedRef.current = true; setNameInput(e.target.value); debouncedUpsertName(e.target.value); }}
+        placeholder="name..."
+        className="flex-1 text-xs bg-muted/50 rounded px-2 py-1 border border-transparent focus:border-border outline-none"
+      />
+      {headerStatus}
+    </div>
+  );
+
+  // Debug: parse variables in formula input and show above the textarea
+  const [varNames, setVarNames] = useState<string[]>([]);
+  const availableNames = useBrainContextStore(s => s.availableNames);
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const { parseBrainNames } = await import('hasyx/lib/brain');
+        const vars = await parseBrainNames(value || '');
+        if (active) setVarNames(Array.isArray(vars) ? vars : []);
+      } catch {
+        // Fallback simple parser
+        try {
+          const matches = Array.from(String(value || '').matchAll(/\$\{([A-Za-z_][A-Za-z0-9_]*)\}/g)).map(m => m[1]);
+          const unique = Array.from(new Set(matches)).sort();
+          if (active) setVarNames(unique);
+        } catch {
+          if (active) setVarNames([]);
+        }
+      }
+    })();
+    return () => { active = false; };
+  }, [value]);
 
   const handleSave = useCallback(async () => {
     if (!onSave) return;
@@ -600,8 +730,23 @@ export function BrainFormulaComponent({
   }
 
   return (
-    <BrainOptionWrapper className={className} data={data}>
+    <BrainOptionWrapper className={className} data={data} headerContent={headerContent}>
       <div className="bg-card w-[300px]">
+        {/* Debug variables row */}
+        <div className="px-2 pt-1 text-[11px] text-muted-foreground space-y-0.5">
+          <div className="flex flex-wrap gap-1 items-center">
+            <span className="opacity-70">Vars:</span>
+            {varNames.length > 0 ? varNames.map(v => (
+              <span key={v} className="px-1.5 py-0.5 bg-muted rounded border border-border text-foreground/80">{v}</span>
+            )) : <span className="opacity-50">none</span>}
+          </div>
+          <div className="flex flex-wrap gap-1 items-center">
+            <span className="opacity-70">Available:</span>
+            {availableNames && availableNames.length > 0 ? availableNames.map(v => (
+              <span key={v} className="px-1.5 py-0.5 bg-muted rounded border border-dashed text-foreground/70">{v}</span>
+            )) : <span className="opacity-50">none</span>}
+          </div>
+        </div>
         {/* Input area */}
         <div className="flex items-start gap-2 p-2">
           {onTypeChange && (
