@@ -43,6 +43,9 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
   await hasura.defineColumn({ schema, table: optionsTable, name: 'boolean_value', type: ColumnType.BOOLEAN });
   await hasura.defineColumn({ schema, table: optionsTable, name: 'jsonb_value', type: ColumnType.JSONB });
 
+  // Ensure updated_at trigger (auto-update on UPDATE)
+  await hasura.defineUpdatedTrigger({ schema, table: optionsTable, column: 'updated_at' });
+
   // FK to users for user_id (owner of the option record)
   await hasura.defineForeignKey({
     from: { schema, table: optionsTable, column: 'user_id' },
@@ -183,11 +186,12 @@ export async function up(params: OptionsUpParams, customHasura?: Hasura) {
             END;
           END LOOP;
           
-          -- Set schema path based on found table
+          -- Set schema path based on found table; if none matched, fallback to wildcard (options.__any)
           IF found_in_table IS NOT NULL THEN
             v_schema_path := 'options.' || found_in_table;
           ELSE
-            RAISE EXCEPTION 'item_id % not found in any of the available tables: %', NEW.item_id, array_to_string(available_tables, ', ');
+            -- Graceful fallback: validate against wildcard group without enforcing table existence
+            v_schema_path := 'options.__any';
           END IF;
           
         EXCEPTION WHEN OTHERS THEN

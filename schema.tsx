@@ -115,6 +115,11 @@ export const options = {
     // Title field example
     title: z.string().min(1).max(500).optional(),
   }),
+  // Options can reference other options (e.g. brain_formula -> brain_string)
+  options: z.object({
+    // Only brain_string can reference other options as item_id
+    brain_string: z.string().describe('Result of brain_formula or brain_ask computation').meta({ multiple: true, BrainComponent: 'BrainStringComponent' }),
+  }),
   // Global options (no item_id required): aliased to options.__empty
   "": z.object(_brainEnything),
   // Wildcard options for any target table: aliased to options.__any

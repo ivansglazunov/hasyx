@@ -184,19 +184,37 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
       const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
       if (!OPENROUTER_API_KEY) {
         debug('brain_ask: OPENROUTER_API_KEY not configured');
-        await hasyx.insert({
+        // Upsert brain_string manually (same pattern as brain_formula)
+        const existing = await hasyx.select<any[]>({
           table: 'options',
-          object: {
-            key: 'brain_string',
-            string_value: 'Error: AI provider not configured (OPENROUTER_API_KEY missing)',
-            item_id: row.id,
-            user_id: row.user_id,
+          where: {
+            key: { _eq: 'brain_string' },
+            item_id: { _eq: row.id },
+            user_id: { _eq: row.user_id }
           },
-          on_conflict: {
-            constraint: 'options_pkey',
-            update_columns: ['string_value', 'updated_at']
-          }
+          returning: ['id'],
+          limit: 1
         });
+
+        if (existing && existing.length > 0) {
+          await hasyx.update({
+            table: 'options',
+            pk_columns: { id: existing[0].id },
+            _set: {
+              string_value: 'Error: AI provider not configured (OPENROUTER_API_KEY missing)'
+            }
+          });
+        } else {
+          await hasyx.insert({
+            table: 'options',
+            object: {
+              key: 'brain_string',
+              string_value: 'Error: AI provider not configured (OPENROUTER_API_KEY missing)',
+              item_id: row.id,
+              user_id: row.user_id,
+            }
+          });
+        }
         return { success: true, warning: 'ai_not_configured' };
       }
 
@@ -217,38 +235,72 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
         
         debug('brain_ask: AI response received, length:', response.length);
 
-        // Store result in brain_string
-        await hasyx.insert({
+        // Store result in brain_string (manual upsert to avoid duplicates)
+        const existing = await hasyx.select<any[]>({
           table: 'options',
-          object: {
-            key: 'brain_string',
-            string_value: response,
-            item_id: row.id,
-            user_id: row.user_id,
+          where: {
+            key: { _eq: 'brain_string' },
+            item_id: { _eq: row.id },
+            user_id: { _eq: row.user_id }
           },
-          on_conflict: {
-            constraint: 'options_pkey',
-            update_columns: ['string_value', 'updated_at']
-          }
+          returning: ['id'],
+          limit: 1
         });
+
+        if (existing && existing.length > 0) {
+          await hasyx.update({
+            table: 'options',
+            pk_columns: { id: existing[0].id },
+            _set: {
+              string_value: response
+            }
+          });
+        } else {
+          await hasyx.insert({
+            table: 'options',
+            object: {
+              key: 'brain_string',
+              string_value: response,
+              item_id: row.id,
+              user_id: row.user_id,
+            }
+          });
+        }
 
         debug('brain_ask: stored AI response in brain_string');
       } catch (aiError: any) {
         debug('brain_ask: AI query error:', aiError?.message);
-        // Store error as result
-        await hasyx.insert({
+        // Store error as result (manual upsert)
+        const existing = await hasyx.select<any[]>({
           table: 'options',
-          object: {
-            key: 'brain_string',
-            string_value: `Error: ${aiError?.message || 'AI query failed'}`,
-            item_id: row.id,
-            user_id: row.user_id,
+          where: {
+            key: { _eq: 'brain_string' },
+            item_id: { _eq: row.id },
+            user_id: { _eq: row.user_id }
           },
-          on_conflict: {
-            constraint: 'options_pkey',
-            update_columns: ['string_value', 'updated_at']
-          }
+          returning: ['id'],
+          limit: 1
         });
+
+        if (existing && existing.length > 0) {
+          await hasyx.update({
+            table: 'options',
+            pk_columns: { id: existing[0].id },
+            _set: {
+              string_value: `Error: ${aiError?.message || 'AI query failed'}`
+            }
+          });
+        } else {
+          await hasyx.insert({
+            table: 'options',
+            object: {
+              key: 'brain_string',
+              string_value: `Error: ${aiError?.message || 'AI query failed'}`,
+              item_id: row.id,
+              user_id: row.user_id,
+            }
+          });
+        }
       }
 
     } else if (key === 'brain_number') {

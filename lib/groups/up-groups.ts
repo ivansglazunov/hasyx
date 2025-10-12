@@ -152,29 +152,8 @@ export async function up(customHasura?: Hasura) {
 
   /* ------------------------- helper functions/triggers ------------------------- */
   // Common updated_at trigger
-  await hasura.defineFunction({
-    schema: 'public',
-    name: 'set_current_timestamp_updated_at',
-    replace: true,
-    language: 'plpgsql',
-    definition: `()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at := (EXTRACT(EPOCH FROM NOW())*1000)::bigint;
-  RETURN NEW;
-END;$$`,
-  });
-
   for (const tbl of ['groups', 'memberships', 'invitations']) {
-    await hasura.defineTrigger({
-      schema: 'public',
-      table: tbl,
-      name: `${tbl}_set_updated_at`,
-      timing: 'BEFORE',
-      event: 'UPDATE',
-      function_name: 'public.set_current_timestamp_updated_at',
-      replace: true,
-    });
+    await hasura.defineUpdatedTrigger({ schema: 'public', table: tbl, column: 'updated_at' });
   }
 
   // BEFORE INSERT on groups: default created_by_id/owner_id from session

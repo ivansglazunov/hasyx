@@ -188,28 +188,7 @@ $$`,
   });
 
   // Add timestamp trigger for updated_at
-  await hasura.defineFunction({
-    schema: 'public',
-    name: 'set_current_timestamp_updated_at',
-    replace: true,
-    language: 'plpgsql',
-    definition: `()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at := (EXTRACT(EPOCH FROM NOW())*1000)::bigint;
-  RETURN NEW;
-END;$$`,
-  });
-
-  await hasura.defineTrigger({
-    schema: 'public',
-    table: 'items',
-    name: 'items_set_updated_at',
-    timing: 'BEFORE',
-    event: 'UPDATE',
-    function_name: 'public.set_current_timestamp_updated_at',
-    replace: true,
-  });
+  await hasura.defineUpdatedTrigger({ schema: 'public', table: 'items', column: 'updated_at' });
 
   // Track table and define permissions (default: any user can CRUD; anonymous can select)
   await hasura.trackTable({ schema, table });

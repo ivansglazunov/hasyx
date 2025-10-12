@@ -1181,6 +1181,69 @@ export class Hasura {
     return { success: true };
   }
 
+  /**
+   * Define a standard BEFORE UPDATE trigger that updates the given timestamp column.
+   * - Detects column type and uses NOW() for timestamptz, or epoch milliseconds for bigint/integer.
+   * - Creates/updates per-table trigger function "${table}_set_updated_at" in the provided schema.
+   * - Creates/updates trigger named "${table}_set_updated_at" on the table.
+   */
+  async defineUpdatedTrigger(options: { schema: string; table: string; column?: string; replace?: boolean }): Promise<any> {
+    const { schema, table, column = 'updated_at', replace = true } = options;
+    // Inspect column type
+    const cols = await this.columns({ schema, table });
+    const info = cols[column];
+    if (!info) {
+      debug(`⚠️ Column ${schema}.${table}.${column} not found; skipping defineUpdatedTrigger`);
+      return { success: false, skipped: true };
+    }
+    const dataType = (info.type || '').toLowerCase();
+    const udt = (info._type || '').toLowerCase();
+
+    // Choose expression based on type
+    let setExpr = 'NOW()';
+    if (dataType.includes('timestamp')) {
+      setExpr = 'NOW()';
+    } else if (dataType === 'bigint' || udt === 'int8') {
+      setExpr = '(EXTRACT(EPOCH FROM NOW())*1000)::bigint';
+    } else if (dataType === 'integer' || udt === 'int4') {
+      setExpr = '(EXTRACT(EPOCH FROM NOW())*1000)::integer';
+    } else if (dataType === 'numeric' || udt === 'numeric') {
+      setExpr = '(EXTRACT(EPOCH FROM NOW())*1000)';
+    } else {
+      // fallback: NOW()
+      setExpr = 'NOW()';
+    }
+
+    const fnName = `${table}_set_updated_at`;
+
+    // Create/replace per-table function
+    await this.defineFunction({
+      schema,
+      name: fnName,
+      language: 'plpgsql',
+      replace: true,
+      definition: `()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW."${column}" := ${setExpr};
+  RETURN NEW;
+END;$$`,
+    });
+
+    // Create/replace trigger
+    await this.defineTrigger({
+      schema,
+      table,
+      name: `${table}_set_updated_at`,
+      timing: 'BEFORE',
+      event: 'UPDATE',
+      function_name: `${schema}.${fnName}`,
+      replace,
+    });
+
+    return { success: true };
+  }
+
   // Foreign Keys
   async defineForeignKey(options: ForeignKeyOptions): Promise<any> {
     const { from, to, on_delete = 'RESTRICT', on_update = 'CASCADE', name } = options;

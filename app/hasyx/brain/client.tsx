@@ -35,10 +35,10 @@ export default function Client() {
     where: {
       key: {
         _in: [
-          'brain',
+          // 'brain',
           'brain_string',
-          'brain_number',
-          'brain_object',
+          // 'brain_number',
+          // 'brain_object',
           'brain_formula',
           'brain_ask',
           'brain_js',

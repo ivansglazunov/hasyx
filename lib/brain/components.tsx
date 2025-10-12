@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Textarea } from 'hasyx/components/ui/textarea';
 import { Button } from 'hasyx/components/ui/button';
 import { Check, Loader2, Trash2, ChevronDown } from 'lucide-react';
@@ -234,12 +234,14 @@ export function BrainAskComponent({
   className?: string;
 }) {
   const [isSaving, setIsSaving] = useState(false);
+  const [localUpdatedAt, setLocalUpdatedAt] = useState<number | null>(null);
 
   const handleSave = useCallback(async () => {
     if (!onSave) return;
     setIsSaving(true);
     try {
       await onSave();
+      setLocalUpdatedAt(Date.now());
     } finally {
       setIsSaving(false);
     }
@@ -248,6 +250,15 @@ export function BrainAskComponent({
   // Find result option (brain_string with item_id pointing to this option)
   const resultOption = data.item_options?.find((opt: any) => opt.key === 'brain_string');
   const resultValue = resultOption?.string_value;
+  const calculating = useMemo(() => {
+    try {
+      const hasInput = typeof value === 'string' && value.trim() !== '';
+      if (!hasInput) return false;
+      return isSaving || data?.updated_at > (resultOption?.updated_at || 0);
+    } catch {
+      return false;
+    }
+  }, [data?.updated_at, resultOption?.updated_at, value, isSaving, localUpdatedAt]);
   
   // Determine result state
   let resultState: 'empty' | 'loading' | 'ready' = 'empty';
@@ -280,7 +291,12 @@ export function BrainAskComponent({
         
         {/* Result area */}
         <div className="p-2 bg-muted/30">
-          <div className="bg-muted rounded-md p-3 min-h-[60px]">
+          <div className="bg-muted rounded-md p-3 min-h-[60px] relative">
+            {calculating && (
+              <div className="absolute top-2 right-2 text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" />
+              </div>
+            )}
             {resultState === 'empty' && (
               <div className="text-sm text-muted-foreground flex items-center gap-2">
                 <span className="text-lg">❓</span>
@@ -562,6 +578,16 @@ export function BrainFormulaComponent({
   // Find result option (brain_string with item_id pointing to this option)
   const resultOption = data.item_options?.find((opt: any) => opt.key === 'brain_string');
   const resultValue = resultOption?.string_value;
+  const calculating = useMemo(() => {
+    try {
+      const hasInput = typeof value === 'string' && value.trim() !== '';
+      if (!hasInput) return false;
+      console.log('[COMPONENT]', data, resultOption);
+      return isSaving || data?.updated_at > (resultOption?.updated_at || 0);
+    } catch {
+      return false;
+    }
+  }, [data]);
   
   // Determine result state
   let resultState: 'empty' | 'loading' | 'ready' = 'empty';
@@ -594,7 +620,12 @@ export function BrainFormulaComponent({
         
         {/* Result area */}
         <div className="p-2 bg-muted/30">
-          <div className="bg-muted rounded-md p-3 min-h-[60px]">
+          <div className="bg-muted rounded-md p-3 min-h-[60px] relative">
+            {calculating && (
+              <div className="absolute top-2 right-2 text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" />
+              </div>
+            )}
             {resultState === 'empty' && (
               <div className="text-sm text-muted-foreground flex items-center gap-2">
                 <span className="text-lg">🔢</span>
