@@ -54,19 +54,38 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
       }
 
       try {
-        // Extract variable names from formula
-        const { parseBrainNames } = await import('hasyx/lib/brain');
-        const variableNames = await parseBrainNames(formula);
-        debug('brain_formula: extracted variable names:', variableNames);
-        
-        // TODO: Fetch variable values from brain_name references
-        // For now, evaluate without variables
-        
-        // Dynamically import mathjs
+        // Build scope from all named brain nodes (name -> brain_string)
+        const namedResults = await hasyx.select<any[]>({
+          table: 'options',
+          where: { key: { _eq: 'brain_string' }, user_id: { _eq: row.user_id } },
+          returning: [
+            'string_value',
+            { item_option: [
+              'id', 'key',
+              { item_options: {
+                where: { key: { _eq: 'brain_name' } },
+                returning: ['id','key','string_value']
+              }}
+            ]}
+          ],
+          limit: 5000
+        });
+        const scope: Record<string, any> = {};
+        for (const r of namedResults || []) {
+          const parent = r?.item_option;
+          const children: any[] = parent?.item_options || [];
+          const nameOpt = children.find(c => c?.key === 'brain_name' && c?.string_value);
+          const name = nameOpt?.string_value as string | undefined;
+          if (!name) continue;
+          const raw = r?.string_value as string | undefined;
+          if (raw == null) continue;
+          const num = Number(raw);
+          scope[name] = Number.isFinite(num) ? num : raw;
+        }
+
+        // mathjs with scope
         const mathjs = await import('mathjs');
-        
-        // Evaluate formula
-        const result = mathjs.evaluate(formula);
+        const result = mathjs.evaluate(formula, scope);
         const stringResult = String(result);
         
         debug('brain_formula: result =', stringResult);
@@ -110,7 +129,7 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
                 key: 'brain_string',
                 string_value: stringResult,
                 item_id: row.id,
-                user_id: row.user_id,
+            user_id: row.user_id,
               }
             });
             debug('brain_formula: inserted new brain_string');
@@ -149,16 +168,16 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
           });
         } else {
           await hasyx.insert({
-            table: 'options',
-            object: {
-              key: 'brain_string',
+          table: 'options',
+          object: {
+            key: 'brain_string',
               string_value: errorMessage,
-              item_id: row.id,
-              user_id: row.user_id,
-            }
-          });
-        }
-        
+            item_id: row.id,
+            user_id: row.user_id,
+          }
+        });
+      }
+
         return { success: true, error: evalError?.message };
       }
     }
@@ -204,14 +223,14 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
           });
         } else {
           await hasyx.insert({
-            table: 'options',
-            object: {
-              key: 'brain_string',
-              string_value: 'Error: AI provider not configured (OPENROUTER_API_KEY missing)',
-              item_id: row.id,
-              user_id: row.user_id,
-            }
-          });
+          table: 'options',
+          object: {
+            key: 'brain_string',
+            string_value: 'Error: AI provider not configured (OPENROUTER_API_KEY missing)',
+            item_id: row.id,
+            user_id: row.user_id,
+          }
+        });
         }
         return { success: true, warning: 'ai_not_configured' };
       }
@@ -253,14 +272,14 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
           });
         } else {
           await hasyx.insert({
-            table: 'options',
-            object: {
-              key: 'brain_string',
-              string_value: response,
-              item_id: row.id,
-              user_id: row.user_id,
-            }
-          });
+          table: 'options',
+          object: {
+            key: 'brain_string',
+            string_value: response,
+            item_id: row.id,
+            user_id: row.user_id,
+          }
+        });
         }
 
         debug('brain_ask: stored AI response in brain_string');
@@ -286,14 +305,14 @@ export const POST = hasyxEvent(async (payload: HasuraEventPayload) => {
           });
         } else {
           await hasyx.insert({
-            table: 'options',
-            object: {
-              key: 'brain_string',
-              string_value: `Error: ${aiError?.message || 'AI query failed'}`,
-              item_id: row.id,
-              user_id: row.user_id,
-            }
-          });
+          table: 'options',
+          object: {
+            key: 'brain_string',
+            string_value: `Error: ${aiError?.message || 'AI query failed'}`,
+            item_id: row.id,
+            user_id: row.user_id,
+          }
+        });
         }
       }
 

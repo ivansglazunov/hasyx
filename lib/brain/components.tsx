@@ -11,6 +11,7 @@ import { HasyxConstructorButton } from 'hasyx/lib/constructor';
 import { useHasyx } from 'hasyx';
 import { useDebounceCallback } from '@react-hook/debounce';
 import { useBrainContextStore } from 'hasyx/lib/brain/store';
+import * as math from 'mathjs';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -671,29 +672,35 @@ export function BrainFormulaComponent({
     </div>
   );
 
-  // Debug: parse variables in formula input and show above the textarea
-  const [varNames, setVarNames] = useState<string[]>([]);
   const availableNames = useBrainContextStore(s => s.availableNames);
+  // Client-side evaluation using mathjs scope (do not parse ${})
+  const [clientEval, setClientEval] = useState<{ ok: boolean; text: string }>({ ok: true, text: '' });
   useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        const { parseBrainNames } = await import('hasyx/lib/brain');
-        const vars = await parseBrainNames(value || '');
-        if (active) setVarNames(Array.isArray(vars) ? vars : []);
-      } catch {
-        // Fallback simple parser
-        try {
-          const matches = Array.from(String(value || '').matchAll(/\$\{([A-Za-z_][A-Za-z0-9_]*)\}/g)).map(m => m[1]);
-          const unique = Array.from(new Set(matches)).sort();
-          if (active) setVarNames(unique);
-        } catch {
-          if (active) setVarNames([]);
+    let cancelled = false;
+    try {
+      const expr = String(value || '').trim();
+      if (!expr) {
+        if (!cancelled) setClientEval({ ok: true, text: '' });
+      } else {
+        // Build scope from availableNames map
+        const scope: Record<string, any> = {};
+        if (availableNames && typeof availableNames === 'object') {
+          for (const [k, raw] of Object.entries(availableNames as Record<string, string | undefined>)) {
+            if (raw == null) continue;
+            const num = Number(raw);
+            scope[k] = Number.isFinite(num) ? num : raw;
+          }
         }
+        const result = math.evaluate(expr, scope as any);
+        const asString = typeof result === 'object' ? JSON.stringify(result) : String(result);
+        if (!cancelled) setClientEval({ ok: true, text: asString });
       }
-    })();
-    return () => { active = false; };
-  }, [value]);
+    } catch (e: any) {
+      const msg = e?.message ? String(e.message) : 'Evaluation failed';
+      if (!cancelled) setClientEval({ ok: false, text: msg });
+    }
+    return () => { cancelled = true; };
+  }, [value, availableNames]);
 
   const handleSave = useCallback(async () => {
     if (!onSave) return;
@@ -732,19 +739,22 @@ export function BrainFormulaComponent({
   return (
     <BrainOptionWrapper className={className} data={data} headerContent={headerContent}>
       <div className="bg-card w-[300px]">
-        {/* Debug variables row */}
+        {/* Available variables (scope) */}
         <div className="px-2 pt-1 text-[11px] text-muted-foreground space-y-0.5">
-          <div className="flex flex-wrap gap-1 items-center">
-            <span className="opacity-70">Vars:</span>
-            {varNames.length > 0 ? varNames.map(v => (
-              <span key={v} className="px-1.5 py-0.5 bg-muted rounded border border-border text-foreground/80">{v}</span>
-            )) : <span className="opacity-50">none</span>}
-          </div>
-          <div className="flex flex-wrap gap-1 items-center">
-            <span className="opacity-70">Available:</span>
-            {availableNames && availableNames.length > 0 ? availableNames.map(v => (
-              <span key={v} className="px-1.5 py-0.5 bg-muted rounded border border-dashed text-foreground/70">{v}</span>
-            )) : <span className="opacity-50">none</span>}
+          <div className="flex flex-col gap-0.5">
+            <div className="opacity-70">Available:</div>
+            {availableNames && Object.keys(availableNames as Record<string, string | undefined>).length > 0 ? (
+              <div className="flex flex-col gap-0.5 max-h-28 overflow-auto">
+                {Object.entries(availableNames as Record<string, string | undefined>).map(([name, val]) => (
+                  <div key={name} className="text-[11px]">
+                    <span className="px-1 py-0.5 bg-muted rounded border border-dashed text-foreground/70 mr-1">{name}</span>
+                    <span className="text-foreground/80">{val ?? '—'}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <span className="opacity-50">none</span>
+            )}
           </div>
         </div>
         {/* Input area */}
@@ -761,6 +771,14 @@ export function BrainFormulaComponent({
             className="flex-1 h-[100px] resize-none bg-muted/50 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-sm px-3 py-2"
           />
           <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
+        </div>
+        {/* Client-side mathjs evaluation preview */}
+        <div className="px-2 pb-1 text-[11px]">
+          {clientEval.text ? (
+            <span className={clientEval.ok ? 'text-foreground/70' : 'text-red-500'}>
+              {clientEval.ok ? 'Client result: ' : 'Client error: '}{clientEval.text}
+            </span>
+          ) : null}
         </div>
         
         {/* Result area */}

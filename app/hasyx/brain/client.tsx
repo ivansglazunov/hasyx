@@ -113,12 +113,22 @@ export default function Client() {
     options.forEach((option: any) => {
       if ((option.key === 'brain_ask' || option.key === 'brain_formula') && option.item_options) {
         // Look for brain_name in item_options
+        let localName: string | undefined;
+        let localResult: string | undefined;
         option.item_options.forEach((childOption: any) => {
           if (childOption.key === 'brain_name' && childOption.string_value) {
+            localName = childOption.string_value;
             names[childOption.string_value] = option.id;
-            console.log(`[Brain Analysis] Found brain_name "${childOption.string_value}" for ${option.key} ${option.id}`);
+          }
+          if (childOption.key === 'brain_string' && typeof childOption.string_value === 'string') {
+            localResult = childOption.string_value;
           }
         });
+        // If both name and a brain_string result are present, bind name -> result
+        if (localName) {
+          // Store into available map later
+          (option as any).__brain_value = localResult;
+        }
       }
     });
 
@@ -154,9 +164,21 @@ export default function Client() {
       hipotetics: hipotetics.length
     });
 
-    const availableNames = Object.keys(names).sort();
-    // push to zustand store
-    setAvailableNames(availableNames);
+    // Build map name -> brain_string value (if available)
+    const availableMap: Record<string, string | undefined> = {};
+    options.forEach((option: any) => {
+      if ((option.key === 'brain_ask' || option.key === 'brain_formula') && option.item_options) {
+        let localName: string | undefined;
+        let localResult: string | undefined;
+        option.item_options.forEach((childOption: any) => {
+          if (childOption.key === 'brain_name' && childOption.string_value) localName = childOption.string_value;
+          if (childOption.key === 'brain_string' && typeof childOption.string_value === 'string') localResult = childOption.string_value;
+        });
+        if (localName) availableMap[localName] = localResult;
+      }
+    });
+    // push to zustand store as a map
+    setAvailableNames(availableMap);
     return { names, used, hipotetics };
   }, [options, setAvailableNames]);
 
