@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 
 type BrainContextState = {
-  // Map: brain_name -> string_value of its brain_string result (if any)
-  availableNames: Record<string, string | undefined>;
-  setAvailableNames: (names: Record<string, string | undefined>) => void;
+  // Map: brain_name -> full brain_string option object (if any)
+  // Expected fields at least: id, item_id, string_value, user_id, updated_at
+  availableNames: Record<string, any>;
+  setAvailableNames: (names: Record<string, any>) => void;
 };
 
 export const useBrainContextStore = create<BrainContextState>((set) => ({

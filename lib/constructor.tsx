@@ -1544,7 +1544,7 @@ export default function Constructor({ serverSession, sidebarData, schema = hasyx
         value={constructorState}
         onChange={setConstructorState}
         defaultTable="users"
-        schema={hasyxSchema}
+        schema={schema}
       />
     </SidebarLayout>
   );

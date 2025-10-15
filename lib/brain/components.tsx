@@ -245,6 +245,7 @@ export function BrainAskComponent({
   const [isSaving, setIsSaving] = useState(false);
   const [localUpdatedAt, setLocalUpdatedAt] = useState<number | null>(null);
   const hasyx = useHasyx();
+  const availableNames = useBrainContextStore(s => s.availableNames);
 
   // brain_name editor
   const nameOption = data.item_options?.find((opt: any) => opt.key === 'brain_name');
@@ -328,6 +329,8 @@ export function BrainAskComponent({
     resultState = 'loading';
   }
 
+  console.log('[availableNames]', availableNames);
+
   return (
     <BrainOptionWrapper className={className} data={data} headerContent={headerContent}>
       <div className="bg-card w-[300px]">
@@ -346,7 +349,7 @@ export function BrainAskComponent({
           />
           <ActionButtons onDelete={onDelete} onSave={onSave ? handleSave : undefined} isSaving={isSaving} />
         </div>
-        
+        {/* Edges are rendered globally in the brain client */}
         {/* Result area */}
         <div className="p-2 bg-muted/30">
           <div className="bg-muted rounded-md p-3 min-h-[60px] relative">
@@ -685,7 +688,9 @@ export function BrainFormulaComponent({
         // Build scope from availableNames map
         const scope: Record<string, any> = {};
         if (availableNames && typeof availableNames === 'object') {
-          for (const [k, raw] of Object.entries(availableNames as Record<string, string | undefined>)) {
+          for (const [k, obj] of Object.entries(availableNames as Record<string, any>)) {
+            if (!obj) continue;
+            const raw = obj?.string_value as string | undefined;
             if (raw == null) continue;
             const num = Number(raw);
             scope[k] = Number.isFinite(num) ? num : raw;
@@ -743,12 +748,12 @@ export function BrainFormulaComponent({
         <div className="px-2 pt-1 text-[11px] text-muted-foreground space-y-0.5">
           <div className="flex flex-col gap-0.5">
             <div className="opacity-70">Available:</div>
-            {availableNames && Object.keys(availableNames as Record<string, string | undefined>).length > 0 ? (
+            {availableNames && Object.keys(availableNames as Record<string, any>).length > 0 ? (
               <div className="flex flex-col gap-0.5 max-h-28 overflow-auto">
-                {Object.entries(availableNames as Record<string, string | undefined>).map(([name, val]) => (
+                {Object.entries(availableNames as Record<string, any>).map(([name, obj]) => (
                   <div key={name} className="text-[11px]">
                     <span className="px-1 py-0.5 bg-muted rounded border border-dashed text-foreground/70 mr-1">{name}</span>
-                    <span className="text-foreground/80">{val ?? '—'}</span>
+                    <span className="text-foreground/80">{obj?.string_value ?? '—'}</span>
                   </div>
                 ))}
               </div>

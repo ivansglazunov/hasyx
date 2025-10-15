@@ -14,9 +14,14 @@ interface ClientLayoutProps {
   messages: any;
   children: React.ReactNode;
   defaultTheme?: string;
+  pwa?: boolean;
+  eruda?: boolean;
 }
 
-export function ClientLayout({ defaultLocale, schema, messages, children, defaultTheme }: ClientLayoutProps) {
+export function ClientLayout({
+  defaultLocale, schema, messages, children, defaultTheme,
+  pwa = false, eruda = false,
+}: ClientLayoutProps) {
   const { locale, setLocale } = useLocaleClient(defaultLocale);
   const generate = useMemo(() => {
     return Generator(schema);
@@ -27,9 +32,13 @@ export function ClientLayout({ defaultLocale, schema, messages, children, defaul
       <NextIntlClientProvider locale={locale} messages={messages} timeZone="UTC">
         {children}
         {/* PWA Components - must be inside NextIntl provider to use translations */}
-        <PWAInstallPrompt />
-        <PWAStatus />
-        <Eruda />
+        {!!pwa && <>
+          <PWAInstallPrompt />
+          <PWAStatus />
+        </>}
+        {!!eruda && <>
+          <Eruda />
+        </>}
       </NextIntlClientProvider>
     </HasyxProvider>
   );

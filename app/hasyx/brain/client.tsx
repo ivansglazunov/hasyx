@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useEffect } from 'react';
-import { Cyto, CytoStyle } from 'hasyx/lib/cyto';
+import { Cyto, CytoStyle, CytoEdge } from 'hasyx/lib/cyto';
 import { useSubscription, useHasyx } from 'hasyx';
 import { CytoNode as OptionCytoNode } from 'hasyx/components/entities/options';
 import { toast } from 'sonner';
@@ -62,12 +62,14 @@ export default function Client() {
       'created_at', 
       'updated_at',
       // Include result options (brain_string) that point to this option via item_id
-      { item_options: ['id', 'key', 'string_value', 'number_value', 'jsonb_value', 'created_at', 'updated_at'] }
+      { item_options: ['id', 'item_id', 'key', 'string_value', 'number_value', 'jsonb_value', 'created_at', 'updated_at'] }
     ],
   }), []);
 
   const { data: options = [], loading, error } = useSubscription(subscriptionOptions);
   const setAvailableNames = useBrainContextStore(s => s.setAvailableNames);
+  
+  const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   
   // Debug: log subscription query on mount
   useEffect(() => {
@@ -164,23 +166,61 @@ export default function Client() {
       hipotetics: hipotetics.length
     });
 
-    // Build map name -> brain_string value (if available)
-    const availableMap: Record<string, string | undefined> = {};
+  // Build map name -> full brain_string option (if available)
+  const availableMap: Record<string, any> = {};
     options.forEach((option: any) => {
       if ((option.key === 'brain_ask' || option.key === 'brain_formula') && option.item_options) {
         let localName: string | undefined;
-        let localResult: string | undefined;
+      let localResult: any | undefined;
         option.item_options.forEach((childOption: any) => {
           if (childOption.key === 'brain_name' && childOption.string_value) localName = childOption.string_value;
-          if (childOption.key === 'brain_string' && typeof childOption.string_value === 'string') localResult = childOption.string_value;
+        if (childOption.key === 'brain_string') localResult = childOption;
         });
-        if (localName) availableMap[localName] = localResult;
+      if (localName && localResult) availableMap[localName] = localResult;
       }
     });
     // push to zustand store as a map
     setAvailableNames(availableMap);
     return { names, used, hipotetics };
   }, [options, setAvailableNames]);
+
+  // Build name -> brain_ask/formula option map
+  const namedOptions = useMemo(() => {
+    const map: Record<string, any> = {};
+    options.forEach((option: any) => {
+      if ((option.key === 'brain_ask' || option.key === 'brain_formula') && option.item_options) {
+        const nameOpt = option.item_options.find((o: any) => o.key === 'brain_name' && o.string_value);
+        if (nameOpt?.string_value) {
+          map[nameOpt.string_value] = option;
+        }
+      }
+    });
+    return map;
+  }, [options]);
+
+  // Derive edges: for each brain_ask/formula, scan its text for whole-word matches of any name in namedOptions
+  const edges = useMemo(() => {
+    const out: Array<{ id: string; source: string; target: string } > = [];
+    const names = Object.keys(namedOptions);
+    if (names.length === 0) return out;
+
+    options.forEach((current: any) => {
+      if (!(current.key === 'brain_ask' || current.key === 'brain_formula')) return;
+      const expr = String(current?.string_value || '');
+      if (!expr) return;
+      names.forEach((name) => {
+        const target = namedOptions[name];
+        if (!target || !target.id || target.id === current.id) return;
+        // word-boundary-like check: name must appear as a standalone token (underscore counts as word char)
+        const re = new RegExp(`(^|[^A-Za-z0-9_])${escapeRegExp(name)}([^A-Za-z0-9_]|$)`);
+        if (re.test(expr)) {
+          const edgeId = `edge-${current.id}-${target.id}-${name}`;
+          out.push({ id: edgeId, source: current.id, target: target.id });
+        }
+      });
+    });
+    return out;
+  }, [options, namedOptions]);
 
   // Debug: log options data and check item_options
   useEffect(() => {
@@ -280,6 +320,11 @@ export default function Client() {
             key={option.id}
             data={option}
           />
+        ))}
+
+        {/* Render derived edges for references found in text */}
+        {edges.map(e => (
+          <CytoEdge key={e.id} element={{ id: e.id, data: { id: e.id, source: e.source, target: e.target } }} />
         ))}
       </Cyto>
 
