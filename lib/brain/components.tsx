@@ -6,7 +6,7 @@ import { Button } from 'hasyx/components/ui/button';
 import { Check, Loader2, Trash2, ChevronDown } from 'lucide-react';
 import { cn } from 'hasyx/lib/utils';
 import { z } from 'zod';
-import { options as schemaOptions } from '@/schema';
+import { options as schemaOptions } from 'hasyx/schema';
 import { HasyxConstructorButton } from 'hasyx/lib/constructor';
 import { useHasyx } from 'hasyx';
 import { useDebounceCallback } from '@react-hook/debounce';
