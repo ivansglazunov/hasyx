@@ -1373,14 +1373,19 @@ vscode:
   debug('Finished "init" command.');
 };
 
-export const devCommand = () => {
+export const devCommand = async () => {
   debug('Executing "dev" command.');
   const cwd = process.cwd();
-  
-  // Documentation generation removed
-  
-  console.log('🚀 Starting development server (using next dev --turbopack)...');
-  const devArgs = ['next', 'dev', '--turbopack'];
+
+  // Run unbuild first (equivalent to npm run unbuild)
+  console.log('🧹 Running unbuild...');
+  await unbuildCommand();
+
+  // Load .env file using dotenv
+  dotenv.config({ path: path.join(cwd, '.env') });
+
+  console.log('🚀 Starting development server...');
+  const devArgs = ['next', 'dev'];
   const portEnv = process.env.PORT || process.env.NEXT_PORT || process.env.APP_PORT;
   if (portEnv) {
     devArgs.push('-p', String(portEnv));
@@ -1389,9 +1394,13 @@ export const devCommand = () => {
   const result = spawn.sync('npx', devArgs, {
     stdio: 'inherit',
     cwd: cwd,
-    env: { ...process.env, PORT: portEnv || process.env.PORT },
+    env: {
+      ...process.env,
+      PORT: portEnv || process.env.PORT,
+      NODE_OPTIONS: '--experimental-vm-modules --require dotenv/config'
+    },
   });
-  debug('next dev --turbopack result:', JSON.stringify(result, null, 2));
+  debug('next dev result:', JSON.stringify(result, null, 2));
   if (result.error) {
     console.error('❌ Failed to start development server:', result.error);
     debug(`next dev failed to start: ${result.error}`);
@@ -1408,17 +1417,61 @@ export const devCommand = () => {
 export const buildCommand = () => {
   debug('Executing "build" command.');
   const cwd = process.cwd();
-  ensureWebSocketSupport(cwd);
-  
-  // Documentation generation removed
-  
-  console.log('🏗️ Building Next.js application...');
-  debug(`Running command: npx next build --turbopack in ${cwd}`);
-  const result = spawn.sync('npx', ['next', 'build', '--turbopack'], {
+
+  // Step 1: Build library files (npm run build:lib)
+  console.log('📚 Building library files...');
+  debug('Running command: npx tsc -p tsconfig.lib.json');
+  const buildLibResult = spawn.sync('npx', ['tsc', '-p', 'tsconfig.lib.json'], {
     stdio: 'inherit',
     cwd: cwd,
   });
-  debug('next build --turbopack result:', JSON.stringify(result, null, 2));
+  if (buildLibResult.error) {
+    console.error('❌ Library build failed:', buildLibResult.error);
+    debug(`tsc build failed to start: ${buildLibResult.error}`);
+    process.exit(1);
+  }
+  if (buildLibResult.status !== 0) {
+    console.error(`❌ Library build process exited with status ${buildLibResult.status}`);
+    debug(`tsc build exited with non-zero status: ${buildLibResult.status}`);
+    process.exit(buildLibResult.status ?? 1);
+  }
+  console.log('✅ Library build complete!');
+
+  // Step 2: Build templates (npm run build:templates)
+  console.log('📦 Building templates...');
+  debug('Running command: npx tsx lib/build-templates.ts');
+  const buildTemplatesResult = spawn.sync('npx', ['tsx', 'lib/build-templates.ts'], {
+    stdio: 'inherit',
+    cwd: cwd,
+  });
+  if (buildTemplatesResult.error) {
+    console.error('❌ Templates build failed:', buildTemplatesResult.error);
+    debug(`templates build failed to start: ${buildTemplatesResult.error}`);
+    process.exit(1);
+  }
+  if (buildTemplatesResult.status !== 0) {
+    console.error(`❌ Templates build process exited with status ${buildTemplatesResult.status}`);
+    debug(`templates build exited with non-zero status: ${buildTemplatesResult.status}`);
+    process.exit(buildTemplatesResult.status ?? 1);
+  }
+  console.log('✅ Templates build complete!');
+
+  // Step 3: Apply WebSocket patch (npm run ws)
+  ensureWebSocketSupport(cwd);
+
+  // Step 4: Build Next.js application
+  console.log('🏗️ Building Next.js application...');
+  debug(`Running command: npx next build in ${cwd}`);
+  const result = spawn.sync('npx', ['next', 'build'], {
+    stdio: 'inherit',
+    cwd: cwd,
+    env: {
+      ...process.env,
+      NODE_ENV: 'production',
+      NODE_OPTIONS: '--experimental-vm-modules --require dotenv/config'
+    },
+  });
+  debug('next build result:', JSON.stringify(result, null, 2));
    if (result.error) {
     console.error('❌ Build failed:', result.error);
     debug(`next build failed to start: ${result.error}`);
@@ -2301,7 +2354,9 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
   });
 
   // Dev command
-  devCommandDescribe(program.command('dev')).action(devCommand);
+  devCommandDescribe(program.command('dev')).action(async () => {
+    await devCommand();
+  });
 
   // Build command
   buildCommandDescribe(program.command('build')).action(buildCommand);
