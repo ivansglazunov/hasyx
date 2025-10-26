@@ -2227,7 +2227,10 @@ export const logsStatesCommandDescribe = (cmd: Command) => {
 };
 
 export const envCommandDescribe = (cmd: Command) => {
-  return cmd.description('Update environment variables in docker-compose.yml and restart running container if needed');
+  return cmd
+    .description('Manage environment variables using hasyx.config.json - switch between local, dev, prod environments')
+    .option('-l, --list', 'List all available environments and their variables')
+    .option('--docker-sync', 'Legacy: sync .env to docker-compose.yml (deprecated)');
 };
 
 export const dockerCommandDescribe = (cmd: Command) => {
@@ -2395,16 +2398,33 @@ export const setupCommands = (program: Command, packageName: string = 'hasyx') =
   });
 
   // Env command
-  envCommandDescribe(program.command('env')).action(async () => {
+  envCommandDescribe(program.command('env')).action(async (options: { list?: boolean; dockerSync?: boolean }) => {
     console.log('🚀 CLI: Starting env command...');
     try {
-      await envCommand();
-      console.log('✅ CLI: Env command completed successfully');
+      if (options.dockerSync) {
+        // Legacy docker-compose sync
+        await envCommand();
+        console.log('✅ CLI: Docker sync completed successfully');
+      } else {
+        // New hasyx.config.json based env management
+        const { envManagerCommand } = await import('./env-manager');
+        await envManagerCommand({ list: options.list });
+        console.log('✅ CLI: Env command completed successfully');
+      }
     } catch (error) {
       console.error('❌ CLI: Env command failed:', error);
       process.exit(1);
     }
   });
+
+  // Assist command - interactive env variable management
+  program
+    .command('assist')
+    .description('Interactive assistant for managing environment variables in hasyx.config.json')
+    .action(async () => {
+      const { assistCommand } = await import('./env-assist');
+      await assistCommand();
+    });
 
   // Config command
   program
