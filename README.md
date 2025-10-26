@@ -177,6 +177,7 @@ Explore the different modules and functionalities of Hasyx:
 *   **[USE-QUERY.md](USE-QUERY.md):** Complete guide to URL query state management with the `use-query` hook for synchronizing state between multiple components through URL parameters.
 *   **[FILES.md](FILES.md):** Complete guide to Hasyx Files Storage system with S3-compatible storage, file upload/download, metadata management, and REST API integration.
 *   **[PLV8.md](PLV8.md):** Complete guide to plv8 (PostgreSQL JavaScript) extension support for creating JavaScript functions and triggers in PostgreSQL with cross-platform compatibility.
+*   **[VALIDATION.md](VALIDATION.md):** Database-level validation system using plv8 + Zod. Enforce TypeScript schemas at the PostgreSQL level with automatic JSON Schema conversion, Options system validation, and permission rules.
 *   **[FASTLANE.md](FASTLANE.md):** Complete guide to Fastlane integration for automated mobile app building, signing, and deployment with CI/CD integration.
 *   **[GEO.md](GEO.md):** PostGIS-powered geospatial layer (schema `geo`, `features` table, spatial helpers, permissions) with Hasyx client usage examples.
 
@@ -727,11 +728,87 @@ Synchronize Hasura event triggers with local definitions
 - Option: `--init` - Create default event trigger definitions
 - Option: `--clean` - Remove security headers from event definitions (they will be added automatically during sync)
 
-The CLI automatically loads environment variables from the `.env` file in your project root. This ensures that commands like `npx hasyx events`
+The CLI automatically loads environment variables from the `.env` file in your project root. This ensures that commands like `npx hasyx events` work correctly.
+
+```bash
+npx hasyx events
+```
 
 ---
 
- 
+### `validation`
+
+**Database-Level Validation with plv8 + Zod**
+
+Comprehensive validation system that enforces Zod schemas at the database level using PostgreSQL plv8 functions. This ensures data integrity regardless of how data is inserted (GraphQL, SQL, external tools).
+
+```bash
+# Sync Zod schemas to database and apply all validation rules
+npx hasyx validation sync
+
+# Remove all validation triggers (deprecated commands)
+npx hasyx validation undefine
+npx hasyx validation define  # deprecated, use 'sync' instead
+```
+
+**🎯 What it does:**
+
+The `validation sync` command performs a full validation setup:
+1. **Converts Zod schemas to JSON Schema** - Reads schemas from `schema.tsx` and `lib/config.tsx`
+2. **Syncs to database** - Creates/updates `validation.project_schemas()` plv8 function
+3. **Creates validation runtime** - Installs plv8 validation functions (`validate_json`, `validate_column`)
+4. **Sets up options triggers** - Creates triggers for the Options system validation
+5. **Applies validation rules** - Reads `hasyx.config.json` and creates triggers for configured rules
+
+**✨ Features:**
+- **Database-Level Enforcement:** Validation runs in PostgreSQL triggers before insert/update
+- **Zod Integration:** Use familiar Zod schemas from your TypeScript code
+- **JSON Schema Generation:** Automatic conversion using Zod 4's built-in `toJSONSchema`
+- **Options System:** Built-in validation for the Options table with key/value checks
+- **Permission Rules:** Optional permission checks with placeholders (`${USER_ID}`, `${ITEM_ID}`, etc.)
+- **Column Validation:** Validate specific columns against Zod schemas
+- **Idempotent:** Safe to run multiple times
+
+**📋 Configuration:**
+
+Define validation rules in `hasyx.config.json`:
+
+```json
+{
+  "validationRules": {
+    "user-email": {
+      "schema": "public",
+      "table": "users",
+      "column": "email",
+      "validate": "schema.email"
+    }
+  }
+}
+```
+
+**Example Workflow:**
+
+```bash
+# 1. Define Zod schemas in schema.tsx
+# export const schema = {
+#   email: z.object({ email: z.string().email() })
+# }
+
+# 2. Sync validation to database
+npx hasyx validation sync
+
+# 3. Try to insert invalid data - will be rejected at DB level!
+```
+
+**📖 See [VALIDATION.md](VALIDATION.md) for complete documentation** including:
+- How to write Zod schemas for validation
+- Options table validation setup
+- Permission rules with placeholders
+- Troubleshooting validation errors
+
+---
+
+
 
 **Interactive Project Configuration Assistant**
 
