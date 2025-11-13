@@ -800,6 +800,204 @@ export function Form({ schema, onSubmit, initialData = {}, parentConfig }: FormP
 
 
 
+// Компонент для редактирования key-value пар (для extraEnv)
+function KeyValueEditor({ 
+  config, 
+  onConfig, 
+  onBack, 
+  title, 
+  description 
+}: { 
+  config: Record<string, string>; 
+  onConfig: (newConfig: Record<string, string>) => void; 
+  onBack: () => void;
+  title?: string;
+  description?: string;
+}) {
+  const [pairs, setPairs] = useState<Array<{ key: string; value: string }>>(() => {
+    return Object.entries(config).map(([key, value]) => ({ key, value }));
+  });
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [newKey, setNewKey] = useState('');
+  const [newValue, setNewValue] = useState('');
+  const [mode, setMode] = useState<'list' | 'add' | 'edit'>('list');
+  const [addField, setAddField] = useState<'key' | 'value'>('key');
+  const [tempKey, setTempKey] = useState('');
+  const [tempValue, setTempValue] = useState('');
+
+  // Синхронизируем pairs с config при изменении config извне
+  // Но только если мы не в режиме редактирования/добавления, чтобы не потерять изменения
+  useEffect(() => {
+    if (mode === 'list') {
+      const newPairs = Object.entries(config).map(([key, value]) => ({ key, value }));
+      setPairs(newPairs);
+    }
+  }, [config, mode]);
+
+  useInput((input, key) => {
+    if (key.escape) {
+      if (mode === 'add' || mode === 'edit') {
+        setMode('list');
+        setNewKey('');
+        setNewValue('');
+        setTempKey('');
+        setTempValue('');
+        setAddField('key');
+        setEditingIndex(null);
+      } else {
+        onBack();
+      }
+    }
+  });
+
+  const savePairs = (updatedPairs: Array<{ key: string; value: string }>) => {
+    const newConfig: Record<string, string> = {};
+    updatedPairs.forEach(({ key, value }) => {
+      if (key.trim()) {
+        newConfig[key.trim()] = value;
+      }
+    });
+    onConfig(newConfig);
+    setPairs(updatedPairs);
+  };
+
+  if (mode === 'add') {
+    if (addField === 'key') {
+      return (
+        <Box flexDirection="column" gap={1}>
+          <Text color="cyan">{title || 'Extra Environment Variables'}</Text>
+          {description && <Text color="gray">{description}</Text>}
+          <Text color="yellow">Adding new variable (Escape to cancel)</Text>
+          <Text color="cyan">Variable name:</Text>
+          <TextInput
+            key={`add-key-input`}
+            defaultValue={tempKey}
+            onChange={setTempKey}
+            onSubmit={(value) => {
+              if (value.trim()) {
+                setNewKey(value.trim());
+                setTempKey(value.trim());
+                setAddField('value');
+              }
+            }}
+            placeholder="e.g., ANTHROPIC_API_KEY"
+          />
+          <Text color="gray">Press Enter to continue to value field</Text>
+        </Box>
+      );
+    }
+
+    return (
+      <Box flexDirection="column" gap={1}>
+        <Text color="cyan">{title || 'Extra Environment Variables'}</Text>
+        <Text color="yellow">Adding: {tempKey} (Escape to cancel)</Text>
+        <Text color="cyan">Variable value:</Text>
+        <TextInput
+          key={`add-value-input`}
+          defaultValue={tempValue}
+          onChange={setTempValue}
+          onSubmit={(value) => {
+            if (tempKey.trim()) {
+              // Убеждаемся, что мы добавляем к текущим pairs, а не перезаписываем
+              const currentPairs = pairs.length > 0 ? pairs : Object.entries(config).map(([key, val]) => ({ key, value: val }));
+              const updated = [...currentPairs, { key: tempKey.trim(), value: value || '' }];
+              savePairs(updated);
+              setNewKey('');
+              setNewValue('');
+              setTempKey('');
+              setTempValue('');
+              setAddField('key');
+              setMode('list');
+            }
+          }}
+          placeholder="Enter value"
+        />
+        <Text color="gray">Press Enter to save</Text>
+      </Box>
+    );
+  }
+
+  if (mode === 'edit' && editingIndex !== null) {
+    const pair = pairs[editingIndex];
+    return (
+      <Box flexDirection="column" gap={1}>
+        <Text color="cyan">{title || 'Extra Environment Variables'}</Text>
+        <Text color="yellow">Editing: {pair.key} (Escape to cancel)</Text>
+        <Text color="cyan">Variable name:</Text>
+        <TextInput
+          key={`edit-key-${editingIndex}`}
+          defaultValue={newKey}
+          onChange={setNewKey}
+          placeholder={pair.key}
+        />
+        <Text color="cyan">Variable value:</Text>
+        <TextInput
+          key={`edit-value-${editingIndex}`}
+          defaultValue={newValue}
+          onChange={setNewValue}
+          onSubmit={() => {
+            const updated = [...pairs];
+            updated[editingIndex] = { key: newKey.trim() || pair.key, value: newValue };
+            savePairs(updated);
+            setEditingIndex(null);
+            setNewKey('');
+            setNewValue('');
+            setMode('list');
+          }}
+          placeholder={pair.value}
+        />
+      </Box>
+    );
+  }
+
+  const options = [
+    { label: '< back', value: 'back' },
+    ...pairs.map((pair, index) => ({ 
+      label: `${pair.key}=${pair.value.length > 30 ? pair.value.substring(0, 30) + '...' : pair.value}`, 
+      value: `edit-${index}` 
+    })),
+    ...(pairs.length > 0 ? pairs.map((pair, index) => ({ 
+      label: `🗑️  delete ${pair.key}`, 
+      value: `delete-${index}` 
+    })) : []),
+    { label: '+ add variable', value: 'add' }
+  ];
+
+  return (
+    <Box flexDirection="column" gap={1}>
+      <Text color="cyan">{title || 'Extra Environment Variables'}</Text>
+      {description && <Text color="gray">{description}</Text>}
+      <Text color="gray">Variables: {pairs.length}</Text>
+      <Select
+        options={options}
+        onChange={(value) => {
+          if (value === 'back') {
+            onBack();
+          } else if (value === 'add') {
+            setNewKey('');
+            setNewValue('');
+            setTempKey('');
+            setTempValue('');
+            setAddField('key');
+            setMode('add');
+          } else if (value.startsWith('edit-')) {
+            const index = parseInt(value.split('-')[1]);
+            const pair = pairs[index];
+            setEditingIndex(index);
+            setNewKey(pair.key);
+            setNewValue(pair.value);
+            setMode('edit');
+          } else if (value.startsWith('delete-')) {
+            const index = parseInt(value.split('-')[1]);
+            const updated = pairs.filter((_, i) => i !== index);
+            savePairs(updated);
+          }
+        }}
+      />
+    </Box>
+  );
+}
+
 // Универсальный компонент для добавления нового ключа
 function AddNewKey({ schema, defaultKeys, onAdd, onBack }: { 
   schema: z.ZodSchema; 
@@ -977,6 +1175,25 @@ function KeysList({
             fullConfig={fullConfig || config}
           />
         </Box>
+      );
+    }
+    
+    // Специальная обработка для extra-env-config (key-value pairs)
+    const extraEnvSchemaMeta = (addSchema as any).meta ? (addSchema as any).meta() : {};
+    if (extraEnvSchemaMeta.type === 'extra-env-config') {
+      return (
+        <KeyValueEditor
+          key={`keyvalue-${selectedKey}`}
+          config={config[selectedKey] || {}}
+          onConfig={(newKeyValuePairs) => {
+            const updatedConfig = { ...config, [selectedKey]: newKeyValuePairs };
+            onConfig(updatedConfig);
+            setSelectedKey(null);
+          }}
+          onBack={() => setSelectedKey(null)}
+          title={extraEnvSchemaMeta.title || 'Extra Environment Variables'}
+          description={extraEnvSchemaMeta.description}
+        />
       );
     }
     

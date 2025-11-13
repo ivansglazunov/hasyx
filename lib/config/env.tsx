@@ -28,7 +28,7 @@ function resolveVariant(variant: string, config: any) {
     'googleOAuth', 'yandexOAuth', 'githubOAuth', 'facebookOAuth', 'vkOAuth', 'telegramLoginOAuth',
     'storage', 'files', 'pg', 'docker', 'dockerhub', 'github', 'resend', 'smsru', 'smsaero', 'openrouter', 'npm', 'firebase', 'firebasePublic',
     'nextAuthSecrets', 'dns', 'cloudflare', 'projectUser', 'vercel', 'githubWebhooks', 'githubTelegramBot',
-    'testing',
+    'testing', 'extraEnv',
   ];
 
   for (const configType of optionalConfigs) {
@@ -252,6 +252,16 @@ function generateEnvFile(config: any, variant: string): string {
   const hostConfig = resolvedConfig.host;
   if (hostConfig) {
     // Больше не дублируем NEXT_PUBLIC_JWT_AUTH здесь – оно придёт из envMapping с учётом numericBoolean
+  }
+
+  // Добавляем произвольные переменные окружения из extraEnv
+  const extraEnvConfig = resolvedConfig.extraEnv;
+  if (extraEnvConfig && typeof extraEnvConfig === 'object') {
+    for (const [envKey, envValue] of Object.entries(extraEnvConfig)) {
+      if (envValue !== undefined && envValue !== null && envValue !== '') {
+        envVars.push(`${envKey}=${envValue}`);
+      }
+    }
   }
 
   return envVars.join('\n');

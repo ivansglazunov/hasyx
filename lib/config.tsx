@@ -657,6 +657,17 @@ hasyxConfig.variant = z.object({
     backLabel: '< back',
     descriptionTemplate: (_data: any) => 'token'
   }),
+  // Extra environment variables
+  extraEnv: z.string().optional().meta({
+    type: 'reference-selector',
+    data: 'extraEnv',
+    referenceKey: 'extraEnv',
+    title: 'Extra Environment Variables',
+    description: 'Select extra environment variables configuration (optional). Use this to add custom variables not covered by other configs.',
+    emptyMessage: 'No extra environment variables configurations available. Create one first.',
+    backLabel: '< back',
+    descriptionTemplate: (_data: any) => 'Custom env variables'
+  }),
 }).meta({
   type: 'variant-editor',
   title: 'Variant Configuration',
@@ -665,7 +676,7 @@ hasyxConfig.variant = z.object({
     'host', 'hasura', 'files', 'telegramBot', 'telegramChannel', 'environment', 'testing',
     'googleOAuth', 'yandexOAuth', 'githubOAuth', 'facebookOAuth', 'vkOAuth', 'telegramLoginOAuth', 'nextAuthSecrets',
     'storage', 'pg', 'docker', 'dockerhub', 'github', 'vercel', 'iosSigning', 'githubTelegramBot',
-    'resend', 'smsProvider', 'openrouter', 'npm', 'firebase', 'firebasePublic', 'dns', 'cloudflare', 'projectUser', 'githubWebhooks'
+    'resend', 'smsProvider', 'openrouter', 'npm', 'firebase', 'firebasePublic', 'dns', 'cloudflare', 'projectUser', 'githubWebhooks', 'extraEnv'
   ]
 });
 
@@ -1274,6 +1285,27 @@ hasyxConfig.nextAuthSecretsList = nextAuthSecretsList;
     },
   });
 
+  // Extra Environment Variables Schema
+  hasyxConfig.extraEnv = z.record(
+    z.string(),
+    z.string()
+  ).meta({
+    type: 'extra-env-config',
+    title: 'Extra Environment Variables',
+    description: 'Add custom environment variables that are not covered by other configurations. Each key-value pair will be added to .env file as-is. Example: { "ANTHROPIC_API_KEY": "sk-...", "MY_CUSTOM_VAR": "value" }',
+  });
+
+  hasyxConfig.extraEnvs = z.record(
+    z.string(), // extraEnv configuration name
+    hasyxConfig.extraEnv,
+  ).meta({
+    data: 'extraEnv',
+    type: 'keys',
+    default: ['local', 'dev', 'prod'],
+    add: hasyxConfig.extraEnv,
+    descriptionTemplate: (_data: any) => 'Custom environment variables'
+  });
+
   // Testing Schema (for test-data tokens)
   hasyxConfig.testing = z.object({
     token: z
@@ -1747,6 +1779,7 @@ hasyxConfig.file = z.object({
   testing: hasyxConfig.testings,
   global: hasyxConfig.global,
   invites: hasyxConfig.invitesList,
+  extraEnv: hasyxConfig.extraEnvs, // Extra environment variables
   // validation rules (optional, alternative to top-level array "validation")
   validationRules: hasyxConfig.validationRules,
 });
