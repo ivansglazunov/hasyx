@@ -142,7 +142,7 @@
     "@vercel/analytics": "1.5.0",
     "aframe": "1.7.1",
     "aframe-react": "4.4.0",
-    "ai": "4.3.16",
+    "ai": "5.0.65",
     "axios": "1.8.4",
     "babel-jest": "29.7.0",
     "bcrypt": "5.1.1",
