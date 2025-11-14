@@ -861,3 +861,132 @@ When engines are disabled:
 - The corresponding context is not added to the system prompt
 - Execution attempts return an error message
 - The AI receives appropriate context about available capabilities
+
+## Universal Tool Wrapper (AskTool)
+
+The `AskTool` class provides a universal wrapper that makes any Tool callable through a simple `ask()` interface. It abstracts away the complexity of Dialog, Tooler, and Provider configuration.
+
+### Basic Usage
+
+```typescript
+import { AskTool } from 'hasyx/lib/ai/ask-tool';
+import { ExecJSTool } from 'hasyx/lib/ai/tools/exec-js-tool';
+import { OpenRouterProvider } from 'hasyx/lib/ai/providers/openrouter';
+
+// Create provider
+const provider = new OpenRouterProvider({
+  token: process.env.OPENROUTER_API_KEY,
+  model: 'deepseek/deepseek-chat-v3-0324:free'
+});
+
+// Wrap a tool with AskTool
+const askJS = new AskTool({
+  tool: new ExecJSTool(),
+  provider
+});
+
+// Execute through simple ask interface
+const result = await askJS.ask('Calculate 42 * 137');
+console.log(result.result); // 5754
+```
+
+### AskToolRegistry
+
+For managing multiple tools, use `AskToolRegistry`:
+
+```typescript
+import { AskToolRegistry } from 'hasyx/lib/ai/ask-tool';
+import { ExecJSTool } from 'hasyx/lib/ai/tools/exec-js-tool';
+import { TerminalTool } from 'hasyx/lib/ai/tools/terminal-tool';
+
+// Create registry
+const registry = new AskToolRegistry(provider);
+
+// Register multiple tools
+registry.register(new ExecJSTool());
+registry.register(new TerminalTool());
+
+// Execute on specific tool by name
+const result = await registry.ask('javascript', 'Calculate factorial of 5');
+console.log(result.result); // 120
+
+// List available tools
+const tools = registry.list();
+tools.forEach(tool => {
+  console.log(`${tool.name}: ${tool.description}`);
+});
+```
+
+### Creating Custom Tools
+
+You can create custom tools and wrap them with AskTool:
+
+```typescript
+import { Tool, ToolResult } from 'hasyx/lib/ai/tool';
+import { AskTool } from 'hasyx/lib/ai/ask-tool';
+
+// Define custom tool
+class MathTool extends Tool {
+  constructor() {
+    super({
+      name: 'math',
+      contextPreprompt: 'Perform mathematical operations'
+    });
+  }
+
+  async execute(command: string, content: string): Promise<ToolResult> {
+    // Implement your tool logic
+    const result = eval(content);
+    return { id: 'not_used', result };
+  }
+}
+
+// Wrap with AskTool
+const askMath = new AskTool({
+  tool: new MathTool(),
+  provider
+});
+
+// Use it
+const result = await askMath.ask('Calculate mean of: 10, 20, 30, 40, 50');
+```
+
+### Features
+
+- **Simple Interface**: No need to manage Dialog, Tooler, or complex configuration
+- **Unified API**: Consistent interface across all tools
+- **Event Callbacks**: Optional event monitoring with `onEvent`
+- **Registry Pattern**: Easy management of multiple tools
+- **Type Safety**: Full TypeScript support
+- **Flexible**: Works with any Tool implementation
+
+### Examples
+
+See the `examples/ask-tool/` directory for comprehensive examples:
+- `basic-usage.ts` - Simple AskTool usage
+- `registry-usage.ts` - Managing multiple tools
+- `custom-tool.ts` - Creating custom tools
+
+Run examples:
+```bash
+npx tsx examples/ask-tool/basic-usage.ts
+npx tsx examples/ask-tool/registry-usage.ts
+npx tsx examples/ask-tool/custom-tool.ts
+```
+
+### API Reference
+
+**AskTool Options:**
+- `tool`: The Tool instance to wrap (required)
+- `provider`: AIProvider for generating responses (required)
+- `systemPrompt`: Optional custom system prompt
+- `stream`: Use streaming mode (default: false)
+- `onEvent`: Event callback for monitoring execution
+
+**AskResult:**
+- `result`: The tool execution result
+- `error`: Any error that occurred
+- `conversation`: Full conversation history
+- `events`: Raw dialog events
+
+For more details, see the [AskTool documentation](examples/ask-tool/README.md).
