@@ -8,7 +8,7 @@ import { generateJWT } from '../jwt';
 (!!+(process?.env?.JEST_LOCAL || '') ? describe.skip : describe)('Files API Integration (full cycle)', () => {
   let uploadedFileId: string | undefined;
   let testJwt: string;
-  const apiUrl = process.env.API_URL || 'http://localhost:3004/api/files';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL+'/api/files' || 'http://localhost:3004/api/files';
 
   beforeAll(async () => {
     const testUser = await createTestUser();
