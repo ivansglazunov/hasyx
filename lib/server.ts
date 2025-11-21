@@ -21,6 +21,30 @@ export * from './exec-tsx';
 export * from './terminal';
 export * from './markdown-terminal';
 
+// AI module exports (event-driven LLM interaction system)
+export * from './ai/ai';
+export * from './ai/dialog';
+export * from './ai/dialog-parser';
+export * from './ai/tool';
+export * from './ai/tooler';
+export * from './ai/core-prompts';
+export * from './ai/console';
+export * from './ai/terminal';
+export * from './ai/telegram';
+
+// AI providers
+export * from './ai/providers/ollama';
+export * from './ai/providers/openrouter';
+export * from './ai/providers/api-route';
+
+// AI tools
+export * from './ai/tools/exec-js-tool';
+export * from './ai/tools/exec-tsx-tool';
+export * from './ai/tools/terminal-tool';
+
+// AI handlers
+export * from './ai/handlers/api-dialog';
+
 // Re-export from auth.tsx (now including auth-next.ts indirectly)
 export * from './users/auth';
 
