@@ -194,7 +194,7 @@
     "marked-terminal": "7.3.0",
     "mathjs": "^14.8.2",
     "mock-local-storage": "^1.1.24",
-    "next": "15.3.1",
+    "next": "15.3.6",
     "next-auth": "4.24.11",
     "next-intl": "^4.3.4",
     "next-themes": "0.4.6",
