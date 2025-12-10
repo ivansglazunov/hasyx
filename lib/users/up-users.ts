@@ -221,7 +221,7 @@ export async function applySQLSchema(hasura: Hasura) {
   
   // Define auth_jwt table for JWT authentication
   debug('  🔧 Creating auth_jwt table...');
-  await hasura.createTable({
+  await hasura.defineTable({
     schema: 'public',
     table: 'auth_jwt',
     id: 'id',
@@ -261,7 +261,7 @@ export async function applySQLSchema(hasura: Hasura) {
 
   // Define verification_codes table for OTP flows (email/phone)
   debug('  🔧 Creating verification_codes table...');
-  await hasura.createTable({
+  await hasura.defineTable({
     schema: 'public',
     table: 'verification_codes',
     id: 'id',

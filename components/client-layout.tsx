@@ -7,6 +7,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { Eruda } from "hasyx/lib/eruda";
 import { Generator } from "hasyx";
 import { useMemo } from "react";
+import { isDevelopmentMode } from "hasyx/lib/pwa-dev-utils";
 
 interface ClientLayoutProps {
   defaultLocale: string;
@@ -34,7 +35,7 @@ export function ClientLayout({
         {/* PWA Components - must be inside NextIntl provider to use translations */}
         {!!pwa && <>
           <PWAInstallPrompt />
-          <PWAStatus />
+          {isDevelopmentMode() && <PWAStatus />}
         </>}
         {!!eruda && <>
           <Eruda />

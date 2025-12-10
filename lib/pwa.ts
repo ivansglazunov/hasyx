@@ -144,10 +144,16 @@ export function setupInstallPrompt(): PWAInstallPrompt {
   }
 
   // iOS Safari detection
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  // Modern iPadOS (13+) may report as Mac, so we need to check for touch support
+  const userAgent = navigator.userAgent;
+  const isIPad = /iPad/.test(userAgent) || 
+                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isIPhone = /iPhone/.test(userAgent);
+  const isIPod = /iPod/.test(userAgent);
+  const isIOS = isIPad || isIPhone || isIPod;
   const isStandalone = (window.navigator as any).standalone;
   
-  debug(`Device detection - iOS: ${isIOS}, Standalone: ${isStandalone}, UserAgent: ${navigator.userAgent.substring(0, 100)}`);
+  debug(`Device detection - iOS: ${isIOS}, iPad: ${isIPad}, iPhone: ${isIPhone}, Standalone: ${isStandalone}, UserAgent: ${userAgent.substring(0, 100)}`);
   
   if (isIOS) {
     if (isStandalone) {

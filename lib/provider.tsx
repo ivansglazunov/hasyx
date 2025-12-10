@@ -59,15 +59,27 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
   const { data: session } = useSessionNextAuth();
 
   // In JWT mode, prefer JWT user over session user
-  const effectiveUser = jwtUser
+  // Если JWT режим не включен, используем только NextAuth сессию
+  const jwtAuthEnabled = typeof window !== 'undefined' && (!!+process.env.NEXT_PUBLIC_JWT_AUTH!);
+  const jwtForceEnabled = typeof window !== 'undefined' && (!!+process.env.NEXT_PUBLIC_JWT_FORCE!);
+  
+  const effectiveUser = (jwtAuthEnabled || jwtForceEnabled) && jwtUser
     ? jwtUser 
     : (session?.user || null);
 
   const _jwtToken = jwtToken || session?.accessToken;
   
   // Check for JWT mode and monitor localStorage changes
+  // Only if JWT auth is explicitly enabled
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    
+    // Если JWT режим не включен, используем только NextAuth сессию
+    if (!jwtAuthEnabled && !jwtForceEnabled) {
+      setJwtToken(null);
+      setJwtUser(null);
+      return;
+    }
     
     const base64UrlDecode = (input: string) => {
       try {
@@ -120,7 +132,7 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
     // Initial check
     checkJwtAuth();
     
-    // Listen for storage changes
+    // Listen for storage changes (only if JWT mode is enabled)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'nextauth_jwt') {
         checkJwtAuth();
@@ -129,14 +141,17 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Also check periodically in case of same-tab changes
-    const interval = setInterval(checkJwtAuth, 1000);
+    // Check periodically only if JWT mode is enabled (reduced frequency)
+    // Убираем постоянную проверку каждую секунду - проверяем только при событиях
+    const interval = jwtAuthEnabled || jwtForceEnabled ? setInterval(checkJwtAuth, 5000) : null;
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
+      if (interval) {
+        clearInterval(interval);
+      }
     };
-  }, [jwtToken]);
+  }, [jwtToken, jwtAuthEnabled, jwtForceEnabled]);
 
   const apolloClient = useCreateApolloClient(useMemo(() => {
     // Determine if current domain is localhost
@@ -291,6 +306,14 @@ function HasyxProviderCore({ url: urlOverride, children, generate }: { url?: str
     };
     return hasyxInstance;
   }, [apolloClient, generate, session, effectiveUser]);
+
+  // Синхронизируем hasyxInstance.user при изменении effectiveUser
+  useEffect(() => {
+    if (hasyxInstance && hasyxInstance.user !== effectiveUser) {
+      hasyxInstance.user = effectiveUser;
+      debug('Updated hasyxInstance.user:', effectiveUser);
+    }
+  }, [hasyxInstance, effectiveUser]);
 
   // @ts-ignore
   global.hasyx = hasyxInstance;

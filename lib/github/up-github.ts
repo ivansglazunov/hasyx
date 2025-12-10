@@ -293,8 +293,9 @@ export async function createUserTrigger(hasura: Hasura) {
     $$ LANGUAGE plpgsql;
   `);
   
-  // Create trigger
+  // Create trigger (drop if exists first for idempotency)
   await hasura.sql(`
+    DROP TRIGGER IF EXISTS set_user_id_on_github_issues ON public.github_issues;
     CREATE TRIGGER set_user_id_on_github_issues
       BEFORE INSERT OR UPDATE ON public.github_issues
       FOR EACH ROW

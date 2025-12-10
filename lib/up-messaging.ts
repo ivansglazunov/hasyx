@@ -76,16 +76,29 @@ export async function upMessagingSchema(hasura: Hasura) {
     await hasura.defineColumn({ schema: 'public', table: 'message_reads', name, type, postfix });
   }
 
-  // Add unique constraint for user_id + room_id
-  await hasura.sql(`ALTER TABLE public.message_reads ADD CONSTRAINT unique_user_room UNIQUE (user_id, room_id);`);
+  // Add unique constraint for user_id + room_id (drop if exists first for idempotency)
+  await hasura.sql(`
+    ALTER TABLE public.message_reads 
+    DROP CONSTRAINT IF EXISTS unique_user_room;
+    ALTER TABLE public.message_reads 
+    ADD CONSTRAINT unique_user_room UNIQUE (user_id, room_id);
+  `);
 
   // Foreign keys -------------------------------------------------------------
-  await hasura.sql(`ALTER TABLE public.replies
+  // Drop constraints if they exist first (for idempotency)
+  await hasura.sql(`
+    ALTER TABLE public.replies
+    DROP CONSTRAINT IF EXISTS fk_replies_room,
+    DROP CONSTRAINT IF EXISTS fk_replies_message;
+    ALTER TABLE public.replies
     ADD CONSTRAINT fk_replies_room FOREIGN KEY (room_id) REFERENCES public.rooms(id) ON DELETE CASCADE,
     ADD CONSTRAINT fk_replies_message FOREIGN KEY (message_id) REFERENCES public.messages(id) ON DELETE CASCADE;
   `);
 
-  await hasura.sql(`ALTER TABLE public.message_reads
+  await hasura.sql(`
+    ALTER TABLE public.message_reads
+    DROP CONSTRAINT IF EXISTS fk_message_reads_room;
+    ALTER TABLE public.message_reads
     ADD CONSTRAINT fk_message_reads_room FOREIGN KEY (room_id) REFERENCES public.rooms(id) ON DELETE CASCADE;
   `);
 

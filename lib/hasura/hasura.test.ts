@@ -17,16 +17,13 @@ if (!process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL || !process.env.HASURA_ADMIN_SEC
   throw new Error('❌ Missing required environment variables: NEXT_PUBLIC_HASURA_GRAPHQL_URL and/or HASURA_ADMIN_SECRET. Please ensure they are set in your .env file.');
 }
 
-const testDatabaseUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL || 'postgres://postgres:postgrespassword@postgres:5432/postgres';
-
 // Real Hasura client for testing with actual database - created at top level
+// NOTE: Source should already be configured in Hasura Console
+// We don't call ensureDefaultSource here to avoid hanging on top-level await
 const hasura = new Hasura({
   url: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL || 'http://localhost:8080',
   secret: process.env.HASURA_ADMIN_SECRET || 'hasura_admin_secret_key',
 });
-
-// Ensure default source exists
-await hasura.ensureDefaultSource(testDatabaseUrl);
 
 debug('✅ Real Hasura client initialized for testing');
 

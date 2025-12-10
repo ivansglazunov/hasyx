@@ -5,6 +5,10 @@ import { Dialog, DialogEvent } from './dialog';
 import { OpenRouterProvider } from './providers/openrouter';
 import { AIMessage } from './ai';
 import { Tool } from './tool';
+import { Hasyx } from '../hasyx/hasyx';
+import { createApolloClient } from '../apollo/apollo';
+import { Generator } from '../generator';
+import schema from '../../public/hasura-schema.json';
 
 const debug = Debug('ai:telegram');
 
@@ -88,6 +92,67 @@ export function generateTelegramHandler(options: TelegramHandlerOptions) {
         debug(`Processing /start command for chat ${chatId}`);
         dialogs.delete(chatId);
         dialog = undefined;
+        
+        // Register user in notification_permissions for receiving notifications
+        try {
+          const hasuraUrl = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL;
+          const hasuraSecret = process.env.HASURA_ADMIN_SECRET;
+          
+          if (hasuraUrl && hasuraSecret) {
+            const adminApolloClient = createApolloClient({ url: hasuraUrl, secret: hasuraSecret });
+            const generator = Generator(schema as any);
+            const hasyxClient = new Hasyx(adminApolloClient, generator);
+            
+            const userId = message.from?.id;
+            const username = message.from?.username || message.from?.first_name || 'UnknownUser';
+            
+            if (userId) {
+              const deviceInfo = {
+                platform: 'telegram',
+                username: username,
+                firstName: message.from?.first_name,
+                lastName: message.from?.last_name,
+                userId: userId
+              };
+
+              // Check if permission already exists
+              const existing = await hasyxClient.select({
+                table: 'notification_permissions',
+                where: {
+                  user_id: { _eq: String(userId) },
+                  provider: { _eq: 'telegram_bot' },
+                  device_token: { _eq: String(chatId) }
+                },
+                returning: ['id'],
+                limit: 1
+              });
+
+              // Only insert if doesn't exist
+              if (!existing || existing.length === 0) {
+                await hasyxClient.insert({
+                  table: 'notification_permissions',
+                  object: {
+                    user_id: String(userId),
+                    provider: 'telegram_bot',
+                    device_token: String(chatId),
+                    device_info: deviceInfo,
+                    created_at: new Date().valueOf(),
+                    updated_at: new Date().valueOf(),
+                  }
+                });
+                debug(`✅ Registered user ${userId} (chat ${chatId}) for Telegram notifications`);
+              } else {
+                debug(`ℹ️ User ${userId} (chat ${chatId}) already registered for notifications`);
+              }
+            }
+          } else {
+            debug('⚠️ Hasura not configured, skipping notification permission registration');
+          }
+        } catch (error) {
+          debug('⚠️ Error registering user for notifications:', error);
+          // Don't fail the /start command if registration fails
+        }
+        
         await sendTelegramMessage(process.env.TELEGRAM_BOT_TOKEN!, chatId, `Hello! I am your AI assistant. Your session has been reset. Send me a task.`);
         return NextResponse.json({ success: true });
       }
