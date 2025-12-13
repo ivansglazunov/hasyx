@@ -119,7 +119,7 @@ export default function FilesPage() {
       clearChoose(); // Очищаем выбор после удаления
     } catch (error) {
       console.error('Delete selected files error:', error);
-      toast.error(useTranslations('files')('toast.deleteFailedMany'));
+      toast.error(t('files.toast.deleteFailedMany'));
     }
   };
 
