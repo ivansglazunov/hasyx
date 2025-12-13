@@ -831,11 +831,16 @@ export function Generator(schema: any): Generate { // We take the __schema objec
             namesToTry.push(`delete_${table}_by_pk`);
         }
     } else if (effectiveOperation === 'insert') {
-        // Try insert_${table} first (more common in Hasura)
-        namesToTry.push(`insert_${table}`);
-        // Then try insert_${table}_one if using single object (less common, but exists in some schemas)
+        // For insert operations, prioritize based on input type:
+        // - If single object (object without objects), prefer insert_${table}_one
+        // - If array (objects), use insert_${table}
         if (opts.object && !opts.objects) {
+            // Single object: try _one variant first, then fallback to regular insert
             namesToTry.push(`insert_${table}_one`);
+            namesToTry.push(`insert_${table}`);
+        } else {
+            // Array or no specific input: use regular insert
+            namesToTry.push(`insert_${table}`);
         }
     } else if (effectiveOperation === 'update') {
         namesToTry.push(`update_${table}`);
