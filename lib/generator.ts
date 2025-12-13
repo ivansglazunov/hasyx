@@ -831,10 +831,12 @@ export function Generator(schema: any): Generate { // We take the __schema objec
             namesToTry.push(`delete_${table}_by_pk`);
         }
     } else if (effectiveOperation === 'insert') {
+        // Try insert_${table} first (more common in Hasura)
+        namesToTry.push(`insert_${table}`);
+        // Then try insert_${table}_one if using single object (less common, but exists in some schemas)
         if (opts.object && !opts.objects) {
             namesToTry.push(`insert_${table}_one`);
         }
-        namesToTry.push(`insert_${table}`);
     } else if (effectiveOperation === 'update') {
         namesToTry.push(`update_${table}`);
     } else if (effectiveOperation === 'delete') {
