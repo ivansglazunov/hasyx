@@ -758,6 +758,9 @@ export function Generator(schema: any): Generate { // We take the __schema objec
       throw new Error('❌ Query root type description not found in schema types.');
   }
 
+  // Check if we're in a browser environment (for SSR/build safety)
+  const isBrowser = typeof window !== 'undefined';
+
   function generate(opts: GenerateOptions): GenerateResult {
     let varCounter = opts.varCounter || 1;
 
@@ -779,10 +782,24 @@ export function Generator(schema: any): Generate { // We take the __schema objec
     
     // Determine the correct root type based on operation
     let targetRoot: any = queryRoot;
+    let fallbackToQuery = false;
     if (operation === 'insert' || operation === 'update' || operation === 'delete') {
         targetRoot = mutationRoot || queryRoot;
     } else if (operation === 'subscription' || operation === 'stream') {
-        targetRoot = subscriptionRoot || queryRoot;
+        // For subscription/stream, try subscription root first, but allow fallback to query
+        // During SSR/build, always use query root to avoid errors
+        if (subscriptionRoot && isBrowser) {
+            targetRoot = subscriptionRoot;
+        } else {
+            // No subscription root available or SSR/build context, fallback to query
+            targetRoot = queryRoot;
+            fallbackToQuery = true;
+            if (!isBrowser) {
+                debug(`[generator] SSR/build context detected, using query_root instead of subscription_root for ${operation} operation`);
+            } else {
+                debug(`[generator] No subscription_root found, falling back to query_root for ${operation} operation`);
+            }
+        }
     }
     
     // Try different naming patterns based on operation and options
@@ -823,6 +840,24 @@ export function Generator(schema: any): Generate { // We take the __schema objec
             queryInfo = found;
             debug(`[generator] Using query name: ${queryName}`);
             break;
+        }
+    }
+
+    // If subscription/stream not found and we haven't tried query root yet, try query root as fallback
+    if (!queryInfo && (operation === 'subscription' || operation === 'stream') && !fallbackToQuery && queryRoot) {
+        debug(`[generator] Subscription field not found in subscription_root, trying query_root as fallback`);
+        targetRoot = queryRoot;
+        fallbackToQuery = true;
+        
+        // Retry with query root
+        for (const name of namesToTry) {
+            const found = targetRoot.fields.find((f: any) => f.name === name);
+            if (found) {
+                queryName = name;
+                queryInfo = found;
+                debug(`[generator] Using query name from query_root fallback: ${queryName}`);
+                break;
+            }
         }
     }
 
