@@ -139,10 +139,13 @@ async function migration_000001_create_initial_tables(hasura: Hasura) {
 async function migration_000002_download_expiration_constraint(hasura: Hasura) {
   debug('🔧 Applying migration 000002_download_expiration_constraint...');
 
+  // Drop constraint if exists first (for idempotency)
   await hasura.sql(`
     ALTER TABLE storage.buckets
-        ADD CONSTRAINT download_expiration_valid_range
-            CHECK (download_expiration >= 1 AND download_expiration <= 604800);
+    DROP CONSTRAINT IF EXISTS download_expiration_valid_range;
+    ALTER TABLE storage.buckets
+    ADD CONSTRAINT download_expiration_valid_range
+        CHECK (download_expiration >= 1 AND download_expiration <= 604800);
   `);
 
   debug('✅ Migration 000002_download_expiration_constraint applied.');

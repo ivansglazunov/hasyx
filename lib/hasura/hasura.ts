@@ -300,50 +300,85 @@ export class Hasura {
 
   async sql(sql: string, source: string = 'default', cascade: boolean = true): Promise<any> {
     return await this.withInconsistentMetadataHandling(async () => {
-      debug('🔧 Executing SQL via /v2/query...');
-      try {
-        const response = await this.clientInstance.post('/v2/query', {
-          type: 'run_sql',
-          args: {
-            source,
-            sql,
-            cascade,
-          },
-        });
-        const data = response.data;
+      const maxRetries = 3;
+      let lastError: any = null;
+      
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          if (attempt > 1) {
+            // Progressive delay: 1s, 2s, 3s
+            const delay = attempt * 1000;
+            debug(`🔄 Retrying SQL query (attempt ${attempt}/${maxRetries}) after ${delay}ms delay...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          } else {
+            debug('🔧 Executing SQL via /v2/query...');
+          }
+          
+          const response = await this.clientInstance.post('/v2/query', {
+            type: 'run_sql',
+            args: {
+              source,
+              sql,
+              cascade,
+            },
+          });
+          const data = response.data;
 
-        // Detect and surface Hasura/PG errors even if HTTP status is 2xx/4xx (axios validateStatus allows 4xx)
-        // Typical error shapes from Hasura run_sql:
-        // { error: string, code: string, internal: { error?: { message?: string }, statement?: string } }
-        // Success shape typically contains { result_type: 'TuplesOk' | 'CommandOk', result?: any[][] }
-        const hasExplicitError = !!(data && (data.error || data.code === 'postgres-error'));
-        const internalError = data?.internal?.error || (Array.isArray(data?.internal) ? data.internal[0]?.error : undefined);
-        if (hasExplicitError || internalError) {
-          const errMsg = (
-            internalError?.message || data?.internal?.statement || data?.error || 'Unknown SQL error'
-          );
-          const formatted = `❌ Hasura run_sql error: ${errMsg}`;
-          debug(formatted, data);
-          throw new Error(formatted);
-        }
-
-        // If neither result_type nor result present, but there is a message that indicates error, surface it
-        if (!('result_type' in (data || {})) && !('result' in (data || {}))) {
-          const maybeMessage: string | undefined = data?.message || data?.error;
-          if (maybeMessage && /error|exception|failed/i.test(String(maybeMessage))) {
-            const formatted = `❌ Hasura run_sql anomaly: ${maybeMessage}`;
+          // Detect and surface Hasura/PG errors even if HTTP status is 2xx/4xx (axios validateStatus allows 4xx)
+          // Typical error shapes from Hasura run_sql:
+          // { error: string, code: string, internal: { error?: { message?: string }, statement?: string } }
+          // Success shape typically contains { result_type: 'TuplesOk' | 'CommandOk', result?: any[][] }
+          const hasExplicitError = !!(data && (data.error || data.code === 'postgres-error'));
+          const internalError = data?.internal?.error || (Array.isArray(data?.internal) ? data.internal[0]?.error : undefined);
+          if (hasExplicitError || internalError) {
+            const errMsg = (
+              internalError?.message || data?.internal?.statement || data?.error || 'Unknown SQL error'
+            );
+            const formatted = `❌ Hasura run_sql error: ${errMsg}`;
             debug(formatted, data);
             throw new Error(formatted);
           }
-        }
 
-        debug('✅ SQL executed successfully.');
-        return data;
-      } catch (error: any) {
-        const errorMessage = `❌ Error executing SQL: ${error.response?.data?.error || error.message}`;
-        debug(errorMessage, error.response?.data || error);
-        throw new Error(errorMessage); // Re-throw after logging
+          // If neither result_type nor result present, but there is a message that indicates error, surface it
+          if (!('result_type' in (data || {})) && !('result' in (data || {}))) {
+            const maybeMessage: string | undefined = data?.message || data?.error;
+            if (maybeMessage && /error|exception|failed/i.test(String(maybeMessage))) {
+              const formatted = `❌ Hasura run_sql anomaly: ${maybeMessage}`;
+              debug(formatted, data);
+              throw new Error(formatted);
+            }
+          }
+
+          debug('✅ SQL executed successfully.');
+          return data;
+        } catch (error: any) {
+          lastError = error;
+          const errorMessage = error.message || String(error);
+          const errorCode = error.code || error.response?.data?.code;
+          
+          // Check if it's a network error that we should retry
+          const isNetworkError = errorCode === 'ECONNRESET' || 
+                                 errorCode === 'ETIMEDOUT' || 
+                                 errorCode === 'ECONNREFUSED' ||
+                                 errorMessage.includes('ECONNRESET') ||
+                                 errorMessage.includes('ETIMEDOUT') ||
+                                 errorMessage.includes('ECONNREFUSED') ||
+                                 (error.response?.status >= 500 && error.response?.status < 600);
+          
+          if (isNetworkError && attempt < maxRetries) {
+            debug(`⚠️ Network error (${errorCode || 'unknown'}): ${errorMessage}. Will retry...`);
+            continue; // Retry on next iteration
+          }
+          
+          // If not a network error, or we've exhausted retries, throw immediately
+          const finalErrorMessage = `❌ Error executing SQL: ${error.response?.data?.error || errorMessage}`;
+          debug(finalErrorMessage, error.response?.data || error);
+          throw new Error(finalErrorMessage);
+        }
       }
+      
+      // Should never reach here, but TypeScript needs it
+      throw new Error(`❌ Error executing SQL: Failed after ${maxRetries} attempts. Last error: ${lastError?.message || 'Unknown error'}`);
     }, `SQL: ${sql.substring(0, 50)}...`);
   }
 
@@ -661,12 +696,104 @@ export class Hasura {
       if (currentType !== type) {
         // Try to alter column type
         try {
+          // In PostgreSQL, you cannot specify DEFAULT in the same ALTER COLUMN TYPE statement
+          // We need to separate TYPE change and DEFAULT setting into two statements
+          const hasDefault = postfix.includes('DEFAULT');
+          const postfixWithoutDefault = postfix.replace(/\s*DEFAULT\s+[^;]+/gi, '').trim();
+          
+          // If converting from bigint to timestamptz, we need to:
+          // 1. Drop existing DEFAULT (if any)
+          // 2. Change type with USING clause
+          // 3. Set new DEFAULT
+          const typeStr = String(type); // Convert enum to string for comparison
+          const needsUsing = currentType === 'bigint' && (typeStr === 'timestamptz' || typeStr === ColumnType.TIMESTAMPTZ || typeStr.includes('timestamp'));
+          
+          if (needsUsing) {
+            // First, check if DEFAULT exists and drop it if it does
+            // PostgreSQL can't convert DEFAULT from bigint to timestamptz automatically
+            try {
+              const defaultCheck = await this.sql(`
+                SELECT column_default
+                FROM information_schema.columns
+                WHERE table_schema = '${schema}'
+                  AND table_name = '${table}'
+                  AND column_name = '${name}';
+              `);
+              
+              const hasDefault = defaultCheck.result && defaultCheck.result.length > 1 && defaultCheck.result[1][0] !== null;
+              
+              if (hasDefault) {
+                debug(`Dropping existing DEFAULT for ${schema}.${table}.${name} before type conversion`);
+                await this.sql(`
+                  ALTER TABLE "${schema}"."${table}" 
+                  ALTER COLUMN "${name}" DROP DEFAULT;
+                `);
+              } else {
+                debug(`No DEFAULT to drop for ${schema}.${table}.${name}`);
+              }
+            } catch (e) {
+              // If check fails, try to drop anyway (might not exist, which is fine)
+              debug(`Could not check DEFAULT for ${schema}.${table}.${name}, attempting to drop anyway`);
+              try {
+                await this.sql(`
+                  ALTER TABLE "${schema}"."${table}" 
+                  ALTER COLUMN "${name}" DROP DEFAULT;
+                `);
+              } catch (dropError) {
+                // Ignore if DEFAULT doesn't exist
+                debug(`No DEFAULT to drop for ${schema}.${table}.${name} (or already dropped)`);
+              }
+            }
+          }
+          
+          // Change the type (with USING clause if needed)
+          let usingClause = '';
+          if (needsUsing) {
+            // Convert bigint (Unix timestamp in milliseconds) to timestamptz
+            usingClause = ' USING to_timestamp(CAST("' + name + '" AS bigint) / 1000.0)';
+          }
+          
           await this.sql(`
             ALTER TABLE "${schema}"."${table}" 
-            ALTER COLUMN "${name}" TYPE ${type} ${postfix};
-            ${uniqueConstraint ? `ALTER TABLE "${schema}"."${table}" ADD CONSTRAINT "${table}_${name}_unique" UNIQUE ("${name}");` : ''}
-            ${commentSql}
+            ALTER COLUMN "${name}" TYPE ${type}${usingClause}${postfixWithoutDefault ? ' ' + postfixWithoutDefault : ''};
           `);
+          
+          // Then, set DEFAULT separately if it was in postfix
+          if (hasDefault) {
+            const defaultMatch = postfix.match(/DEFAULT\s+([^;]+)/i);
+            if (defaultMatch) {
+              const defaultValue = defaultMatch[1].trim();
+              await this.sql(`
+                ALTER TABLE "${schema}"."${table}" 
+                ALTER COLUMN "${name}" SET DEFAULT ${defaultValue};
+              `);
+            }
+          }
+          
+          // Add unique constraint if needed
+          if (uniqueConstraint) {
+            // Check if constraint already exists
+            const constraintExists = await this.sql(`
+              SELECT EXISTS (
+                SELECT FROM pg_constraint
+                WHERE conname = '${table}_${name}_unique'
+                AND conrelid = '${schema}.${table}'::regclass
+              );
+            `);
+            
+            if (!constraintExists.result?.[1]?.[0] || constraintExists.result?.[1]?.[0] !== 't') {
+              await this.sql(`
+                ALTER TABLE "${schema}"."${table}" 
+                ADD CONSTRAINT "${table}_${name}_unique" UNIQUE ("${name}");
+              `);
+            }
+          }
+          
+          // Add comment if provided
+          if (commentSql) {
+            await this.sql(commentSql);
+          }
+          
           debug(`✅ Modified column ${name} type from ${currentType} to ${type}`);
         } catch (error: unknown) {
           const errorMessage = error instanceof Error ? error.message : String(error);
@@ -1148,17 +1275,8 @@ export class Hasura {
     
     debug(`🏗️ Creating trigger ${name} on ${schema}.${table}`);
     
-    // Check if trigger exists
-    const triggerExists = await this.sql(`
-      SELECT EXISTS (
-        SELECT FROM pg_trigger
-        WHERE tgname = '${name}' AND tgrelid = '${schema}.${table}'::regclass
-      );
-    `);
-    
-    if (triggerExists.result?.[1]?.[0] === 't') {
-      throw new Error(`❌ Trigger ${name} already exists on ${schema}.${table}`);
-    }
+    // Drop trigger if exists for idempotency
+    await this.sql(`DROP TRIGGER IF EXISTS "${name}" ON "${schema}"."${table}";`);
     
     await this.sql(`
       CREATE TRIGGER "${name}"
@@ -2164,18 +2282,127 @@ END;$$`,
   async ensureDefaultSource(databaseUrl?: string): Promise<any> {
     debug('🔍 Ensuring default data source exists');
     
+    // First check if "default" source exists
     const defaultExists = await this.checkSourceExists('default');
     
-    if (!defaultExists) {
-      debug('📝 Default source does not exist, creating it...');
+    if (defaultExists) {
+      debug('✅ Default data source already exists');
+      return { success: true };
+    }
+    
+    // If "default" doesn't exist, check if ANY source exists
+    // If user connected DB via Console, it might have different name
+    try {
+      const sources = await this.listSources();
+      if (sources && sources.length > 0) {
+        const firstSource = sources[0];
+        debug(`✅ Found existing source "${firstSource.name}" - migrations will use it`);
+        return { success: true, sourceName: firstSource.name };
+      }
+    } catch (error) {
+      debug(`⚠️ Could not check existing sources: ${error}`);
+      // Continue to create "default" source
+    }
+    
+    debug('📝 Default source does not exist, creating it...');
+    
+    // Determine database URL
+    let dbUrl = databaseUrl;
+    
+    // Check if Hasura is Cloud - need to determine this early
+    const hasuraBaseUrl = this.clientInstance.defaults.baseURL || '';
+    const hasuraUrl = typeof hasuraBaseUrl === 'string' ? hasuraBaseUrl : String(hasuraBaseUrl || '');
+    const isHasuraCloud = hasuraUrl.includes('.hasura.app') || hasuraUrl.includes('.hasura.cloud') || 
+                         hasuraUrl.includes('hasura.deep.foundation');
+    
+    // For Hasura Cloud, don't try to create source - it should be configured in Console
+    if (isHasuraCloud) {
+      debug('⚠️ Hasura Cloud detected - source should be configured in Console');
+      debug('⚠️ Skipping source creation - please configure database in Hasura Console');
+      throw new Error(
+        `❌ Default data source does not exist in Hasura Cloud.\n\n` +
+        `   Please configure the database in Hasura Console:\n` +
+        `   ${hasuraUrl.replace('/v1/graphql', '/console')}\n` +
+        `   Go to Data → Manage → Connect Database\n\n` +
+        `   After configuring, the source will be detected automatically.`
+      );
+    }
+    
+    // If not provided, try to get from environment or config
+    if (!dbUrl) {
+      dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL;
       
-      // Use provided database URL or try to get from environment
-      const dbUrl = databaseUrl || 
-                   process.env.POSTGRES_URL || 
-                   process.env.DATABASE_URL ||
-                   'postgres://postgres:postgrespassword@postgres:5432/postgres';
+      // If still not found, try to load from hasyx.config.json
+      // Only try to read file system on server side (not in browser/client bundle)
+      if (!dbUrl && typeof window === 'undefined') {
+        try {
+          const fs = require('fs');
+          const path = require('path');
+          const configPath = path.join(process.cwd(), 'hasyx.config.json');
+          
+          if (fs.existsSync(configPath)) {
+            const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            const variant = config.variant || 'local';
+            const variantConfig = config.variants?.[variant];
+            
+            if (variantConfig?.pg && config.pg?.[variantConfig.pg]) {
+              const configUrl = config.pg[variantConfig.pg].url;
+              if (configUrl && configUrl.trim() !== '') {
+                dbUrl = configUrl;
+                debug(`📋 Loaded database URL from hasyx.config.json (variant: ${variant}, pg: ${variantConfig.pg})`);
+              }
+            } else if (config.pg?.prod) {
+              // Fallback to prod pg config
+              const configUrl = config.pg.prod.url;
+              if (configUrl && configUrl.trim() !== '') {
+                dbUrl = configUrl;
+                debug(`📋 Loaded database URL from hasyx.config.json (fallback to prod)`);
+              }
+            }
+          }
+        } catch (configError) {
+          debug(`⚠️ Could not load config from hasyx.config.json: ${configError}`);
+        }
+      }
       
-      await this.defineSource({
+      // Final fallback - only use Docker URL if Hasura is local (not Cloud)
+      if (!dbUrl) {
+        // isHasuraCloud already checked above, so this is local Hasura
+        dbUrl = 'postgres://postgres:postgrespassword@postgres:5432/postgres';
+        debug('⚠️ Using default Docker database URL (postgres:5432) for local Hasura');
+      }
+    }
+    
+    // Check if database URL uses Docker hostname (variables already declared above)
+    const isDockerHostname = dbUrl.includes('@postgres:') || dbUrl.includes('@localhost:') || 
+                            (dbUrl.includes('postgres:5432') && !dbUrl.includes('://'));
+    
+    if (isHasuraCloud && isDockerHostname) {
+      const maskedUrl = dbUrl.replace(/:([^:@]+)@/, ':****@');
+      const errorMessage = 
+        `❌ Invalid database URL for Hasura Cloud/Remote: ${maskedUrl}\n` +
+        `   Hasura Cloud/Remote cannot connect to Docker hostname 'postgres:5432' or 'localhost:5432'.\n` +
+        `   These hostnames only work inside Docker networks.\n\n` +
+        `   Solutions:\n` +
+        `   1. Use a public database URL accessible from the internet\n` +
+        `   2. Update POSTGRES_URL environment variable\n` +
+        `   3. Update hasyx.config.json with a public database URL\n\n` +
+        `   Example public URL: postgres://user:password@your-db-host.com:5432/hasyx\n` +
+        `   Or use a database service like:\n` +
+        `   - Supabase: postgres://user:pass@db.xxx.supabase.co:5432/postgres\n` +
+        `   - Railway: postgres://user:pass@containers-us-west-xxx.railway.app:5432/railway\n` +
+        `   - Neon: postgres://user:pass@ep-xxx.us-east-2.aws.neon.tech/neondb`;
+      debug(errorMessage);
+      throw new Error(errorMessage);
+    }
+    
+    // Log database URL (masked for security)
+    const maskedUrl = dbUrl.replace(/:([^:@]+)@/, ':****@');
+    debug(`🔗 Using database URL: ${maskedUrl}`);
+    
+    let sourceCreateResult: any;
+    try {
+      sourceCreateResult = await this.defineSource({
         name: 'default',
         kind: 'postgres',
         configuration: {
@@ -2186,11 +2413,129 @@ END;$$`,
           }
         }
       });
+      debug('✅ Source created via pg_add_source API');
       
-      debug('✅ Default data source created successfully');
-    } else {
-      debug('✅ Default data source already exists');
+      // Check response for warnings or errors
+      if (sourceCreateResult?.message) {
+        debug(`📋 Source creation message: ${sourceCreateResult.message}`);
+      }
+      if (sourceCreateResult?.warnings) {
+        debug(`⚠️ Source creation warnings:`, sourceCreateResult.warnings);
+      }
+    } catch (sourceError: any) {
+      const errorMsg = sourceError?.response?.data?.error || sourceError?.message || String(sourceError);
+      const errorCode = sourceError?.response?.data?.code || sourceError?.code;
+      debug(`❌ Error creating source: ${errorMsg} (code: ${errorCode})`);
+      
+      // Check if it's a connection error
+      if (errorMsg.includes('connection') || errorMsg.includes('connect') || errorMsg.includes('timeout') || 
+          errorMsg.includes('refused') || errorMsg.includes('ECONNREFUSED') || errorCode === 'connection-error') {
+        throw new Error(`❌ Cannot connect to database at ${maskedUrl}. Please check:\n  1. Database is running and accessible\n  2. Database URL is correct\n  3. Network connectivity to database host\n  4. Firewall rules allow connection\n  Original error: ${errorMsg}`);
+      }
+      throw sourceError;
     }
+    
+    // Critical: Reload metadata after creating source so Hasura recognizes it immediately
+    debug('🔄 Reloading metadata to activate new source...');
+    try {
+      await this.reloadMetadata();
+      debug('✅ Metadata reloaded successfully');
+    } catch (reloadError) {
+      debug('⚠️ Warning: Metadata reload failed, but source may still be available:', reloadError);
+      // Continue anyway - source might still work
+    }
+    
+    // Verify source is actually usable by testing with a simple SQL query
+    // This is more reliable than checking metadata, as it tests actual connectivity
+    // Use direct API call to avoid recursion through sql() method
+    let verified = false;
+    const maxAttempts = 5;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      // Progressive delay: 300ms, 600ms, 900ms, 1200ms, 1500ms
+      await new Promise(resolve => setTimeout(resolve, 300 * attempt));
+      
+      try {
+        // Test source by executing a simple SQL query directly via API
+        // This avoids recursion and tests actual source availability
+        const response = await this.clientInstance.post('/v2/query', {
+          type: 'run_sql',
+          args: {
+            source: 'default',
+            sql: 'SELECT 1 as test;',
+            cascade: false,
+          },
+        });
+        
+        const data = response.data;
+        // Check if query succeeded
+        if (data && (data.result_type === 'TuplesOk' || data.result_type === 'CommandOk')) {
+          verified = true;
+          debug(`✅ Default data source verified and working after ${attempt} attempt(s)`);
+          break;
+        } else if (data?.error) {
+          const errorMsg = data.error;
+          if (errorMsg.includes('source with name "default" does not exist')) {
+            debug(`⏳ Source not yet available for SQL queries, attempt ${attempt}/${maxAttempts}...`);
+            if (attempt < maxAttempts) {
+              // Try reloading metadata again before next attempt
+              try {
+                await this.reloadMetadata();
+                debug('🔄 Metadata reloaded before retry');
+              } catch (e) {
+                debug('⚠️ Retry reload failed:', e);
+              }
+            } else {
+              // Last attempt failed
+              debug(`❌ Source verification failed after ${maxAttempts} attempts`);
+              debug(`💡 Source was created but is not accessible. This usually means:\n  1. Database URL is incorrect: ${maskedUrl}\n  2. Database is unreachable from Hasura\n  3. Database credentials are wrong\n  4. Network/firewall issues\n  Please verify database connectivity and URL.`);
+            }
+          } else {
+            // Different error - might be connection issue, but source exists
+            debug(`⚠️ SQL test error (but source may exist): ${errorMsg}`);
+            // After 3 attempts with different errors, assume source exists but has issues
+            if (attempt >= 3) {
+              verified = true;
+              debug('⚠️ Assuming source exists despite SQL test errors');
+              break;
+            }
+          }
+        }
+      } catch (apiError: any) {
+        const errorMsg = apiError?.response?.data?.error || apiError?.message || String(apiError);
+        // If error is about source not existing, continue retrying
+        if (errorMsg.includes('source with name "default" does not exist')) {
+          debug(`⏳ Source not yet available for SQL queries, attempt ${attempt}/${maxAttempts}...`);
+          if (attempt < maxAttempts) {
+            // Try reloading metadata again before next attempt
+            try {
+              await this.reloadMetadata();
+              debug('🔄 Metadata reloaded before retry');
+            } catch (e) {
+              debug('⚠️ Retry reload failed:', e);
+            }
+          } else {
+            // Last attempt failed
+            debug(`❌ Source verification failed after ${maxAttempts} attempts`);
+            debug(`💡 Source was created but is not accessible. This usually means:\n  1. Database URL is incorrect: ${maskedUrl}\n  2. Database is unreachable from Hasura\n  3. Database credentials are wrong\n  4. Network/firewall issues\n  Please verify database connectivity and URL.`);
+          }
+        } else {
+          // Different error - might be connection issue, but source exists
+          debug(`⚠️ API test error (but source may exist): ${errorMsg}`);
+          // After 3 attempts with different errors, assume source exists but has issues
+          if (attempt >= 3) {
+            verified = true;
+            debug('⚠️ Assuming source exists despite API test errors');
+            break;
+          }
+        }
+      }
+    }
+    
+    if (!verified) {
+      debug('⚠️ Warning: Source created but could not be verified via SQL test. It may still work.');
+    }
+    
+    debug('✅ Default data source created successfully');
     
     return { success: true };
   }

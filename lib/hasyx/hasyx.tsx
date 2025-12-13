@@ -216,6 +216,12 @@ export class Hasyx {
     const { role, ...genOptions } = options;
     debug('Executing update with options:', genOptions, 'Role:', role);
     const generated: GenerateResult = this.generate({ ...genOptions, operation: 'update' });
+    
+    // Log the exact GraphQL query and variables being sent (also to console for debugging)
+    console.log('🔍 [Hasyx Update Debug] Query:', generated.queryString);
+    console.log('🔍 [Hasyx Update Debug] Variables:', JSON.stringify(generated.variables, null, 2));
+    console.log('🔍 [Hasyx Update Debug] _set keys:', genOptions._set ? Object.keys(genOptions._set) : []);
+    
     try {
       const result: FetchResult<any> = await this.apolloClient.mutate({
         mutation: generated.query,
@@ -226,6 +232,7 @@ export class Hasyx {
 
       if (result.errors) {
         debug('GraphQL errors during update:', result.errors);
+        console.log('❌ [Hasyx Update] GraphQL errors:', JSON.stringify(result.errors, null, 2));
         const extra = formatHasuraErrors(result.errors);
         if (extra) debug('Hasura/PG details:', extra);
         const err = new ApolloError({ graphQLErrors: result.errors });
@@ -304,11 +311,45 @@ export class Hasyx {
    */
   async upsert<TData = any>(options: HasyxOptions): Promise<TData> {
     const { role, on_conflict, ...genOptions } = options;
-    debug('Executing upsert with options:', genOptions, 'on_conflict:', on_conflict, 'Role:', role);
+    debug('Executing upsert with options:', JSON.stringify(genOptions, null, 2), 'on_conflict:', JSON.stringify(on_conflict, null, 2), 'Role:', role);
+
+    // Filter update_columns to only include fields that are present in the object
+    // This prevents errors when Hasura tries to update fields that aren't in the object
+    // (e.g., when a field in update_columns has a different type in DB vs GraphQL schema)
+    let filteredOnConflict = on_conflict;
+    if (on_conflict && genOptions.object) {
+      const objectKeys = new Set(Object.keys(genOptions.object));
+      const filteredUpdateColumns = on_conflict.update_columns.filter((col: string) => objectKeys.has(col));
+      
+      if (filteredUpdateColumns.length !== on_conflict.update_columns.length) {
+        debug(`⚠️ Filtered update_columns from [${on_conflict.update_columns.join(', ')}] to [${filteredUpdateColumns.join(', ')}] based on object keys`);
+        filteredOnConflict = {
+          ...on_conflict,
+          update_columns: filteredUpdateColumns,
+        };
+      }
+    }
+
+    // Log the final object and on_conflict that will be sent to Hasura
+    debug('📤 Final upsert payload:', {
+      object: genOptions.object,
+      on_conflict: filteredOnConflict,
+      objectKeys: genOptions.object ? Object.keys(genOptions.object) : [],
+      updateColumns: filteredOnConflict?.update_columns || []
+    });
 
     // First, try native upsert with ON CONFLICT
     try {
-      const generated: GenerateResult = this.generate({ ...genOptions, on_conflict, operation: 'insert' });
+      const generated: GenerateResult = this.generate({ ...genOptions, on_conflict: filteredOnConflict, operation: 'insert' });
+      
+      // Log the exact GraphQL query and variables being sent (also to console for debugging)
+      debug('📤 GraphQL Mutation Query:', generated.queryString);
+      debug('📤 GraphQL Variables:', JSON.stringify(generated.variables, null, 2));
+      console.log('🔍 [Hasyx Upsert Debug] Query:', generated.queryString);
+      console.log('🔍 [Hasyx Upsert Debug] Variables:', JSON.stringify(generated.variables, null, 2));
+      console.log('🔍 [Hasyx Upsert Debug] Object keys:', genOptions.object ? Object.keys(genOptions.object) : []);
+      console.log('🔍 [Hasyx Upsert Debug] Update columns:', filteredOnConflict?.update_columns || []);
+      
       const result: FetchResult<any> = await this.apolloClient.mutate({
         mutation: generated.query,
         variables: generated.variables,
@@ -318,6 +359,7 @@ export class Hasyx {
 
       if (result.errors) {
         debug('GraphQL errors during native upsert:', result.errors);
+        console.log('❌ [Hasyx Upsert] GraphQL errors:', JSON.stringify(result.errors, null, 2));
         throw new ApolloError({ graphQLErrors: result.errors });
       }
 
@@ -334,7 +376,7 @@ export class Hasyx {
         return extractedData as TData;
       }
     } catch (error: any) {
-      // Check if this is a uniqueness violation that suggests we need fallback approach
+      // Check if this is a uniqueness violation or type mismatch error that suggests we need fallback approach
       const isUniqueViolation = error?.message?.includes('Uniqueness violation') ||
                                error?.message?.includes('duplicate key value') ||
                                error?.graphQLErrors?.some((e: any) => 
@@ -343,7 +385,18 @@ export class Hasyx {
                                  e?.extensions?.code === 'constraint-violation'
                                );
 
-      if (isUniqueViolation) {
+      // Check for type mismatch errors (e.g., timestamp vs bigint)
+      const isTypeMismatch = error?.message?.includes('invalid input syntax for type') ||
+                            error?.graphQLErrors?.some((e: any) => 
+                              e?.message?.includes('invalid input syntax for type') ||
+                              e?.extensions?.code === 'data-exception'
+                            );
+
+      if (isUniqueViolation || isTypeMismatch) {
+        if (isTypeMismatch) {
+          console.log('⚠️ [Hasyx Upsert] Type mismatch error detected, using fallback UPDATE/INSERT approach');
+          debug('Type mismatch error detected, using fallback UPDATE/INSERT approach');
+        }
         debug('Native upsert failed with uniqueness violation, attempting fallback upsert approach');
         
         // Fallback: Try UPDATE first, then INSERT if not found
@@ -356,6 +409,11 @@ export class Hasyx {
           // Prepare update data
           const updateData: any = { ...genOptions.object };
           delete updateData.id; // Remove ID from update data
+
+          console.log('🔄 [Hasyx Upsert Fallback] Attempting UPDATE with:', {
+            pk_columns: genOptions.object.id ? { id: genOptions.object.id } : undefined,
+            _set: updateData
+          });
 
           // Try UPDATE first
           let updateOptions: any;
@@ -393,14 +451,17 @@ export class Hasyx {
           
           // Check if update actually affected any rows
           if (updateResult) {
+            console.log('✅ [Hasyx Upsert Fallback] UPDATE successful');
             debug('Fallback upsert: UPDATE successful');
             return (updateResult as any)?.returning[0] as TData;
           } else {
+            console.log('⚠️ [Hasyx Upsert Fallback] UPDATE affected 0 rows, trying INSERT');
             debug('Fallback upsert: UPDATE affected 0 rows, trying INSERT');
             // If no rows were updated, try INSERT
             return await this.insert<TData>(genOptions);
           }
         } catch (updateError: any) {
+          console.log('❌ [Hasyx Upsert Fallback] UPDATE failed:', updateError?.message);
           debug('Fallback upsert: UPDATE failed, trying INSERT:', updateError?.message);
           // If UPDATE fails, try INSERT
           try {

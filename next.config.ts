@@ -59,6 +59,32 @@ let config: NextConfig = {
   
   // Increase body size limit for file uploads
   // Note: `api` config is not supported in Next 15 app router config. Keep limits in individual routes if needed.
+  
+  // Webpack configuration to exclude Node.js modules from client bundle
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Exclude Node.js modules from client bundle
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        os: false,
+        crypto: false,
+        stream: false,
+        buffer: false,
+        util: false,
+        assert: false,
+        http: false,
+        https: false,
+        zlib: false,
+        url: false,
+        net: false,
+        tls: false,
+        child_process: false,
+      };
+    }
+    return config;
+  },
 };
 
 // Attach CORS headers only for non-client builds (server/standalone)

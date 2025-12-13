@@ -28,6 +28,7 @@
     "lint": "next lint --turbopack",
     "test": "npm run unbuild; NODE_OPTIONS=\"--experimental-vm-modules --max-old-space-size=4096\" jest --verbose --runInBand",
     "test:build": "jest build.test.ts",
+    "cleanup:test-schemas": "NODE_OPTIONS=\"--experimental-vm-modules\" tsx scripts/cleanup-test-schemas.ts",
     "postinstall": "npm run ws -- -y",
     "ws": "npx --yes next-ws-cli@latest patch -y",
     "migrate": "tsx lib/migrate.ts",
@@ -57,8 +58,8 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "peerDependencies": {
-    "react": "^18.2.0 || ^19.0.0",
-    "react-dom": "^18.2.0 || ^19.0.0",
+    "react": "^18.2.0 || ^19.1.2",
+    "react-dom": "^18.2.0 || ^19.1.2",
     "zod": "^4.0.15"
   },
   "dependencies": {
@@ -133,8 +134,8 @@
     "@types/jsonwebtoken": "9.0.9",
     "@types/lodash": "4.17.17",
     "@types/node": "20.17.30",
-    "@types/react": "19",
-    "@types/react-dom": "19",
+    "@types/react": "19.1.2",
+    "@types/react-dom": "19.1.2",
     "@types/uuid": "10.0.0",
     "@types/ws": "8.18.1",
     "@udecode/plate-common": "^36.3.9",
@@ -194,7 +195,7 @@
     "marked-terminal": "7.3.0",
     "mathjs": "^14.8.2",
     "mock-local-storage": "^1.1.24",
-    "next": "15.3.1",
+    "next": "15.5.7",
     "next-auth": "4.24.11",
     "next-intl": "^4.3.4",
     "next-themes": "0.4.6",
@@ -252,12 +253,15 @@
     "hasyx": "./lib/cli.js"
   },
   "devDependencies": {
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "@jest/test-sequencer": "^30.2.0",
+    "react": "19.1.2",
+    "react-dom": "19.1.2",
     "zod-to-json-schema": "^3.24.6"
   },
   "overrides": {
-    "zod": "^4.0.15"
+    "zod": "^4.0.15",
+    "react": "19.1.2",
+    "react-dom": "19.1.2"
   },
   "resolutions": {
     "zod": "^4.0.15"

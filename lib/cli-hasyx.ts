@@ -808,6 +808,11 @@ export const initCommand = async (options: any, packageName: string = 'hasyx') =
     'public/favicon.ico': 'public/favicon.ico',
     'public/logo.svg': 'public/logo.svg',
     'public/hasura-schema.json': 'public/hasura-schema.json',
+    // PWA files
+    'public/sw.js': 'public/sw.js',
+    'public/manifest.webmanifest': 'public/manifest.webmanifest',
+    'public/firebase-messaging-sw.js': 'public/firebase-messaging-sw.js',
+    'public/browserconfig.xml': 'public/browserconfig.xml',
     'Dockerfile': 'Dockerfile',
     'Dockerfile.postgres': 'Dockerfile.postgres',
     '.dockerignore': '.dockerignore',

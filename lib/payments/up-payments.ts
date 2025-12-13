@@ -97,8 +97,13 @@ async function createPaymentProviders(hasura: Hasura) {
     on_update: 'SET NULL'
   });
   
-  // Define unique constraint
-  await hasura.sql(`ALTER TABLE "payments"."providers" ADD CONSTRAINT "providers_name_type_test_mode_unique" UNIQUE ("name", "type", "is_test_mode");`);
+  // Define unique constraint (drop if exists first for idempotency)
+  await hasura.sql(`
+    ALTER TABLE "payments"."providers" 
+    DROP CONSTRAINT IF EXISTS "providers_name_type_test_mode_unique";
+    ALTER TABLE "payments"."providers" 
+    ADD CONSTRAINT "providers_name_type_test_mode_unique" UNIQUE ("name", "type", "is_test_mode");
+  `);
   
   debug('payments.providers table created successfully.');
 }
@@ -210,8 +215,13 @@ async function createPaymentMethods(hasura: Hasura) {
     on_update: 'RESTRICT'
   });
   
-  // Define unique constraint
-  await hasura.sql(`ALTER TABLE "payments"."methods" ADD CONSTRAINT "methods_user_provider_external_type_unique" UNIQUE ("user_id", "provider_id", "external_id", "type");`);
+  // Define unique constraint (drop if exists first for idempotency)
+  await hasura.sql(`
+    ALTER TABLE "payments"."methods" 
+    DROP CONSTRAINT IF EXISTS "methods_user_provider_external_type_unique";
+    ALTER TABLE "payments"."methods" 
+    ADD CONSTRAINT "methods_user_provider_external_type_unique" UNIQUE ("user_id", "provider_id", "external_id", "type");
+  `);
   
   debug('payments.methods table created successfully.');
 }

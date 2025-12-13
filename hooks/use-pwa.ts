@@ -14,6 +14,7 @@ interface PWAState {
   installPromptAvailable: boolean;
   updateAvailable: boolean;
   displayMode: string;
+  platform: string;
   isInitialized: boolean;
 }
 
@@ -31,6 +32,7 @@ export function usePWA(): PWAState & PWAActions {
     installPromptAvailable: false,
     updateAvailable: false,
     displayMode: 'browser',
+    platform: 'web',
     isInitialized: false,
   });
 
@@ -47,6 +49,7 @@ export function usePWA(): PWAState & PWAActions {
           isInstalled: pwaInfo.isPWA,
           installPromptAvailable: pwaInfo.installPrompt.isAvailable,
           displayMode: pwaInfo.displayMode,
+          platform: pwaInfo.installPrompt.platform,
           isInitialized: true,
         }));
         
