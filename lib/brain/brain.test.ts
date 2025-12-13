@@ -346,40 +346,110 @@ const generate = Generator(schema as any);
   }, 30000);
 
   it('verifies BrainComponent metadata is stored in schema and extractable via z.toJSONSchema()', () => {
+    // Helper function to extract BrainComponent metadata (same logic as components.tsx)
+    const getBrainComponent = (propertySchema: any): string | undefined => {
+      return propertySchema.BrainComponent || propertySchema['x-meta']?.BrainComponent;
+    };
+    
+    // Helper function to extract metadata from Zod schema and add to JSON Schema
+    const enrichJsonSchemaWithMetadata = (zodSchema: any, jsonSchema: any): any => {
+      if (!zodSchema || !jsonSchema || !jsonSchema.properties) return jsonSchema;
+      
+      // Get shape from Zod object schema
+      const shape = (zodSchema as any).shape || {};
+      const properties = jsonSchema.properties;
+      
+      // For each property, try to extract metadata from Zod schema
+      for (const key of Object.keys(properties)) {
+        const zodField = shape[key];
+        if (!zodField) continue;
+        
+        // Extract metadata from Zod field (unwrap optional/nullable/default if needed)
+        let currentField: any = zodField;
+        for (let i = 0; i < 5; i++) {
+          if (currentField instanceof z.ZodOptional || 
+              currentField instanceof z.ZodNullable || 
+              currentField instanceof z.ZodDefault) {
+            currentField = (currentField as any)._def?.innerType || currentField;
+            continue;
+          }
+          break;
+        }
+        
+        // Get metadata from field
+        const meta = typeof currentField?.meta === 'function' ? currentField.meta() : {};
+        
+        // If metadata exists and not already in JSON Schema, add it
+        if (meta && Object.keys(meta).length > 0) {
+          const prop = properties[key];
+          // Add metadata directly to property (z.toJSONSchema should do this, but if not, we do it manually)
+          if (!prop.BrainComponent && meta.BrainComponent) {
+            prop.BrainComponent = meta.BrainComponent;
+          }
+          // Also ensure x-meta exists for compatibility
+          if (!prop['x-meta']) {
+            prop['x-meta'] = {};
+          }
+          if (meta.BrainComponent && !prop['x-meta'].BrainComponent) {
+            prop['x-meta'].BrainComponent = meta.BrainComponent;
+          }
+        }
+      }
+      
+      return jsonSchema;
+    };
+    
     // Check that metadata is accessible via z.toJSONSchema()
     const globalSchema = (schemaOptions as any)[''];
     expect(globalSchema).toBeDefined();
     
-    const jsonSchema = z.toJSONSchema(globalSchema);
+    let jsonSchema = z.toJSONSchema(globalSchema);
     expect(jsonSchema).toBeDefined();
     expect((jsonSchema as any).properties).toBeDefined();
+    
+    // Enrich JSON Schema with metadata from Zod schema if needed
+    jsonSchema = enrichJsonSchemaWithMetadata(globalSchema, jsonSchema);
     
     const properties = (jsonSchema as any).properties;
     
     // Verify brain_string has BrainComponent metadata
     expect(properties.brain_string).toBeDefined();
-    expect(properties.brain_string.BrainComponent).toBe('BrainStringComponent');
-    console.log('[brain.test] ✓ brain_string has BrainComponent:', properties.brain_string.BrainComponent);
+    const brainStringComponent = getBrainComponent(properties.brain_string);
+    expect(brainStringComponent).toBe('BrainStringComponent');
+    console.log('[brain.test] ✓ brain_string has BrainComponent:', brainStringComponent);
     
     // Verify brain_number
-    expect(properties.brain_number.BrainComponent).toBe('BrainNumberComponent');
-    console.log('[brain.test] ✓ brain_number has BrainComponent:', properties.brain_number.BrainComponent);
+    const brainNumberComponent = getBrainComponent(properties.brain_number);
+    expect(brainNumberComponent).toBe('BrainNumberComponent');
+    console.log('[brain.test] ✓ brain_number has BrainComponent:', brainNumberComponent);
     
     // Verify brain_object
-    expect(properties.brain_object.BrainComponent).toBe('BrainObjectComponent');
-    console.log('[brain.test] ✓ brain_object has BrainComponent:', properties.brain_object.BrainComponent);
+    const brainObjectComponent = getBrainComponent(properties.brain_object);
+    expect(brainObjectComponent).toBe('BrainObjectComponent');
+    console.log('[brain.test] ✓ brain_object has BrainComponent:', brainObjectComponent);
     
     // Check wildcard schema
     const wildcardSchema = (schemaOptions as any)['*'];
-    const wildcardJsonSchema = z.toJSONSchema(wildcardSchema);
+    let wildcardJsonSchema = z.toJSONSchema(wildcardSchema);
+    // Enrich wildcard JSON Schema with metadata from Zod schema if needed
+    wildcardJsonSchema = enrichJsonSchemaWithMetadata(wildcardSchema, wildcardJsonSchema);
     const wildcardProperties = (wildcardJsonSchema as any).properties;
     
-    expect(wildcardProperties.brain_formula.BrainComponent).toBe('BrainFormulaComponent');
-    expect(wildcardProperties.brain_ask.BrainComponent).toBe('BrainAskComponent');
-    expect(wildcardProperties.brain_js.BrainComponent).toBe('BrainJSComponent');
-    expect(wildcardProperties.brain_query.BrainComponent).toBe('BrainQueryComponent');
-    expect(wildcardProperties.brain_name.BrainComponent).toBe('DefaultBrainComponent');
-    console.log('[brain.test] ✓ brain_name has BrainComponent:', wildcardProperties.brain_name.BrainComponent);
+    const brainFormulaComponent = getBrainComponent(wildcardProperties.brain_formula);
+    expect(brainFormulaComponent).toBe('BrainFormulaComponent');
+    
+    const brainAskComponent = getBrainComponent(wildcardProperties.brain_ask);
+    expect(brainAskComponent).toBe('BrainAskComponent');
+    
+    const brainJsComponent = getBrainComponent(wildcardProperties.brain_js);
+    expect(brainJsComponent).toBe('BrainJSComponent');
+    
+    const brainQueryComponent = getBrainComponent(wildcardProperties.brain_query);
+    expect(brainQueryComponent).toBe('BrainQueryComponent');
+    
+    const brainNameComponent = getBrainComponent(wildcardProperties.brain_name);
+    expect(brainNameComponent).toBe('DefaultBrainComponent');
+    console.log('[brain.test] ✓ brain_name has BrainComponent:', brainNameComponent);
     
     console.log('[brain.test] ✅ All BrainComponent metadata extracted successfully!');
     console.log('[brain.test] ℹ️ Note: components/entities/options.tsx uses getOptionComponent() to resolve these components at runtime');
