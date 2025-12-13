@@ -37,6 +37,7 @@ export default function FilesPage() {
   const filesStore = useFilesStore();
 
   // Use hasura-storage files table
+  // Generator will automatically fallback to query_root during SSR/build if subscription_root is not available
   const { data: files = [], loading, error } = useSubscription({
     table: 'files', // This should query storage.files via hasura-storage GraphQL
     where: {},
@@ -118,7 +119,7 @@ export default function FilesPage() {
       clearChoose(); // Очищаем выбор после удаления
     } catch (error) {
       console.error('Delete selected files error:', error);
-      toast.error(useTranslations('files')('toast.deleteFailedMany'));
+      toast.error(t('files.toast.deleteFailedMany'));
     }
   };
 
