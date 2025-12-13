@@ -760,6 +760,11 @@ export function Generator(schema: any): Generate { // We take the __schema objec
 
   // Check if we're in a browser environment (for SSR/build safety)
   const isBrowser = typeof window !== 'undefined';
+  // Check if we're in Next.js build/SSR context (not just any Node.js environment like tests)
+  const isNextBuild = typeof process !== 'undefined' && 
+    (process.env.NEXT_PHASE !== undefined || 
+     process.env.__NEXT_PRIVATE_PREBUNDLED_REACT !== undefined ||
+     (process.env.NODE_ENV === 'production' && process.env.NEXT_RUNTIME !== undefined));
 
   function generate(opts: GenerateOptions): GenerateResult {
     let varCounter = opts.varCounter || 1;
@@ -788,20 +793,24 @@ export function Generator(schema: any): Generate { // We take the __schema objec
     if (operation === 'insert' || operation === 'update' || operation === 'delete') {
         targetRoot = mutationRoot || queryRoot;
     } else if (operation === 'subscription' || operation === 'stream') {
-        // For subscription/stream, try subscription root first, but allow fallback to query
-        // During SSR/build, always use query root to avoid errors
-        if (subscriptionRoot && isBrowser) {
+        // For subscription/stream, prefer subscription root if available
+        // Only fallback to query_root if subscriptionRoot is missing AND we're in Next.js build context
+        if (subscriptionRoot) {
+            // Use subscription root if available (works in tests, browser, and most SSR contexts)
             targetRoot = subscriptionRoot;
-        } else {
-            // No subscription root available or SSR/build context, fallback to query
+        } else if (isNextBuild) {
+            // Only in Next.js build context, fallback to query_root to avoid build errors
             targetRoot = queryRoot;
             fallbackToQuery = true;
             actualOperation = 'query'; // Use query operation when falling back to query_root
-            if (!isBrowser) {
-                debug(`[generator] SSR/build context detected, using query_root with query operation instead of subscription_root for ${operation} operation`);
-            } else {
-                debug(`[generator] No subscription_root found, falling back to query_root with query operation for ${operation} operation`);
-            }
+            debug(`[generator] Next.js build context detected, using query_root with query operation instead of subscription_root for ${operation} operation`);
+        } else {
+            // In tests or other contexts without subscriptionRoot, still try to use subscription_root structure
+            // but this will likely fail - we'll handle it in the fallback logic below
+            targetRoot = queryRoot;
+            fallbackToQuery = true;
+            actualOperation = 'query';
+            debug(`[generator] No subscription_root found, falling back to query_root with query operation for ${operation} operation`);
         }
     }
     
@@ -878,10 +887,10 @@ export function Generator(schema: any): Generate { // We take the __schema objec
     }
 
     if (!queryInfo) {
-        // In SSR/build context, if subscription falls back to query_root and field is not found,
+        // In Next.js build context, if subscription falls back to query_root and field is not found,
         // create a minimal valid queryInfo to prevent build failures
-        if (!isBrowser && (operation === 'subscription' || operation === 'stream') && fallbackToQuery) {
-            debug(`[generator] Field not found in query_root for ${operation} operation during SSR/build. Using minimal fallback query.`);
+        if (isNextBuild && (operation === 'subscription' || operation === 'stream') && fallbackToQuery) {
+            debug(`[generator] Field not found in query_root for ${operation} operation during Next.js build. Using minimal fallback query.`);
             // Create a minimal queryInfo structure that won't break the build
             // This will generate a query that may not work at runtime, but won't break the build
             queryName = table;
